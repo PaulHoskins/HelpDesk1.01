@@ -1,0 +1,1200 @@
+&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
+&ANALYZE-RESUME
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
+/***********************************************************************
+
+    Program:        iss/issue.p
+    
+    Purpose:        Issue Main Page
+    
+    Notes:
+    
+    
+    When        Who         What
+    06/04/2006  phoski      SearchField 
+    06/04/2006  phoski      hidedisplay.js for issue detailed info
+    06/04/2006  phoski      Sort by issue descending
+    10/04/2006  phoski      CompanyCode
+    11/04/2006  phoski      Common routines
+    11/04/2006  phoski      htmlib-trmouse()
+    13/04/2006  phoski      Handle customers user page
+    
+    13/09/2010  DJS         3708 Add dates to selection criteria
+    14/09/2010  DJS         3708 Additional bist for above
+    02/08/2012  DJS         3933 Modified to use object buffers  
+    20/04/2014  phoski      fixed 3933 and customer page     
+    24/04/2014  phoski      Various from specifications & fixes
+***********************************************************************/
+CREATE WIDGET-POOL.
+
+/* ***************************  Definitions  ************************** */
+
+/* Parameters Definitions ---                                           */
+
+/* Local Variable Definitions ---                                       */
+
+def var lc-error-field as char no-undo.
+def var lc-error-mess  as char no-undo.
+
+def var lc-rowid as char no-undo.
+def var lc-link-print as char no-undo.
+
+def var li-max-lines as int initial 12 no-undo.
+def var lr-first-row as rowid no-undo.
+def var lr-last-row  as rowid no-undo.
+def var li-count     as int   no-undo.
+def var ll-prev      as log   no-undo.
+def var ll-next      as log   no-undo.
+def var lc-search    as char  no-undo.
+def var lc-firstrow  as char  no-undo.
+def var lc-lastrow   as char  no-undo.
+def var lc-navigation as char no-undo.
+def var lc-parameters   as char no-undo.
+def var lc-smessage     as char no-undo.
+def var lc-link-otherp  as char no-undo.
+def var lc-char         as char no-undo.
+
+def var lc-sel-account  as char no-undo.
+def var lc-sel-status   as char no-undo.
+def var lc-sel-assign   as char no-undo.
+def var lc-sel-area     as char no-undo.
+def var lc-sel-cat      as char no-undo.
+def var lc-status       as char no-undo.
+def var lc-customer     as char no-undo.
+def var lc-issdate      as char no-undo.
+def var lc-raised       as char no-undo.
+def var lc-assigned     as char no-undo.
+
+
+def var lc-open-status  as char no-undo.
+def var lc-closed-status as char no-undo.
+
+def buffer b-query          for issue.
+def buffer b-search         for issue.
+def buffer b-cust           for customer.
+def buffer b-status         for WebStatus.
+def buffer b-user           for WebUser.
+def buffer b-Area           for WebIssArea.
+def buffer this-user        for WebUser.
+  
+
+
+def var lc-area         as char no-undo.
+def var lc-list-acc     as char no-undo.
+def var lc-list-aname   as char no-undo.
+def var lc-acc-lo       as char no-undo.
+def var lc-acc-hi       as char no-undo.
+def var lc-ass-lo       as char no-undo.
+def var lc-ass-hi       as char no-undo.
+def var lc-area-lo      as char no-undo.
+def var lc-area-hi      as char no-undo.
+def var lc-srch-status  as char no-undo.
+def var lc-srch-desc    as char no-undo.
+def var lc-cat-lo       as char no-undo.
+def var lc-cat-hi       as char no-undo.
+DEF VAR lc-iclass       AS CHAR NO-UNDO.
+
+
+def var lc-list-status  as char no-undo.
+def var lc-list-sname   as char no-undo.
+
+def var lc-list-assign  as char no-undo.
+def var lc-list-assname   as char no-undo.
+
+
+def var lc-list-area  as char no-undo.
+def var lc-list-arname   as char no-undo.
+
+def var lc-list-cat     as char no-undo.
+def var lc-list-cname   as char no-undo.
+
+def var lc-info         as char no-undo.
+def var lc-object       as char no-undo.
+def var li-tag-end      as int no-undo.
+def var lc-dummy-return as char initial "MYXXX111PPP2222"   no-undo.
+def var ll-customer     as log no-undo.
+def var li-search       as int no-undo.
+def var ll-search-err   as log no-undo.
+
+def var lc-lodate       as char format "99/99/9999" no-undo.
+def var lc-hidate       as char format "99/99/9999" no-undo.
+
+DEF VAR lc-SortField    AS CHAR    NO-UNDO.
+DEF VAR lc-SortOrder    AS CHAR    NO-UNDO.
+DEF VAR lc-SortOptions  AS CHAR    NO-UNDO.
+DEF VAR lc-OrderOptions AS CHAR    NO-UNDO.
+
+def var vcQueryPrepare  as char    no-undo.
+def var vhLBuffer       as handle  no-undo.
+def var vhLQuery        as handle  no-undo.
+
+
+create query vhLQuery  assign cache = 100 .
+
+vhLBuffer = buffer b-query:handle.
+vhLQuery:set-buffers(vhLBuffer).
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+
+&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
+/* ********************  Preprocessor Definitions  ******************** */
+
+&Scoped-define PROCEDURE-TYPE Procedure
+&Scoped-define DB-AWARE no
+
+
+
+/* _UIB-PREPROCESSOR-BLOCK-END */
+&ANALYZE-RESUME
+
+
+/* ************************  Function Prototypes ********************** */
+
+&IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Account Procedure 
+FUNCTION Format-Select-Account RETURNS CHARACTER
+   ( pc-htm as char )  FORWARD.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+
+/* *********************** Procedure Settings ************************ */
+
+&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
+/* Settings for THIS-PROCEDURE
+   Type: Procedure
+   Allow: 
+   Frames: 0
+   Add Fields to: Neither
+   Other Settings: CODE-ONLY COMPILE
+ */
+&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
+/* *************************  Create Window  ************************** */
+
+&ANALYZE-SUSPEND _CREATE-WINDOW
+/* DESIGN Window definition (used by the UIB) 
+  CREATE WINDOW Procedure ASSIGN
+         HEIGHT             = 14.15
+         WIDTH              = 60.57.
+/* END WINDOW DEFINITION */
+                                                                        */
+&ANALYZE-RESUME
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
+/* ************************* Included-Libraries *********************** */
+
+{src/web2/wrap-cgi.i}
+{lib/htmlib.i}
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+
+ 
+
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
+
+
+/* ************************  Main Code Block  *********************** */
+
+/* Process the latest Web event. */
+
+
+RUN process-web-request.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+
+/* **********************  Internal Procedures  *********************** */
+
+&IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
+PROCEDURE ip-ExportJScript :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+
+    {&out} skip
+            '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' skip.
+
+    {&out} skip 
+          '<script language="JavaScript">' skip.
+
+    {&out} skip
+        'function ChangeAccount() ~{' skip
+        '   SubmitThePage("AccountChange")' skip
+        '~}' skip
+
+        'function ChangeStatus() ~{' skip
+        '   SubmitThePage("StatusChange")' skip
+        '~}' skip
+
+            'function ChangeDates() ~{' skip
+        '   SubmitThePage("DatesChange")' skip
+        '~}' skip.
+
+    {&out} skip
+           '</script>' skip.
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-ip-InitialProcess) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-InitialProcess Procedure 
+PROCEDURE ip-InitialProcess :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+
+    if ll-customer then
+    do:
+        assign lc-sel-account = this-user.AccountNumber
+               lc-sel-assign  = htmlib-Null().
+        set-user-field("account",this-user.AccountNumber).
+
+        ASSIGN lc-SortOptions = "b-query.IssueNumber|Issue Number,b-query.IssueDate|Date,b-query.briefDescription|Brief Description,b-query.StatusCode|Status,b-query.AreaCode|Area,b-query.iclass|Class".
+
+    end.
+    ELSE
+    DO:
+        ASSIGN lc-SortOptions = 
+               "b-query.tlight|Traffic Light,"  +
+               "b-query.SLATrip|SLA Date,"  +
+               "b-query.SLAAmber|SLA Warning,"  +
+               "b-query.IssueNumber|Issue Number,b-query.IssueDate|Date,b-query.briefDescription|Brief Description,b-query.StatusCode|Status,"
+             + "b-query.AreaCode|Area,b-query.iclass|Class,b-query.AssignTo|Assigned To," 
+             + "b-query.LastActivity|Last Contact,"
+             + "b-query.AccountNumber|Customer".
+
+    END.
+
+    ASSIGN
+        lc-OrderOptions = "DESC|Descending,ASC|Ascending".
+
+
+    
+    assign lc-search      = get-value("search")
+           lc-firstrow    = get-value("firstrow")
+           lc-lastrow     = get-value("lastrow")
+           lc-navigation  = get-value("navigation")
+           lc-sel-account = get-value("account")
+           lc-sel-status  = get-value("status")
+           lc-sel-assign  = get-value("assign")
+           lc-sel-area    = get-value("area")
+           lc-sel-cat     = get-value("category")
+           lc-lodate      = get-value("lodate")         
+           lc-hidate      = get-value("hidate")
+           lc-SortField   = get-value("sortfield")
+           lc-SortOrder   = get-value("sortorder")
+           lc-iclass      = get-value("iclass").    
+    
+ 
+    IF lc-SortField = "" THEN
+    ASSIGN lc-SortField = ENTRY(1,lc-SortOptions,"|").
+    IF lc-SortOrder = ""
+    THEN lc-SortOrder = ENTRY(1,lc-OrderOptions,"|").
+
+    IF lc-iclass = "" 
+    THEN lc-iclass = ENTRY(1,lc-global-iclass-code,"|").
+ 
+    IF NOT ll-customer THEN
+    DO:
+    
+        if lc-lodate = ""
+        then assign lc-lodate = string(today - 365, "99/99/9999").
+
+        if lc-hidate = ""
+        then assign lc-hidate = string(today, "99/99/9999").
+    END.
+    ELSE
+    DO:
+        if lc-lodate = ""
+        then assign lc-lodate = "01/01/2001".
+
+        if lc-hidate = ""
+        then assign lc-hidate = "31/12/2999".
+
+
+    END.
+   
+    if lc-sel-account = ""
+    then assign lc-sel-account = htmlib-Null().
+
+    if lc-sel-status = ""
+    then assign lc-sel-status = htmlib-Null().
+
+    if lc-sel-assign = ""
+    then assign lc-sel-assign = htmlib-Null().
+
+    if lc-sel-area = ""
+    then assign lc-sel-area = htmlib-Null().
+
+    if lc-sel-cat = ""
+    then assign lc-sel-cat = htmlib-Null().
+
+    assign lc-parameters = "search=" + lc-search +
+                           "&firstrow=" + lc-firstrow + 
+                           "&lastrow=" + lc-lastrow.
+
+    
+    
+    assign lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
+    
+    if lc-search <> "" then
+    do:
+        assign li-search = int(lc-search) no-error.
+        if error-status:error
+        or li-search < 1 then assign ll-search-err = true
+                                     li-search = 0.
+    end.
+
+    assign li-max-lines = int(lc-char) no-error.
+    if error-status:error
+    or li-max-lines < 1
+    or li-max-lines = ? then li-max-lines = 12.
+
+    RUN com-GetCustomer ( lc-global-company , lc-global-user, output lc-list-acc, output lc-list-aname ).
+
+    RUN com-GetStatus ( lc-global-company , output lc-list-status, output lc-list-sname ).
+
+    RUN com-StatusType ( lc-global-company , output lc-open-status , output lc-closed-status ).
+
+    find webuser where webuser.companycode = lc-global-company
+        and webuser.loginid = lc-global-user no-lock.
+    if webuser.UserClass = "CONTRACT" 
+    then assign lc-list-assign = webuser.loginid
+                lc-list-assname = webuser.name
+                lc-sel-assign   = webuser.loginid.
+
+    else RUN com-GetAssign ( lc-global-company , output lc-list-assign , output lc-list-assname ).
+    
+    RUN com-GetArea ( lc-global-company , output lc-list-area , output lc-list-arname ).
+
+    run com-GetCatSelect ( lc-global-company, output lc-list-cat, output lc-list-cname ).
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-ip-navigate) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-navigate Procedure 
+PROCEDURE ip-navigate :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+
+
+    if lc-navigation = "nextpage" then
+    do:
+        vhLQuery:reposition-to-rowid(to-rowid(lc-lastrow)) .
+        if error-status:error = false then
+        do:
+          vhLQuery:get-next(no-lock).
+          vhLQuery:get-next(no-lock).
+    
+          if not avail b-query then vhLQuery:get-first(no-lock).
+      end.
+    end.
+    else
+    if lc-navigation = "prevpage" then
+    do:
+      vhLQuery:reposition-to-rowid(to-rowid(lc-firstrow)) no-error.
+      if error-status:error = false then
+      do:
+        vhLQuery:get-next(no-lock).
+         vhLQuery:reposition-backwards(li-max-lines + 1). 
+         vhLQuery:get-next(no-lock).
+        if not avail b-query then vhLQuery:get-first(no-lock).
+    end.
+    end.
+    else
+    if lc-navigation = "refresh" then
+    do:
+        vhLQuery:reposition-to-rowid(to-rowid(lc-firstrow)) no-error.
+        if error-status:error = false then
+        do:
+          vhLQuery:get-next(no-lock).
+           if not avail b-query then vhLQuery:get-first(no-lock).
+       end.  
+       else vhLQuery:get-first(no-lock).
+    end.
+    else 
+    if lc-navigation = "lastpage" then
+    do:
+      vhLQuery:get-last(no-lock).
+      vhLQuery:reposition-backwards(li-max-lines).
+      vhLQuery:get-next(no-lock).
+     if not avail b-query then vhLQuery:get-first(no-lock).
+    end.
+
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-ip-Selection) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Selection Procedure 
+PROCEDURE ip-Selection :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+    DEF VAR iloop       AS INT      NO-UNDO.
+    DEF VAR cPart       AS CHAR     NO-UNDO.
+    DEF VAR cCode       AS CHAR     NO-UNDO.
+    DEF VAR cDesc       AS CHAR     NO-UNDO.
+    
+    find this-user
+        where this-user.LoginID = lc-global-user no-lock no-error.
+
+    if not ll-customer
+    then {&out}
+           '<td align=right valign=top>' htmlib-SideLabel("Customer") '</td>'
+           '<td align=left valign=top>' 
+                format-Select-Account(htmlib-Select("account",lc-list-acc,lc-list-aname,lc-sel-account)) '</td>'.
+
+    {&out}
+           '<td align=right valign=top>' htmlib-SideLabel("Status") '</td>'
+           '<td align=left valign=top>' 
+                format-Select-Account(htmlib-Select("status",lc-list-status,lc-list-sname,lc-sel-status)) '</td>' skip.
+    {&out} 
+            '<td valign="top" align="right">' 
+            (if lookup("lodate",lc-error-field,'|') > 0 
+            then htmlib-SideLabelError("From Date")
+            else htmlib-SideLabel("From Date"))
+            '</td>'
+            '<td valign="top" align="left">'
+            htmlib-CalendarInputField("lodate",10,lc-lodate) 
+            htmlib-CalendarLink("lodate")
+            '</td>' skip
+     .
+    IF ll-Customer THEN
+    {&out} '<td valign="top" align="right">' 
+          (if lookup("hidate",lc-error-field,'|') > 0 
+          then htmlib-SideLabelError("To Date")
+          else htmlib-SideLabel("To Date"))
+          '</td>'
+          '<td valign="top" align="left">'
+          htmlib-CalendarInputField("hidate",10,lc-hidate) 
+          htmlib-CalendarLink("hidate")
+          '</td>' skip.
+
+    
+    if not ll-customer 
+    THEN 
+    {&out} 
+            '</tr><tr>' 
+            '<td align=right valign=top>' htmlib-SideLabel("Assigned") '</td>'
+            '<td align=left valign=top>' 
+            format-Select-Account(htmlib-Select("assign",lc-list-assign,lc-list-assname,lc-sel-assign)) '</td>' skip.
+
+    {&out} '<td align=right valign=top>' htmlib-SideLabel("Area") '</td>'
+           '<td align=left valign=top>'
+            '<select name="area" class="inputfield" onChange="ChangeAccount()">' 
+            '<option value="' dynamic-function("htmlib-Null") '" ' if lc-sel-area = dynamic-function("htmlib-Null") 
+                then "selected" else "" '>All Areas</option>' skip
+            '<option value="NOTASSIGNED" ' if lc-sel-area = "NOTASSIGNED"
+                then "selected" else "" '>Not Assigned</option>' skip   
+            .
+    for each webIssArea no-lock
+        where webIssArea.CompanyCode = lc-Global-Company 
+          break by webIssArea.GroupID
+                by webIssArea.AreaCode:
+        if first-of(webissArea.GroupID) then
+        do:
+            find webissagrp
+                where webissagrp.companycode = webissArea.CompanyCode
+                  and webissagrp.Groupid     = webissArea.GroupID no-lock no-error.
+            {&out}
+                '<optgroup label="' html-encode(if avail webissagrp then webissagrp.description else "Unknown") '">' skip.
+        end.
+        {&out}
+            '<option value="' webIssArea.AreaCode '" ' if lc-sel-area = webIssArea.AreaCode  
+                then "selected" else "" '>' html-encode(webIssArea.Description) '</option>' skip.
+        if last-of(WebIssArea.GroupID) then {&out} '</optgroup>' skip.
+    end.
+    {&out} '</select></td>'.
+
+    IF NOT ll-customer THEN
+    {&out} '<td valign="top" align="right">' 
+          (if lookup("hidate",lc-error-field,'|') > 0 
+          then htmlib-SideLabelError("To Date")
+          else htmlib-SideLabel("To Date"))
+          '</td>'
+          '<td valign="top" align="left">'
+          htmlib-CalendarInputField("hidate",10,lc-hidate) 
+          htmlib-CalendarLink("hidate")
+          '</td>' skip.
+    if not ll-customer then
+    do:
+        {&out} '</tr><tr>'
+                '<td align=right valign=top>' htmlib-SideLabel("Category") '</td>'
+           '<td align=left valign=top>' 
+                format-Select-Account(htmlib-Select("category",lc-list-cat,lc-list-cname,lc-sel-cat)) '</td>' skip.
+    end.
+
+    {&out} /*'</tr><tr>' */
+                '<td align=right valign=top>' htmlib-SideLabel("Class") '</td>'
+           '<td align=left valign=top>' 
+                format-Select-Account(htmlib-Select("iclass","All|" + lc-global-iclass-code,"All|" + lc-global-iclass-code,lc-iclass)) '</td>' skip.
+
+    /*
+    ** SortField
+    **
+    */
+    IF lc-SortOptions <> "" THEN
+    DO:
+        {&out}
+            '<td align=right valign=top>' htmlib-SideLabel("Sort By") '</td>'
+           '<td align=left valign=top>'
+            '<select name="sortfield" class="inputfield" onChange="ChangeAccount()">' 
+             SKIP.
+        DO iloop = 1 TO NUM-ENTRIES(lc-SortOptions):
+            cPart = ENTRY(iloop,lc-SortOptions).
+            cCode = ENTRY(1,cPart,"|").
+            cDesc = ENTRY(2,cPart,"|").
+
+            {&out}
+                '<option value="' cCode '" ' if lc-SortField = cCode
+                    then "selected" else "" '>' html-encode(cDesc) '</option>' skip.
+
+             
+  
+        END.
+        {&out} '</select>'.
+
+        {&out} '<br/>' 
+            '<select name="sortorder" class="inputfield" onChange="ChangeAccount()">' 
+             SKIP.
+        DO iloop = 1 TO NUM-ENTRIES(lc-orderOptions):
+            cPart = ENTRY(iloop,lc-OrderOptions).
+            cCode = ENTRY(1,cPart,"|").
+            cDesc = ENTRY(2,cPart,"|").
+
+            {&out}
+                '<option value="' cCode '" ' if lc-SortOrder = cCode
+                    then "selected" else "" '>' html-encode(cDesc) '</option>' skip.
+
+              
+  
+        END.
+        {&out} '</select></td>'.
+
+
+
+    END.
+    {&out} '</tr></table>' skip.
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
+PROCEDURE ip-Validate :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  emails:       
+------------------------------------------------------------------------------*/
+    def output param pc-error-field as char no-undo.
+    def output param pc-error-msg  as char no-undo.
+
+
+    def var ld-lodate   as date     no-undo.
+    def var ld-hidate   as date     no-undo.
+    def var li-loop     as int      no-undo.
+    def var lc-rowid    as char     no-undo.
+
+    assign
+        ld-lodate = date(lc-lodate) no-error.
+    if error-status:error 
+    or ld-lodate = ?
+    then run htmlib-AddErrorMessage(
+                'lodate', 
+                'The from date is invalid',
+                 input-output pc-error-field,
+                 input-output pc-error-msg ).
+
+    assign
+        ld-hidate = date(lc-hidate) no-error.
+    if error-status:error 
+    or ld-hidate = ?
+    then run htmlib-AddErrorMessage(
+                'hidate', 
+                'The to date is invalid',
+                 input-output pc-error-field,
+                 input-output pc-error-msg ).
+
+    if ld-lodate > ld-hidate 
+    then run htmlib-AddErrorMessage(
+                'lodate', 
+                'The date range is invalid',
+                 input-output pc-error-field,
+                 input-output pc-error-msg ).
+
+   
+
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
+PROCEDURE outputHeader :
+/*------------------------------------------------------------------------------
+  Purpose:     Output the MIME header, and any "cookie" information needed 
+               by this procedure.  
+  Parameters:  <none>
+  Notes:       In the event that this Web object is state-aware, this is
+               a good place to set the webState and webTimeout attributes.
+------------------------------------------------------------------------------*/
+
+  /* To make this a state-aware Web object, pass in the timeout period 
+   * (in minutes) before running outputContentType.  If you supply a timeout 
+   * period greater than 0, the Web object becomes state-aware and the 
+   * following happens:
+   *
+   *   - 4GL variables webState and webTimeout are set
+   *   - a cookie is created for the broker to id the client on the return trip
+   *   - a cookie is created to id the correct procedure on the return trip
+   *
+   * If you supply a timeout period less than 1, the following happens:
+   *
+   *   - 4GL variables webState and webTimeout are set to an empty string
+   *   - a cookie is killed for the broker to id the client on the return trip
+   *   - a cookie is killed to id the correct procedure on the return trip
+   *
+   * Example: Timeout period of 5 minutes for this Web object.
+   *
+   *   setWebState (5.0).
+   */
+    
+  /* 
+   * Output additional cookie information here before running outputContentType.
+   *      For more information about the Netscape Cookie Specification, see
+   *      http://home.netscape.com/newsref/std/cookie_spec.html  
+   *   
+   *      Name         - name of the cookie
+   *      Value        - value of the cookie
+   *      Expires date - Date to expire (optional). See TODAY function.
+   *      Expires time - Time to expire (optional). See TIME function.
+   *      Path         - Override default URL path (optional)
+   *      Domain       - Override default domain (optional)
+   *      Secure       - "secure" or unknown (optional)
+   * 
+   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+   *      same time but only for secure (https) connections.
+   *      
+   *      RUN SetCookie IN web-utilities-hdl 
+   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+   */ 
+  output-content-type ("text/html":U).
+  
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
+PROCEDURE process-web-request :
+/*------------------------------------------------------------------------------
+  Purpose:     Process the web request.
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+  
+    {lib/checkloggedin.i}
+
+    DEF VAR iloop       AS INT      NO-UNDO.
+    DEF VAR cPart       AS CHAR     NO-UNDO.
+    DEF VAR cCode       AS CHAR     NO-UNDO.
+    DEF VAR cDesc       AS CHAR     NO-UNDO.
+    DEF VAR lc-LastAct  AS CHAR     NO-UNDO.
+
+    
+    find this-user
+        where this-user.LoginID = lc-global-user no-lock no-error.
+    
+    assign
+        ll-customer = this-user.UserClass = "CUSTOMER".
+    RUN ip-InitialProcess.
+    RUN outputHeader.
+    {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
+    {&out} htmlib-Header("Maintain Issue") skip.
+    RUN ip-ExportJScript.
+    {&out} htmlib-JScript-Maintenance() skip.
+    {&out} htmlib-StartForm("mainform","post", appurl + '/iss/issue.p' ) skip.
+    {&out} htmlib-ProgramTitle(if ll-Customer then "Your Issues" else "Maintain Issue") 
+           htmlib-hidden("submitsource","") skip.
+    {&out} htmlib-BeginCriteria("Search Issues").
+    if ll-search-err then
+    do:
+        {&out} '<div class="infobox">The issue number you entered is not a number, the issue description has been searched</div>' skip.
+    end.
+    if ll-customer and get-value("statementsent") = "yes" then
+    do:
+        {&out} '<div class="infobox">A statement for your account has been sent to your email address.</div>' skip.
+    end.
+    {&out} '<table align=center><tr>' skip.
+
+    RUN ip-Selection.
+
+    {&out} htmlib-EndCriteria().
+    assign lc-link-print = appurl + '/iss/issueprint.p?account=' 
+                         + html-encode(lc-sel-account) 
+                         + '&area=' + lc-sel-area 
+                         + '&assign=' + lc-sel-assign 
+                         + '&status=' + lc-sel-status 
+                         + '&category=' + lc-sel-cat
+                         + '&lodate=' + lc-lodate       /* 3708  */  
+                         + '&hidate=' + lc-hidate       /* 3708  */ 
+                         + '&sortfield=' + lc-SortField 
+                         + '&sortorder=' + lc-SortOrder 
+                         + '&iclass=' + lc-iclass 
+       .
+    {&out}
+            tbar-Begin(
+               tbar-Find(appurl + "/iss/issue.p")
+                )
+            tbar-BeginOption().
+    if not ll-Customer 
+    then {&out}
+            tbar-Link("pdf",?,
+                      'javascript:RepWindow('
+                          + '~'' + lc-link-print 
+                          + '~'' 
+                          + ');'
+                      ,"").
+    if ll-Customer
+    then {&out} tbar-Link("statement",?,appurl + '/'
+                          + "cust/indivstatement.p","source=customer&accountnumber=" + this-user.AccountNumber).
+    {&out}
+            tbar-Link("view",?,"off",lc-link-otherp).
+    if not ll-Customer
+    then {&out} tbar-Link("update",?,"off",lc-link-otherp).
+    else 
+    do:
+        {&out} tbar-Link("doclist",?,"off",lc-link-otherp).
+    end.
+    if dynamic-function("com-IsSuperUser",lc-user)
+    then {&out} tbar-Link("moveiss",?,"off",lc-link-otherp).
+    {&out}
+            tbar-EndOption()
+            tbar-End().
+    if not ll-customer
+    then {&out} skip
+           replace(htmlib-StartMntTable(),'width="100%"','width="100%"') skip
+           htmlib-TableHeading(
+            "|SLA Date<br/>SLA Warning|Issue Number^right|Date^right|Brief Description^left|Status^left|Area|Class|Assigned To|Last Contact|Customer^left"
+            ) skip.
+    else {&out} skip
+           replace(htmlib-StartMntTable(),'width="100%"','width="97%"') skip
+           htmlib-TableHeading(
+            "Issue Number^right|Date^right|Brief Description^left|Status^left|Area|Class"
+            ) skip.
+    if ll-customer then
+    do:
+        assign lc-sel-account = this-user.AccountNumber
+               lc-sel-assign  = htmlib-Null().
+    end.
+    if lc-sel-account = htmlib-Null()
+    then assign lc-acc-lo = ""
+                lc-acc-hi = "ZZZZZZZZZZZZZZZZZZZZZZZZ".
+    else assign lc-acc-lo = lc-sel-account
+                lc-acc-hi = lc-sel-account.
+
+    if lc-sel-status = htmlib-Null() 
+    then assign lc-srch-status = "*".
+    else
+    if lc-sel-status = "AllOpen" 
+    then assign lc-srch-status = lc-open-status.
+    else 
+    if lc-sel-status = "AllClosed"
+    then assign lc-srch-status = lc-closed-status.
+    else assign lc-srch-status = lc-sel-status.
+    if lc-sel-assign = htmlib-null() 
+    then assign lc-ass-lo = ""
+                lc-ass-hi = "ZZZZZZZZZZZZZZZZ".
+    else
+    if lc-sel-assign = "NotAssigned" 
+    then assign lc-ass-lo = ""
+                lc-ass-hi = "".
+    else assign lc-ass-lo = lc-sel-assign
+                lc-ass-hi = lc-sel-assign.
+
+    if lc-sel-area = htmlib-null() 
+    then assign lc-area-lo = ""
+                lc-area-hi = "ZZZZZZZZZZZZZZZZ".
+    else
+    if lc-sel-area = "NotAssigned" 
+    then assign lc-area-lo = ""
+                lc-area-hi = "".
+    else assign lc-area-lo = lc-sel-area
+                lc-area-hi = lc-sel-area.
+    if lc-sel-cat = htmlib-null() 
+    then assign lc-cat-lo = ""
+                lc-cat-hi = "ZZZZZZZZZZZZZZZZZZZ".
+    else assign lc-cat-lo = lc-sel-cat
+                lc-cat-hi = lc-sel-cat.
+
+ /* 3933  START */
+    vcQueryPrepare = 
+      "for each b-query no-lock where b-query.CompanyCode = '" + string(lc-Global-Company) + "' " +  
+      "and b-query.AccountNumber >= '" + string(lc-acc-lo) + "' " +  
+      "and b-query.AccountNumber <= '" + string(lc-acc-hi) + "' " +
+      "and b-query.AssignTo >= '" + string(lc-ass-lo) + "' " + 
+      "and b-query.AssignTo <= '" + string(lc-ass-hi) + "' " + 
+      "and b-query.AreaCode >= '" + string(lc-area-lo) + "' " + 
+      "and b-query.AreaCode <= '" + string(lc-area-hi) + "' " + 
+      "and b-query.CatCode  >= '" + string(lc-cat-lo) + "' " + 
+      "and b-query.CatCode  <= '" + string(lc-cat-hi) + "' " + 
+      "and b-query.CreateDate >= '" + string(date(lc-lodate)) + "' " + 
+      "and b-query.CreateDate <= '" + string(date(lc-hidate)) + "' " +
+      (if lc-srch-status <> "*" then " and index('" + string(lc-srch-status) + "',b-query.StatusCode) <> 0 " else "") +
+      (if li-search > 0 then " and b-query.IssueNumber = '" + string(li-Search) + "'" else "") 
+      .
+
+
+    IF li-search = 0
+    AND lc-search <> "" THEN
+    DO:
+        assign
+            vcQueryPrepare = vcQueryPrepare  + " and b-query.searchField contains '" + lc-search + "'".
+       
+         
+    END.
+
+    IF lc-iClass <> "ALL" 
+    THEN ASSIGN 
+            vcQueryPrepare = vcQueryPrepare  + " and b-query.iclass = '" + lc-iclass + "'".
+
+
+    IF lc-SortField <> "" THEN
+    DO:
+        ASSIGN vcQueryPrepare = vcQueryPrepare  
+                + " by " + lc-sortfield + " " + ( IF lc-sortOrder = "ASC" THEN "" ELSE lc-SortOrder ).
+        IF lc-SortField <> "Traffic Light" 
+        THEN 
+        do: 
+            ASSIGN vcQueryPrepare = vcQueryPrepare + " by b-query.tlight".
+            IF lc-SortField <> "Issue Number"
+            THEN ASSIGN vcQueryPrepare = vcQueryPrepare + " by b-query.issueNumber DESC".
+
+        END.
+        ELSE ASSIGN vcQueryPrepare = vcQueryPrepare + " by b-query.issueNumber DESC".
+
+    END.
+
+    vhLQuery:set-buffers(vhLBuffer).
+    vhLQuery:query-prepare(vcQueryPrepare).
+    vhLQuery:QUERY-OPEN().
+    vhLQuery:GET-FIRST(no-lock).
+    
+    run ip-navigate.
+/* 3933  END */
+
+    assign li-count = 0
+           lr-first-row = ?
+           lr-last-row  = ?.
+
+    repeat while vhLBuffer:available: /* 3933  */
+ 
+        assign lc-rowid = string(rowid(b-query))
+               lc-issdate = if b-query.issuedate = ? then "" else string(b-query.issuedate,'99/99/9999').
+        assign li-count = li-count + 1.
+        if lr-first-row = ?
+        then assign lr-first-row = rowid(b-query).
+        assign lr-last-row = rowid(b-query).
+        assign lc-link-otherp = 'search=' + lc-search +
+                                '&firstrow=' + string(lr-first-row) +
+                                '&account=' + lc-sel-account + 
+                                '&status=' + lc-sel-status + 
+                                '&assign=' + lc-sel-assign + 
+                                '&area=' + lc-sel-area + 
+                                '&category=' + lc-sel-cat +
+                                '&lodate=' + lc-lodate +     
+                                '&hidate=' + lc-hidate +
+                                '&sortfield=' + lc-SortField + 
+                                '&sortorder=' + lc-SortOrder + 
+                                '&iclass=' + lc-iclass.
+        find b-cust of b-query no-lock no-error.
+        assign lc-customer = if avail b-cust then b-cust.name else "".
+        find b-status of b-query no-lock no-error.
+        if avail b-status then
+        do:
+            assign lc-status = b-status.Description.
+            if b-status.CompletedStatus
+            then lc-status = lc-status + ' (closed)'.
+            else lc-status = lc-status + ' (open)'.
+        end.
+        else lc-status = "".
+        find b-user where b-user.LoginID = b-query.RaisedLogin no-lock no-error.
+        assign lc-raised = if avail b-user then b-user.name else "".
+        assign lc-assigned = "".
+        find b-user where b-user.LoginID = b-query.AssignTo no-lock no-error.
+        if avail b-user then
+        do:
+            assign lc-assigned = b-user.name.
+            if b-query.AssignDate <> ? then
+            assign
+                lc-assigned = lc-assigned + "~n" + string(b-query.AssignDate,"99/99/9999") + " " +
+                                                  string(b-query.AssignTime,"hh:mm am").
+        end.
+        find b-area of b-query no-lock no-error.
+        assign lc-area = if avail b-area then b-area.description else "".
+        {&out}
+            skip
+            tbar-tr(rowid(b-query))
+            skip.
+
+        /* SLA Traffic Light */
+        IF NOT ll-Customer THEN
+        DO:
+            {&out} '<td valign="top" align="right">' SKIP.
+
+            IF b-query.tlight = li-global-sla-fail
+            THEN {&out} '<img src="/images/sla/fail.gif">' SKIP.
+            ELSE
+            IF b-query.tlight = li-global-sla-amber
+            THEN {&out} '<img src="/images/sla/warn.gif">' SKIP.
+            
+            ELSE
+            IF b-query.tlight = li-global-sla-ok
+            THEN {&out} '<img src="/images/sla/ok.gif">' SKIP.
+            ELSE {&out} '&nbsp;' SKIP.
+            
+            
+            {&out} '</td>' skip.
+
+            IF b-query.slatrip <> ? THEN
+            DO:
+                {&out} '<td valign="top" align="left" nowrap>' SKIP
+                       STRING(b-query.slatrip,"99/99/9999 HH:MM") SKIP.
+
+
+                IF b-query.slaAmber <> ? THEN
+                {&out} '<br/>' SKIP
+                       STRING(b-query.slaAmber,"99/99/9999 HH:MM") SKIP.
+                {&out} '</td>' SKIP.
+
+            END.
+            ELSE {&out} '<td>&nbsp;</td>' SKIP.
+
+
+            
+
+        END.
+        {&out}
+            htmlib-MntTableField(html-encode(string(b-query.issuenumber)),'right')
+            htmlib-MntTableField(html-encode(lc-issdate),'right').
+        if b-query.LongDescription <> ""
+        and b-query.LongDescription <> b-query.briefdescription then
+        do:
+            assign lc-info = 
+                replace(htmlib-MntTableField(html-encode(b-query.briefdescription),'left'),'</td>','')
+                lc-object = "hdobj" + string(b-query.issuenumber).
+            assign li-tag-end = index(lc-info,">").
+            {&out} substr(lc-info,1,li-tag-end).
+            assign substr(lc-info,1,li-tag-end) = "".
+            {&out} 
+                '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
+                        lc-object '~')">':U skip.
+            {&out} lc-info.
+            {&out} htmlib-ExpandBox(lc-object,b-query.LongDescription).
+            {&out} '</td>' skip.
+        end.
+        else {&out} htmlib-MntTableField(html-encode(b-query.briefdescription),"left").
+        {&out}
+            htmlib-MntTableField(html-encode(lc-status),'left')
+            htmlib-MntTableField(html-encode(lc-area),'left')
+            htmlib-MntTableField(html-encode(b-query.iclass),'left').
+        if not ll-customer then
+        do:
+            IF b-query.lastActivity = ?
+            THEN lc-lastAct = "".
+            ELSE lc-lastAct = STRING(b-query.lastActivity,"99/99/9999 HH:MM").
+            
+            {&out}
+                htmlib-MntTableField(replace(html-encode(lc-assigned),"~n","<br>"),'left')
+                htmlib-MntTableField(replace(html-encode(lc-LastAct),"~n","<br>"),'left').
+
+            
+            if lc-raised = ""
+            then {&out} htmlib-MntTableField(html-encode(lc-customer),'left').
+            else
+            do:
+                assign lc-info = 
+                    replace(htmlib-MntTableField(html-encode(lc-customer),'left'),'</td>','')
+                    lc-object = "hdobjcust" + string(b-query.issuenumber).
+                assign li-tag-end = index(lc-info,">").
+                {&out} substr(lc-info,1,li-tag-end).
+                assign substr(lc-info,1,li-tag-end) = "".
+                {&out} 
+                    '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
+                            lc-object '~')">':U skip.
+                {&out} lc-info.
+                {&out} htmlib-SimpleExpandBox(lc-object,lc-raised).
+                {&out} '</td>' skip.
+            end.
+        end.
+        {&out} skip
+                tbar-BeginHidden(rowid(b-query)).
+        if not ll-Customer 
+        then {&out} tbar-Link("pdf",?,
+                      'javascript:RepWindow('
+                          + '~'' + lc-link-print 
+                          + '~'' 
+                          + ');'
+                      ,"").
+        if ll-Customer
+        then {&out} tbar-Link("statement",?,appurl + '/'
+                          + "cust/indivstatement.p","source=customer&accountnumber=" + this-user.AccountNumber).
+        {&out}
+                tbar-Link("view",rowid(b-query),
+                          'javascript:HelpWindow('
+                          + '~'' + appurl 
+                          + '/iss/issueview.p?rowid=' + string(rowid(b-query))
+                          + '~'' 
+                          + ');'
+                          ,lc-link-otherp).
+        if not ll-customer  
+        then {&out} tbar-Link("update",rowid(b-query),appurl + '/' + "iss/issueframe.p",lc-link-otherp).
+        else {&out} tbar-Link("doclist",rowid(b-query),appurl + '/' + "iss/custissdoc.p",lc-link-otherp).
+        if dynamic-function("com-IsSuperUser",lc-user)
+        then {&out} tbar-Link("moveiss",rowid(b-query),appurl + '/' + "iss/moveissue.p",lc-link-otherp).
+        {&out}
+            tbar-EndHidden()
+            skip
+           '</tr>' skip.
+        if li-count = li-max-lines then leave.
+ 
+      vhLQuery:get-next(no-lock). /* 3933  */
+
+    end.
+ 
+    if li-count < li-max-lines then
+    do:
+        {&out} skip htmlib-BlankTableLines(li-max-lines - li-count) skip.
+    end.
+    {&out} skip 
+           htmlib-EndTable()
+           skip.
+    {lib/issnavpanel3.i "iss/issue.p"}
+    {&out} skip
+           htmlib-Hidden("firstrow", string(lr-first-row)) skip
+           htmlib-Hidden("lastrow", string(lr-last-row)) skip
+           skip.
+
+    if ll-customer then
+    do:
+        {&out} 
+            skip
+            '<div style="display: none;">'
+                format-Select-Account(htmlib-Select("account",lc-sel-account,lc-sel-account,lc-sel-account)) 
+                format-Select-Account(htmlib-Select("assign",htmlib-Null(),htmlib-Null(),htmlib-Null())) 
+                /*format-Select-Account(htmlib-Select("status",htmlib-Null(),htmlib-Null(),htmlib-Null())) 
+                  */
+            '</div>'
+            skip.
+    end.
+
+    IF ll-customer THEN
+    DO:
+        {&out} htmlib-mBanner(lc-global-Company).
+    END.
+
+    {&out} htmlib-EndForm() skip.
+    {&out} htmlib-CalendarScript("lodate") skip
+           htmlib-CalendarScript("hidate") skip.
+    if ll-customer and get-value("showpdf") <> "" then
+    do:
+        {&out} '<script>' skip
+            "OpenNewWindow('"
+                    appurl "/rep/viewpdf3.pdf?PDF=" 
+                    url-encode(get-value("showpdf"),"query") "')" skip
+            '</script>' skip.
+    end.
+    
+
+    {&OUT} htmlib-Footer() skip.
+
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+/* ************************  Function Implementations ***************** */
+
+&IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Account Procedure 
+FUNCTION Format-Select-Account RETURNS CHARACTER
+   ( pc-htm as char ) :
+/*------------------------------------------------------------------------------
+  Purpose:  
+    Notes:  
+------------------------------------------------------------------------------*/
+
+  def var lc-htm as char no-undo.
+
+  lc-htm = replace(pc-htm,'<select',
+                   '<select onChange="ChangeAccount()"')
+                   . 
+
+
+  RETURN lc-htm.
+
+
+END FUNCTION.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
