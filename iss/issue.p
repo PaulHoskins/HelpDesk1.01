@@ -880,7 +880,7 @@ PROCEDURE process-web-request :
     else assign lc-cat-lo = lc-sel-cat
                 lc-cat-hi = lc-sel-cat.
 
- /* 3933  START */
+
     vcQueryPrepare = 
       "for each b-query no-lock where b-query.CompanyCode = '" + string(lc-Global-Company) + "' " +  
       "and b-query.AccountNumber >= '" + string(lc-acc-lo) + "' " +  
@@ -928,13 +928,20 @@ PROCEDURE process-web-request :
 
     END.
 
+    
+    vcQueryPrepare = vcQueryPrepare + ' INDEXED-REPOSITION'.
+    
+
     vhLQuery:set-buffers(vhLBuffer).
     vhLQuery:query-prepare(vcQueryPrepare).
     vhLQuery:QUERY-OPEN().
+
+    DYNAMIC-FUNCTION("com-WriteQueryInfo",vhlQuery).
+
     vhLQuery:GET-FIRST(no-lock).
-    
+
     run ip-navigate.
-/* 3933  END */
+
 
     assign li-count = 0
            lr-first-row = ?
@@ -1005,7 +1012,6 @@ PROCEDURE process-web-request :
             IF b-query.tlight = li-global-sla-ok
             THEN {&out} '<img src="/images/sla/ok.gif">' SKIP.
             ELSE {&out} '&nbsp;' SKIP.
-            
             
             {&out} '</td>' skip.
 

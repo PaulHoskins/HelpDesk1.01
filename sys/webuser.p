@@ -200,8 +200,6 @@ PROCEDURE process-web-request :
 
     {lib/checkloggedin.i}
 
-    
-   
     assign lc-search = get-value("search")
            lc-firstrow = get-value("firstrow")
            lc-lastrow  = get-value("lastrow")

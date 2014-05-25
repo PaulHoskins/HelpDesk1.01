@@ -469,6 +469,13 @@ FUNCTION com-UserTrackIssue RETURNS logical
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-WriteQueryInfo Include 
+FUNCTION com-WriteQueryInfo RETURNS LOGICAL
+  ( hQuery AS HANDLE )  FORWARD.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
 
 /* *********************** Procedure Settings ************************ */
 
@@ -929,7 +936,7 @@ PROCEDURE com-GetCustomer :
             if not DYNAMIC-FUNCTION('com-AllowCustomerAccess':U,
                                     pc-companyCode,
                                     pc-LoginID,
-                                    pc-AccountNumber) then next.
+                                    b-cust.AccountNumber) then next.
         end.
         assign pc-AccountNumber = pc-AccountNumber + '|' + 
                b-cust.AccountNumber
@@ -1303,7 +1310,8 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
     DEF BUFFER webusteam    FOR webusteam.
     DEF BUFFER customer     FOR customer.
     DEF VAR ll-Steam    AS LOG NO-UNDO.
-    
+    DEF VAR ll-Access   AS LOG NO-UNDO.
+
     
     ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid =  pc-LoginID NO-LOCK).
 
@@ -1323,9 +1331,9 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
         FIND customer WHERE customer.companyCode = pc-CompanyCode
                         AND customer.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
         IF customer.st-num = 0 THEN RETURN FALSE.
-        RETURN CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-LoginID
-                                       AND webusteam.st-num = customer.st-num NO-LOCK).
-
+        ll-access = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-LoginID
+                                          AND webusteam.st-num = customer.st-num NO-LOCK).
+        RETURN ll-access.
     END.
 
     if b-user.UserClass = "{&CUSTOMER}" then
@@ -1334,7 +1342,7 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
     end.
 
     return can-find(first b-ContAccess where b-ContAccess.LoginID = pc-LoginID 
-                    and b-ContAccess.AccountNumber = pc-AccountNumber no-lock ).
+                      and b-ContAccess.AccountNumber = pc-AccountNumber no-lock ).
 
 
  
@@ -2833,6 +2841,32 @@ FUNCTION com-UserTrackIssue RETURNS logical
 
     return if avail webUser and webUser.email <> "" 
            then webUser.CustomerTrack else false.
+
+END FUNCTION.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-WriteQueryInfo Include 
+FUNCTION com-WriteQueryInfo RETURNS LOGICAL
+  ( hQuery AS HANDLE ) :
+/*------------------------------------------------------------------------------
+  Purpose:  
+    Notes:  
+------------------------------------------------------------------------------*/
+  DEFINE VARIABLE ix     AS INTEGER NO-UNDO.
+  DEFINE VARIABLE jx     AS INTEGER NO-UNDO.
+
+  REPEAT ix = 1 TO hQuery:NUM-BUFFERS:  
+      jx = LOOKUP("WHOLE-INDEX", hQuery:INDEX-INFORMATION(ix)).  
+      IF jx > 0 
+      THEN    MESSAGE "inefficient index" ENTRY(jx + 1, hQuery:INDEX-INFORMATION(ix)).  
+      ELSE     MESSAGE "bracketed index use of" hQuery:INDEX-INFORMATION(ix).
+   END.
+
+
+  RETURN TRUE.
+
 
 END FUNCTION.
 

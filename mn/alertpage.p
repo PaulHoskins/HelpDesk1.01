@@ -1,4 +1,4 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
+&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
 &ANALYZE-RESUME
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
@@ -73,8 +73,8 @@ def var lc-Alert-TBAR      as char
 &ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
-         HEIGHT             = 14.14
-         WIDTH              = 60.6.
+         HEIGHT             = 14.15
+         WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
 &ANALYZE-RESUME
