@@ -124,7 +124,7 @@ DEF VAR lc-SortOrder    AS CHAR    NO-UNDO.
 DEF VAR lc-SortOptions  AS CHAR    NO-UNDO.
 DEF VAR lc-OrderOptions AS CHAR    NO-UNDO.
 
-def var vcQueryPrepare  as char    no-undo.
+def var lc-QPhrase  as char    no-undo.
 def var vhLBuffer       as handle  no-undo.
 def var vhLQuery        as handle  no-undo.
 
@@ -797,7 +797,7 @@ PROCEDURE process-web-request :
        .
     {&out}
             tbar-Begin(
-               tbar-Find(appurl + "/iss/issue.p")
+               tbar-FindLabel(appurl + "/iss/issue.p","Search Issue Number/Description")
                 )
             tbar-BeginOption().
     if not ll-Customer 
@@ -855,6 +855,7 @@ PROCEDURE process-web-request :
     if lc-sel-status = "AllClosed"
     then assign lc-srch-status = lc-closed-status.
     else assign lc-srch-status = lc-sel-status.
+
     if lc-sel-assign = htmlib-null() 
     then assign lc-ass-lo = ""
                 lc-ass-hi = "ZZZZZZZZZZZZZZZZ".
@@ -881,62 +882,66 @@ PROCEDURE process-web-request :
                 lc-cat-hi = lc-sel-cat.
 
 
-    vcQueryPrepare = 
-      "for each b-query no-lock where b-query.CompanyCode = '" + string(lc-Global-Company) + "' " +  
-      "and b-query.AccountNumber >= '" + string(lc-acc-lo) + "' " +  
-      "and b-query.AccountNumber <= '" + string(lc-acc-hi) + "' " +
-      "and b-query.AssignTo >= '" + string(lc-ass-lo) + "' " + 
-      "and b-query.AssignTo <= '" + string(lc-ass-hi) + "' " + 
-      "and b-query.AreaCode >= '" + string(lc-area-lo) + "' " + 
-      "and b-query.AreaCode <= '" + string(lc-area-hi) + "' " + 
-      "and b-query.CatCode  >= '" + string(lc-cat-lo) + "' " + 
-      "and b-query.CatCode  <= '" + string(lc-cat-hi) + "' " + 
-      "and b-query.CreateDate >= '" + string(date(lc-lodate)) + "' " + 
-      "and b-query.CreateDate <= '" + string(date(lc-hidate)) + "' " +
-      (if lc-srch-status <> "*" then " and index('" + string(lc-srch-status) + "',b-query.StatusCode) <> 0 " else "") +
-      (if li-search > 0 then " and b-query.IssueNumber = '" + string(li-Search) + "'" else "") 
-      .
+    
+    lc-QPhrase = 
+      "for each b-query NO-LOCK where b-query.CompanyCode = '" + string(lc-Global-Company) + "'".
 
+    if lc-sel-account <> htmlib-Null() 
+    THEN ASSIGN lc-QPhrase =  lc-QPhrase + " and b-query.AccountNumber = '" + lc-acc-lo + "'".
+    if lc-sel-assign <> htmlib-null() 
+    THEN ASSIGN lc-QPhrase =  lc-QPhrase + " and b-query.AssignTo = '" + lc-ass-lo + "'".
 
-    IF li-search = 0
-    AND lc-search <> "" THEN
-    DO:
-        assign
-            vcQueryPrepare = vcQueryPrepare  + " and b-query.searchField contains '" + lc-search + "'".
-       
-         
-    END.
+    if lc-sel-area <> htmlib-null() 
+    THEN ASSIGN lc-QPhrase =  lc-QPhrase + " and b-query.AreaCode = '" + lc-area-lo + "'".
+    
+    if lc-sel-cat <> htmlib-null() 
+    THEN ASSIGN lc-QPhrase =  lc-QPhrase + " and b-query.CatCode = '" + lc-cat-lo + "'".
 
+    ASSIGN lc-QPhrase = lc-QPhrase + 
+            " and b-query.CreateDate >= '" + string(date(lc-lodate)) + "' " + 
+            " and b-query.CreateDate <= '" + string(date(lc-hidate)) + "' ".
+
+    if lc-srch-status <> "*" then 
+    ASSIGN lc-QPhrase = lc-QPhrase + " and index('" + string(lc-srch-status) + "',b-query.StatusCode) <> 0 ".
+    if li-search > 0 then 
+    ASSIGN lc-QPhrase = lc-QPhrase + " and b-query.IssueNumber = '" + string(li-Search) + "'".
+    ELSE 
+    if lc-search <> "" 
+    THEN assign
+            lc-QPhrase = lc-QPhrase  + " and b-query.searchField contains '" + lc-search + "'".
+    
     IF lc-iClass <> "ALL" 
     THEN ASSIGN 
-            vcQueryPrepare = vcQueryPrepare  + " and b-query.iclass = '" + lc-iclass + "'".
+            lc-QPhrase = lc-QPhrase  + " and b-query.iclass = '" + lc-iclass + "'".
 
 
     IF lc-SortField <> "" THEN
     DO:
-        ASSIGN vcQueryPrepare = vcQueryPrepare  
+        ASSIGN lc-QPhrase = lc-QPhrase  
                 + " by " + lc-sortfield + " " + ( IF lc-sortOrder = "ASC" THEN "" ELSE lc-SortOrder ).
-        IF lc-SortField <> "Traffic Light" 
+        IF lc-SortField <> "b-query.tlight"
         THEN 
         do: 
-            ASSIGN vcQueryPrepare = vcQueryPrepare + " by b-query.tlight".
-            IF lc-SortField <> "Issue Number"
-            THEN ASSIGN vcQueryPrepare = vcQueryPrepare + " by b-query.issueNumber DESC".
+            ASSIGN lc-QPhrase = lc-QPhrase + " by b-query.tlight".
+            IF lc-SortField <> "b-query.issueNumber"
+            THEN ASSIGN lc-QPhrase = lc-QPhrase + " by b-query.issueNumber DESC".
 
         END.
-        ELSE ASSIGN vcQueryPrepare = vcQueryPrepare + " by b-query.issueNumber DESC".
+        ELSE ASSIGN lc-QPhrase = lc-QPhrase + " by b-query.issueNumber DESC".
 
     END.
 
     
-    vcQueryPrepare = vcQueryPrepare + ' INDEXED-REPOSITION'.
+    lc-QPhrase = lc-QPhrase + ' INDEXED-REPOSITION'.
     
+    /* MESSAGE "Q = " lc-qPhrase. */
 
     vhLQuery:set-buffers(vhLBuffer).
-    vhLQuery:query-prepare(vcQueryPrepare).
+    vhLQuery:query-prepare(lc-QPhrase).
     vhLQuery:QUERY-OPEN().
-
+/*
     DYNAMIC-FUNCTION("com-WriteQueryInfo",vhlQuery).
+  */
 
     vhLQuery:GET-FIRST(no-lock).
 

@@ -161,6 +161,18 @@ FUNCTION tbar-FindCustom RETURNS CHARACTER
 
 &ENDIF
 
+&IF DEFINED(EXCLUDE-tbar-FindLabel) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD tbar-FindLabel Procedure 
+FUNCTION tbar-FindLabel RETURNS CHARACTER
+ ( pc-url as char,
+   pc-label AS CHAR )  FORWARD.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
 &IF DEFINED(EXCLUDE-tbar-ImageLink) = 0 &THEN
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD tbar-ImageLink Procedure 
@@ -511,6 +523,33 @@ FUNCTION tbar-FindCustom RETURNS CHARACTER
                 '" value="' + dynamic-function("get-value",pc-name) + '">'
                 + '&nbsp;' 
                 + '<a alt="Find" href="javascript:MntButtonPress(~''  + pc-action + '~',~'' + pc-url + '~')">'
+                + '<img src="/images/toolbar/find.gif" class="tbarimg" border="0" alt="Find"></a>'.
+    /*
+         dynamic-function("htmlib-MntButton",pc-url,"search","Search").
+      */
+
+END FUNCTION.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-tbar-FindLabel) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION tbar-FindLabel Procedure 
+FUNCTION tbar-FindLabel RETURNS CHARACTER
+ ( pc-url as char,
+   pc-label AS CHAR ) :
+/*------------------------------------------------------------------------------
+  Purpose:  
+    Notes:  
+------------------------------------------------------------------------------*/
+
+    return      '<b>' + pc-label + ':</b>&nbsp;' + 
+                '<input style="font-size: 12px;" name="search" size="20" value="' + dynamic-function("get-value","search") + '">'
+                + '&nbsp;' 
+                + '<a alt="Find" href="javascript:MntButtonPress(~'search~',~'' + pc-url + '~')">'
                 + '<img src="/images/toolbar/find.gif" class="tbarimg" border="0" alt="Find"></a>'.
     /*
          dynamic-function("htmlib-MntButton",pc-url,"search","Search").
