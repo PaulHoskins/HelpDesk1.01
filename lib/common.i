@@ -1686,6 +1686,10 @@ FUNCTION com-CanDelete RETURNS LOGICAL
         DO:
             RETURN TRUE.
         END.
+        WHEN 'iemailtmp' THEN
+        DO:
+            RETURN TRUE.
+        END.
         WHEN "Steam" THEN
         DO:
             FIND steam WHERE ROWID(steam) = pr-rowid NO-LOCK NO-ERROR.

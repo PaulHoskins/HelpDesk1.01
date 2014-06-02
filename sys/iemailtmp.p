@@ -3,16 +3,15 @@
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
-    Program:        sys/webactivetype.p
+    Program:        sys/iemailtmp.p
     
-    Purpose:        Activity Type Maintenance             
+    Purpose:        Email Template Maintenance     
     
     Notes:
     
     
     When        Who         What
-    12/04/2006  phoski      Initial
-        
+    16/05/2014  phoski      Initial      
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -28,28 +27,28 @@ def var lc-error-mess  as char no-undo.
 def var lc-rowid as char no-undo.
 
 
-def var li-max-lines          as int initial 12 no-undo.
-def var lr-first-row          as rowid no-undo.
-def var lr-last-row           as rowid no-undo.
-def var li-count              as int   no-undo.
-def var ll-prev               as log   no-undo.
-def var ll-next               as log   no-undo.
-def var lc-search             as char  no-undo.
-def var lc-firstrow           as char  no-undo.
-def var lc-lastrow            as char  no-undo.
-def var lc-navigation         as char no-undo.
-def var lc-parameters         as char no-undo.
-def var lc-smessage           as char no-undo.
-def var lc-link-otherp        as char no-undo.
-def var lc-link-subcontract   as char no-undo.
-def var lc-char               as char no-undo.
-def var lc-nopass             as char no-undo.
+def var li-max-lines as int initial 12 no-undo.
+def var lr-first-row as rowid no-undo.
+def var lr-last-row  as rowid no-undo.
+def var li-count     as int   no-undo.
+def var ll-prev      as log   no-undo.
+def var ll-next      as log   no-undo.
+def var lc-search    as char  no-undo.
+def var lc-firstrow  as char  no-undo.
+def var lc-lastrow   as char  no-undo.
+def var lc-navigation as char no-undo.
+def var lc-parameters   as char no-undo.
+def var lc-smessage     as char no-undo.
+def var lc-link-otherp  as char no-undo.
+def var lc-char         as char no-undo.
+def var lc-nopass       as char no-undo.
 
 
 
 
-def buffer b-query for WebActType.
-def buffer b-search for WebActType.
+def buffer b-query for iemailtmp.
+def buffer b-search for iemailtmp.
+
 
 def query q for b-query scrolling.
 
@@ -88,7 +87,7 @@ def query q for b-query scrolling.
 &ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
-         HEIGHT             = 6.19
+         HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
@@ -216,41 +215,36 @@ PROCEDURE process-web-request :
 
     RUN outputHeader.
     
-    {&out} htmlib-Header("Maintain Activity Types") skip.
+    {&out} htmlib-Header("Maintain Email Templates") skip.
 
     {&out} htmlib-JScript-Maintenance() skip.
 
-    {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webactivetype.p' ) skip.
+    {&out} htmlib-StartForm("mainform","post", appurl + '/sys/iemailtmp.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Activity Types") skip.
+    {&out} htmlib-ProgramTitle("Maintain Email Templates") skip.
     
-    {&out}
-            tbar-Begin(
-                tbar-Find(appurl + "/sys/webactivetype.p")
-                )
-            tbar-Link("add",?,appurl + "/sys/webactivetypemnt.p",lc-link-otherp)
-            tbar-BeginOption()
-            tbar-Link("view",?,"off",lc-link-otherp)
-            tbar-Link("update",?,"off",lc-link-otherp)
-            tbar-Link("delete",?,"off",lc-link-otherp)
-            tbar-EndOption()
-            tbar-End().
 
+    {&out}
+        tbar-StandardBar(
+            appurl + "/sys/iemailtmp.p",
+            appurl + "/sys/iemailtmpmnt.p",
+            lc-link-otherp
+            ).
 
     {&out} skip
            htmlib-StartMntTable().
 
 
+    
+
     {&out}
             htmlib-TableHeading(
-            "Type^left|Description^left|Minimum Time Bookable<br />(Minutes)^right"
+            "Code|Description"
             ) skip.
 
 
     open query q for each b-query no-lock
-        where b-query.companycode = lc-global-company
-           by b-query.TypeID 
-          .
+        where b-query.CompanyCode = lc-global-company.
 
     get first q no-lock.
 
@@ -281,7 +275,7 @@ PROCEDURE process-web-request :
     do:
         find first b-search 
              where b-search.CompanyCode = lc-global-company
-               and b-search.ActivityType >= lc-search no-lock no-error.
+             NO-LOCK NO-ERROR.
         if avail b-search then
         do:
             reposition q to rowid rowid(b-search) no-error.
@@ -323,18 +317,18 @@ PROCEDURE process-web-request :
             skip
             tbar-tr(rowid(b-query))
             skip
-            htmlib-MntTableField(html-encode(string(b-query.ActivityType)),'left')
-            htmlib-MntTableField(html-encode(string(b-query.Description)),'left')
-            htmlib-MntTableField(html-encode(string(b-query.MinTime)),'right')
-
-            tbar-BeginHidden(rowid(b-query))
-                tbar-Link("view",rowid(b-query),appurl + "/sys/webactivetypemnt.p",lc-link-otherp)
-                tbar-Link("update",rowid(b-query),appurl + "/sys/webactivetypemnt.p",lc-link-otherp)
-                tbar-Link("delete",rowid(b-query),
-                          if DYNAMIC-FUNCTION('com-CanDelete':U,lc-user,"webactivetype",rowid(b-query))
-                          then ( appurl + "/sys/webactivetypemnt.p") else "off",
-                          lc-link-otherp)             
-            tbar-EndHidden()
+            htmlib-MntTableField(html-encode(b-query.tmpCode),'left')
+            htmlib-MntTableField(html-encode(b-query.descr),'left')
+            
+            tbar-StandardRow(
+                rowid(b-query),
+                lc-user,
+                appurl + "/sys/iemailtmpmnt.p",
+                "iemailtmp",
+                lc-link-otherp
+                )
+            
+           
             '</tr>' skip.
 
        
@@ -354,8 +348,7 @@ PROCEDURE process-web-request :
            htmlib-EndTable()
            skip.
 
-    {lib/navpanel.i "sys/webactivetype.p"}
-
+    {lib/navpanel.i "sys/iemailtmp.p"}
 
     {&out} skip
            htmlib-Hidden("firstrow", string(lr-first-row)) skip

@@ -73,7 +73,7 @@ def var li-tot-period-nonbillable   as int no-undo.
 def var li-tot-period-productivity  as dec no-undo.
 
 
-def temp-table issRep like issActivity
+def temp-table issRep NO-UNDO like issActivity
   field AccountNumber like issue.AccountNumber
   field ActionDesc    like issAction.Notes
   field ActivityType  like issActivity.ContractType
@@ -82,7 +82,7 @@ def temp-table issRep like issActivity
   index i-cust AccountNumber  period-of
   index i-user ActivityBy  period-of.
  
-def temp-table issTime
+def temp-table issTime NO-UNDO
   field IssueNumber   like issActivity.IssueNumber
   field AccountNumber like issue.AccountNumber
   field ActivityBy    like issActivity.ActivityBy
@@ -91,7 +91,7 @@ def temp-table issTime
   field nonbillable   as int
   index i-num IssueNumber  period-of.
 
-def temp-table issTotal
+def temp-table issTotal NO-UNDO
   field AccountNumber like issue.AccountNumber
   field ActivityBy    like issActivity.ActivityBy
   field billable      as int
@@ -100,7 +100,7 @@ def temp-table issTotal
   index i-num AccountNumber  
   index i-by  ActivityBy.
 
-def temp-table issUser
+def temp-table issUser NO-UNDO
   field ActivityBy    like issActivity.ActivityBy
   field period-of     as int
   field billable      as int
@@ -108,7 +108,7 @@ def temp-table issUser
   field productivity  as dec
   index i-num ActivityBy  period-of.
 
-def temp-table issCust
+def temp-table issCust NO-UNDO
   field AccountNumber like issue.AccountNumber
   field period-of     as int
   field billable      as int
@@ -116,7 +116,7 @@ def temp-table issCust
   field num-issues    as int
   index i-num AccountNumber  period-of.
 
-def temp-table issTable like issue
+def temp-table issTable NO-UNDO like issue 
   index i-num AccountNumber.
 
 def temp-table this-period no-undo

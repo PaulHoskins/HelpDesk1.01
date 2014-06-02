@@ -24,13 +24,6 @@ assign lc-docid = get-value("docid").
 assign lc-docid = string(lc-global-reportpath + "\" + lc-docid + ".xls")
        lc-doctype = "xls".
 
-  output to "C:\temp\djs.txt" append.
-  put unformatted 
-    "lc-docid                "  lc-docid skip
-    "lc-global-helpdesk      "  lc-global-helpdesk skip
-    "lc-global-reportpath    "  lc-global-reportpath skip(2).
-  
-  output close.
 
 assign length(lb-blob) = 16384.
 input from value(lc-docid) binary no-map no-convert.
@@ -73,12 +66,6 @@ case lc-doctype:
             return.
         end.
 end case.
-
-  output to "C:\temp\djs.txt" append.
-  put unformatted 
-    "Got Here.....           "    skip(2).
-  
-  output close.
 
 for each newdoc where newdoc.docid = 1 no-lock:
     put {&WEBSTREAM} control newdoc.rdata.
