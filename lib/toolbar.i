@@ -790,6 +790,10 @@ FUNCTION tbar-Link RETURNS CHARACTER
         when "CustAsset" 
         then assign lc-image = '/images/toolbar3/fa.gif'
                    lc-alt-text = 'Customer Asset'.
+        when "TestV" 
+        then assign lc-image = '/images/toolbar3/testv.gif'
+                 lc-alt-text = 'Test Template'.
+
 
 
 

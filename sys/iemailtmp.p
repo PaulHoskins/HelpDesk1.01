@@ -225,23 +225,26 @@ PROCEDURE process-web-request :
     
 
     {&out}
-        tbar-StandardBar(
-            appurl + "/sys/iemailtmp.p",
-            appurl + "/sys/iemailtmpmnt.p",
-            lc-link-otherp
-            ).
+            tbar-Begin(
+                tbar-Find(appurl + "/sys/iemailtmp.p")
+                )
+            tbar-Link("add",?,appurl + '/' + "sys/iemailtmpmnt.p",lc-link-otherp)
+            tbar-BeginOption()
+            tbar-Link("view",?,"off",lc-link-otherp)
+            tbar-Link("update",?,"off",lc-link-otherp)
+            tbar-Link("delete",?,"off",lc-link-otherp)
+            tbar-Link("testv",?,"off",lc-link-otherp)
+          
+            tbar-EndOption()
+            tbar-End().
 
     {&out} skip
            htmlib-StartMntTable().
-
-
-    
 
     {&out}
             htmlib-TableHeading(
             "Code|Description"
             ) skip.
-
 
     open query q for each b-query no-lock
         where b-query.CompanyCode = lc-global-company.
@@ -320,15 +323,16 @@ PROCEDURE process-web-request :
             htmlib-MntTableField(html-encode(b-query.tmpCode),'left')
             htmlib-MntTableField(html-encode(b-query.descr),'left')
             
-            tbar-StandardRow(
-                rowid(b-query),
-                lc-user,
-                appurl + "/sys/iemailtmpmnt.p",
-                "iemailtmp",
-                lc-link-otherp
-                )
+            tbar-BeginHidden(rowid(b-query))
+            tbar-Link("view",rowid(b-query),appurl + '/' + "sys/iemailtmpmnt.p",lc-link-otherp)
+            tbar-Link("update",rowid(b-query),appurl + '/' + "sys/iemailtmpmnt.p",lc-link-otherp)
+            tbar-Link("delete",rowid(b-query),appurl + '/' + "sys/iemailtmpmnt.p",lc-link-otherp)
+            tbar-Link("testv",rowid(b-query),appurl + '/' + "sys/iemailtest.p","template=" + 
+                                            b-query.tmpCode 
+                                            )
             
-           
+            tbar-EndHidden()
+
             '</tr>' skip.
 
        

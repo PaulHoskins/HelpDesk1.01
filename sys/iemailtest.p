@@ -3,15 +3,15 @@
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
-    Program:        sys/iemailtmpmnt.p
+    Program:        sys/iemailtest.p
     
-    Purpose:        Email Template Maintenance     
+    Purpose:        Email Template Tester  
     
     Notes:
     
     
     When        Who         What
-    16/05/2014  phoski      Initial      
+    02/06/2014  phoski      Initial      
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -32,6 +32,8 @@ def var lc-title as char no-undo.
 
 def buffer b-valid for iemailtmp.
 def buffer b-table for iemailtmp.
+DEF BUFFER issue   FOR issue.
+
 
 
 def var lc-search    as char  no-undo.
@@ -50,6 +52,8 @@ def var lc-link-url     as char no-undo.
 def var lc-descr        as char no-undo.
 def var lc-tmpcode      AS CHAR NO-UNDO.
 DEF VAR lc-tmptxt       AS CHAR NO-UNDO.
+DEF VAR lc-issue        AS CHAR NO-UNDO.
+DEF VAR lc-convtxt      AS CHAR NO-UNDO.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -133,42 +137,34 @@ PROCEDURE ip-Validate :
     DEF VAR li-int      AS INT      NO-UNDO.
 
 
+    ASSIGN li-int = INT(lc-issue) NO-ERROR.
 
-    if lc-mode = "ADD":U then
-    do:
-       
-        IF lc-tmpcode = ""
-        OR lc-tmpcode = ? THEN
-        DO:
-            run htmlib-AddErrorMessage(
-                    'tmpcode', 
-                    'The code must be entered',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-            RETURN.
-        END.
-        if can-find(first b-valid
-                    where b-valid.tmpcode = lc-tmpcode
-                      and b-valid.companycode = lc-global-company
-                    no-lock)
-        then run htmlib-AddErrorMessage(
-                    'tmpcode', 
-                    'This code already exists',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF ERROR-STATUS:ERROR
+    OR li-int < 1 THEN
+    DO:
+        run htmlib-AddErrorMessage(
+                        'issue', 
+                        'The issue number must be entered',
+                        input-output pc-error-field,
+                        input-output pc-error-msg ).
+        RETURN.
 
-    end.
+    END.
 
-    if lc-descr = ""
-    or lc-descr = ?
-    then run htmlib-AddErrorMessage(
-                    'descr', 
-                    'You must enter the description',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    FIND issue WHERE issue.companyCode = lc-global-company
+                 AND issue.issueNumber = li-int NO-LOCK NO-ERROR.
 
+    IF NOT AVAIL issue THEN
+    DO:
+        run htmlib-AddErrorMessage(
+                        'issue', 
+                        'The issue number does not exist',
+                        input-output pc-error-field,
+                        input-output pc-error-msg ).
+        RETURN.
+
+    END.
     
-
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -254,7 +250,6 @@ PROCEDURE process-web-request :
     {lib/checkloggedin.i} 
     
 
-    
     assign lc-mode = get-value("mode")
            lc-rowid = get-value("rowid")
            lc-search = get-value("search")
@@ -275,26 +270,15 @@ PROCEDURE process-web-request :
                            "&lastrow=" + lc-lastrow.
 
     case lc-mode:
-        when 'add'
-        then assign lc-title = 'Add'
-                    lc-link-label = "Cancel addition"
-                    lc-submit-label = "Add Email Template".
-        when 'view'
-        then assign lc-title = 'View'
-                    lc-link-label = "Back"
-                    lc-submit-label = "".
-        when 'delete'
-        then assign lc-title = 'Delete'
-                    lc-link-label = 'Cancel deletion'
-                    lc-submit-label = 'Delete Email Template'.
-        when 'Update'
-        then assign lc-title = 'Update'
-                    lc-link-label = 'Cancel update'
-                    lc-submit-label = 'Update Email Template'.
+  
+        when 'testv'
+        then assign lc-link-label = "Back"
+                    lc-submit-label = "Test Email Template".
+  
     end case.
 
 
-    assign lc-title = lc-title + ' Email Template'
+    assign lc-title = 'Test Email Template'
            lc-link-url = appurl + '/sys/iemailtmp.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
@@ -303,111 +287,75 @@ PROCEDURE process-web-request :
                                   '&time=' + string(time)
                            .
 
-    if can-do("view,update,delete",lc-mode) then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid)
-             no-lock no-error.
-        if not avail b-table then
-        do:
-            set-user-field("mode",lc-mode).
-            set-user-field("title",lc-title).
-            set-user-field("nexturl",appurl + "/sys/iemailtmp.p").
-            RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
-            return.
-        end.
 
+    find b-table where rowid(b-table) = to-rowid(lc-rowid)
+         no-lock no-error.
+    if not avail b-table then
+    do:
+        set-user-field("mode",lc-mode).
+        set-user-field("title",lc-title).
+        set-user-field("nexturl",appurl + "/sys/iemailtmp.p").
+        RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
+        return.
     end.
+
 
 
     if request_method = "POST" then
     do:
-
-        if lc-mode <> "delete" then
+    
+        assign lc-issue     = get-value("issue")
+              .
+        
+           
+        RUN ip-Validate( output lc-error-field,
+                         output lc-error-msg ).
+    
+        if lc-error-msg = "" then
         do:
-            assign lc-descr     = get-value("descr")
-                   lc-tmpcode   = get-value("tmpcode")
-                   lc-tmptxt    = get-value("tmptxt")
-                  .
+            RUN lib/translatetemplate.p 
+                (
+                    lc-global-company,
+                    b-table.tmpCode,
+                    issue.issueNumber,
+                    b-table.tmptxt,
+                    OUTPUT lc-convtxt,
+                    OUTPUT lc-error-msg
+                ).
+         
+
+           
             
-               
-            RUN ip-Validate( output lc-error-field,
-                             output lc-error-msg ).
-
-            if lc-error-msg = "" then
-            do:
-                
-                if lc-mode = 'update' then
-                do:
-                    find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                        exclusive-lock no-wait no-error.
-                    if locked b-table 
-                    then  run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-                end.
-                else
-                do:
-                    create b-table.
-                    assign b-table.tmpcode = CAPS(lc-tmpcode)
-                           b-table.companycode = lc-global-company
-                           lc-firstrow      = string(rowid(b-table))
-                           .
-                   
-                end.
-                
-                assign 
-                    b-table.descr     = lc-descr
-                    b-table.tmptxt    = lc-tmptxt.
-                  
-                    
-                
-            end.
         end.
-        else
-        do:
-            find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                 exclusive-lock no-wait no-error.
-            if locked b-table 
-            then  run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-            else delete b-table.
-        end.
-
-        if lc-error-field = "" then
-        do:
-            RUN outputHeader.
-            set-user-field("navigation",'refresh').
-            set-user-field("firstrow",lc-firstrow).
-            set-user-field("search",lc-search).
-            RUN run-web-object IN web-utilities-hdl ("sys/iemailtmp.p").
-            return.
-        end.
+ 
+        
     end.
+    ELSE
+    DO:
 
-    if lc-mode <> 'add' then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
-        assign 
-            lc-tmpcode = string(b-table.tmpcode)
-            .
+        FIND LAST issue WHERE issue.companyCode = lc-global-company
+                          AND issue.AssignTo = lc-user NO-LOCK NO-ERROR.
+        IF NOT AVAIL issue THEN
+        FIND LAST issue WHERE issue.companyCode = lc-global-company
+                         NO-LOCK NO-ERROR.
 
-        if can-do("view,delete",lc-mode)
-        or request_method <> "post"
-        then assign lc-descr   = b-table.descr
-                    lc-tmptxt  = b-table.tmptxt
-                    .
-       
-    end.
+
+        IF AVAIL issue
+        THEN lc-issue = STRING(issue.IssueNumber).
+    END.
+
+
+    find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
+    assign 
+        lc-tmpcode = string(b-table.tmpcode)
+        lc-descr   = b-table.descr
+        lc-tmptxt  = b-table.tmptxt.
+
 
     RUN outputHeader.
     
     {&out} htmlib-Header(lc-title) skip
-           htmlib-StartForm("mainform","post", appurl + '/sys/iemailtmpmnt.p' )
+           htmlib-StartForm("mainform","post", appurl + '/sys/iemailtest.p' )
            htmlib-ProgramTitle(lc-title) skip.
 
     {&out} htmlib-Hidden ("savemode", lc-mode) skip
@@ -426,16 +374,11 @@ PROCEDURE process-web-request :
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
            ( if lookup("tmpcode",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Code")
-           else htmlib-SideLabel("Code"))
+           then htmlib-SideLabelError("Template Code")
+           else htmlib-SideLabel("Template Code"))
            '</TD>' skip
            .
 
-    if lc-mode = "ADD" then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-           htmlib-InputField("tmpcode",15,lc-tmpcode) skip
-           '</TD>'.
-    else
     {&out} htmlib-TableField(html-encode(lc-tmpcode),'left')
            skip.
 
@@ -446,39 +389,44 @@ PROCEDURE process-web-request :
             (if lookup("descr",lc-error-field,'|') > 0 
             then htmlib-SideLabelError("Description")
             else htmlib-SideLabel("Description"))
-            '</TD>'.
-    
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-InputField("descr",40,lc-descr) 
-            '</TD>' skip.
-    else 
-    {&out} htmlib-TableField(html-encode(lc-descr),'left')
-           skip.
-    {&out} '</TR>' skip.
-    
+            '</TD>'
+            htmlib-TableField(html-encode(lc-descr),'left')
+            SKIP
+            '</TR>'.
+
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
             (if lookup("tmptxt",lc-error-field,'|') > 0 
             then htmlib-SideLabelError("Template Text")
             else htmlib-SideLabel("Template Text"))
-            '</TD>'.
-    
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-textArea("tmptxt",lc-tmptxt,40,80) 
-            '</TD>' skip.
-    else 
-    {&out} htmlib-TableField(REPLACE(lc-tmptxt,'~n','<br />'),'left')
-           skip.
-    {&out} '</TR>' skip.
+            '</TD>'
+            htmlib-TableField(REPLACE(lc-tmptxt,'~n','<br />'),'left')
+           '</TR>' skip.
 
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (if lookup("issue",lc-error-field,'|') > 0 
+            then htmlib-SideLabelError("Test Issue Number")
+            else htmlib-SideLabel("Test Issue Number"))
+            '</TD>'
+            '<TD VALIGN="TOP" ALIGN="left">'
+            htmlib-InputField("issue",15,lc-issue) 
+            '</TD></tr>' skip.
+
+    if request_method = "POST" then
+    do:
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            htmlib-SideLabel("Merged Template")
+            '</TD>'
+            htmlib-TableField(REPLACE(lc-convtxt,'~n','<br />'),'left')
+            '</TR>' skip.
+
+    END.
 
     {&out} htmlib-EndTable() skip.
 
 
     if lc-error-msg <> "" then
-    do:
+    DO:
         {&out} '<BR><BR><CENTER>' 
                 htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
     end.

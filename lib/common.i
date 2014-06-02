@@ -1439,7 +1439,7 @@ FUNCTION com-AssignedToUser RETURNS INTEGER
     for each Issue no-lock
         where Issue.CompanyCode = pc-companyCode
           and Issue.AssignTo = pc-LoginID
-          use-index AssignTo ,
+           ,
           first WebStatus no-lock
                 where WebStatus.companyCode = Issue.CompanyCode
                   and WebStatus.StatusCode  = Issue.StatusCode
@@ -2508,7 +2508,7 @@ FUNCTION com-NumberUnAssigned RETURNS INTEGER
     for each Issue no-lock
         where Issue.CompanyCode = pc-companyCode
           and Issue.AssignTo = ""
-          use-index AssignTo ,
+           ,
           first WebStatus no-lock
                 where WebStatus.companyCode = Issue.CompanyCode
                   and WebStatus.StatusCode  = Issue.StatusCode
