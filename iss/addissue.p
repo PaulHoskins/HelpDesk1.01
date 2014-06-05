@@ -114,8 +114,6 @@ def var lc-saved-contract   as char no-undo.
 def var lc-saved-billable   as char no-undo.
 def var lc-saved-activity   as char no-undo.
 
-
-
 /* Status */
 def var lc-list-status      as char no-undo.
 def var lc-list-sname       as char no-undo.
@@ -136,6 +134,13 @@ def var lc-DefaultTimeSet   as char no-undo.
 def var lc-manChecked       as char no-undo.
 
 def buffer webStatus        for webStatus.
+
+/** Adding user on the fly */
+
+DEF VAR lc-uadd-loginid AS CHAR NO-UNDO.
+DEF VAR lc-uadd-name    AS CHAR NO-UNDO.
+DEF VAR lc-uadd-email   AS CHAR NO-UNDO.
+DEF VAR lc-uadd-phone   AS CHAR NO-UNDO.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -625,63 +630,65 @@ PROCEDURE ip-GenHTML :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-        {&out} htmlib-Header(lc-title) skip.
-        RUN ip-ExportJScript.
-        {&out}
-                         htmlib-StartForm("mainform","post", appurl + '/iss/addissue.p' ) htmlib-ProgramTitle(lc-title) skip.
-        if not ll-Customer then
-        do:
-                {&out} htmlib-StartInputTable() skip
-                        '<tr><td>&nbsp;</td><td  align="right" width="50%">' skip
-                        '<span id="clockface" class="clockface">' skip
-                        '0:00:00' skip
-                        '</span><img id="throbber" src="/images/ajax/ajax-loader-red.gif"></td></tr>' skip
-                        '<tr><td valign="top"><fieldset><legend>Main Issue Entry</legend>' skip                 .
-        end.
-        run ip-MainEntry.
-        if not ll-Customer then 
-        do: 
-                {&out} '</td><td valign="top" style="padding-left: 5px;">' skip .
-                RUN ip-QuickFinish.
-                {&out} '</td></tr>'.
-                {&out} htmlib-EndTable().
-                {&out} '</fieldset>' skip
-                        '</td></tr>' skip.
-        end.
-        if lc-error-msg <> "" then
-        do:
-                {&out} '<br><br><center>' 
-                                                htmlib-MultiplyErrorMessage(lc-error-msg) '</center>' skip.
-        end.
-        {&out} '<center>' Return-Submit-Button("submitform","Add Issue","PrePost()") 
-                                         '</center>' skip.
-        if not ll-Customer and can-find(customer where customer.CompanyCode = lc-global-company and 
-                                                                                                                                                                                         customer.AccountNumber = lc-AccountNumber) then
-        do:
-                RUN ip-Inventory ( lc-global-company, lc-AccountNumber ).
-        end.
-        {&out} htmlib-Hidden("submitsource","null") skip
-             htmlib-Hidden("emailid",lc-emailid) skip
-             htmlib-Hidden("issuesource",lc-issuesource) skip
-             htmlib-Hidden("timeSecondSet",lc-timeSecondSet) skip
-             htmlib-Hidden("timeMinuteSet",lc-timeMinuteSet) skip
-             htmlib-Hidden("defaultTime",lc-DefaultTimeSet) skip
-             htmlib-Hidden("contract",lc-contract-type) skip
-             htmlib-Hidden("billable",lc-billable-flag) skip
-             htmlib-Hidden("savedactivetype",lc-saved-activity) skip   
-             htmlib-Hidden("actDesc",lc-list-activdesc) skip     
-             htmlib-Hidden("actTime",lc-list-activtime) skip 
-             htmlib-Hidden("actID",lc-list-actid) skip 
-             htmlib-EndForm() skip.
-        if not ll-customer then
-        {&out}  htmlib-CalendarScript("date") skip
-                                        htmlib-CalendarScript("startdate") skip
-                                        htmlib-CalendarScript("enddate") skip.
-        {&out}
-        '<script type="text/javascript">' skip
-        'startclock();' skip
-        '</script>' skip.
-        {&out} htmlib-Footer() skip.
+    {&out} htmlib-Header(lc-title) skip.
+    RUN ip-ExportJScript.
+
+    {&out} htmlib-StartForm("mainform","post", appurl + '/iss/addissue.p' ) htmlib-ProgramTitle(lc-title) skip.
+    
+    if not ll-Customer then
+    do:
+            {&out} htmlib-StartInputTable() skip
+                    '<tr><td>&nbsp;</td><td  align="right" width="50%">' skip
+                    '<span id="clockface" class="clockface">' skip
+                    '0:00:00' skip
+                    '</span><img id="throbber" src="/images/ajax/ajax-loader-red.gif"></td></tr>' skip
+                    '<tr><td valign="top"><fieldset><legend>Main Issue Entry</legend>' skip                 .
+    end.
+    run ip-MainEntry.
+    if not ll-Customer then 
+    do: 
+            {&out} '</td><td valign="top" style="padding-left: 5px;">' skip .
+            RUN ip-QuickFinish.
+            {&out} '</td></tr>'.
+            {&out} htmlib-EndTable().
+            {&out} '</fieldset>' skip
+                    '</td></tr>' skip.
+    end.
+    if lc-error-msg <> "" then
+    do:
+            {&out} '<br><br><center>' 
+                                            htmlib-MultiplyErrorMessage(lc-error-msg) '</center>' skip.
+    end.
+    {&out} '<center>' Return-Submit-Button("submitform","Add Issue","PrePost()") 
+                                     '</center>' skip.
+    if not ll-Customer and can-find(customer where customer.CompanyCode = lc-global-company and 
+                                    customer.AccountNumber = lc-AccountNumber) then
+    do:
+        RUN ip-Inventory ( lc-global-company, lc-AccountNumber ).
+    end.
+
+    {&out} htmlib-Hidden("submitsource","null") skip
+         htmlib-Hidden("emailid",lc-emailid) skip
+         htmlib-Hidden("issuesource",lc-issuesource) skip
+         htmlib-Hidden("timeSecondSet",lc-timeSecondSet) skip
+         htmlib-Hidden("timeMinuteSet",lc-timeMinuteSet) skip
+         htmlib-Hidden("defaultTime",lc-DefaultTimeSet) skip
+         htmlib-Hidden("contract",lc-contract-type) skip
+         htmlib-Hidden("billable",lc-billable-flag) skip
+         htmlib-Hidden("savedactivetype",lc-saved-activity) skip   
+         htmlib-Hidden("actDesc",lc-list-activdesc) skip     
+         htmlib-Hidden("actTime",lc-list-activtime) skip 
+         htmlib-Hidden("actID",lc-list-actid) skip 
+         htmlib-EndForm() skip.
+    if not ll-customer then
+    {&out}  htmlib-CalendarScript("date") skip
+                                    htmlib-CalendarScript("startdate") skip
+                                    htmlib-CalendarScript("enddate") skip.
+    {&out}
+    '<script type="text/javascript">' skip
+    'startclock();' skip
+    '</script>' skip.
+    {&out} htmlib-Footer() skip.
   
 END PROCEDURE.
 
@@ -1103,7 +1110,6 @@ PROCEDURE ip-MainEntry :
     
     DEF BUFFER bcust    FOR customer.
 
-   
     if not ll-customer then
     do:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
@@ -1150,6 +1156,15 @@ PROCEDURE ip-MainEntry :
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("raisedlogin",lc-list-login,lc-list-lname,lc-raisedlogin)
             '</TD></TR>' skip. 
+
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="left" colspan=2>'  SKIP.
+    
+
+    RUN ip-NewUserHTML.
+
+    {&out} '</td></tr>' SKIP. /* end of new user */
+
+   
 
 
 
@@ -1315,6 +1330,68 @@ PROCEDURE ip-MainEntry :
     {&out} htmlib-EndTable() skip.
 
 
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-ip-NewUserHTML) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-NewUserHTML Procedure 
+PROCEDURE ip-NewUserHTML :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+    
+    {&out} htmlib-BeginCriteria("Or Create New User").
+
+    {&out}
+        htmlib-StartMntTable().
+    
+    {&out} '</td></tr>' SKIP.
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (if lookup("uadd-loginid",lc-error-field,'|') > 0 
+        then htmlib-SideLabelError("User ID")
+        else htmlib-SideLabel("User ID"))
+        '</TD>' 
+        '<TD VALIGN="TOP" ALIGN="left">'
+         htmlib-InputField("uadd-loginid",10,lc-uadd-loginid) 
+        '</TD></TR>' skip. 
+        
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+         (if lookup("uadd-name",lc-error-field,'|') > 0 
+         then htmlib-SideLabelError("Name")
+         else htmlib-SideLabel("Name"))
+         '</TD>' 
+         '<TD VALIGN="TOP" ALIGN="left">'
+          htmlib-InputField("uadd-name",40,lc-uadd-name) 
+         '</TD></TR>' skip. 
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (if lookup("uadd-email",lc-error-field,'|') > 0 
+        then htmlib-SideLabelError("Email")
+        else htmlib-SideLabel("Email"))
+        '</TD>' 
+        '<TD VALIGN="TOP" ALIGN="left">'
+        htmlib-InputField("uadd-email",40,lc-uadd-email) 
+        '</TD></TR>' skip. 
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+         (if lookup("uadd-phone",lc-error-field,'|') > 0 
+         then htmlib-SideLabelError("Telephone")
+         else htmlib-SideLabel("Telephone"))
+         '</TD>' 
+         '<TD VALIGN="TOP" ALIGN="left">'
+          htmlib-InputField("uadd-phone",40,lc-uadd-phone) 
+         '</TD></TR>' skip. 
+    
+    {&out} skip 
+        htmlib-EndTable()
+         htmlib-EndCriteria() skip.
 
 END PROCEDURE.
 
@@ -1844,6 +1921,7 @@ PROCEDURE ip-Validate :
     def var li-startt   as int      no-undo.
     def var li-endt     as int      no-undo.
     def var li-int      as int      no-undo.
+    DEF BUFFER b FOR webuser.
     
 
     if not can-find(customer where customer.accountnumber 
@@ -1856,12 +1934,50 @@ PROCEDURE ip-Validate :
                     input-output pc-error-field,
                     input-output pc-error-msg ).
     if pc-error-field = "" 
-    and lc-raisedlogin = htmlib-Null() 
-    then run htmlib-AddErrorMessage(
+    and ( lc-raisedlogin = htmlib-Null() OR lc-raisedLogin = "" ) THEN 
+    do:
+        
+        IF lc-uadd-loginId = "" THEN
+        run htmlib-AddErrorMessage(
                     'raisedlogin', 
-                    'Select the person who raised the issue',
+                    'Select the person who raised the issue or create one',
                     input-output pc-error-field,
                     input-output pc-error-msg ).
+        /* Oherwise adding a new user! */
+        ELSE
+        DO:
+            IF CAN-FIND(b WHERE b.loginid = lc-uadd-loginid NO-LOCK) 
+            THEN run htmlib-AddErrorMessage(
+                    'uadd-loginid', 
+                    'This user already exists',
+                    input-output pc-error-field,
+                    input-output pc-error-msg ).
+            ELSE
+            DO:
+                IF lc-uadd-name = "" THEN
+                 run htmlib-AddErrorMessage(
+                    'uadd-name', 
+                    'You must enter the users name',
+                    input-output pc-error-field,
+                    input-output pc-error-msg ).
+                 IF lc-uadd-email = "" THEN
+                 run htmlib-AddErrorMessage(
+                    'uadd-email', 
+                    'You must enter the users email',
+                    input-output pc-error-field,
+                    input-output pc-error-msg ).
+                 IF lc-uadd-phone = "" THEN
+                 run htmlib-AddErrorMessage(
+                    'uadd-phone', 
+                    'You must enter the users phone number',
+                    input-output pc-error-field,
+                    input-output pc-error-msg ).
+
+
+
+            END.
+        END.
+    END.
 
     if lc-areacode = htmlib-Null() 
     then run htmlib-AddErrorMessage(
@@ -1871,12 +1987,7 @@ PROCEDURE ip-Validate :
                     input-output pc-error-msg ).
 
 
-/*     if lc-contract-type = htmlib-Null()          */
-/*     then run htmlib-AddErrorMessage(             */
-/*                     'contract',                  */
-/*                     'Select the issue contract', */
-/*                     input-output pc-error-field, */
-/*                     input-output pc-error-msg ). */
+
 
 
     assign ld-date = date(lc-date) no-error.
@@ -2049,6 +2160,40 @@ END PROCEDURE.
 
 &ENDIF
 
+&IF DEFINED(EXCLUDE-ipCreateNewUser) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipCreateNewUser Procedure 
+PROCEDURE ipCreateNewUser :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+   DEF BUFFER b FOR webuser.
+
+   CREATE b.
+   ASSIGN
+       b.loginid = lc-uadd-loginid
+       b.NAME = lc-uadd-name
+       b.companycode = issue.companyCode
+       b.accountnumber = issue.accountnumber
+       b.email = lc-uadd-email
+       b.expiredate = TODAY
+       b.passwd = ENCODE(LC(b.loginid))
+       b.telephone = lc-uadd-phone
+       b.userclass = "CUSTOMER"
+
+       .
+
+
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
@@ -2120,7 +2265,9 @@ PROCEDURE process-web-request :
 ------------------------------------------------------------------------------*/    
     def buffer b for webUser.
     def var ll-ok as log no-undo.
+
     {lib/checkloggedin.i}
+
     assign  lc-title = 'Add Issue'
             lc-default-catcode = 
             dynamic-function("com-GetDefaultCategory",lc-global-company)
@@ -2139,9 +2286,9 @@ PROCEDURE process-web-request :
 
     if lc-IssueSource = "custenq" then
     do:
-            assign
-                lc-AccountNumber = get-value("accountnumber") .
-                lc-sla-selected = "slanone". 
+        assign
+            lc-AccountNumber = get-value("accountnumber") .
+            lc-sla-selected = "slanone". 
     end.
     if WebUser.UserClass = "CUSTOMER" then
     do:
@@ -2149,8 +2296,8 @@ PROCEDURE process-web-request :
             lc-emailid = ""
             lc-issuesource = "".
         find Customer where Customer.CompanyCode   = lc-global-company
-                                and Customer.AccountNumber = WebUser.AccountNumber
-                                no-lock no-error.
+                        and Customer.AccountNumber = WebUser.AccountNumber
+                        no-lock no-error.
         assign lc-AccountNumber = WebUser.AccountNumber
                lc-raisedlogin   = WebUser.LoginID
                ll-customer      = true.
@@ -2187,7 +2334,12 @@ PROCEDURE process-web-request :
                  lc-sla-selected     = get-value("sla")
                  lc-catcode          = get-value("catcode")
                  lc-ticket           = get-value("ticket")
-                 lc-iclass           = get-value("iclass").
+                 lc-iclass           = get-value("iclass")
+                 lc-uadd-loginid     = get-value("uadd-loginid")
+                 lc-uadd-name        = get-value("uadd-name")
+                 lc-uadd-email       = get-value("uadd-email")
+                 lc-uadd-phone       = get-value("uadd-phone")
+                .
             IF lc-iclass = ""
             THEN lc-iclass = ENTRY(1,lc-global-iclass-code,"|").
             if not ll-customer then
@@ -2311,6 +2463,15 @@ PROCEDURE process-web-request :
                     end.
                     if lc-raisedlogin <> htmlib-Null() 
                     then assign issue.RaisedLoginid = lc-raisedlogin.
+
+                    IF lc-raisedLogin = ""
+                    OR lc-raisedLogin =  htmlib-Null() 
+                    AND lc-uadd-loginid <> "" THEN
+                    DO:
+                        RUN ipCreateNewUser.
+                        assign issue.RaisedLoginid = lc-uadd-loginid.
+
+                    END.
                     assign issue.StatusCode = htmlib-GetAttr("System","DefaultStatus").
                     run islib-StatusHistory(
                             issue.CompanyCode,

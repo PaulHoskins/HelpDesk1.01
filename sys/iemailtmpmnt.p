@@ -176,6 +176,50 @@ END PROCEDURE.
 
 &ENDIF
 
+&IF DEFINED(EXCLUDE-ipShowMergeFields) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipShowMergeFields Procedure 
+PROCEDURE ipShowMergeFields :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+    DEF INPUT PARAM pc-table        AS CHAR NO-UNDO.
+    DEF INPUT PARAM pc-buffer       AS CHAR NO-UNDO.
+    DEF INPUT PARAM pc-label        AS CHAR NO-UNDO.
+
+
+    {&out} skip
+           htmlib-StartMntTable().
+
+    {&out} '<tr><th colspan=2>' pc-label '</th></tr>' SKIP.
+    {&out}
+            htmlib-TableHeading(
+            "Code|Description"
+            ) skip.
+
+    FOR EACH _file NO-LOCK WHERE _file._file-name = pc-table,
+        EACH _field NO-LOCK OF _file
+        WHERE _field._extent <= 1:
+
+        {&out} '<tr>'
+                 htmlib-MntTableField('<%' + pc-buffer + '.' + _field-name  + '%>','left')
+                htmlib-MntTableField(_label,'left')
+            '</tr>' SKIP.
+    END.
+    {&out} skip 
+           htmlib-EndTable()
+           skip.
+
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
@@ -466,14 +510,34 @@ PROCEDURE process-web-request :
     
     if not can-do("view,delete",lc-mode) then
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-textArea("tmptxt",lc-tmptxt,40,180) 
+            htmlib-textArea("tmptxt",lc-tmptxt,40,120) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(REPLACE(lc-tmptxt,'~n','<br />'),'left')
            skip.
     {&out} '</TR>' skip.
 
+    
+    IF lc-mode <> "DELETE" THEN
+    DO:
+        
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+               
+                htmlib-SideLabel("Available Merge Fields")
+                '</TD>'
+                '<td>' SKIP.
+    
+        RUN ipShowMergeFields ('issue','Issue','Issue Merge Fields').
+        RUN ipShowMergeFields ('customer','Customer','Customer Merge Fields').
+        RUN ipShowMergeFields ('webstatus','IStatus','Issue Status Merge Fields').
+        RUN ipShowMergeFields ('webIssArea','IArea','Issue Area Merge Fields').
+        RUN ipShowMergeFields ('webUser','Assigned','Issue Assigned To Merge Fields').
+        RUN ipShowMergeFields ('webUser','Raised','Issue Raised By Merge Fields').
 
+
+        {&out} '</TD></TR>' skip.
+
+    END.
     {&out} htmlib-EndTable() skip.
 
 
