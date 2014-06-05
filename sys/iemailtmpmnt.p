@@ -466,7 +466,7 @@ PROCEDURE process-web-request :
     
     if not can-do("view,delete",lc-mode) then
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-textArea("tmptxt",lc-tmptxt,40,80) 
+            htmlib-textArea("tmptxt",lc-tmptxt,40,180) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(REPLACE(lc-tmptxt,'~n','<br />'),'left')

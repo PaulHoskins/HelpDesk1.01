@@ -318,6 +318,7 @@ PROCEDURE process-web-request :
                     lc-global-company,
                     b-table.tmpCode,
                     issue.issueNumber,
+                    YES,
                     b-table.tmptxt,
                     OUTPUT lc-convtxt,
                     OUTPUT lc-error-msg

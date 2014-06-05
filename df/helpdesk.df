@@ -714,6 +714,7 @@ ADD FIELD "AccountNumber" OF "Customer" AS character
 ADD FIELD "Name" OF "Customer" AS character 
   FORMAT "x(40)"
   INITIAL ""
+  LABEL "Name"
   POSITION 3
   MAX-WIDTH 80
   ORDER 30
@@ -794,6 +795,7 @@ ADD FIELD "CompanyCode" OF "Customer" AS character
 ADD FIELD "notes" OF "Customer" AS character 
   FORMAT "X(8)"
   INITIAL ""
+  LABEL "Notes"
   POSITION 13
   MAX-WIDTH 16
   ORDER 120
@@ -826,6 +828,7 @@ ADD FIELD "TicketBalance" OF "Customer" AS integer
 ADD FIELD "StatementEmail" OF "Customer" AS character 
   FORMAT "X(8)"
   INITIAL ""
+  LABEL "Statement Email"
   POSITION 17
   MAX-WIDTH 16
   ORDER 160
@@ -833,7 +836,7 @@ ADD FIELD "StatementEmail" OF "Customer" AS character
 ADD FIELD "IsActive" OF "Customer" AS logical 
   FORMAT "yes/no"
   INITIAL "yes"
-  LABEL "Active>"
+  LABEL "Active?"
   POSITION 18
   MAX-WIDTH 1
   ORDER 170
@@ -2027,6 +2030,7 @@ ADD FIELD "IssueNumber" OF "Issue" AS integer
 ADD FIELD "IssueDate" OF "Issue" AS date 
   FORMAT "99/99/9999"
   INITIAL ?
+  LABEL "Issue Date"
   POSITION 3
   MAX-WIDTH 4
   ORDER 30
@@ -2042,7 +2046,7 @@ ADD FIELD "BriefDescription" OF "Issue" AS character
 ADD FIELD "LongDescription" OF "Issue" AS character 
   FORMAT "x(80)"
   INITIAL ""
-  LABEL "Description"
+  LABEL "Long Description"
   POSITION 5
   MAX-WIDTH 160
   ORDER 60
@@ -2066,7 +2070,7 @@ ADD FIELD "AccountNumber" OF "Issue" AS character
 ADD FIELD "RaisedLoginID" OF "Issue" AS character 
   FORMAT "x(15)"
   INITIAL ""
-  LABEL "User ID"
+  LABEL "Raised By"
   POSITION 8
   MAX-WIDTH 30
   ORDER 90
@@ -2090,6 +2094,7 @@ ADD FIELD "CreateDate" OF "Issue" AS date
 ADD FIELD "CreateTime" OF "Issue" AS integer 
   FORMAT "->,>>>,>>9"
   INITIAL "0"
+  LABEL "Created Time"
   POSITION 11
   MAX-WIDTH 4
   ORDER 120
@@ -2138,6 +2143,7 @@ ADD FIELD "TimeSpent" OF "Issue" AS decimal
 ADD FIELD "SearchField" OF "Issue" AS character 
   FORMAT "X(8)"
   INITIAL ""
+  LABEL "Search Field"
   POSITION 18
   MAX-WIDTH 16
   ORDER 190
@@ -2153,7 +2159,7 @@ ADD FIELD "CompanyCode" OF "Issue" AS character
 ADD FIELD "link-SLAID" OF "Issue" AS decimal 
   FORMAT "->>,>>9.99"
   INITIAL "0"
-  LABEL "ID"
+  LABEL "SLA Id"
   POSITION 20
   MAX-WIDTH 17
   DECIMALS 2
@@ -2197,6 +2203,7 @@ ADD FIELD "SLATime" OF "Issue" AS integer
 ADD FIELD "AssignTime" OF "Issue" AS integer 
   FORMAT "->,>>>,>>9"
   INITIAL "0"
+  LABEL "Assigned Time"
   POSITION 25
   MAX-WIDTH 4
   ORDER 160
@@ -2244,6 +2251,7 @@ ADD FIELD "Ticket" OF "Issue" AS logical
 ADD FIELD "TicketAmount" OF "Issue" AS integer 
   FORMAT "->,>>>,>>9"
   INITIAL "0"
+  LABEL "Ticket Amount"
   POSITION 31
   MAX-WIDTH 4
   ORDER 290
@@ -2278,7 +2286,7 @@ ADD FIELD "Billable" OF "Issue" AS logical
 ADD FIELD "ContractType" OF "Issue" AS character 
   FORMAT "X(8)"
   INITIAL ""
-  LABEL "CType"
+  LABEL "Contract Type"
   POSITION 35
   MAX-WIDTH 16
   COLUMN-LABEL "CType"
@@ -2311,7 +2319,7 @@ ADD FIELD "LastActivity" OF "Issue" AS datetime
 ADD FIELD "tLight" OF "Issue" AS integer 
   FORMAT "->,>>>,>>9"
   INITIAL "99"
-  LABEL "Traffic Light"
+  LABEL "Traffic Light Level"
   POSITION 39
   MAX-WIDTH 4
   ORDER 370
@@ -2327,7 +2335,7 @@ ADD FIELD "SLAAmber" OF "Issue" AS datetime
 ADD FIELD "SLATrip" OF "Issue" AS datetime 
   FORMAT "99/99/9999 HH:MM"
   INITIAL ?
-  LABEL "SLA"
+  LABEL "SLA Deadline"
   POSITION 41
   MAX-WIDTH 8
   ORDER 380
@@ -3515,6 +3523,7 @@ ADD FIELD "CompanyCode" OF "WebIssArea" AS character
 ADD FIELD "def-ActionCode" OF "WebIssArea" AS character 
   FORMAT "X(8)"
   INITIAL ""
+  LABEL "Default Action Code"
   POSITION 5
   MAX-WIDTH 180
   EXTENT 10
@@ -3903,7 +3912,7 @@ ADD FIELD "CompletedStatus" OF "WebStatus" AS logical
 ADD FIELD "NoteCode" OF "WebStatus" AS character 
   FORMAT "X(8)"
   INITIAL ""
-  LABEL "Status Code"
+  LABEL "Note Code"
   POSITION 5
   MAX-WIDTH 16
   ORDER 50
@@ -4187,6 +4196,7 @@ ADD FIELD "CustomerTrack" OF "WebUser" AS logical
 ADD FIELD "RecordsPerPage" OF "WebUser" AS integer 
   FORMAT "zz9"
   INITIAL "10"
+  LABEL "Records Per Page"
   POSITION 20
   MAX-WIDTH 4
   ORDER 180
@@ -4194,6 +4204,7 @@ ADD FIELD "RecordsPerPage" OF "WebUser" AS integer
 ADD FIELD "Mobile" OF "WebUser" AS character 
   FORMAT "X(8)"
   INITIAL ""
+  LABEL "Mobile"
   POSITION 21
   MAX-WIDTH 16
   ORDER 190
@@ -4201,6 +4212,7 @@ ADD FIELD "Mobile" OF "WebUser" AS character
 ADD FIELD "AllowSMS" OF "WebUser" AS logical 
   FORMAT "yes/no"
   INITIAL "no"
+  LABEL "Allow SMS"
   POSITION 22
   MAX-WIDTH 1
   ORDER 200
@@ -4208,6 +4220,7 @@ ADD FIELD "AllowSMS" OF "WebUser" AS logical
 ADD FIELD "AccessSMS" OF "WebUser" AS logical 
   FORMAT "yes/no"
   INITIAL "no"
+  LABEL "Access To SMS"
   POSITION 23
   MAX-WIDTH 1
   ORDER 210
@@ -4215,6 +4228,7 @@ ADD FIELD "AccessSMS" OF "WebUser" AS logical
 ADD FIELD "SuperUser" OF "WebUser" AS logical 
   FORMAT "yes/no"
   INITIAL "no"
+  LABEL "SuperUser?"
   POSITION 24
   MAX-WIDTH 1
   ORDER 220
@@ -4403,4 +4417,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000086495
+0000086852
