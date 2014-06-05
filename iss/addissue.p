@@ -853,8 +853,8 @@ PROCEDURE ip-GetContract :
 /*                   pc-Contract      = "Select Contract|AdHoc". */
    
     
-            assign pc-Type     = pc-Type      + '|' + string(ContractType.ContractNumber)
-                   pc-Contract = pc-Contract  + '|' + ContractType.Description.
+            assign pc-Type     = pc-Type      + '|' + string(WebIssCont.ContractCode)
+                   pc-Contract = pc-Contract  + '|' + WebIssCont.Description.
     
         end.
       end.
@@ -903,10 +903,10 @@ PROCEDURE ip-GetOwner :
                                                                  
       if avail b-user then                                       /* 3667 */  
          assign pc-login = b-user.loginid  + '|'                 /* 3667 */  
-                pc-Name  = b-user.name     + '|Not Applicable'.  /* 3667 */  
+                pc-Name  = b-user.name     + '|Add New'.  
       else
          assign pc-login = htmlib-Null() + '|'
-                pc-Name  = "Select Person|Not Applicable".
+                pc-Name  = "Select Person|Add New".
 
       for each b-user no-lock
                where b-user.CompanyCode   = lc-global-company

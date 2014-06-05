@@ -1565,10 +1565,12 @@ FUNCTION com-CanDelete RETURNS LOGICAL
             find webuser where rowid(webuser) = pr-rowid no-lock no-error.
             if not avail webuser then return false.
             if can-find(first issue
-                where issue.AssignTo = webuser.LoginID no-lock) 
+                where issue.AssignTo = webuser.LoginID 
+                  AND issue.companyCode = webuser.companyCode no-lock) 
             then return false.
             if can-find(first issue
-                where issue.RaisedLoginID = webuser.LoginID no-lock) 
+                where issue.RaisedLoginID = webuser.LoginID 
+                  AND issue.companyCode = webuser.companyCode no-lock) 
             then return false.
             if can-find(first issAction
                         where issAction.AssignTo = webuser.LoginID no-lock)

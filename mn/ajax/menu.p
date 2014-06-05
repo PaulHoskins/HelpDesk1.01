@@ -38,6 +38,11 @@ def var lc-pass as char no-undo.
 def var li-item as int no-undo.
 def var ll-Alert        as log no-undo.
 
+DEFINE VARIABLE MyUUID AS RAW       NO-UNDO.
+DEFINE VARIABLE cGUID  AS CHARACTER NO-UNDO. 
+
+DEF VAR lc-unq  AS CHAR     NO-UNDO.
+
 
 def temp-table tt-menu no-undo
     field ItemNo        as int
@@ -262,6 +267,9 @@ PROCEDURE ip-NewMenu :
     def buffer b-sub-menu     for tt-menu.
     def var lc-object       as char no-undo.
 
+    
+
+
     def var lc-desc         as char     no-undo.
 
 
@@ -275,9 +283,14 @@ PROCEDURE ip-NewMenu :
        
         if tt-menu.ObjType = "WS" then
         do:
+
+            IF INDEX(tt-menu.ObjURL,"?") > 0
+            THEN lc-unq = '&UniqueID='  + cGUID.
+            ELSE lc-unq = '?UniqueID='  + cGUID.
+
             {&out} '<div class="menusub" style="margin-left: 0px;">' skip
                    '<table><tr><td nowrap>'.
-            {&out} '<a href="'  appurl  '/' tt-menu.ObjURL '" target="' tt-menu.ObjTarget '"' skip.
+            {&out} '<a href="'  appurl  '/' tt-menu.ObjURL lc-unq  '" target="' tt-menu.ObjTarget '"' skip.
               
             {&out} ' title="' + html-encode(tt-menu.description) '"'.
 
@@ -314,8 +327,13 @@ PROCEDURE ip-NewMenu :
             if rowid(b-sub-menu) = rowid(tt-menu) then next.
             {&out} '<tr><td nowrap>'.
 
+            
+
+            IF INDEX(b-sub-menu.ObjURL,"?") > 0
+            THEN lc-unq = '&UniqueID='  + cGUID.
+            ELSE lc-unq = '?UniqueID='  + cGUID.
            
-            {&out} '<a href="'  appurl  '/' b-sub-menu.ObjURL '" target="' b-sub-menu.ObjTarget '"'.
+            {&out} '<a href="'  appurl  '/' b-sub-menu.ObjURL lc-unq  '" target="' b-sub-menu.ObjTarget '"'.
                 
             {&out} ' title="' + html-encode(b-sub-menu.description) '"'.
             {&out}  '>'
@@ -828,6 +846,12 @@ PROCEDURE process-web-request :
 
 
     assign lc-user = get-value("user").
+
+
+
+
+    ASSIGN  MyUUID = GENERATE-UUID  
+            cGUID  = GUID(MyUUID). 
 
 
     RUN outputHeader.

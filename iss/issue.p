@@ -770,10 +770,7 @@ PROCEDURE process-web-request :
     {&out} htmlib-ProgramTitle(if ll-Customer then "Your Issues" else "Maintain Issue") 
            htmlib-hidden("submitsource","") skip.
     {&out} htmlib-BeginCriteria("Search Issues").
-    if ll-search-err then
-    do:
-        {&out} '<div class="infobox">The issue number you entered is not a number, the issue description has been searched</div>' skip.
-    end.
+    
     if ll-customer and get-value("statementsent") = "yes" then
     do:
         {&out} '<div class="infobox">A statement for your account has been sent to your email address.</div>' skip.
@@ -796,10 +793,10 @@ PROCEDURE process-web-request :
                          + '&iclass=' + lc-iclass 
        .
     {&out}
-            tbar-Begin(
-               tbar-FindLabel(appurl + "/iss/issue.p","Search Issue Number/Description")
-                )
-            tbar-BeginOption().
+        tbar-Begin(
+           tbar-FindLabel(appurl + "/iss/issue.p","Search Issue Number/Description")
+            )
+        tbar-BeginOption().
     if not ll-Customer 
     then {&out}
             tbar-Link("pdf",?,

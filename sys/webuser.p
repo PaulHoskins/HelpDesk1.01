@@ -310,10 +310,11 @@ PROCEDURE process-web-request :
            lr-last-row  = ?.
 
     repeat while avail b-query:
-   
+        
         assign
             lc-CustomerInfo = dynamic-function("com-UsersCompany",
                                                b-query.LoginID).
+        
         if lc-CustomerInfo <> ""
         then assign lc-customerInfo = b-query.AccountNumber + " " +
                                       lc-CustomerInfo.
