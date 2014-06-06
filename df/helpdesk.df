@@ -2340,6 +2340,14 @@ ADD FIELD "SLATrip" OF "Issue" AS datetime
   MAX-WIDTH 8
   ORDER 380
 
+ADD FIELD "LastTmpCode" OF "Issue" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Email Template Code"
+  POSITION 42
+  MAX-WIDTH 16
+  ORDER 400
+
 ADD INDEX "IssueNumber" ON "Issue" 
   AREA "Schema Area"
   UNIQUE
@@ -4417,4 +4425,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000086852
+0000087010

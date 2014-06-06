@@ -362,7 +362,7 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-ContractSelect) = 0 &THEN
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ContractSelect Procedure 
-PROCEDURE ip-ContractSelect :
+PROCEDURE ip-ContractSelect PRIVATE :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
@@ -539,7 +539,7 @@ PROCEDURE ip-IssueMain :
            htmlib-SideLabel("Contract")
            '</TD><td>' skip .
 
-        RUN ip-ContractSelect.
+    RUN ip-ContractSelect.
 
     {&out} '</TD></tr> ' skip.  
 
@@ -1295,7 +1295,7 @@ PROCEDURE process-web-request :
                lc-sla-selected     = get-value("sla")
                lc-catcode          = get-value("catcode")
                lc-ticket           = get-value("ticket")
-               lc-contract-type    = get-value("contract")
+               lc-contract-type    = get-value("selectcontract")
                lc-billable-flag    = get-value("billcheck")
                lc-iclass           = get-value("iclass").
           

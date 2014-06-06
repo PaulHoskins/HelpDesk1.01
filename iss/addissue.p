@@ -1157,14 +1157,15 @@ PROCEDURE ip-MainEntry :
             htmlib-Select("raisedlogin",lc-list-login,lc-list-lname,lc-raisedlogin)
             '</TD></TR>' skip. 
 
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="left" colspan=2>'  SKIP.
+
+    IF NOT ll-customer THEN
+    DO:
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="left" colspan=2>'  SKIP.
+        
+        RUN ip-NewUserHTML.
     
-
-    RUN ip-NewUserHTML.
-
-    {&out} '</td></tr>' SKIP. /* end of new user */
-
-   
+        {&out} '</td></tr>' SKIP. /* end of new user */
+    END.
 
 
 
@@ -1223,10 +1224,6 @@ PROCEDURE ip-MainEntry :
                 '<TD VALIGN="TOP" ALIGN="left">'
                 htmlib-Select("iclass",lc-global-iclass-code,lc-global-iclass-code,lc-iclass)
                 '</TD></TR>' skip. 
-
-
-
-
 
     end.
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
@@ -1361,7 +1358,7 @@ PROCEDURE ip-NewUserHTML :
         else htmlib-SideLabel("User ID"))
         '</TD>' 
         '<TD VALIGN="TOP" ALIGN="left">'
-         htmlib-InputField("uadd-loginid",10,lc-uadd-loginid) 
+         htmlib-InputField("uadd-loginid",20,lc-uadd-loginid) 
         '</TD></TR>' skip. 
         
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
@@ -2170,20 +2167,48 @@ PROCEDURE ipCreateNewUser :
   Notes:       
 ------------------------------------------------------------------------------*/
    DEF BUFFER b FOR webuser.
+   DEF BUFFER c FOR webuser.
+
+   FIND FIRST c 
+       WHERE c.companyCode = issue.companyCode
+       AND  c.accountnumber = issue.accountnumber
+       AND c.defaultuser NO-LOCK NO-ERROR.
+   IF NOT AVAIL c THEN
+    FIND FIRST c 
+       WHERE c.companyCode = issue.companyCode
+       AND  c.accountnumber = issue.accountnumber
+       AND c.DISABLED = NO
+       NO-LOCK NO-ERROR.
 
    CREATE b.
+   IF AVAIL c
+   THEN BUFFER-COPY c EXCEPT c.loginid TO b.
    ASSIGN
        b.loginid = lc-uadd-loginid
        b.NAME = lc-uadd-name
        b.companycode = issue.companyCode
        b.accountnumber = issue.accountnumber
        b.email = lc-uadd-email
-       b.expiredate = TODAY
+       b.expiredate = TODAY - 2000
        b.passwd = ENCODE(LC(b.loginid))
        b.telephone = lc-uadd-phone
+       b.mobile = ""
        b.userclass = "CUSTOMER"
+       b.defaultuser = no
+       b.forename = ""
+       b.surname = ""
+       b.lastDate = ?
+       b.LastPasswordChange = b.expireDate
+       b.lastTime = 0
+       b.userTitle = ""
+        .
+    IF num-entries(b.NAME," ") > 1 THEN
+    DO:
+        ASSIGN
+            b.forename = ENTRY(1,b.NAME," ")
+            b.surname = ENTRY(2,b.NAME," ").
 
-       .
+    END.
 
 
 
@@ -2367,7 +2392,7 @@ PROCEDURE process-web-request :
                     lc-timeSecondSet    = get-value("timeSecondSet")
                     lc-timeMinuteSet    = get-value("timeMinuteSet")
                     lc-DefaultTimeSet   = get-value("defaultTime")
-                    lc-contract-type    = get-value("contract")
+                    lc-contract-type    = get-value("selectcontract")
                     lc-billable-flag    = get-value("billcheck")
                     lc-saved-activity   = get-value("savedactivetype")                
                     lc-saved-contract   = lc-contract-type 
