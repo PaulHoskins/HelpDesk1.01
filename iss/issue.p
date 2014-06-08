@@ -804,7 +804,9 @@ PROCEDURE process-web-request :
                           + '~'' + lc-link-print 
                           + '~'' 
                           + ');'
-                      ,"").
+                      ,"")
+           tbar-Link("MailIssue",ROWID(this-user),appurl + '/' + "iss/issueemail.p",lc-link-otherp).
+
     if ll-Customer
     then {&out} tbar-Link("statement",?,appurl + '/'
                           + "cust/indivstatement.p","source=customer&accountnumber=" + this-user.AccountNumber).
@@ -931,7 +933,7 @@ PROCEDURE process-web-request :
     
     lc-QPhrase = lc-QPhrase + ' INDEXED-REPOSITION'.
     
-    /* MESSAGE "Q = " lc-qPhrase. */
+
 
     vhLQuery:set-buffers(vhLBuffer).
     vhLQuery:query-prepare(lc-QPhrase).
@@ -949,7 +951,7 @@ PROCEDURE process-web-request :
            lr-first-row = ?
            lr-last-row  = ?.
 
-    repeat while vhLBuffer:available: /* 3933  */
+    repeat while vhLBuffer:available: 
  
         assign lc-rowid = string(rowid(b-query))
                lc-issdate = if b-query.issuedate = ? then "" else string(b-query.issuedate,'99/99/9999').
@@ -1096,7 +1098,11 @@ PROCEDURE process-web-request :
                           + '~'' + lc-link-print 
                           + '~'' 
                           + ');'
-                      ,"").
+                      ,"")
+            tbar-Link("MailIssue",ROWID(this-user),appurl + '/' + "iss/issueemail.p",lc-link-otherp).
+
+
+
         if ll-Customer
         then {&out} tbar-Link("statement",?,appurl + '/'
                           + "cust/indivstatement.p","source=customer&accountnumber=" + this-user.AccountNumber).

@@ -793,6 +793,9 @@ FUNCTION tbar-Link RETURNS CHARACTER
         when "TestV" 
         then assign lc-image = '/images/toolbar3/testv.gif'
                  lc-alt-text = 'Test Template'.
+        when "MailIssue" 
+        then assign lc-image = '/images/toolbar3/mailiss.gif'
+                 lc-alt-text = 'Mail Open Issues'.
 
 
 
