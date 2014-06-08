@@ -38,12 +38,17 @@ def var lc-customer     as char no-undo.
 def var lc-issdate      as char no-undo.
 def var lc-raised       as char no-undo.
 def var lc-assigned     as char no-undo.
+DEF VAR lc-submitsource AS CHAR NO-UNDO.
+
 DEF buffer issue        for issue.
 def buffer customer     for customer.
 def buffer WebStatus    for WebStatus.
 def buffer WebUser      for WebUser.
 def buffer WebIssArea   for WebIssArea.
 def buffer this-user    for WebUser.
+DEF BUFFER b-tmp        FOR iemailtmp.
+DEF BUFFER iemailtmp    FOR iemailtmp.
+
   
 
 DEF VAR lc-IPref        AS CHAR     NO-UNDO.
@@ -58,7 +63,9 @@ def var li-tag-end      as int no-undo.
 def var lc-dummy-return as char initial "MYXXX111PPP2222"   no-undo.
 
 
-def var lc-QPhrase  as char    no-undo.
+DEF VAR lc-seltmpcode   AS CHAR    NO-UNDO.
+DEF VAR lc-seltmpdesc   AS CHAR    NO-UNDO.
+def var lc-QPhrase      as char    no-undo.
 def var vhLBuffer       as handle  no-undo.
 def var vhLQuery        as handle  no-undo.
 
@@ -155,16 +162,55 @@ PROCEDURE ip-EmailHTML :
   Notes:       
 ------------------------------------------------------------------------------*/
   
-  {&out}
+   def var lc-descr        as char no-undo.
+   def var lc-tmpcode      AS CHAR NO-UNDO.
+   DEF VAR lc-tmptxt       AS CHAR NO-UNDO.
+   DEF VAR lc-convtxt      AS CHAR NO-UNDO.
+
+    {&out}
       '<tr><td colspan=' li-col '>' SKIP
-       htmlib-BeginCriteria("Email Details " + STRING(issue.IssueNumber)).
+       htmlib-BeginCriteria("Email Details " + STRING(issue.IssueNumber))
+       htmlib-StartMntTable().
 
-  lc-IField = lc-iPref + 'tmped'.
+  
+    ASSIGN 
+        lc-IField = lc-iPref + 'tmpsel'
+        lc-TmpCode = get-value(lc-IField).
+   
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        htmlib-SideLabel("Email Template") '</TD>' SKIP
+        '<TD VALIGN="TOP" ALIGN="left">' SKIP
+        htmlib-SelectJS(
+            lc-iField,
+            'ChangeTemplate(this)',
+            lc-seltmpcode,
+            lc-seltmpdesc,
+            lc-tmpCode
+            ) SKIP
+           
+            '</TD>' skip. 
 
-  {&out} replace(get-value(lc-iField),'~n','<BR />'). 
-  {&out}
-      htmlib-EndCriteria()
-      '</td></tr>' SKIP.
+
+    assign
+        lc-IField = lc-iPref + 'tmped'.
+        lc-convtxt = get-value(lc-iField).
+
+    {&out}
+        '<TD VALIGN="TOP" ALIGN="right">' 
+        htmlib-SideLabel("Email") '</TD>' SKIP
+        '<TD VALIGN="TOP" ALIGN="left">' SKIP
+        htmlib-textArea(lc-IField,lc-convtxt,20,100) 
+        '</td>' SKIP.
+
+
+
+
+    {&out}
+        '</tr>' SKIP
+        htmlib-EndTable()
+        htmlib-EndCriteria()
+        '</td></tr>' SKIP.
 
 END PROCEDURE.
 
@@ -190,16 +236,24 @@ PROCEDURE ip-ExportJScript :
           '<script language="JavaScript">' skip.
 
     {&out} skip
-        'function ChangeAccount() ~{' skip
-        '   SubmitThePage("AccountChange")' skip
-        '~}' skip
+        'function ChangeTemplate(obj) ~{' skip
+        '   alert("Into Changed");' SKIP
+        '   var selfld =  obj.name;' skip
+        '   var tmpcode = obj.value;' SKIP
+        '   var tmpedit = selfld.replace("tmpsel","tmped");' SKIP
 
-        'function ChangeStatus() ~{' skip
-        '   SubmitThePage("StatusChange")' skip
-        '~}' skip
+        '   alert("done box = " + tmpedit);' SKIP
 
-            'function ChangeDates() ~{' skip
-        '   SubmitThePage("DatesChange")' skip
+
+        '   var TemplateAjax = "' 
+           appurl '/iss/ajax/buildemail.p?company=' lc-global-company 
+           '";' SKIP
+        '   TemplateAjax += "&reference=" + selfld;' SKIP
+        '   TemplateAjax += "&template=" + tmpcode;' SKIP
+       
+        '   alert("final = " + TemplateAjax );' SKIP
+        "   ahah(TemplateAjax,'paul');" SKIP
+        '   alert("done ok");' skip
         '~}' skip.
 
     {&out} skip
@@ -221,6 +275,12 @@ PROCEDURE ip-InitialProcess :
   Notes:       
 ------------------------------------------------------------------------------*/
 
+    RUN com-getTemplateSelect ( lc-global-company,OUTPUT lc-seltmpcode, OUTPUT lc-seltmpdesc ).
+
+    ASSIGN
+        lc-seltmpcode = "|" + lc-seltmpCode
+        lc-seltmpdesc = "No email|" + lc-seltmpdesc.
+
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -238,6 +298,9 @@ PROCEDURE ipGetMethodProcess :
   Notes:       
 ------------------------------------------------------------------------------*/
    
+    DEF buffer  iemailtmp   FOR iemailtmp.
+    DEF BUFFER  issue       FOR issue.
+    DEF BUFFER  WebStatus   FOR WebStatus.
 
     def var lc-descr        as char no-undo.
     def var lc-tmpcode      AS CHAR NO-UNDO.
@@ -388,7 +451,7 @@ PROCEDURE process-web-request :
     END.
 
     RUN outputHeader.
-    {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
+    
     {&out} htmlib-Header("Issue Email") skip.
     RUN ip-ExportJScript.
     {&out} htmlib-JScript-Maintenance() skip.
@@ -397,8 +460,9 @@ PROCEDURE process-web-request :
            htmlib-hidden("submitsource","") skip.
     
    
-   
+    {&out} '<div id="paul">paul Contents </div>'.
 
+  
     {&out}
         tbar-Begin("")
            

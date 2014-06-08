@@ -486,6 +486,17 @@ FUNCTION htmlib-Select-By-ID RETURNS CHARACTER
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SelectJS Include 
+FUNCTION htmlib-SelectJS RETURNS CHARACTER
+  ( pc-name as char ,
+    pc-js  AS CHAR,
+    pc-value as char ,
+    pc-display as char,
+    pc-selected as char )  FORWARD.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SideLabel Include 
 FUNCTION htmlib-SideLabel RETURNS CHARACTER
   ( pc-Label as char )  FORWARD.
@@ -2233,12 +2244,7 @@ FUNCTION htmlib-Select RETURNS CHARACTER
 
   RETURN lc-data.
 
-  /*
-  <select name="select">
-  <option value="01">Paul</option>
-  <option selected value="02">Paul2</option>
-</select>
-  */
+ 
 
 END FUNCTION.
 
@@ -2297,6 +2303,55 @@ FUNCTION htmlib-Select-By-ID RETURNS CHARACTER
   <option selected value="02">Paul2</option>
 </select>
   */
+
+END FUNCTION.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-SelectJS Include 
+FUNCTION htmlib-SelectJS RETURNS CHARACTER
+  ( pc-name as char ,
+    pc-js  AS CHAR,
+    pc-value as char ,
+    pc-display as char,
+    pc-selected as char ) :
+/*------------------------------------------------------------------------------
+  Purpose:  
+    Notes:  
+------------------------------------------------------------------------------*/
+
+  def var lc-data as char no-undo.
+  def var li-loop as int  no-undo.
+  def var lc-value as char no-undo.
+  def var lc-display as char no-undo.
+  def var lc-selected as char no-undo.
+
+  if pc-display = ""
+  then pc-display = pc-value.
+/* onChange="ChangeAccount()"') */
+  assign lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name 
+        + '" onChange="' + pc-js + '")>'.
+
+  do li-loop = 1 to num-entries(pc-value,'|'):
+      assign lc-value = entry(li-loop,pc-value,'|')
+             lc-display = entry(li-loop,pc-display,'|').
+      if lc-value = pc-selected 
+      then lc-selected = 'selected'.
+      else lc-selected = "".
+      assign lc-data = lc-data + 
+                       '<option ' +
+                       lc-selected + 
+                       ' value="' + 
+                       lc-value + 
+                       '">' + 
+                       lc-display +
+                       '</option>'.
+  end.
+  
+  assign lc-data = lc-data + '</select>'.
+
+  RETURN lc-data.
 
 END FUNCTION.
 

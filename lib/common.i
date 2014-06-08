@@ -1213,6 +1213,36 @@ END PROCEDURE.
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-getTemplateSelect Include 
+PROCEDURE com-getTemplateSelect :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+    def input param  pc-CompanyCode     as char no-undo.
+    def output param pc-Codes           as char no-undo.
+    def output param pc-Desc            as char no-undo.
+
+
+    def buffer b-buffer for iemailtmp.
+
+    for each b-buffer no-lock 
+        where b-buffer.CompanyCode = pc-CompanyCode
+       :
+        if pc-codes = ""
+        then assign pc-Codes = b-buffer.tmpcode
+                    pc-Desc = b-buffer.Descr.
+        else assign pc-Codes = pc-Codes + '|' + b-buffer.tmpCode
+                    pc-Desc = pc-Desc + '|' + b-buffer.Descr.
+    end.
+
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-ResetDefaultStatus Include 
 PROCEDURE com-ResetDefaultStatus :
 /*------------------------------------------------------------------------------
