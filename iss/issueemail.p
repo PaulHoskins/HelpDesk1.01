@@ -65,6 +65,10 @@ def var lc-dummy-return as char initial "MYXXX111PPP2222"   no-undo.
 
 DEF VAR lc-seltmpcode   AS CHAR    NO-UNDO.
 DEF VAR lc-seltmpdesc   AS CHAR    NO-UNDO.
+
+DEF VAR lc-selActcode   AS CHAR    NO-UNDO.
+DEF VAR lc-selActdesc   AS CHAR    NO-UNDO.
+
 def var lc-QPhrase      as char    no-undo.
 def var vhLBuffer       as handle  no-undo.
 def var vhLQuery        as handle  no-undo.
@@ -166,6 +170,8 @@ PROCEDURE ip-EmailHTML :
    def var lc-tmpcode      AS CHAR NO-UNDO.
    DEF VAR lc-tmptxt       AS CHAR NO-UNDO.
    DEF VAR lc-convtxt      AS CHAR NO-UNDO.
+   def var lc-action       AS CHAR NO-UNDO.
+
 
     {&out}
       '<tr><td colspan=' li-col '>' SKIP
@@ -191,6 +197,23 @@ PROCEDURE ip-EmailHTML :
            
             '</TD>' skip. 
 
+    assign
+       lc-IField = lc-iPref + 'act'.
+       lc-action = get-value(lc-iField).
+
+   {&out} '<TD VALIGN="TOP" ALIGN="right">' 
+          htmlib-SideLabel("Action") '</TD>' SKIP
+          '<TD VALIGN="TOP" ALIGN="left">' SKIP
+          htmlib-Select(
+              lc-iField,
+              lc-selActcode,
+              lc-selActdesc,
+              lc-Action
+              ) SKIP
+
+              '</TD>' skip. 
+
+
 
     assign
         lc-IField = lc-iPref + 'tmped'.
@@ -202,9 +225,6 @@ PROCEDURE ip-EmailHTML :
         '<TD VALIGN="TOP" ALIGN="left">' SKIP
         htmlib-textArea(lc-IField,lc-convtxt,20,100) 
         '</td>' SKIP.
-
-
-
 
     {&out}
         '</tr>' SKIP
@@ -281,6 +301,11 @@ PROCEDURE ip-InitialProcess :
         lc-seltmpcode = "|" + lc-seltmpCode
         lc-seltmpdesc = "No email|" + lc-seltmpdesc.
 
+
+    RUN com-getAction ( lc-global-company,OUTPUT lc-selActCode, OUTPUT lc-selActdesc ).
+
+
+
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -347,6 +372,135 @@ PROCEDURE ipGetMethodProcess :
 
 
    END.
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-ipProcessEmail) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipProcessEmail Procedure 
+PROCEDURE ipProcessEmail :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+
+
+    DEF buffer  iemailtmp   FOR iemailtmp.
+    DEF BUFFER  issue       FOR issue.
+    DEF BUFFER  WebStatus   FOR WebStatus.
+    def buffer b-table      for IssAction.
+
+    def var lc-descr        as char no-undo.
+    def var lc-tmpcode      AS CHAR NO-UNDO.
+    DEF VAR lc-convtxt       AS CHAR NO-UNDO.
+    DEF VAR lc-Action       AS CHAR NO-UNDO.
+
+
+    def var lf-Audit            as dec  no-undo.
+    def var lc-temp             as char no-undo.
+
+    def var lr-temp             as rowid no-undo.
+
+
+    for each issue NO-LOCK where issue.CompanyCode = lc-global-company
+                             AND issue.assignto = lc-global-user,
+        FIRST WebStatus of issue where WebStatus.CompletedStatus = no no-lock:
+
+
+        assign
+            lc-ipref = "I" + STRING(issue.IssueNumber).
+            
+        ASSIGN 
+            lc-IField = lc-iPref + 'tmpsel'
+            lc-TmpCode = get-value(lc-IField).
+
+        assign
+            lc-IField = lc-iPref + 'act'.
+            lc-action = get-value(lc-iField).
+
+
+        assign
+            lc-IField = lc-iPref + 'tmped'.
+            lc-convtxt = get-value(lc-iField).
+
+
+        IF lc-tmpCode = "" THEN NEXT.
+
+
+        find WebAction
+            where WebAction.CompanyCode = lc-global-company
+              and WebAction.ActionCode  = lc-Action
+              no-lock no-error.
+        
+        create b-table.
+        assign b-table.actionID    = WebAction.ActionID
+               b-table.CompanyCode = lc-global-company
+               b-table.IssueNumber = issue.IssueNumber
+               b-table.CreateDate  = today
+               b-table.CreateTime  = time
+               b-table.CreatedBy   = lc-global-user
+               b-table.customerview = Yes
+               .
+
+        do while true:
+            run lib/makeaudit.p (
+                "",
+                output lf-audit
+                ).
+            if can-find(first IssAction
+                        where IssAction.IssActionID = lf-audit no-lock)
+                        then next.
+            assign
+                b-table.IssActionID = lf-audit.
+            leave.
+        end.
+
+        ASSIGN b-table.notes         = lc-convtxt
+              b-table.ActionStatus  = "OPEN"
+              b-table.ActionDate    =  today
+            .
+
+        assign b-table.AssignDate = today
+               b-table.AssignTime = time
+               b-table.AssignBy   = lc-global-user
+               b-table.assignto  = lc-global-user.
+
+        assign lr-temp = rowid(b-table).
+        release b-table.
+
+        find b-table where rowid(b-table) = lr-temp exclusive-lock.
+    
+        dynamic-function("islib-CreateAutoAction",
+                         b-table.IssActionID).
+
+        
+
+
+        /*
+        **
+        ***
+        ***dynamic-function("mlib-SendEmail",
+                                                 lc-global-company,
+                                                 "",
+                                                 "HelpDesk Action Assignment - Issue " + 
+                                                 string(Issue.IssueNumber),
+                                                 lc-temp,
+                                                 b-user.email).
+        **/
+
+
+
+
+
+
+    END.
+
 
 END PROCEDURE.
 
@@ -446,7 +600,7 @@ PROCEDURE process-web-request :
     END.
     ELSE
     DO:
-
+        
     END.
 
     RUN outputHeader.
