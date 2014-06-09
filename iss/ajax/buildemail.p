@@ -3,15 +3,15 @@
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
-    Program:        iss/ajax/note.p
+    Program:        iss/ajax/buildemail.p
     
-    Purpose:        Customer Maintenance - Ajax Table    
+    Purpose:        Build Issue Email - Ajax     
     
     Notes:
     
     
     When        Who         What
-    22/04/2006  phoski      Initial
+    09/06/2014  phoski      Initial
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -21,16 +21,13 @@ CREATE WIDGET-POOL.
 /* Parameters Definitions ---                                           */
 
 /* Local Variable Definitions ---                                       */
+DEF BUFFER iemailtmp FOR iemailtmp.
 
-def buffer b-issue for Issue.
-def buffer b-table for IssNote.
-def buffer b-status for WebNote.
-def buffer b-user   for WebUser.
-def var lc-rowid as char no-undo.
-def var lc-mode  as char no-undo.
-def var lc-status as char no-undo.
-def var lc-name   as char no-undo.
-def var lc-url   as char no-undo.
+
+def var lc-company      as char no-undo.
+def var lc-reference    AS char no-undo.
+def var lc-edit         as char no-undo.
+def var lc-tmpcode      as char no-undo.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -170,19 +167,41 @@ PROCEDURE process-web-request :
   Notes:       
 ------------------------------------------------------------------------------*/
   
-    MESSAGE '<br/>company = ' get-value("company")
-           '<br/>Reference = ' get-value("Reference")
-           '<br/>Template = ' get-value("template") skip.
+    def var lc-descr        as char no-undo.
+    DEF VAR lc-convtxt      AS CHAR NO-UNDO.
 
+    ASSIGN
+        lc-company = get-value("company")
+        lc-Reference = replace(get-value("Reference"),"tmpsel","")
+        lc-reference = SUBSTR(lc-reference,2)
+        lc-tmpcode =  get-value("template") 
+        lc-tmpcode =  get-value("template")
+        lc-edit    = get-value("edit").
+
+    IF lc-tmpcode <> "" THEN
+    DO:
+        FIND iemailtmp
+                    WHERE iemailtmp.companyCode = lc-company
+                      AND iemailtmp.tmpCode = lc-tmpCode
+                      NO-LOCK NO-ERROR.
+        RUN lib/translatetemplate.p 
+                   (
+                       lc-company,
+                       lc-tmpcode,
+                       int(lc-reference),
+                       NO,
+                       iemailtmp.tmptxt,
+                       OUTPUT lc-convtxt,
+                       OUTPUT lc-descr
+                   ).
+    END.
+    ELSE lc-convtxt = "No email will be sent".
    
     
     RUN outputHeader.
     
-    
+    {&out} lc-convtxt.
 
-    {&out} '<br/>company = ' get-value("company")
-          '<br/>Reference = ' get-value("Reference")
-        '<br/>Template = ' get-value("template") skip.
 
 
 END PROCEDURE.

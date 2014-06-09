@@ -229,6 +229,12 @@ PROCEDURE ip-ExportJScript :
   Notes:       
 ------------------------------------------------------------------------------*/
 
+{&out}
+        '<script language="JavaScript" src="/scripts/js/menu.js"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip
+        .
+
     {&out} skip
             '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' skip.
 
@@ -237,23 +243,17 @@ PROCEDURE ip-ExportJScript :
 
     {&out} skip
         'function ChangeTemplate(obj) ~{' skip
-        '   alert("Into Changed");' SKIP
         '   var selfld =  obj.name;' skip
         '   var tmpcode = obj.value;' SKIP
         '   var tmpedit = selfld.replace("tmpsel","tmped");' SKIP
-
-        '   alert("done box = " + tmpedit);' SKIP
-
-
         '   var TemplateAjax = "' 
            appurl '/iss/ajax/buildemail.p?company=' lc-global-company 
            '";' SKIP
         '   TemplateAjax += "&reference=" + selfld;' SKIP
         '   TemplateAjax += "&template=" + tmpcode;' SKIP
-       
-        '   alert("final = " + TemplateAjax );' SKIP
-        "   ahah(TemplateAjax,'paul');" SKIP
-        '   alert("done ok");' skip
+        '   TemplateAjax += "&edit=" + tmpedit;' SKIP
+        "   new Ajax.Updater(tmpedit, TemplateAjax, ~{ method: 'get',evalScripts: true }~);" SKIP
+
         '~}' skip.
 
     {&out} skip
@@ -315,8 +315,7 @@ PROCEDURE ipGetMethodProcess :
             lc-ipref = "I" + STRING(issue.IssueNumber)
             lc-IField = lc-iPref + 'tmpsel'
             lc-TmpCode = issue.LastTmpCode.
-        IF lc-TmpCode = "" THEN lc-TmpCode = "1".
-
+       
         set-user-field(lc-iField,lc-TmpCode).
 
         IF lc-tmpCode = "" THEN NEXT.
@@ -460,8 +459,6 @@ PROCEDURE process-web-request :
            htmlib-hidden("submitsource","") skip.
     
    
-    {&out} '<div id="paul">paul Contents </div>'.
-
   
     {&out}
         tbar-Begin("")

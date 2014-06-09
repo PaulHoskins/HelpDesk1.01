@@ -2754,7 +2754,7 @@ FUNCTION htmlib-TextArea RETURNS CHARACTER
 
 
   return substitute(
-        '<textarea class="inputfield" name="&1" rows="&3" cols="&4">&2</textarea>',
+        '<textarea class="inputfield" id="&1" name="&1" rows="&3" cols="&4">&2</textarea>',
         pc-name,
         pc-value,
         string(pi-rows),

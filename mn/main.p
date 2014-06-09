@@ -1,4 +1,4 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
+&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
 &ANALYZE-RESUME
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /*------------------------------------------------------------------------
@@ -69,8 +69,8 @@ CREATE WIDGET-POOL.
 &ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
-         HEIGHT             = 11.57
-         WIDTH              = 60.6.
+         HEIGHT             = 11.58
+         WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
 &ANALYZE-RESUME
