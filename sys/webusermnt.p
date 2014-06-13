@@ -18,6 +18,7 @@
     30/04/2006  phoski      Mobile & AllowSMS AccessSMS
     17/08/2006  phoski      QuickView
     20/05/2014  phoski      DFS bug fixes & Team Selections
+    13/06/2014  phoski      UX
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -56,6 +57,8 @@ def var lc-parameters   as char no-undo.
 def var lc-link-label   as char no-undo.
 def var lc-submit-label as char no-undo.
 def var lc-link-url     as char no-undo.
+DEF VAR lc-selacc       AS CHAR NO-UNDO.
+
 
 
 def var lc-loginid      as char no-undo.
@@ -1037,6 +1040,7 @@ PROCEDURE process-web-request :
            lc-firstrow = get-value("firstrow")
            lc-lastrow  = get-value("lastrow")
            lc-navigation = get-value("navigation")
+           lc-selacc    = get-value("selacc")
            li-curr-year  = integer(get-value("submityear")).
 
     if li-curr-year = ? or li-curr-year = 0 then li-curr-year = year(today).
@@ -1078,7 +1082,8 @@ PROCEDURE process-web-request :
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
-                                  '&navigation=refresh' +
+                                   '&navigation=refresh' +
+                                  '&selacc=' + lc-selacc + 
                                   '&time=' + string(time)
                            .
 
@@ -1257,6 +1262,7 @@ PROCEDURE process-web-request :
             set-user-field("navigation",'refresh').
             set-user-field("firstrow",lc-firstrow).
             set-user-field("search",lc-search).
+             set-user-field("selacc",lc-selacc).
             RUN run-web-object IN web-utilities-hdl ("sys/webuser.p").
             return.
         end.
@@ -1322,6 +1328,15 @@ PROCEDURE process-web-request :
     do:
         assign 
             lc-recordsperpage = "10".
+
+        IF lc-selacc <> "ALLC"
+        AND lc-selacc <> ""
+        AND lc-selacc <> "INTERNAL" THEN
+        DO:
+            ASSIGN 
+                lc-userClass = "CUSTOMER"
+                lc-accountnumber = lc-selacc.
+        END.
     end.
 
     RUN outputHeader.
@@ -1365,7 +1380,6 @@ PROCEDURE process-web-request :
       then run ip-timestable.
     {&out} htmlib-EndTable() skip.
     {&out} '</td></tr></table>' skip.
-
 
 
     if lc-error-msg <> "" then

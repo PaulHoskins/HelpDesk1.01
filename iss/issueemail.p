@@ -73,6 +73,9 @@ def var lc-QPhrase      as char    no-undo.
 def var vhLBuffer       as handle  no-undo.
 def var vhLQuery        as handle  no-undo.
 
+
+{iss/issue.i}
+
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
@@ -179,8 +182,22 @@ PROCEDURE ip-EmailHTML :
        htmlib-StartMntTable().
 
   
+    
+    ASSIGN lc-IField = lc-iPref + 'Send'.
+    lc-TmpCode = get-value(lc-IField).
+
+    IF lc-tmpCode <> "" THEN
+    DO:
+        {&out} '<tr><td colspan=6><div class="infobox">Email sent to '
+            lc-tmpCode
+            '</div></td></tr>' SKIP.
+
+    END.
     ASSIGN 
-        lc-IField = lc-iPref + 'tmpsel'
+       lc-IField = lc-iPref + 'tmpsel'.
+
+
+    ASSIGN
         lc-TmpCode = get-value(lc-IField).
    
     
@@ -395,10 +412,11 @@ PROCEDURE ipProcessEmail :
     DEF BUFFER  issue       FOR issue.
     DEF BUFFER  WebStatus   FOR WebStatus.
     def buffer b-table      for IssAction.
+    DEF BUFFER  u           FOR webuser.
 
     def var lc-descr        as char no-undo.
     def var lc-tmpcode      AS CHAR NO-UNDO.
-    DEF VAR lc-convtxt       AS CHAR NO-UNDO.
+    DEF VAR lc-convtxt      AS CHAR NO-UNDO.
     DEF VAR lc-Action       AS CHAR NO-UNDO.
 
 
@@ -406,9 +424,10 @@ PROCEDURE ipProcessEmail :
     def var lc-temp             as char no-undo.
 
     def var lr-temp             as rowid no-undo.
+    DEF VAR lc-emailTo          AS CHAR  NO-UNDO.
 
 
-    for each issue NO-LOCK where issue.CompanyCode = lc-global-company
+    for each issue exclusive-lock where issue.CompanyCode = lc-global-company
                              AND issue.assignto = lc-global-user,
         FIRST WebStatus of issue where WebStatus.CompletedStatus = no no-lock:
 
@@ -431,6 +450,8 @@ PROCEDURE ipProcessEmail :
 
 
         IF lc-tmpCode = "" THEN NEXT.
+
+        issue.LastTmpCode = lc-tmpCode.
 
 
         find WebAction
@@ -462,7 +483,7 @@ PROCEDURE ipProcessEmail :
         end.
 
         ASSIGN b-table.notes         = lc-convtxt
-              b-table.ActionStatus  = "OPEN"
+              b-table.ActionStatus  = "CLOSED"
               b-table.ActionDate    =  today
             .
 
@@ -479,20 +500,34 @@ PROCEDURE ipProcessEmail :
         dynamic-function("islib-CreateAutoAction",
                          b-table.IssActionID).
 
-        
+        lc-emailTo = "Support@ouritdept.co.uk".
+
+        FIND u WHERE u.loginid = issue.RaisedLogin NO-LOCK NO-ERROR.
+        IF AVAIL u THEN lc-emailto = lc-emailto + "," + u.email.
 
 
-        /*
-        **
-        ***
-        ***dynamic-function("mlib-SendEmail",
-                                                 lc-global-company,
-                                                 "",
-                                                 "HelpDesk Action Assignment - Issue " + 
-                                                 string(Issue.IssueNumber),
-                                                 lc-temp,
-                                                 b-user.email).
-        **/
+        FIND FIRST u WHERE u.accountNumber = issue.accountNumber
+                       AND u.defaultuser = TRUE
+                       AND u.loginid <> issue.RaisedLogin
+                       NO-LOCK NO-ERROR.
+        IF AVAIL u THEN lc-emailto = lc-emailto + "," + u.email.
+
+       
+
+        assign
+            
+            lc-IField = lc-iPref + 'Send'.
+            
+       
+        set-user-field(lc-iField,lc-emailto).
+
+        dynamic-function("mlib-SendEmail",
+                         lc-global-company,
+                         "",
+                         "Issue " + 
+                         string(Issue.IssueNumber) + " - " + issue.BriefDescription,
+                         lc-convtxt,
+                         lc-emailto).
 
 
 
@@ -600,6 +635,8 @@ PROCEDURE process-web-request :
     END.
     ELSE
     DO:
+        RUN ipProcessEmail.
+
         
     END.
 
@@ -639,7 +676,8 @@ PROCEDURE process-web-request :
 
     for each issue NO-LOCK where issue.CompanyCode = lc-global-company
                              AND issue.assignto = lc-global-user,
-        FIRST WebStatus of issue where WebStatus.CompletedStatus = no no-lock:
+        FIRST WebStatus of issue where WebStatus.CompletedStatus = no no-lock
+        BY issue.issuenumber DESC:
 
  
         assign lc-rowid = string(rowid(issue))
@@ -660,7 +698,7 @@ PROCEDURE process-web-request :
         
         
         find WebUser where WebUser.LoginID = issue.AssignTo no-lock no-error.
-        
+        assign lc-assigned = "".
         if avail WebUser then
         do:
             assign lc-assigned = WebUser.name.
@@ -673,7 +711,7 @@ PROCEDURE process-web-request :
         find WebUser where WebUser.LoginID = issue.RaisedLogin no-lock no-error.
         
         assign lc-raised = if avail WebUser then WebUser.name else "".
-        assign lc-assigned = "".
+        
 
 
         find WebIssArea of issue no-lock no-error.
@@ -796,6 +834,9 @@ PROCEDURE process-web-request :
     {&out} skip 
            htmlib-EndTable()
            skip.
+
+    {&out} '<center>' htmlib-SubmitButton("submitform","Generate Emails") 
+               '</center>' skip.
     
 
     {&out} htmlib-EndForm() skip.

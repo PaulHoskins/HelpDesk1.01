@@ -14,6 +14,7 @@
     09/04/2006  phoski      Contractor link to accounts
     10/04/2006  phoski      Company Code
     11/04/2006  phoski      Show customer for CUSTOMER type users
+    13/06/2014  phoski      Various for UX
 
 ***********************************************************************/
 
@@ -46,6 +47,7 @@ def var lc-smessage     as char no-undo.
 def var lc-link-otherp  as char no-undo.
 def var lc-char         as char no-undo.
 def var lc-nopass       as char no-undo.
+DEF VAR lc-selacc       AS CHAR NO-UNDO.
 
 
 
@@ -53,8 +55,13 @@ def var lc-nopass       as char no-undo.
 def buffer b-query for webuser.
 def buffer b-search for webuser.
 
-
+/*
 def query q for b-query scrolling.
+*/
+
+def var lc-QPhrase  as char    no-undo.
+def var vhLBuffer       as handle  no-undo.
+def var vhLQuery        as handle  no-undo.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -72,6 +79,19 @@ def query q for b-query scrolling.
 /* _UIB-PREPROCESSOR-BLOCK-END */
 &ANALYZE-RESUME
 
+
+/* ************************  Function Prototypes ********************** */
+
+&IF DEFINED(EXCLUDE-fnToolbarAccountSelection) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnToolbarAccountSelection Procedure 
+FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
+  ( /* parameter-definitions */ )  FORWARD.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
@@ -125,6 +145,104 @@ RUN process-web-request.
 
 
 /* **********************  Internal Procedures  *********************** */
+
+&IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
+PROCEDURE ip-ExportJScript :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+
+{&out}
+        '<script language="JavaScript" src="/scripts/js/menu.js"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip
+        .
+
+    {&out} skip
+            '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' skip.
+
+    {&out} skip 
+          '<script language="JavaScript">' skip.
+
+    {&out} skip
+        'function OptionChange(obj) ~{' skip
+        '   SubmitThePage("selection");' SKIP
+        '~}' skip.
+
+    {&out} skip
+           '</script>' skip.
+
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-ip-navigate) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-navigate Procedure 
+PROCEDURE ip-navigate :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+    
+    if lc-navigation = "nextpage" then
+    do:
+        vhLQuery:reposition-to-rowid(to-rowid(lc-lastrow)) .
+        if error-status:error = false then
+        do:
+          vhLQuery:get-next(no-lock).
+          vhLQuery:get-next(no-lock).
+    
+          if not avail b-query then vhLQuery:get-first(no-lock).
+      end.
+    end.
+    else
+    if lc-navigation = "prevpage" then
+    do:
+      vhLQuery:reposition-to-rowid(to-rowid(lc-firstrow)) no-error.
+      if error-status:error = false then
+      do:
+        vhLQuery:get-next(no-lock).
+         vhLQuery:reposition-backwards(li-max-lines + 1). 
+         vhLQuery:get-next(no-lock).
+        if not avail b-query then vhLQuery:get-first(no-lock).
+    end.
+    end.
+    else
+    if lc-navigation = "refresh" then
+    do:
+        vhLQuery:reposition-to-rowid(to-rowid(lc-firstrow)) no-error.
+        if error-status:error = false then
+        do:
+          vhLQuery:get-next(no-lock).
+           if not avail b-query then vhLQuery:get-first(no-lock).
+       end.  
+       else vhLQuery:get-first(no-lock).
+    end.
+    else 
+    if lc-navigation = "lastpage" then
+    do:
+      vhLQuery:get-last(no-lock).
+      vhLQuery:reposition-backwards(li-max-lines).
+      vhLQuery:get-next(no-lock).
+     if not avail b-query then vhLQuery:get-first(no-lock).
+    end.
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
@@ -203,13 +321,18 @@ PROCEDURE process-web-request :
     assign lc-search = get-value("search")
            lc-firstrow = get-value("firstrow")
            lc-lastrow  = get-value("lastrow")
-           lc-navigation = get-value("navigation").
+           lc-navigation = get-value("navigation")
+           lc-selacc     = get-value("selacc").
     
     assign lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
-                           "&lastrow=" + lc-lastrow.
+                           "&lastrow=" + lc-lastrow +
+                           "&selacc=" + lc-selacc.
 
     
+    ASSIGN
+        lc-link-otherp = lc-parameters.
+
     
     assign lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
     
@@ -223,14 +346,18 @@ PROCEDURE process-web-request :
     {&out} htmlib-Header("Maintain Users") skip.
 
     {&out} htmlib-JScript-Maintenance() skip.
+    RUN ip-ExportJScript.
 
     {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webuser.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Users") skip.
+    {&out} htmlib-ProgramTitle("Maintain Users") skip
+           htmlib-hidden("submitsource","") skip.
     
     {&out}
             tbar-Begin(
-                tbar-Find(appurl + "/sys/webuser.p")
+                DYNAMIC-FUNCTION('fnToolbarAccountSelection':U) 
+                + 
+                tbar-FindLabel(appurl + "/sys/webuser.p","Find Name")
                 )
             tbar-Link("add",?,appurl + '/' + "sys/webusermnt.p",lc-link-otherp)
             tbar-BeginOption()
@@ -251,65 +378,52 @@ PROCEDURE process-web-request :
             "User Name^left|Name^left|Customer|Email^left|Disabled?"
             ) skip.
 
+    lc-QPhrase = 
+        "for each b-query NO-LOCK where b-query.CompanyCode = '" + string(lc-Global-Company) + "'".
 
-    open query q for each b-query no-lock
-        where b-query.companycode = lc-global-company
-        by b-query.LoginID.
+    IF lc-selacc <> "" THEN
+    DO:
+        IF lc-selacc = "INTERNAL"
+        THEN ASSIGN 
+                lc-qPhrase = lc-qphrase + " and b-query.AccountNumber = ''".
+        ELSE
+        IF lc-selacc = "ALLC"
+        THEN ASSIGN 
+                lc-qPhrase = lc-qphrase + " and b-query.AccountNumber > ''".
+        ELSE ASSIGN 
+                lc-qPhrase = lc-qphrase + " and b-query.AccountNumber = '" + lc-selacc + "'".
+    END.
 
-    get first q no-lock.
 
-    if lc-navigation = "nextpage" then
-    do:
-        reposition q to rowid to-rowid(lc-lastrow) no-error.
-        if error-status:error = false then
-        do:
-            get next q no-lock.
-            get next q no-lock.
-            if not avail b-query then get first q.
-        end.
-    end.
-    else
-    if lc-navigation = "prevpage" then
-    do:
-        reposition q to rowid to-rowid(lc-firstrow) no-error.
-        if error-status:error = false then
-        do:
-            get next q no-lock.
-            reposition q backwards li-max-lines + 1.
-            get next q no-lock.
-            if not avail b-query then get first q.
-        end.
-    end.
-    else
-    if lc-navigation = "search" then
-    do:
-        find first b-search 
-             where b-query.companycode = lc-global-company
-             and b-search.loginid >= lc-search no-lock no-error.
-        if avail b-search then
-        do:
-            reposition q to rowid rowid(b-search) no-error.
-            get next q no-lock.
-        end.
-        else assign lc-smessage = "Your search found no records, displaying all".
-    end.
-    else
-    if lc-navigation = "refresh" then
-    do:
-        reposition q to rowid to-rowid(lc-firstrow) no-error.
-        if error-status:error = false then
-        do:
-            get next q no-lock.
-            if not avail b-query then get first q.
-        end.  
-        else get first q.
-    end.
+     
+    IF lc-search <> "" THEN
+    DO:
+        assign
+            lc-qPhrase = lc-qphrase + " and b-query.name contains '" + lc-search + "'".
+    END.
+
+    lc-QPhrase = lc-QPhrase + ' INDEXED-REPOSITION'.
+    
+    create query vhLQuery.
+
+    vhLBuffer = buffer b-query:handle.
+
+    vhLQuery:set-buffers(vhLBuffer).
+    vhLQuery:query-prepare(lc-QPhrase).
+    vhLQuery:QUERY-OPEN().
+
+
+    vhLQuery:GET-FIRST(no-lock).
+
+    run ip-navigate.
+
 
     assign li-count = 0
            lr-first-row = ?
            lr-last-row  = ?.
 
-    repeat while avail b-query:
+     repeat while vhLBuffer:available: 
+
         
         assign
             lc-CustomerInfo = dynamic-function("com-UsersCompany",
@@ -369,7 +483,10 @@ PROCEDURE process-web-request :
 
         if li-count = li-max-lines then leave.
 
-        get next q no-lock.
+
+       
+        vhLQuery:get-next(no-lock). /* 3933  */
+
             
     end.
 
@@ -382,8 +499,50 @@ PROCEDURE process-web-request :
            htmlib-EndTable()
            skip.
 
-    {lib/navpanel.i "sys/webuser.p"}
+   
+    {&out} htmlib-StartPanel() 
+            skip.
 
+
+    {&out}  '<tr><td align="left">'.
+
+
+    if lr-first-row <> ? then
+    do:
+        vhLQuery:GET-FIRST(no-lock). 
+       
+        if rowid(b-query) = lr-first-row 
+        then assign ll-prev = false.
+        else assign ll-prev = true.
+
+        
+        vhLQuery:get-last(no-lock). 
+
+        if rowid(b-query) = lr-last-row
+        then assign ll-next = false.
+        else assign ll-next = true.
+
+        if ll-prev 
+        then {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","PrevPage","Prev Page").
+
+
+        if ll-next 
+        then {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","NextPage","Next Page").
+
+        if not ll-prev
+        and not ll-next 
+        then {&out} "&nbsp;".
+
+
+    end.
+    else {&out} "&nbsp;".
+
+    {&out} '</td><td align="right">' htmlib-ErrorMessage(lc-smessage)
+          '</td></tr>'.
+
+    {&out} htmlib-EndPanel().
+
+     
     {&out} skip
            htmlib-Hidden("firstrow", string(lr-first-row)) skip
            htmlib-Hidden("lastrow", string(lr-last-row)) skip
@@ -397,6 +556,61 @@ PROCEDURE process-web-request :
     
   
 END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ENDIF
+
+/* ************************  Function Implementations ***************** */
+
+&IF DEFINED(EXCLUDE-fnToolbarAccountSelection) = 0 &THEN
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnToolbarAccountSelection Procedure 
+FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
+  ( /* parameter-definitions */ ) :
+/*------------------------------------------------------------------------------
+  Purpose:  
+    Notes:  
+------------------------------------------------------------------------------*/
+
+    
+    DEF VAR lc-return       AS CHAR     NO-UNDO.
+
+    DEF VAR lc-codes        AS CHAR     NO-UNDO.
+    DEF VAR lc-names        AS CHAR     NO-UNDO.
+    DEF VAR lc-this         AS CHAR     NO-UNDO.
+
+    DEF BUFFER customer FOR customer.
+
+    ASSIGN
+        lc-codes = "|INTERNAL|ALLC"
+        lc-names = "All Users|Internal Users|All Customer Users"
+        lc-this  = get-value("selacc").
+   
+    FOR EACH customer NO-LOCK
+            WHERE customer.companyCode = lc-global-company
+        BY customer.NAME:
+        ASSIGN lc-codes = lc-codes + "|" + customer.AccountNumber
+               lc-names = lc-names + "|" + customer.NAME.
+
+    END.
+
+    lc-return =  htmlib-SelectJS(
+            "selacc",
+            'OptionChange(this)',
+            lc-codes,
+            lc-names,
+            lc-this
+            ).
+
+
+
+    lc-return = "<b>Account/User Type:</b>" + lc-return + "&nbsp;".
+
+    RETURN lc-return.
+
+END FUNCTION.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
