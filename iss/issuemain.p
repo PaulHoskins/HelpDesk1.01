@@ -71,7 +71,8 @@ def var lc-category         as char no-undo.
 
 def var lc-sla-rows         as char no-undo.
 def var lc-sla-selected     as char no-undo.
-
+DEF VAR li-OpenActions      AS INT  NO-UNDO.
+DEF VAR ll-IsOpen           AS LOG  NO-UNDO.
 
 /* Lists */
 def var lc-list-area        as char no-undo.
@@ -491,6 +492,7 @@ PROCEDURE ip-IssueMain :
 
     def buffer b-cust   for customer.
     def buffer b-user   for WebUser.
+    DEF BUFFER WebAttr  FOR WebAttr.
 
     def var lc-SLA-Describe as char no-undo.
     def var lc-icustname    as char no-undo.
@@ -590,6 +592,26 @@ PROCEDURE ip-IssueMain :
 
     RUN ip-AreaCode.         
     {&out}        '</TD></TR>' skip. 
+
+    IF li-OpenActions <> 0  THEN
+    DO:
+        {&out} '<tr><td>&nbsp;</td><td><div class="infobox" style="font-size: 10px;">This issue has open actions ('
+             li-openActions 
+            ') and can not be closed.</div></td></tr>'
+            SKIP.
+    END.
+    ELSE
+    IF ll-IsOpen THEN
+    DO:
+        find WebAttr where WebAttr.SystemID = "SYSTEM"
+             and   WebAttr.AttrID   = "ISSCLOSEWARNING" NO-LOCK NO-ERROR.
+             
+        IF AVAIL webattr THEN
+        {&out} '<tr><td>&nbsp;</td><td>' SKIP
+            '<div class="infobox" style="font-size: 10px;">' webattr.attrValue 
+            '</div></td></tr>'
+            SKIP.
+    END.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
             (if lookup("currentstatus",lc-error-field,'|') > 0 
@@ -1265,16 +1287,28 @@ PROCEDURE process-web-request :
                     lc-link-label = 'Cancel update'
                     lc-submit-label = 'Update Issue'.
     end case.
+    find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock no-error.
+    find customer of b-table no-lock no-error.
+    
+    li-OpenActions = com-IssueActionsStatus(b-table.companyCode,b-table.issueNumbe,'Open').
 
-    RUN com-GetStatusIssue ( lc-global-company , output lc-list-status, output lc-list-sname ).
+    IF li-OpenActions = 0 
+    THEN RUN com-GetStatusIssue ( lc-global-company , output lc-list-status, output lc-list-sname ).
+    ELSE RUN com-GetStatusIssueOpen ( lc-global-company , output lc-list-status, output lc-list-sname ).
+   
+    IF dynamic-function("islib-StatusIsClosed",
+                        b-table.CompanyCode,
+                        b-table.StatusCode) 
+    THEN ll-IsOpen = FALSE.
+    ELSE ll-isOpen = TRUE.
+
     RUN com-GetAreaIssue ( lc-global-company , output lc-list-area , output lc-list-aname ).
     RUN com-GetAssignIssue ( lc-global-company , output lc-list-assign , output lc-list-assname ).
     run com-GetCategoryIssue( lc-global-company, output lc-list-catcode, output lc-list-cname ).
     
     
 
-    find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock no-error.
-    find customer of b-table no-lock no-error.
+    
 
     assign lc-title = lc-title + ' Issue ' + string(b-table.issuenumber) + ' - ' +
            html-encode(customer.accountNumber + " - " + customer.name)
@@ -1398,18 +1432,11 @@ PROCEDURE process-web-request :
 
 
 /* 3678 ----------------------> */ 
-    {&out}  '<script type="text/javascript" >~n'
+ {&out}  '<script type="text/javascript" >~n'
             'var pIP =  window.location.host; ~n'
             'function goGMAP(pCODE, pNAME, pADD) ~{~n'
-            'var pOPEN = "http://";~n'
-            'pOPEN = pOPEN + pIP;~n'
-            'pOPEN = pOPEN + ":8090/Gmap.html?postCode=";~n'
-            'pOPEN = pOPEN + pCODE;~n'
-            'pOPEN = pOPEN + "&Name=";~n'
-            'pOPEN = pOPEN + pNAME;~n'
-            'pOPEN = pOPEN + "&Address=";~n'
-            'pOPEN = pOPEN + pADD;~n'
-            /* 'alert(pOPEN);~n' */
+            'var pOPEN = "http://www.google.co.uk/maps/preview?q=";' SKIP
+            'pOPEN = pOPEN + pCODE;~n' SKIP
             'window.open(pOPEN, ~'WinName~' , ~'width=645,height=720,left=0,top=0~');~n'
             ' ~}~n'
             '</script>'  skip.

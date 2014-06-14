@@ -1,4 +1,4 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
+&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
 &ANALYZE-RESUME
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
@@ -430,6 +430,7 @@ PROCEDURE ip-ProcessReport :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
+DEF BUFFER BatchWork FOR BatchWork.
 
 def var li-run      as int no-undo.
 def var TYPEOF      as char initial "Detail,Summary_Detail,Summary" no-undo.
@@ -470,6 +471,9 @@ reportdesc = entry(lookup(lc-reptypeE,engcust  ) ,ISSUE ) + "_"
 /* fetch next report id  */
 assign li-run = next-value(ReportNumber).
 
+DO TRANSACTION:
+
+
 create BatchWork  no-error.
 assign
      BatchWork.BatchDate      = today
@@ -488,9 +492,16 @@ assign
      BatchWork.BatchParams[8] = "offline"  /* ALWAYS!! */             /* lc-local-offline     */ 
 .
  
-                                                           
+
+MESSAGE "Batch ID = "  BatchWork.BatchID  LC-global-helpdesk SKIP.
+RELEASE BatchWork.
+
+END.
+
+
 
  os-command silent value("start /min " + lc-global-helpdesk + "\batchwork.bat " + string(li-run)).
+
 
  
 assign lc-setrun = true.
@@ -807,7 +818,7 @@ PROCEDURE process-web-request :
       run ip-Validate(output lc-error-field).
 
       if lc-error-field = "" then RUN ip-ProcessReport.
-      else leave.
+      
   end.
 
   if request_method <> "post"

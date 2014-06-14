@@ -12,6 +12,7 @@
     
     When        Who         What
     10/11/2010  DJS         Initial
+    14/06/2014  phoski      fix customer read
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -47,7 +48,9 @@ def input param lc-local-offline      as char no-undo.
 &endif
 
 
+/*
 def var lc-global-helpdesk      as char no-undo.
+*/
 def var lc-global-reportpath    as char no-undo.
 def var lc-FileDescription      as char format "x(70)" no-undo.
 def var lc-FileSaveAs           as char format "x(170)" no-undo.
@@ -365,10 +368,6 @@ FUNCTION Wk2Date RETURNS CHARACTER
 
 /* ************************  Main Code Block  *********************** */
 
-find WebAttr where WebAttr.SystemID = "BATCHWORK"
-             and   WebAttr.AttrID   = "BATCHPATH"
-no-lock no-error.
-assign lc-global-helpdesk =  WebAttr.AttrValue .
 
 find WebAttr where WebAttr.SystemID = "BATCHWORK"
              and   WebAttr.AttrID   = "REPORTPATH"
@@ -377,22 +376,6 @@ assign lc-global-reportpath =  WebAttr.AttrValue .
 
 find first BatchWork where BatchWork.BatchID = integer(lc-batch-id) no-error.
 
-/* output to "C:\temp\djstest2.txt" append.             */
-/* put                                                  */
-/* "lc-batch-id           "   lc-batch-id          skip */
-/* "lc-local-company      "   lc-local-company     skip */
-/* "lc-local-view-type    "   lc-local-view-type   skip */
-/* "lc-local-report-type  "   lc-local-report-type skip */
-/* "lc-local-period-type  "   lc-local-period-type skip */
-/* "lc-local-engineers    "   lc-local-engineers   skip */
-/* "lc-local-customers    "   lc-local-customers   skip */
-/* "lc-local-period       "   lc-local-period      skip */
-/* "lc-local-offline      "   lc-local-offline     skip */
-/*                                                 skip */
-/*                                                      */
-/*   avail batchwork skip(2)                            */
-/*   .                                                  */
-/* output close.                                        */
 
 if not avail BatchWork then return.
 
@@ -524,6 +507,7 @@ Notes:
 ------------------------------------------------------------------------------*/
 def input param pc-rep-type     as int no-undo.
 def var pc-local-period         as char no-undo.  
+
 CreateExcel(lc-local-offline).                    /* Create Excel Application */
 chWorkSheet = chExcelApplication:Sheets:Item(1).  /* get the active Worksheet */
 chWorkSheet:Columns("A:G"):NumberFormat = "@".
@@ -983,7 +967,8 @@ end.
 if first-of(issRep.IssueNumber) and pc-rep-type <> 3 then
 do:
   find issTime where issTime.IssueNumber = issRep.IssueNumber and issTime.ActivityBy = issRep.ActivityBy and issTime.period =  issRep.period-of  no-lock no-error.
-  find Customer where Customer.AccountNumber = issRep.AccountNumber no-lock no-error.
+  find Customer where Customer.AccountNumber = issRep.AccountNumber 
+                   AND customer.companyCode  = lc-local-company no-lock no-error.
   if pc-rep-type = 1 then
   do:
     iColumn = iColumn + 1.
@@ -1023,7 +1008,7 @@ do:
     cRange = "B" + cColumn.
     chWorkSheet:Range(cRange):Value = "Client".
     cRange = "C" + cColumn.
-    chWorkSheet:Range(cRange):Value = if avail customer then if length(Customer.Name) > 23 then substr(Customer.Name,1,23) + " ... " else Customer.Name else "Unknown".
+    chWorkSheet:Range(cRange):Value = if avail customer then trim(substr(Customer.Name,1,23)) else "Unknownxxxx".
     iColumn = iColumn + 1.
     cColumn = STRING(iColumn).
     cRange = "B" + cColumn.
@@ -1367,12 +1352,12 @@ def var weekly      as char initial "Week,Month" no-undo.
 
 
 assign
-viewType   = integer(lc-local-view-type)         /* lc-local-view-type    1=Detailed , 2=SummaryDetail, 3=Summary */   
-reportType = integer(lc-local-report-type)       /* lc-local-report-type  1=Customer, 2=Engineer, 3=Issues */            
-periodType = integer(lc-local-period-type)       /* lc-local-period-type  1=Week, 2=Month  */                            
-lc-local-view-type   = entry(viewType,typedesc)  /* set these to descriptions  */ 
-lc-local-report-type = entry(reportType,engcust) /* set these to descriptions  */
-lc-local-period-type = entry(periodType,weekly)  /* set these to descriptions  */
+    viewType   = integer(lc-local-view-type)         /* lc-local-view-type    1=Detailed , 2=SummaryDetail, 3=Summary */   
+    reportType = integer(lc-local-report-type)       /* lc-local-report-type  1=Customer, 2=Engineer, 3=Issues */            
+    periodType = integer(lc-local-period-type)       /* lc-local-period-type  1=Week, 2=Month  */                            
+    lc-local-view-type   = entry(viewType,typedesc)  /* set these to descriptions  */ 
+    lc-local-report-type = entry(reportType,engcust) /* set these to descriptions  */
+    lc-local-period-type = entry(periodType,weekly)  /* set these to descriptions  */
 .
 /* Get year from period - ignore month(s) or week(s) */
 if index(lc-local-period,"|") = 0 then lc-period = entry(2,entry(1,lc-local-period,"|"),"-").
@@ -1476,17 +1461,19 @@ do:
      and   IssActivity.StartDate >= hi-date
      and   IssActivity.StartDate <= lo-date
      :
-     INNER: do:
-      find issAction no-lock of IssActivity no-error .
+     INNER: 
+     do:
+      find first issAction of issActivity NO-LOCK NO-ERROR.
+      IF NOT AVAIL issAction THEN NEXT.
 
-      if avail issAction then
-        find Issue no-lock
+      find Issue no-lock
         where issue.companycode = lc-local-company
         and   Issue.IssueNumber = issAction.IssueNumber
         and   if lc-local-customers = "ALL" then true  else lookup(Issue.AccountNumber,lc-local-customers,",") > 0
         no-error.
-          if not avail Issue then leave INNER.
-             run ReportA(reportType) .
+       if not avail Issue then leave INNER.
+       run ReportA(reportType) .
+      
     end.
   end.
   run ReportC .
@@ -1505,10 +1492,12 @@ do:
          and IssActivity.StartDate <= lo-date
          :
 
-       find first issAction no-lock of issActivity.
+       find first issAction of issActivity NO-LOCK NO-ERROR.
+       IF NOT AVAIL issAction THEN NEXT.
+
        find first issue no-lock where issue.CompanyCode = webuser.CompanyCode
                                   and issue.IssueNumber = IssActivity.IssueNumber no-error.
-         run ReportA(reportType).
+       run ReportA(reportType).
     end.             
   end.               
   run ReportB.
@@ -1522,16 +1511,16 @@ do:
          and IssActivity.StartDate <= lo-date
         :
 
-       find first issAction no-lock of issActivity.
+       find first issAction of issActivity NO-LOCK NO-ERROR.
+       IF NOT AVAIL issAction THEN NEXT.
+
        find first issue no-lock where issue.CompanyCode = lc-local-company
                                   and issue.IssueNumber = IssActivity.IssueNumber no-error.
-         run ReportA(reportType).
+       run ReportA(reportType).
     end.             
   run ReportB.              
   run excelReportC(viewType).  
 end.
-
-  /* ------------------------------------------------------ */
 
   
 END PROCEDURE.
@@ -1746,7 +1735,7 @@ FUNCTION CreateExcel RETURNS LOGICAL
     chExcelApplication:DisplayAlerts = FALSE.
     chExcelApplication:interactive   = offline = "online".
     if offline = "online"  then chExcelApplication:Visible = true.   /* launch Excel so it is visible to the user */
-                           else chExcelApplication:Visible = false.
+                           else chExcelApplication:Visible = FALSE.
     chExcelApplication:ErrorCheckingOptions:NumberAsText = FALSE.
     chWorkbook = chExcelApplication:Workbooks:Add().                 /* create a new Workbook */ 
 

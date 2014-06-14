@@ -19,6 +19,7 @@
                                 
     02/09/2010 DJS          3674 - Added Quickview buttons in view    
     28/04/2014 phoski       Customer Assets 
+    14/06/2014 phoski       google maps fix
                           
                                 
 ***********************************************************************/
@@ -1577,14 +1578,15 @@ PROCEDURE process-web-request :
     {&out}  '<script type="text/javascript" >~n'
             'var pIP =  window.location.host; ~n'
             'function goGMAP(pCODE, pNAME, pADD) ~{~n'
-            'var pOPEN = "http://";~n'
-            'pOPEN = pOPEN + pIP;~n'
-            'pOPEN = pOPEN + ":8090/Gmap.html?postCode=";~n'
-            'pOPEN = pOPEN + pCODE;~n'
+            'var pOPEN = "http://www.google.co.uk/maps/preview?q=";' SKIP
+            'pOPEN = pOPEN + pCODE;~n' SKIP
+        /*
             'pOPEN = pOPEN + "&Name=";~n'
             'pOPEN = pOPEN + pNAME;~n'
             'pOPEN = pOPEN + "&Address=";~n'
             'pOPEN = pOPEN + pADD;~n'
+            */
+
             /*alert(pOPEN);~n' */ 
             'window.open(pOPEN, ~'WinName~' , ~'width=645,height=720,left=0,top=0~');~n'
             ' ~}~n'

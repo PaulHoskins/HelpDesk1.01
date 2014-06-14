@@ -300,6 +300,15 @@ FUNCTION com-IsCustomer RETURNS LOGICAL
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IssueActionsStatus Include 
+FUNCTION com-IssueActionsStatus RETURNS INTEGER
+  ( pc-companyCode AS CHAR,
+    pi-issue   AS INT,
+    pc-status  AS CHAR)  FORWARD.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IssueStatusAlert Include 
 FUNCTION com-IssueStatusAlert RETURNS LOGICAL
   ( pc-CompanyCode as char,
@@ -1130,6 +1139,48 @@ PROCEDURE com-GetStatusIssue :
     assign
         pc-codes = substr(pc-codes,2)
         pc-name  = substr(pc-name,2).
+
+END PROCEDURE.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetStatusIssueOpen Include 
+PROCEDURE com-GetStatusIssueOpen :
+/*------------------------------------------------------------------------------
+  Purpose:     
+  Parameters:  <none>
+  Notes:       
+------------------------------------------------------------------------------*/
+
+    def input  param pc-companyCode     as char no-undo.
+    def output param pc-Codes   as char no-undo.
+    def output param pc-Name            as char no-undo.
+
+
+    def buffer b-WebStatus for WebStatus.
+
+    assign pc-Codes = ""
+           pc-name =  "".
+
+
+    for each b-WebStatus no-lock 
+        where b-WebStatus.CompanyCode = pc-CompanyCode
+          AND b-WeBStatus.CompletedStatus = NO
+        break by ( if b-WebStatus.DisplayOrder = 0 then 99999 else b-Webstatus.DisplayOrder )
+              by b-WebStatus.description:
+        assign pc-Codes = pc-Codes + '|' + 
+               b-WebStatus.StatusCode
+               pc-name = pc-name + '|' + 
+               b-WebStatus.description + " (" + 
+                ( if b-WebStatus.CompletedStatus then "Closed" else "Open" ) + 
+            ")".
+    end.
+
+    assign
+        pc-codes = substr(pc-codes,2)
+        pc-name  = substr(pc-name,2).
+
 
 END PROCEDURE.
 
@@ -2213,6 +2264,39 @@ FUNCTION com-IsCustomer RETURNS LOGICAL
     
     return WebUser.UserClass = "customer".
 
+END FUNCTION.
+
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IssueActionsStatus Include 
+FUNCTION com-IssueActionsStatus RETURNS INTEGER
+  ( pc-companyCode AS CHAR,
+    pi-issue   AS INT,
+    pc-status  AS CHAR) :
+/*------------------------------------------------------------------------------
+  Purpose:  
+    Notes:  
+------------------------------------------------------------------------------*/
+
+    def var li-return as int      no-undo.
+
+    def buffer IssAction    for IssAction.
+
+
+    for each IssAction no-lock
+        where IssAction.companycode = pc-companyCode
+          AND issAction.issuenumber = pi-issue 
+          and IssAction.ActionStatus = pc-status:
+
+        assign li-return = li-return + 1.
+
+    end.
+
+    return li-return.
+    
+
+  
 END FUNCTION.
 
 /* _UIB-CODE-BLOCK-END */

@@ -938,7 +938,7 @@ PROCEDURE process-web-request :
                tt-menu.ObjType = "WS"
                tt-menu.ObjTarget = "mainwindow"
                tt-menu.ObjURL = 'iss/issue.p?assign=' + WebUser.LoginID + 
-                    '&status=AllOpen&iclass=All'
+                    '&status=AllOpen&iclass=All&lodate=01/01/1990&hidate=01/01/2050'
                tt-menu.AltInfo = "View your issues"
                .
             if li-user-open > 0 
