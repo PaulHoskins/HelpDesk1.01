@@ -1060,8 +1060,8 @@ PROCEDURE pdf_set_dash :
   DEFINE INPUT PARAMETER pdfOn      AS INTEGER NO-UNDO.
   DEFINE INPUT PARAMETER pdfOff     AS INTEGER NO-UNDO.
 
-  IF pdfOn  < 0 THEN 1.
-  IF pdfOff < 0 THEN 1.
+  IF pdfOn  < 0 THEN pdfOn = 1.
+  IF pdfOff < 0 THEN pdfOff = 1.
 
   IF NOT CAN-FIND(FIRST TT_pdf_stream 
                   WHERE TT_pdf_stream.obj_stream = pdfStream NO-LOCK)

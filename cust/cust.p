@@ -285,23 +285,6 @@ PROCEDURE process-web-request :
             if not avail b-query then get first q.
         end.
     end.
-    /*
-    else
-    if lc-navigation = "search" then
-    do:
-        find first b-search
-             where  b-search.CompanyCode    = lc-global-company
-              and b-search.AccountNumber >= lc-search
-            
-             no-lock no-error.
-        if avail b-search then
-        do:
-            reposition q to rowid rowid(b-search) no-error.
-            get next q no-lock.
-        end.
-        else assign lc-smessage = "Your search found no records, displaying all".
-    end.
-    */
     else
     if lc-navigation = "refresh" then
     do:
