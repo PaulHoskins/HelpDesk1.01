@@ -599,8 +599,6 @@ PROCEDURE ip-Validate :
      DO li-loop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
         lc-codeName = "chk" + ENTRY(li-loop,lc-global-iclass-code,"|").
     
-         MESSAGE "code = " lc-codeName " val = " get-value(lc-CodeName) .
-    
     
          IF get-value(lc-CodeName) = "on" THEN
          DO:

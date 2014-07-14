@@ -387,8 +387,7 @@ FUNCTION fnSeconds RETURNS INTEGER
         when "WEEK"   then return pi-unit * ( fnSeconds("DAY",1) * 7 ).
         otherwise
             do:
-                message "fcdfdgfgfg" pc-Unit.
-                return 1.
+               return 1.
             end.
            
     end case.

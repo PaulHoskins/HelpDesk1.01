@@ -712,18 +712,32 @@ PROCEDURE ip-GetAccountNumbers :
 
     def buffer b-user for WebUser.
     def buffer b-cust for Customer.
-
-
+ 
+    DEF VAR ll-Steam    AS LOG NO-UNDO.
+    
     find b-user where b-user.LoginID = pc-user no-lock no-error.
+    
+    ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-user NO-LOCK).
+
+
 
     assign pc-AccountNumber = htmlib-Null()
            pc-Name          = "Select Account".
 
 
     for each b-cust no-lock
-             where b-cust.CompanyCode = b-user.CompanyCode
-             and   b-cust.isActive = true   /* 3667 */
-             by b-cust.name:
+        where b-cust.CompanyCode = b-user.CompanyCode
+         and  b-cust.isActive = true   
+         by b-cust.name:
+
+        /*
+        *** if user is in teams then customer must be in 1 of the users teams
+        *** or they have been assigned to the an issue for the customer
+        */
+        IF ll-steam
+        AND NOT CAN-FIND(FIRST webUsteam 
+                            WHERE webusteam.loginid = pc-user
+                              AND webusteam.st-num = b-cust.st-num NO-LOCK) THEN NEXT. 
 
         assign pc-AccountNumber = pc-AccountNumber + '|' + b-cust.AccountNumber
                pc-Name          = pc-Name + '|' + b-cust.name.
@@ -1167,6 +1181,24 @@ PROCEDURE ip-MainEntry :
         {&out} '</td></tr>' SKIP. /* end of new user */
     END.
 
+    IF NOT ll-customer  AND can-find(customer where customer.companycode = lc-global-company
+                                     and customer.AccountNumber = lc-AccountNumber) THEN
+    DO:
+
+        FIND bcust where bcust.companycode = lc-global-company
+                     and bcust.AccountNumber = lc-AccountNumber NO-LOCK NO-ERROR.
+
+       IF AVAIL bcust AND bcust.SupportTicket <> "none" THEN
+       {&out} '<TR><TD VALIGN="TOP" ALIGN="center" colspan=2>'
+              '<div class="infobox" style="font-size: 15px;">'
+               "Ticketed Customer Balance: "
+               dynamic-function("com-TimeToString",bcust.ticketBalance)
+               '</TD></TR>' skip. 
+
+
+
+
+    END.
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
@@ -1259,30 +1291,9 @@ PROCEDURE ip-MainEntry :
                '</TD>' skip.
         {&out} '</TR>' skip.
 
-    end.
-    IF NOT ll-customer  AND can-find(customer where customer.companycode = lc-global-company
-                                     and customer.AccountNumber = lc-AccountNumber) THEN
-    DO:
+    end. 
 
-        FIND bcust where bcust.companycode = lc-global-company
-                     and bcust.AccountNumber = lc-AccountNumber NO-LOCK NO-ERROR.
-
-       IF AVAIL bcust AND bcust.SupportTicket <> "none" THEN
-       {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-                    (if lookup("iclass",lc-error-field,'|') > 0 
-                    then htmlib-SideLabelError("Ticket Balance")
-                    else htmlib-SideLabel("Ticket Balance"))
-                    '</TD>' 
-                    '<TD VALIGN="TOP" ALIGN="left">'
-                    dynamic-function("com-TimeToString",bcust.ticketBalance)
-                    '</TD></TR>' skip. 
-
-
-
-
-    END.
-
-
+   
     if can-find(customer where customer.companycode = lc-global-company
                            and customer.AccountNumber = lc-AccountNumber)
     and com-AskTicket(lc-global-company,lc-AccountNumber) then

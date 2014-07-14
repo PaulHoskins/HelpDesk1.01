@@ -256,10 +256,11 @@ PROCEDURE process-web-request :
         {&out}
             '</head>' skip '<body onLoad="InitialisePage()">'.
 
-        
-        /* window.location.reload(false); */
+   
 
-        {&out} '<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="tlink" style="border:none;" href="javascript:window.location.reload(true);">Refresh Menu</a><br>&nbsp;' SKIP.
+        {&out} '<br /><div style="text-align: center;">'.
+        {&out} '<button onclick="window.location.reload(true);">Refresh Menu</button>' SKIP.
+        {&out} '</div><br />'.
 
         {&out} '<div id="ajaxmenu"></div>' skip.
         

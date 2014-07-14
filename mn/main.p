@@ -228,7 +228,7 @@ PROCEDURE process-web-request :
          "</HEAD>":U SKIP.
     
   
-    
+    /*
     {&out}
         '<frameset rows="50,*" cols="*" frameborder="NO" border="0" framespacing="0">' skip
             '<frame src="' appurl '/mn/menutop.p" name="menutop" scrolling="NO" noresize>' skip
@@ -237,7 +237,18 @@ PROCEDURE process-web-request :
                 '<frame src="' appurl '/mn/mainframe.p" name="mainwindow">' skip
             '</frameset>' skip
         '</frameset>' skip.
-    
+    */
+    /* Increase for split assignments class */
+
+    {&out}
+        '<frameset rows="50,*" cols="*" frameborder="NO" border="0" framespacing="0">' skip
+            '<frame src="' appurl '/mn/menutop.p" name="menutop" scrolling="NO" noresize>' skip
+            '<frameset cols="250,*" frameborder="NO" border="0" framespacing="0">' skip
+                '<frame src="' appurl '/mn/menupanel.p" name="leftpanel" scrolling="YES" noresize>' skip
+                '<frame src="' appurl '/mn/mainframe.p" name="mainwindow">' skip
+            '</frameset>' skip
+        '</frameset>' skip.
+
     {&OUT} htmlib-Footer() skip.
     
   

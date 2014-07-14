@@ -169,7 +169,6 @@ PROCEDURE ip-InternalUser :
     li-ActionCount = com-NumberOfActions(webUser.LoginID).
     li-AlertCount  = com-NumberOfAlerts(webUser.LoginID).
     li-EmailCount  = com-NumberOfEmails(webUser.LoginID).
-/*     li-Inventory   = com-NumberOfInventoryWarnings(webUser.LoginId). */
     li-OpenAction  = com-NumberOfOpenActions(webUser.LoginId).
 
 
@@ -183,10 +182,7 @@ PROCEDURE ip-InternalUser :
                    or li-OpenAction > 0
                 .
 
-    if WebUser.UserClass = "INTERNAL" 
-/*      AND ( webuser.surname BEGINS "bibby"      */
-/*         OR webuser.surname BEGINS "shilling" ) */
-        then
+    if WebUser.UserClass = "INTERNAL" then
     do:
         {&out} 
                 '<br /><a class="tlink" style="width: 100%;" href="' appurl
@@ -369,23 +365,42 @@ PROCEDURE ip-SuperUserAnalysis :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def buffer b-Issue        for Issue.
+    def buffer b-Issue      for Issue.
+    def buffer Issue        for Issue.
+    DEF BUFFER webUsteam FOR webUsteam.
+    DEF BUFFER customer FOR customer.
+
+
+
     def buffer b-WebStatus    for WebStatus.
+    DEF VAR ll-Steam    AS LOG NO-UNDO.
+
     def var    badList        as char no-undo.
     DEF VAR    iloop        AS INT NO-UNDO.
 
-    for each WebStatus where WebStatus.Completed = true 
-                       and   WebStatus.CompanyCode = lc-global-company
-      no-lock:
+    ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-user NO-LOCK).
+
+    for each WebStatus 
+        where WebStatus.Completed = true 
+          and WebStatus.CompanyCode = lc-global-company
+           no-lock:
       assign badList =   WebStatus.StatusCode + "," + badList.
     end.
 
     for each Issue no-lock
       where Issue.CompanyCode = lc-global-company
-      and   Issue.AssignTo    <> ""
-      and   index(badList,Issue.StatusCode)  = 0
-       :
+        and Issue.AssignTo    <> ""
+        and index(badList,Issue.StatusCode)  = 0:
     
+        IF ll-Steam THEN
+        DO:
+            FIND customer OF issue NO-LOCK NO-ERROR.
+            IF NOT AVAIL customer THEN NEXT.
+            IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-user
+                                       AND webusteam.st-num = customer.st-num NO-LOCK) 
+            THEN NEXT.
+
+        END.
         assign li-total = li-total + 1.
     
         find tt where tt.ACode = Issue.AssignTo use-index i-Acode no-error.
@@ -403,54 +418,6 @@ PROCEDURE ip-SuperUserAnalysis :
         END.
     
     end.
-END PROCEDURE.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
-&ENDIF
-
-&IF DEFINED(EXCLUDE-ip-SuperUserAnalysisOLD) = 0 &THEN
-
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-SuperUserAnalysisOLD Procedure 
-PROCEDURE ip-SuperUserAnalysisOLD :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def buffer b-Issue        for Issue.
-    def buffer b-WebStatus    for WebStatus.
-
-      for each Issue fields (CompanyCode StatusCode AssignTo IssueNumber )
-      no-lock
-        where Issue.CompanyCode = lc-global-company
-
-          ,
-          first WebStatus no-lock
-                where WebStatus.companyCode = Issue.CompanyCode
-                  and WebStatus.StatusCode  = Issue.StatusCode
-                  and WebStatus.Completed   = false
-          :
-
-        assign li-total = li-total + 1.
-
-
-        if Issue.AssignTo = "" then next.
-
-        find tt where tt.ACode = Issue.AssignTo use-index i-Acode no-error.
-        if not avail tt then
-        do:
-            create tt.
-            assign tt.Acode = Issue.AssignTo.
-            assign tt.ADescription = dynamic-function("com-UserName",Issue.AssignTo).
-            
-        end.
-        assign tt.Acount = tt.ACount + 1.
-
-       
-    end.
-
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */

@@ -794,7 +794,7 @@ PROCEDURE process-web-request :
        .
     {&out}
         tbar-Begin(
-           tbar-FindLabel(appurl + "/iss/issue.p","Search Issue Number/Description")
+           tbar-FindLabelIssue(appurl + "/iss/issue.p","Search Issue Number/Description")
             )
         tbar-BeginOption().
     if not ll-Customer 
