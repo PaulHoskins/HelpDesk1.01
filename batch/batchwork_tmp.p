@@ -7,8 +7,9 @@
 
 def var vx as int no-undo.
 DEF VAR cid AS CHAR NO-UNDO.
+cid = "185".
 
-find LAST BatchWork /*where BatchID = integer(cid) */
+find LAST BatchWork where BatchID = integer(cid) 
     no-error.
 cid = STRING(batchid).
 
