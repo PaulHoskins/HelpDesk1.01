@@ -11,7 +11,7 @@
     
     
     When        Who         What
-    03/05/2014  phoski      Initial   
+    03/05/2014  phoski      Initial  cc 
 ***********************************************************************/
 
 {rep/issuelogtt.i}
@@ -19,26 +19,26 @@
 
 &IF DEFINED(UIB_is_Running) EQ 0 &THEN
 
-def input param pc-companycode          as char         no-undo.
-DEF INPUT PARAM pc-loginid              AS CHAR         NO-UNDO.
-DEF INPUT PARAM pc-FromAccountNumber    AS CHAR         NO-UNDO.
-DEF INPUT PARAM pc-ToAccountNumber      AS CHAR         NO-UNDO.
-def input param pd-FromDate             as date         no-undo.
-def input param pd-ToDate               as date         no-undo.
-DEF INPUT PARAM pc-ClassList            AS CHAR         NO-UNDO.
+DEFINE INPUT PARAMETER pc-companycode          AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pc-loginid              AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pc-FromAccountNumber    AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pc-ToAccountNumber      AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pd-FromDate             AS DATE         NO-UNDO.
+DEFINE INPUT PARAMETER pd-ToDate               AS DATE         NO-UNDO.
+DEFINE INPUT PARAMETER pc-ClassList            AS CHARACTER         NO-UNDO.
 
 
 
-def output param table              for tt-ilog.
+DEFINE OUTPUT PARAMETER table              FOR tt-ilog.
 
 &ELSE
 
-def VAR pc-companycode          as char         no-undo.
-DEF VAR pc-loginid              AS CHAR         NO-UNDO.
-DEF VAR pc-FromAccountNumber    AS CHAR         NO-UNDO.
-DEF VAR pc-ToAccountNumber      AS CHAR         NO-UNDO.
-def VAR pd-FromDate             as date         no-undo.
-def VAR pd-ToDate               as date         no-undo.
+DEFINE VARIABLE pc-companycode          AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE pc-loginid              AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE pc-FromAccountNumber    AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE pc-ToAccountNumber      AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE pd-FromDate             AS DATE         NO-UNDO.
+DEFINE VARIABLE pd-ToDate               AS DATE         NO-UNDO.
 
 
 
@@ -117,17 +117,17 @@ PROCEDURE ip-BuildData :
   Notes:       
 ------------------------------------------------------------------------------*/
     
-    DEF BUFFER issue        FOR issue.
-    DEF BUFFER IssStatus    for IssStatus.
-    DEF BUFFER IssActivity  FOR IssActivity.
-    DEF BUFFER issnote      FOR issnote.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER IssStatus    FOR IssStatus.
+    DEFINE BUFFER IssActivity  FOR IssActivity.
+    DEFINE BUFFER issnote      FOR issnote.
 
     
-    DEF VAR li-seconds  AS INT      NO-UNDO.
-    DEF VAR li-min      AS INT      NO-UNDO.
-    DEF VAR li-hr       AS INT      NO-UNDO.
-    DEF VAR li-work     AS INT      NO-UNDO.
-    DEF VAR ldt-Comp    AS DATETIME NO-UNDO.
+    DEFINE VARIABLE li-seconds  AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-min      AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-hr       AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-work     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE ldt-Comp    AS DATETIME NO-UNDO.
 
     
 
@@ -136,18 +136,18 @@ PROCEDURE ip-BuildData :
     *** All issues created before the hi date
     ***
     */    
-    for each issue no-lock
-        where issue.CompanyCode = pc-companyCode
+    FOR EACH issue NO-LOCK
+        WHERE issue.CompanyCode = pc-companyCode
           AND issue.AccountNumber >= pc-FromAccountNumber
           AND issue.AccountNumber <= pc-ToAccountNumber
-          and issue.IssueDate >= pd-fromDate
-          and issue.IssueDate <= pd-ToDate
+          AND issue.IssueDate >= pd-fromDate
+          AND issue.IssueDate <= pd-ToDate
           AND CAN-DO(pc-classList,issue.iClass)
         :
 
-        if not can-find(customer of Issue no-lock) then next.
+        IF NOT CAN-FIND(customer OF Issue NO-LOCK) THEN NEXT.
                         
-        create tt-ilog.
+        CREATE tt-ilog.
         BUFFER-COPY issue TO tt-ilog.
 
         /*
@@ -160,7 +160,7 @@ PROCEDURE ip-BuildData :
 
 
         ASSIGN
-            tt-ilog.isClosed =  NOT dynamic-function("islib-IssueIsOpen",rowid(Issue)).
+            tt-ilog.isClosed =  NOT DYNAMIC-FUNCTION("islib-IssueIsOpen",ROWID(Issue)).
 
         IF tt-ilog.SLALevel = ?
         THEN tt-ilog.SLALevel = 0.
@@ -170,9 +170,9 @@ PROCEDURE ip-BuildData :
 
         IF tt-ilog.isClosed THEN
         DO: 
-            find first IssStatus of Issue no-lock no-error.
+            FIND FIRST IssStatus OF Issue NO-LOCK NO-ERROR.
 
-            IF AVAIL issStatus THEN
+            IF AVAILABLE issStatus THEN
             DO:
                 ASSIGN 
                     tt-ilog.Compdate = issStatus.ChangeDate
@@ -199,7 +199,7 @@ PROCEDURE ip-BuildData :
                         STRING(tt-ilog.CompDate,"99/99/9999") + " " + 
                                         STRING(tt-ilog.CompTime,"hh:mm")
                                ).
-                    assign
+                    ASSIGN
                         tt-ilog.SLAAchieved = ldt-Comp <= issue.SLATrip.
 
 
@@ -211,7 +211,7 @@ PROCEDURE ip-BuildData :
         END.
 
         ASSIGN 
-            tt-ilog.AreaCode = dynamic-function("com-AreaName",pc-companyCode,issue.AreaCode)
+            tt-ilog.AreaCode = DYNAMIC-FUNCTION("com-AreaName",pc-companyCode,issue.AreaCode)
             tt-ilog.RaisedLoginID = DYNAMIC-FUNCTION("com-UserName",tt-ilog.RaisedLoginID).
 
 
@@ -223,13 +223,13 @@ PROCEDURE ip-BuildData :
         ASSIGN 
             li-seconds = 0.
 
-        for each IssActivity of Issue NO-LOCK:
+        FOR EACH IssActivity OF Issue NO-LOCK:
    
 
-            assign 
+            ASSIGN 
                 li-seconds = li-seconds + IssActivity.Duration.
 
-        end.
+        END.
         li-work = li-seconds.
 
         IF li-seconds > 0 THEN
@@ -239,8 +239,8 @@ PROCEDURE ip-BuildData :
             li-min = li-seconds MOD 60.
 
             IF li-seconds - li-min >= 60 THEN
-            assign
-                li-hr = round( (li-seconds - li-min) / 60 , 0 ).
+            ASSIGN
+                li-hr = ROUND( (li-seconds - li-min) / 60 , 0 ).
             ELSE li-hr = 0.
 
             ASSIGN
@@ -249,7 +249,7 @@ PROCEDURE ip-BuildData :
 
         END.
 
-    end.
+    END.
 
   
 END PROCEDURE.

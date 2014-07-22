@@ -25,90 +25,90 @@
 &global-define CUSTOMER CUSTOMER
 &global-define CONTRACT CONTRACT
 
-def var lc-global-selcode                   as char 
-    initial "WALESFOREVER"                  no-undo.
-def var lc-global-seldesc                   as char
-    initial "None"                     no-undo.
+DEFINE VARIABLE lc-global-selcode                   AS CHARACTER 
+    INITIAL "WALESFOREVER"                  NO-UNDO.
+DEFINE VARIABLE lc-global-seldesc                   AS CHARACTER
+    INITIAL "None"                     NO-UNDO.
 
-def var lc-global-company                   as char no-undo.
-def var lc-global-user                      as char no-undo.
-def var lc-global-internal                  as char 
-    initial "INTERNAL,CONTRACT"             no-undo.
+DEFINE VARIABLE lc-global-company                   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-user                      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-internal                  AS CHARACTER 
+    INITIAL "INTERNAL,CONTRACT"             NO-UNDO.
 
-def var lc-global-dtype                     as char
-    initial "Text|Number|Date|Note|Yes/No"           no-undo.
+DEFINE VARIABLE lc-global-dtype                     AS CHARACTER
+    INITIAL "Text|Number|Date|Note|Yes/No"           NO-UNDO.
 
-def var lc-global-respaction-code           as char
-    initial "None|Email|EmailPage|Page|Web" no-undo.
-def var lc-global-respaction-display        as char
-    initial "None|Send Email|Send Email & SMS|Send SMS|Web Alert" no-undo.
+DEFINE VARIABLE lc-global-respaction-code           AS CHARACTER
+    INITIAL "None|Email|EmailPage|Page|Web" NO-UNDO.
+DEFINE VARIABLE lc-global-respaction-display        AS CHARACTER
+    INITIAL "None|Send Email|Send Email & SMS|Send SMS|Web Alert" NO-UNDO.
 
-def var lc-global-tbase-code                as char
-    initial "OFF|REAL"                      no-undo.
-def var lc-global-tbase-display             as char
-    initial "Office Hours|24 Hours"         no-undo.
+DEFINE VARIABLE lc-global-tbase-code                AS CHARACTER
+    INITIAL "OFF|REAL"                      NO-UNDO.
+DEFINE VARIABLE lc-global-tbase-display             AS CHARACTER
+    INITIAL "Office Hours|24 Hours"         NO-UNDO.
 
-def var lc-global-abase-code                as char
-    initial "ISSUE|ALERT"                   no-undo.
-def var lc-global-abase-display             as char
-    initial "Issue Date/Time|Previous Alert Date/Time"         
-                                            no-undo.
+DEFINE VARIABLE lc-global-abase-code                AS CHARACTER
+    INITIAL "ISSUE|ALERT"                   NO-UNDO.
+DEFINE VARIABLE lc-global-abase-display             AS CHARACTER
+    INITIAL "Issue Date/Time|Previous Alert Date/Time"         
+                                            NO-UNDO.
 
-def var lc-global-respunit-code             as char
-    initial "None|Minute|Hour|Day|Week"     no-undo.
-def var lc-global-respunit-display          as char
-    initial "None|Minute|Hour|Day|Week"     no-undo.
+DEFINE VARIABLE lc-global-respunit-code             AS CHARACTER
+    INITIAL "None|Minute|Hour|Day|Week"     NO-UNDO.
+DEFINE VARIABLE lc-global-respunit-display          AS CHARACTER
+    INITIAL "None|Minute|Hour|Day|Week"     NO-UNDO.
 
-def var lc-global-action-code                as char
-    initial "OPEN|CLOSED"                    no-undo.
-def var lc-global-action-display             as char
-    initial "Open|Closed"                    no-undo.
+DEFINE VARIABLE lc-global-action-code                AS CHARACTER
+    INITIAL "OPEN|CLOSED"                    NO-UNDO.
+DEFINE VARIABLE lc-global-action-display             AS CHARACTER
+    INITIAL "Open|Closed"                    NO-UNDO.
 
-def var lc-global-hour-code                 as char no-undo.
-def var lc-global-hour-display              as char no-undo.
-def var lc-global-min-code                 as char no-undo.
-def var lc-global-min-display              as char no-undo.
+DEFINE VARIABLE lc-global-hour-code                 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-hour-display              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-min-code                 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-min-display              AS CHARACTER NO-UNDO.
 
-def var lc-System-KB-Code                   as char
-    initial "SYS.ISSUE"                     no-undo.
-def var lc-System-KB-Desc                   as char
-    initial "Completed Issues"              no-undo.
+DEFINE VARIABLE lc-System-KB-Code                   AS CHARACTER
+    INITIAL "SYS.ISSUE"                     NO-UNDO.
+DEFINE VARIABLE lc-System-KB-Desc                   AS CHARACTER
+    INITIAL "Completed Issues"              NO-UNDO.
 
-def var lc-System-Note-Code                 as char
-    initial 'SYS.ACCOUNT,SYS.EMAILCUST,SYS.ASSIGN,SYS.SLA,SYS.MISC,SYS.SLAWARN,SYS.SLAMISSED'  no-undo.
-def var lc-System-Note-Desc                 as char
-    initial 'System - Account Changed,System - Customer Emailed,System - Issue Assignment,System - SLA Assigned,System - Misc Note,System - SLA Warning,System - SLA Missed'
-    no-undo.
+DEFINE VARIABLE lc-System-Note-Code                 AS CHARACTER
+    INITIAL 'SYS.ACCOUNT,SYS.EMAILCUST,SYS.ASSIGN,SYS.SLA,SYS.MISC,SYS.SLAWARN,SYS.SLAMISSED'  NO-UNDO.
+DEFINE VARIABLE lc-System-Note-Desc                 AS CHARACTER
+    INITIAL 'System - Account Changed,System - Customer Emailed,System - Issue Assignment,System - SLA Assigned,System - Misc Note,System - SLA Warning,System - SLA Missed'
+    NO-UNDO.
 
-DEF VAR lc-global-GT-Code       AS CHAR INITIAL
+DEFINE VARIABLE lc-global-GT-Code       AS CHARACTER INITIAL
     'Asset.Type,Asset.Manu,Asset.Status'        NO-UNDO.
 
 
-DEF VAR lc-global-iclass-code   AS CHAR INITIAL
+DEFINE VARIABLE lc-global-iclass-code   AS CHARACTER INITIAL
     'Issue|Admin|Project'                       NO-UNDO.
 
 
 
-def var lc-global-SupportTicket-Code               as char
-    initial 'NONE|YES|BOTH'                 no-undo.
-def var lc-global-SupportTicket-Desc               as char
-    initial 'Standard Support Only|Ticket Support Only|Standard And Ticket Support'
+DEFINE VARIABLE lc-global-SupportTicket-Code               AS CHARACTER
+    INITIAL 'NONE|YES|BOTH'                 NO-UNDO.
+DEFINE VARIABLE lc-global-SupportTicket-Desc               AS CHARACTER
+    INITIAL 'Standard Support Only|Ticket Support Only|Standard And Ticket Support'
                                      
-    no-undo.
-def var lc-global-Allow-TicketSupport       as char
-    initial 'YES|BOTH'                 no-undo.
-def var lc-global-sms-username              as char
-    initial 'tomcarroll'                        no-undo.
-def var lc-global-sms-password              as char
-    initial 'cr34tion'                      no-undo.
+    NO-UNDO.
+DEFINE VARIABLE lc-global-Allow-TicketSupport       AS CHARACTER
+    INITIAL 'YES|BOTH'                 NO-UNDO.
+DEFINE VARIABLE lc-global-sms-username              AS CHARACTER
+    INITIAL 'tomcarroll'                        NO-UNDO.
+DEFINE VARIABLE lc-global-sms-password              AS CHARACTER
+    INITIAL 'cr34tion'                      NO-UNDO.
 
-def var lc-global-excludeType               as char
-    initial "exe,vbs"                       no-undo.
+DEFINE VARIABLE lc-global-excludeType               AS CHARACTER
+    INITIAL "exe,vbs"                       NO-UNDO.
 
-DEF VAR li-global-sla-fail      AS INT INITIAL  10  NO-UNDO.
-DEF VAR li-global-sla-amber     AS INT INITIAL  20  NO-UNDO.
-DEF VAR li-global-sla-ok        AS INT INITIAL  30  NO-UNDO.
-DEF VAR li-global-sla-na        AS INT INITIAL  99  NO-UNDO.
+DEFINE VARIABLE li-global-sla-fail      AS INTEGER INITIAL  10  NO-UNDO.
+DEFINE VARIABLE li-global-sla-amber     AS INTEGER INITIAL  20  NO-UNDO.
+DEFINE VARIABLE li-global-sla-ok        AS INTEGER INITIAL  30  NO-UNDO.
+DEFINE VARIABLE li-global-sla-na        AS INTEGER INITIAL  99  NO-UNDO.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -128,57 +128,57 @@ DEF VAR li-global-sla-na        AS INT INITIAL  99  NO-UNDO.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AllowCustomerAccess Include 
 FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
-  ( pc-CompanyCode as char,
-    pc-LoginID as char,
-    pc-AccountNumber as char )  FORWARD.
+  ( pc-CompanyCode AS CHARACTER,
+    pc-LoginID AS CHARACTER,
+    pc-AccountNumber AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AllowTicketSupport Include 
 FUNCTION com-AllowTicketSupport RETURNS LOGICAL
-  ( pr-rowid as rowid )  FORWARD.
+  ( pr-rowid AS ROWID )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AreaName Include 
 FUNCTION com-AreaName RETURNS CHARACTER
-  ( pc-CompanyCode as char ,
-    pc-AreaCode    AS CHAR )  FORWARD.
+  ( pc-CompanyCode AS CHARACTER ,
+    pc-AreaCode    AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AskTicket Include 
 FUNCTION com-AskTicket RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-AccountNumber      as char )  FORWARD.
+  ( pc-companyCode  AS CHARACTER,
+    pc-AccountNumber      AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AssignedToUser Include 
 FUNCTION com-AssignedToUser RETURNS INTEGER
- ( pc-CompanyCode as char,
-   pc-LoginID     as char )  FORWARD.
+ ( pc-CompanyCode AS CHARACTER,
+   pc-LoginID     AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CanDelete Include 
 FUNCTION com-CanDelete RETURNS LOGICAL
-  ( pc-loginid  as char,
-    pc-table    as char,
-    pr-rowid    as rowid )  FORWARD.
+  ( pc-loginid  AS CHARACTER,
+    pc-table    AS CHARACTER,
+    pr-rowid    AS ROWID )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CatName Include 
 FUNCTION com-CatName RETURNS CHARACTER
-  ( pc-CompanyCode as char,
-    pc-Code AS CHAR
+  ( pc-CompanyCode AS CHARACTER,
+    pc-Code AS CHARACTER
     )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
@@ -186,70 +186,70 @@ FUNCTION com-CatName RETURNS CHARACTER
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CheckSystemSetup Include 
 FUNCTION com-CheckSystemSetup RETURNS LOGICAL
-  ( pc-CompanyCode as char )  FORWARD.
+  ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CookieDate Include 
 FUNCTION com-CookieDate RETURNS DATE
-  ( pc-user as char )  FORWARD.
+  ( pc-user AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CookieTime Include 
 FUNCTION com-CookieTime RETURNS INTEGER
-( pc-user as char )  FORWARD.
+( pc-user AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CustomerAvailableSLA Include 
 FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
-  ( pc-CompanyCode as char,
-    pc-AccountNumber as char )  FORWARD.
+  ( pc-CompanyCode AS CHARACTER,
+    pc-AccountNumber AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CustomerName Include 
 FUNCTION com-CustomerName RETURNS CHARACTER
-  ( pc-Company as char,
-    pc-Account  as char )  FORWARD.
+  ( pc-Company AS CHARACTER,
+    pc-Account  AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CustomerOpenIssues Include 
 FUNCTION com-CustomerOpenIssues RETURNS INTEGER
- ( pc-CompanyCode as char,
-   pc-accountNumber as char )  FORWARD.
+ ( pc-CompanyCode AS CHARACTER,
+   pc-accountNumber AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-DecodeLookup Include 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
-  ( pc-code as char,
-    pc-code-list as char,
-    pc-code-display as char )  FORWARD.
+  ( pc-code AS CHARACTER,
+    pc-code-list AS CHARACTER,
+    pc-code-display AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-DescribeTicket Include 
 FUNCTION com-DescribeTicket RETURNS CHARACTER
-  ( pc-TxnType as char )  FORWARD.
+  ( pc-TxnType AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-GenTabDesc Include 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
-  ( pc-CompanyCode as char,
-    pc-GType AS CHAR,
-    pc-Code AS CHAR
+  ( pc-CompanyCode AS CHARACTER,
+    pc-GType AS CHARACTER,
+    pc-Code AS CHARACTER
     )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
@@ -257,13 +257,13 @@ FUNCTION com-GenTabDesc RETURNS CHARACTER
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-GetDefaultCategory Include 
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
-  ( pc-CompanyCode as char )  FORWARD.
+  ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-Initialise Include 
-FUNCTION com-Initialise RETURNS logical
+FUNCTION com-Initialise RETURNS LOGICAL
   ( /* parameter-definitions */ )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
@@ -271,208 +271,208 @@ FUNCTION com-Initialise RETURNS logical
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-InitialSetup Include 
 FUNCTION com-InitialSetup RETURNS LOGICAL
-  ( pc-LoginID as char )  FORWARD.
+  ( pc-LoginID AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-InternalTime Include 
 FUNCTION com-InternalTime RETURNS INTEGER
-  ( pi-hours as int,
-    pi-mins  as int )  FORWARD.
+  ( pi-hours AS INTEGER,
+    pi-mins  AS INTEGER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IsContractor Include 
 FUNCTION com-IsContractor RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-LoginID      as char )  FORWARD.
+  ( pc-companyCode  AS CHARACTER,
+    pc-LoginID      AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IsCustomer Include 
 FUNCTION com-IsCustomer RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-LoginID      as char )  FORWARD.
+  ( pc-companyCode  AS CHARACTER,
+    pc-LoginID      AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IssueActionsStatus Include 
 FUNCTION com-IssueActionsStatus RETURNS INTEGER
-  ( pc-companyCode AS CHAR,
-    pi-issue   AS INT,
-    pc-status  AS CHAR)  FORWARD.
+  ( pc-companyCode AS CHARACTER,
+    pi-issue   AS INTEGER,
+    pc-status  AS CHARACTER)  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IssueStatusAlert Include 
 FUNCTION com-IssueStatusAlert RETURNS LOGICAL
-  ( pc-CompanyCode as char,
-    pc-CreateSource as char,
-    pc-StatusCode   as char )  FORWARD.
+  ( pc-CompanyCode AS CHARACTER,
+    pc-CreateSource AS CHARACTER,
+    pc-StatusCode   AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IsSuperUser Include 
 FUNCTION com-IsSuperUser RETURNS LOGICAL
-  ( pc-LoginID      as char )  FORWARD.
+  ( pc-LoginID      AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-MonthBegin Include 
 FUNCTION com-MonthBegin RETURNS DATE
-  ( pd-date as date)  FORWARD.
+  ( pd-date AS DATE)  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-MonthEnd Include 
 FUNCTION com-MonthEnd RETURNS DATE
-  ( pd-date as date )  FORWARD.
+  ( pd-date AS DATE )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NearestTimeUnit Include 
 FUNCTION com-NearestTimeUnit RETURNS INTEGER
-  ( pi-time as int )  FORWARD.
+  ( pi-time AS INTEGER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfActions Include 
 FUNCTION com-NumberOfActions RETURNS INTEGER
-  ( pc-LoginID as char )  FORWARD.
+  ( pc-LoginID AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfAlerts Include 
 FUNCTION com-NumberOfAlerts RETURNS INTEGER
- ( pc-LoginID as char )  FORWARD.
+ ( pc-LoginID AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfEmails Include 
 FUNCTION com-NumberOfEmails RETURNS INTEGER
-  ( pc-LoginID as char )  FORWARD.
+  ( pc-LoginID AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfInventoryWarnings Include 
 FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
-    ( pc-LoginID as char )  FORWARD.
+    ( pc-LoginID AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfOpenActions Include 
 FUNCTION com-NumberOfOpenActions RETURNS INTEGER
-  ( pc-LoginID as char )  FORWARD.
+  ( pc-LoginID AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberUnAssigned Include 
 FUNCTION com-NumberUnAssigned RETURNS INTEGER
- ( pc-CompanyCode as char )  FORWARD.
+ ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-QuickView Include 
-FUNCTION com-QuickView RETURNS logical
-  ( pc-LoginID  as char )  FORWARD.
+FUNCTION com-QuickView RETURNS LOGICAL
+  ( pc-LoginID  AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-RequirePasswordChange Include 
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
-  ( pc-user as char )  FORWARD.
+  ( pc-user AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-SLADescription Include 
 FUNCTION com-SLADescription RETURNS CHARACTER
-    ( pf-SLAID as dec )  FORWARD.
+    ( pf-SLAID AS DECIMAL )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-StatusTrackIssue Include 
 FUNCTION com-StatusTrackIssue RETURNS LOGICAL
-  ( pc-companycode as char,
-    pc-StatusCode  as char )  FORWARD.
+  ( pc-companycode AS CHARACTER,
+    pc-StatusCode  AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-StringReturn Include 
 FUNCTION com-StringReturn RETURNS CHARACTER
-  ( pc-orig as char,
-    pc-add as char )  FORWARD.
+  ( pc-orig AS CHARACTER,
+    pc-add AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-SystemLog Include 
 FUNCTION com-SystemLog RETURNS LOGICAL
-  ( pc-ActType as char,
-    pc-LoginID as char,
-    pc-AttrData as char )  FORWARD.
+  ( pc-ActType AS CHARACTER,
+    pc-LoginID AS CHARACTER,
+    pc-AttrData AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-TicketOnly Include 
 FUNCTION com-TicketOnly RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-AccountNumber      as char )  FORWARD.
+  ( pc-companyCode  AS CHARACTER,
+    pc-AccountNumber      AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-TimeReturn Include 
 FUNCTION com-TimeReturn RETURNS CHARACTER
-  ( pc-Type as char )  FORWARD.
+  ( pc-Type AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-TimeToString Include 
 FUNCTION com-TimeToString RETURNS CHARACTER
-  ( pi-time as int )  FORWARD.
+  ( pi-time AS INTEGER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-UserName Include 
 FUNCTION com-UserName RETURNS CHARACTER
-  ( pc-LoginID as char )  FORWARD.
+  ( pc-LoginID AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-UsersCompany Include 
 FUNCTION com-UsersCompany RETURNS CHARACTER
-  ( pc-LoginID  as char )  FORWARD.
+  ( pc-LoginID  AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-UserTrackIssue Include 
-FUNCTION com-UserTrackIssue RETURNS logical
-    ( pc-LoginID as char
+FUNCTION com-UserTrackIssue RETURNS LOGICAL
+    ( pc-LoginID AS CHARACTER
      )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
@@ -533,34 +533,34 @@ PROCEDURE com-GenTabSelect :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def input  param pc-CompanyCode as char no-undo.
-    DEF INPUT  PARAM pc-GType       AS CHAR NO-UNDO.
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pc-GType       AS CHARACTER NO-UNDO.
 
-    def output param pc-code     as char no-undo.
-    def output param pc-Desc     as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-code     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc     AS CHARACTER NO-UNDO.
 
-    DEF VAR icount AS INT       NO-UNDO.
+    DEFINE VARIABLE icount AS INTEGER       NO-UNDO.
 
 
-    def buffer b-GenTab for GenTab.
+    DEFINE BUFFER b-GenTab FOR GenTab.
 
-    for each b-GenTab no-lock 
-        where b-GenTab.CompanyCode = pc-CompanyCode
+    FOR EACH b-GenTab NO-LOCK 
+        WHERE b-GenTab.CompanyCode = pc-CompanyCode
           AND b-GenTab.gType = pc-gType
        :
 
-        if icount = 0 
-        then assign pc-code = b-GenTab.gCode
+        IF icount = 0 
+        THEN ASSIGN pc-code = b-GenTab.gCode
                     pc-Desc    = b-GenTab.Descr.
 
-        else assign pc-code = pc-code + '|' + 
+        ELSE ASSIGN pc-code = pc-code + '|' + 
                b-GenTab.gCode
                pc-Desc = pc-Desc + '|' + 
                b-GenTab.Descr.
 
         icount = icount + 1.
 
-    end.
+    END.
 
 
 END PROCEDURE.
@@ -575,25 +575,25 @@ PROCEDURE com-GetAction :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-buffer for WebAction.
+    DEFINE BUFFER b-buffer FOR WebAction.
 
-    for each b-buffer no-lock 
-        where b-buffer.CompanyCode = pc-CompanyCode
-        by b-buffer.Description:
+    FOR EACH b-buffer NO-LOCK 
+        WHERE b-buffer.CompanyCode = pc-CompanyCode
+        BY b-buffer.Description:
 
-        if pc-codes = ""
-        then assign pc-Codes = b-buffer.ActionCode
+        IF pc-codes = ""
+        THEN ASSIGN pc-Codes = b-buffer.ActionCode
                     pc-Desc = b-buffer.Description.
-        else assign pc-Codes = pc-Codes + '|' + 
+        ELSE ASSIGN pc-Codes = pc-Codes + '|' + 
                b-buffer.ActionCode
                pc-Desc = pc-Desc + '|' + 
                b-buffer.Description.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -607,36 +607,36 @@ PROCEDURE com-GetActivityType :
   Notes:       
 ------------------------------------------------------------------------------*/
     
-    def input  param pc-companyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Active          as char no-undo.
-    def output param pc-Desc            as char no-undo.
-    def output param pc-Time            as char no-undo.
+    DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Active          AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Time            AS CHARACTER NO-UNDO.
 
 /* def var acttype as char initial "Take Call|Travel for Job|Analyse Fault|Repair Fault|Order Goods".  */
 /* def var actcodes as char initial "1|2|3|4|5".                                                       */
 
-    def buffer b-WebActType for WebActType .
+    DEFINE BUFFER b-WebActType FOR WebActType .
 
-    assign pc-Codes  = ""
+    ASSIGN pc-Codes  = ""
            pc-Active = ""
            pc-Desc   = ""
            pc-Time   = "".
 
 
-    for each b-WebActType no-lock 
-        where b-WebActType.CompanyCode = pc-CompanyCode
-        break by b-WebActType.TypeID 
+    FOR EACH b-WebActType NO-LOCK 
+        WHERE b-WebActType.CompanyCode = pc-CompanyCode
+        BREAK BY b-WebActType.TypeID 
               :
 
-        assign pc-Codes  = pc-Codes  + '|' + string(b-WebActType.TypeID)
+        ASSIGN pc-Codes  = pc-Codes  + '|' + string(b-WebActType.TypeID)
                pc-Active = pc-Active + '|' + b-WebActType.ActivityType 
                pc-Desc   = pc-Desc   + '|' + b-WebActType.Description  
                pc-Time   = pc-Time   + '|' + string(b-WebActType.MinTime)
           .
-    end.
+    END.
 
-    assign
+    ASSIGN
         pc-Codes  = substr(pc-Codes,2)
         pc-Active = substr(pc-Active,2)
         pc-Desc   = substr(pc-Desc,2)  
@@ -660,26 +660,26 @@ PROCEDURE com-GetArea :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-IssArea for WebIssArea.
+    DEFINE BUFFER b-IssArea FOR WebIssArea.
 
-    assign pc-Codes = dynamic-function("htmlib-Null") + "|NotAssigned"
+    ASSIGN pc-Codes = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
            pc-Desc = "All Areas|Not Assigned".
 
 
-    for each b-IssArea no-lock 
-        where b-IssArea.CompanyCode = pc-CompanyCode
+    FOR EACH b-IssArea NO-LOCK 
+        WHERE b-IssArea.CompanyCode = pc-CompanyCode
         /* by b-IssArea.Description: */
         :
-        assign pc-Codes = pc-Codes + '|' + 
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-IssArea.AreaCode
                pc-Desc = pc-Desc + '|' + 
                b-IssArea.Description.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -692,25 +692,25 @@ PROCEDURE com-GetAreaIssue :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-IssArea for WebIssArea.
+    DEFINE BUFFER b-IssArea FOR WebIssArea.
 
-    assign pc-Codes = ""
+    ASSIGN pc-Codes = ""
            pc-Desc = "Not Applicable/Known".
 
 
-    for each b-IssArea no-lock 
-        where b-IssArea.CompanyCode = pc-CompanyCode
-        by b-IssArea.Description:
-        assign pc-Codes = pc-Codes + '|' + 
+    FOR EACH b-IssArea NO-LOCK 
+        WHERE b-IssArea.CompanyCode = pc-CompanyCode
+        BY b-IssArea.Description:
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-IssArea.AreaCode
                pc-Desc = pc-Desc + '|' + 
                b-IssArea.Description.
-    end.
+    END.
 
 END PROCEDURE.
 
@@ -724,26 +724,26 @@ PROCEDURE com-GetAssign :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-CompanyCode as char no-undo.
-    def output param pc-LoginID     as char no-undo.
-    def output param pc-Name        as char no-undo.
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
 
 
-    def buffer b-user for WebUser.
+    DEFINE BUFFER b-user FOR WebUser.
 
-    assign pc-LoginID = dynamic-function("htmlib-Null") + "|NotAssigned"
+    ASSIGN pc-LoginID = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
            pc-name = "All People|Not Assigned".
 
 
-    for each b-user no-lock 
-        where can-do(lc-global-internal,b-user.UserClass)
-        and b-user.CompanyCode = pc-CompanyCode
-        by b-user.name:
-        assign pc-LoginID = pc-LoginID + '|' + 
+    FOR EACH b-user NO-LOCK 
+        WHERE CAN-DO(lc-global-internal,b-user.UserClass)
+        AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
+        ASSIGN pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
                pc-name = pc-name + '|' + 
                b-user.Name.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -756,26 +756,26 @@ PROCEDURE com-GetAssignIssue :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-CompanyCode as char no-undo.
-    def output param pc-LoginID     as char no-undo.
-    def output param pc-Name        as char no-undo.
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
 
 
-    def buffer b-user for WebUser.
+    DEFINE BUFFER b-user FOR WebUser.
 
-    assign pc-LoginID = ""
+    ASSIGN pc-LoginID = ""
            pc-name = "Not Assigned".
 
 
-    for each b-user no-lock 
-        where can-do(lc-global-internal,b-user.UserClass)
-        and b-user.CompanyCode = pc-CompanyCode
-        by b-user.name:
-        assign pc-LoginID = pc-LoginID + '|' + 
+    FOR EACH b-user NO-LOCK 
+        WHERE CAN-DO(lc-global-internal,b-user.UserClass)
+        AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
+        ASSIGN pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
                pc-name = pc-name + '|' + 
                b-user.Name.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -788,27 +788,27 @@ PROCEDURE com-GetAssignList :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-CompanyCode as char no-undo.
-    def output param pc-LoginID     as char no-undo.
-    def output param pc-Name        as char no-undo.
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
 
 
-    def buffer b-user for WebUser.
+    DEFINE BUFFER b-user FOR WebUser.
 
-    for each b-user no-lock 
-        where can-do(lc-global-internal,b-user.UserClass)
-        and b-user.CompanyCode = pc-CompanyCode
-        by b-user.name:
+    FOR EACH b-user NO-LOCK 
+        WHERE CAN-DO(lc-global-internal,b-user.UserClass)
+        AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
 
-        if pc-loginID = ""
-        then assign pc-loginID = b-user.LoginID
+        IF pc-loginID = ""
+        THEN ASSIGN pc-loginID = b-user.LoginID
                     pc-name    = b-user.Name.
 
-        else assign pc-LoginID = pc-LoginID + '|' + 
+        ELSE ASSIGN pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
                pc-name = pc-name + '|' + 
                b-user.Name.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -821,28 +821,28 @@ PROCEDURE com-GetAutoAction :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def input param  pc-Exclude         as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER  pc-Exclude         AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
-    def buffer b-buffer for WebAction.
+    DEFINE BUFFER b-buffer FOR WebAction.
 
-    assign
+    ASSIGN
         pc-codes = ""
         pc-desc  = "No Auto Action".
 
-    for each b-buffer no-lock 
-        where b-buffer.CompanyCode = pc-CompanyCode
-        by b-buffer.Description:
+    FOR EACH b-buffer NO-LOCK 
+        WHERE b-buffer.CompanyCode = pc-CompanyCode
+        BY b-buffer.Description:
 
-        if b-buffer.ActionCode = pc-Exclude then next.
+        IF b-buffer.ActionCode = pc-Exclude THEN NEXT.
 
-        assign pc-Codes = pc-Codes + '|' + 
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-buffer.ActionCode
                pc-Desc = pc-Desc + '|' + 
                b-buffer.Description.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -855,29 +855,29 @@ PROCEDURE com-GetCategoryIssue :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-company             as char no-undo.
-    def output param pc-CatCode             as char no-undo.
-    def output param pc-Description         as char no-undo.
+    DEFINE INPUT  PARAMETER pc-company             AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-CatCode             AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Description         AS CHARACTER NO-UNDO.
 
     
-    def buffer b-Cat for WebIssCat.
+    DEFINE BUFFER b-Cat FOR WebIssCat.
 
    
-    assign pc-CatCode = ""
+    ASSIGN pc-CatCode = ""
            pc-Description = "".
 
-    for each b-Cat no-lock
-        where b-Cat.CompanyCode = pc-company
-           by b-Cat.description
+    FOR EACH b-Cat NO-LOCK
+        WHERE b-Cat.CompanyCode = pc-company
+           BY b-Cat.description
             :
 
-        if pc-CatCode = ""
-        then assign  pc-CatCode     = b-Cat.CatCode
+        IF pc-CatCode = ""
+        THEN ASSIGN  pc-CatCode     = b-Cat.CatCode
                      pc-Description = b-Cat.Description.
-        else assign pc-CatCode      = pc-CatCode + '|' + b-Cat.CatCode
+        ELSE ASSIGN pc-CatCode      = pc-CatCode + '|' + b-Cat.CatCode
                     pc-Description  = pc-Description + '|' + b-Cat.Description.
 
-    end.
+    END.
 
 END PROCEDURE.
 
@@ -891,26 +891,26 @@ PROCEDURE com-GetCatSelect :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-IssArea for WebIssCat.
+    DEFINE BUFFER b-IssArea FOR WebIssCat.
 
-    assign pc-Codes = dynamic-function("htmlib-Null")
+    ASSIGN pc-Codes = DYNAMIC-FUNCTION("htmlib-Null")
            pc-Desc = "All Categories".
 
 
-    for each b-IssArea no-lock 
-        where b-IssArea.CompanyCode = pc-CompanyCode
+    FOR EACH b-IssArea NO-LOCK 
+        WHERE b-IssArea.CompanyCode = pc-CompanyCode
         /* by b-IssArea.Description: */
         :
-        assign pc-Codes = pc-Codes + '|' + 
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-IssArea.CatCode
                pc-Desc = pc-Desc + '|' + 
                b-IssArea.Description.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -923,35 +923,35 @@ PROCEDURE com-GetCustomer :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-CompanyCode      as char no-undo.
-    def input param pc-LoginID          as char no-undo.
-    def output param pc-AccountNumber   as char no-undo.
-    def output param pc-Name            as char no-undo.
+    DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-LoginID          AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-AccountNumber   AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-cust for customer.
-    def buffer b-user for WebUser.
+    DEFINE BUFFER b-cust FOR customer.
+    DEFINE BUFFER b-user FOR WebUser.
 
-    assign pc-AccountNumber = dynamic-function("htmlib-Null")
+    ASSIGN pc-AccountNumber = DYNAMIC-FUNCTION("htmlib-Null")
            pc-name = "All Customers".
 
-    find b-user where b-user.LoginID = pc-LoginID no-lock no-error.
+    FIND b-user WHERE b-user.LoginID = pc-LoginID NO-LOCK NO-ERROR.
     
-    for each b-cust no-lock 
-        where b-cust.CompanyCode = pc-CompanyCode
-            by b-cust.name:
-        if avail b-user then
-        do:
-            if not DYNAMIC-FUNCTION('com-AllowCustomerAccess':U,
+    FOR EACH b-cust NO-LOCK 
+        WHERE b-cust.CompanyCode = pc-CompanyCode
+            BY b-cust.name:
+        IF AVAILABLE b-user THEN
+        DO:
+            IF NOT DYNAMIC-FUNCTION('com-AllowCustomerAccess':U,
                                     pc-companyCode,
                                     pc-LoginID,
-                                    b-cust.AccountNumber) then next.
-        end.
-        assign pc-AccountNumber = pc-AccountNumber + '|' + 
+                                    b-cust.AccountNumber) THEN NEXT.
+        END.
+        ASSIGN pc-AccountNumber = pc-AccountNumber + '|' + 
                b-cust.AccountNumber
                pc-name = pc-name + '|' + 
                b-cust.Name.
-    end.
+    END.
 
 
 END PROCEDURE.
@@ -966,31 +966,31 @@ PROCEDURE com-GetCustomerAccount :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-CompanyCode      as char no-undo.
-    def input param pc-LoginID          as char no-undo.
-    def output param pc-AccountNumber   as char no-undo.
-    def output param pc-Name            as char no-undo.
+    DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-LoginID          AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-AccountNumber   AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-cust for customer.
-    def buffer b-user for WebUser.
+    DEFINE BUFFER b-cust FOR customer.
+    DEFINE BUFFER b-user FOR WebUser.
 
    
-    find b-user where b-user.LoginID = pc-LoginID no-lock no-error.
+    FIND b-user WHERE b-user.LoginID = pc-LoginID NO-LOCK NO-ERROR.
     
-    for each b-cust no-lock 
-        where b-cust.CompanyCode = pc-CompanyCode
-            by b-cust.AccountNumber:
+    FOR EACH b-cust NO-LOCK 
+        WHERE b-cust.CompanyCode = pc-CompanyCode
+            BY b-cust.AccountNumber:
         IF pc-AccountNumber = "" 
         THEN ASSIGN 
                 pc-AccountNumber = b-cust.AccountNumber
                 pc-name = b-cust.AccountNumber + " " + b-cust.NAME.
-        ELSE assign 
+        ELSE ASSIGN 
                pc-AccountNumber = pc-AccountNumber + '|' + 
                b-cust.AccountNumber
                pc-name = pc-name + '|' + 
                b-cust.AccountNumber + " " + b-cust.Name.
-    end.
+    END.
 
 
 END PROCEDURE.
@@ -1005,27 +1005,27 @@ PROCEDURE com-GetInternalUser :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-CompanyCode as char no-undo.
-    def output param pc-LoginID     as char no-undo.
-    def output param pc-Name        as char no-undo.
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
 
 
-    def buffer b-user for WebUser.
+    DEFINE BUFFER b-user FOR WebUser.
 
    
-    for each b-user no-lock 
-        where can-do(lc-global-internal,b-user.UserClass)
-        and b-user.CompanyCode = pc-CompanyCode
-        by b-user.name:
+    FOR EACH b-user NO-LOCK 
+        WHERE CAN-DO(lc-global-internal,b-user.UserClass)
+        AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
 
-        if pc-loginID = ""
-        then assign pc-LoginID = b-user.LoginID
+        IF pc-loginID = ""
+        THEN ASSIGN pc-LoginID = b-user.LoginID
                     pc-name    = b-user.name.
-        else assign pc-LoginID = pc-LoginID + '|' + 
+        ELSE ASSIGN pc-LoginID = pc-LoginID + '|' + 
                       b-user.LoginID
                     pc-name = pc-name + '|' + 
                         b-user.Name.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -1038,23 +1038,23 @@ PROCEDURE com-GetKBSection :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-buffer for knbSection.
+    DEFINE BUFFER b-buffer FOR knbSection.
 
-    for each b-buffer no-lock 
-        where b-buffer.CompanyCode = pc-CompanyCode
-        by b-buffer.Description:
+    FOR EACH b-buffer NO-LOCK 
+        WHERE b-buffer.CompanyCode = pc-CompanyCode
+        BY b-buffer.Description:
 
-        if pc-codes = ""
-        then assign pc-Codes = b-buffer.knbCode
+        IF pc-codes = ""
+        THEN ASSIGN pc-Codes = b-buffer.knbCode
                     pc-Desc = b-buffer.Description.
-        else assign pc-Codes = pc-Codes + '|' + b-buffer.knbCode
+        ELSE ASSIGN pc-Codes = pc-Codes + '|' + b-buffer.knbCode
                     pc-Desc = pc-Desc + '|' + b-buffer.Description.
-    end.
+    END.
 
 END PROCEDURE.
 
@@ -1068,36 +1068,36 @@ PROCEDURE com-GetStatus :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-companyCode     as char no-undo.
-    def output param pc-Codes   as char no-undo.
-    def output param pc-Name            as char no-undo.
+    DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-WebStatus for WebStatus.
+    DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    assign pc-Codes = dynamic-function("htmlib-Null")
+    ASSIGN pc-Codes = DYNAMIC-FUNCTION("htmlib-Null")
            pc-name = "All Status Codes".
 
 
-    for each b-WebStatus no-lock 
-        where b-WebStatus.CompanyCode = pc-CompanyCode
-        break by b-WebStatus.CompletedStatus 
-              by ( if b-WebStatus.DisplayOrder = 0 then 99999 else b-Webstatus.DisplayOrder )
-              by b-WebStatus.description:
-        if first-of(b-WebStatus.CompletedStatus) then
-        do:
-            if b-WebStatus.CompletedStatus = false 
-            then assign pc-Codes = pc-Codes + "|AllOpen"
+    FOR EACH b-WebStatus NO-LOCK 
+        WHERE b-WebStatus.CompanyCode = pc-CompanyCode
+        BREAK BY b-WebStatus.CompletedStatus 
+              BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
+              BY b-WebStatus.description:
+        IF FIRST-OF(b-WebStatus.CompletedStatus) THEN
+        DO:
+            IF b-WebStatus.CompletedStatus = FALSE 
+            THEN ASSIGN pc-Codes = pc-Codes + "|AllOpen"
                         pc-name = pc-name + '|* All Open'.
-            else assign pc-Codes = pc-Codes + "|AllClosed"
+            ELSE ASSIGN pc-Codes = pc-Codes + "|AllClosed"
                         pc-name = pc-name + '|* All Closed'.
 
-        end.
-        assign pc-Codes = pc-Codes + '|' + 
+        END.
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
                pc-name = pc-name + '|&nbsp;&nbsp;&nbsp;' + 
                b-WebStatus.description.
-    end.
+    END.
 
 END PROCEDURE.
 
@@ -1112,31 +1112,31 @@ PROCEDURE com-GetStatusIssue :
   Notes:       
 ------------------------------------------------------------------------------*/
     
-    def input  param pc-companyCode     as char no-undo.
-    def output param pc-Codes   as char no-undo.
-    def output param pc-Name            as char no-undo.
+    DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-WebStatus for WebStatus.
+    DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    assign pc-Codes = ""
+    ASSIGN pc-Codes = ""
            pc-name =  "".
 
 
-    for each b-WebStatus no-lock 
-        where b-WebStatus.CompanyCode = pc-CompanyCode
-        break by b-WebStatus.CompletedStatus 
-              by ( if b-WebStatus.DisplayOrder = 0 then 99999 else b-Webstatus.DisplayOrder )
-              by b-WebStatus.description:
-        assign pc-Codes = pc-Codes + '|' + 
+    FOR EACH b-WebStatus NO-LOCK 
+        WHERE b-WebStatus.CompanyCode = pc-CompanyCode
+        BREAK BY b-WebStatus.CompletedStatus 
+              BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
+              BY b-WebStatus.description:
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
                pc-name = pc-name + '|' + 
                b-WebStatus.description + " (" + 
-                ( if b-WebStatus.CompletedStatus then "Closed" else "Open" ) + 
+                ( IF b-WebStatus.CompletedStatus THEN "Closed" ELSE "Open" ) + 
             ")".
-    end.
+    END.
 
-    assign
+    ASSIGN
         pc-codes = substr(pc-codes,2)
         pc-name  = substr(pc-name,2).
 
@@ -1153,31 +1153,31 @@ PROCEDURE com-GetStatusIssueOpen :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def input  param pc-companyCode     as char no-undo.
-    def output param pc-Codes   as char no-undo.
-    def output param pc-Name            as char no-undo.
+    DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-WebStatus for WebStatus.
+    DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    assign pc-Codes = ""
+    ASSIGN pc-Codes = ""
            pc-name =  "".
 
 
-    for each b-WebStatus no-lock 
-        where b-WebStatus.CompanyCode = pc-CompanyCode
+    FOR EACH b-WebStatus NO-LOCK 
+        WHERE b-WebStatus.CompanyCode = pc-CompanyCode
           AND b-WeBStatus.CompletedStatus = NO
-        break by ( if b-WebStatus.DisplayOrder = 0 then 99999 else b-Webstatus.DisplayOrder )
-              by b-WebStatus.description:
-        assign pc-Codes = pc-Codes + '|' + 
+        BREAK BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
+              BY b-WebStatus.description:
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
                pc-name = pc-name + '|' + 
                b-WebStatus.description + " (" + 
-                ( if b-WebStatus.CompletedStatus then "Closed" else "Open" ) + 
+                ( IF b-WebStatus.CompletedStatus THEN "Closed" ELSE "Open" ) + 
             ")".
-    end.
+    END.
 
-    assign
+    ASSIGN
         pc-codes = substr(pc-codes,2)
         pc-name  = substr(pc-name,2).
 
@@ -1194,23 +1194,23 @@ PROCEDURE com-GetStatusOpenOnly :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-companyCode     as char no-undo.
-    def output param pc-Codes   as char no-undo.
-    def output param pc-Name            as char no-undo.
+    DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-WebStatus for WebStatus.
+    DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    assign pc-Codes = "AllOpen"
+    ASSIGN pc-Codes = "AllOpen"
            pc-name = "All Open".
 
 
-    for each b-WebStatus no-lock 
-        where b-WebStatus.CompanyCode = pc-CompanyCode
+    FOR EACH b-WebStatus NO-LOCK 
+        WHERE b-WebStatus.CompanyCode = pc-CompanyCode
           AND b-webStatus.CompletedStatus = FALSE
-        break by b-WebStatus.CompletedStatus 
-              by ( if b-WebStatus.DisplayOrder = 0 then 99999 else b-Webstatus.DisplayOrder )
-              by b-WebStatus.description:
+        BREAK BY b-WebStatus.CompletedStatus 
+              BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
+              BY b-WebStatus.description:
                                                                    /*
                                                                    if first-of(b-WebStatus.CompletedStatus) then
         do:
@@ -1222,11 +1222,11 @@ PROCEDURE com-GetStatusOpenOnly :
 
         end.
         */
-        assign pc-Codes = pc-Codes + '|' + 
+        ASSIGN pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
                pc-name = pc-name + '|&nbsp;&nbsp;&nbsp;' + 
                b-WebStatus.description.
-    end.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -1239,25 +1239,25 @@ PROCEDURE com-GetTeams :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-buffer for steam.
+    DEFINE BUFFER b-buffer FOR steam.
 
-    for each b-buffer no-lock 
-        where b-buffer.CompanyCode = pc-CompanyCode
+    FOR EACH b-buffer NO-LOCK 
+        WHERE b-buffer.CompanyCode = pc-CompanyCode
         :
 
-        if pc-codes = ""
-        then assign pc-Codes = string(b-buffer.st-num)
+        IF pc-codes = ""
+        THEN ASSIGN pc-Codes = STRING(b-buffer.st-num)
                     pc-Desc = b-buffer.Descr.
-        else assign pc-Codes = pc-Codes + '|' + 
+        ELSE ASSIGN pc-Codes = pc-Codes + '|' + 
                string(b-buffer.st-num)
                pc-Desc = pc-Desc + '|' + 
                b-buffer.Descr.
-    end.
+    END.
 
 END PROCEDURE.
 
@@ -1271,22 +1271,22 @@ PROCEDURE com-getTemplateSelect :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param  pc-CompanyCode     as char no-undo.
-    def output param pc-Codes           as char no-undo.
-    def output param pc-Desc            as char no-undo.
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
 
 
-    def buffer b-buffer for iemailtmp.
+    DEFINE BUFFER b-buffer FOR iemailtmp.
 
-    for each b-buffer no-lock 
-        where b-buffer.CompanyCode = pc-CompanyCode
+    FOR EACH b-buffer NO-LOCK 
+        WHERE b-buffer.CompanyCode = pc-CompanyCode
        :
-        if pc-codes = ""
-        then assign pc-Codes = b-buffer.tmpcode
+        IF pc-codes = ""
+        THEN ASSIGN pc-Codes = b-buffer.tmpcode
                     pc-Desc = b-buffer.Descr.
-        else assign pc-Codes = pc-Codes + '|' + b-buffer.tmpCode
+        ELSE ASSIGN pc-Codes = pc-Codes + '|' + b-buffer.tmpCode
                     pc-Desc = pc-Desc + '|' + b-buffer.Descr.
-    end.
+    END.
 
 
 END PROCEDURE.
@@ -1301,17 +1301,17 @@ PROCEDURE com-ResetDefaultStatus :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-CompanyCode      as char     no-undo.
+    DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER     NO-UNDO.
 
-    def buffer b-WebStatus  for WebStatus.
+    DEFINE BUFFER b-WebStatus  FOR WebStatus.
 
-    for each b-WebStatus
-        where b-WebStatus.CompanyCode = pc-CompanyCode
-          and b-WebStatus.DefaultCode exclusive-lock:
+    FOR EACH b-WebStatus
+        WHERE b-WebStatus.CompanyCode = pc-CompanyCode
+          AND b-WebStatus.DefaultCode EXCLUSIVE-LOCK:
 
-        assign 
-            b-WebStatus.DefaultCode = no.
-    end.
+        ASSIGN 
+            b-WebStatus.DefaultCode = NO.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -1324,22 +1324,22 @@ PROCEDURE com-SplitTime :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pi-time     as int      no-undo.
-    def output param pi-hours   as int      no-undo.
-    def output param pi-mins    as int      no-undo.
+    DEFINE INPUT PARAMETER pi-time     AS INTEGER      NO-UNDO.
+    DEFINE OUTPUT PARAMETER pi-hours   AS INTEGER      NO-UNDO.
+    DEFINE OUTPUT PARAMETER pi-mins    AS INTEGER      NO-UNDO.
 
-    def var li-sec-hours        as int      initial 3600 no-undo.
-    def var li-seconds          as int      no-undo.
+    DEFINE VARIABLE li-sec-hours        AS INTEGER      INITIAL 3600 NO-UNDO.
+    DEFINE VARIABLE li-seconds          AS INTEGER      NO-UNDO.
    
-    assign 
-        li-seconds = pi-time mod li-sec-hours
-        pi-mins = truncate(li-seconds / 60,0).
+    ASSIGN 
+        li-seconds = pi-time MOD li-sec-hours
+        pi-mins = TRUNCATE(li-seconds / 60,0).
         
-    assign
+    ASSIGN
         pi-time = pi-time - li-seconds.
         
-    assign
-        pi-hours = truncate(pi-time / li-sec-hours,0).
+    ASSIGN
+        pi-hours = TRUNCATE(pi-time / li-sec-hours,0).
 
     
 END PROCEDURE.
@@ -1354,20 +1354,20 @@ PROCEDURE com-StatusType :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param     pc-CompanyCode      as char no-undo.
-    def output param    pc-open-status      as char no-undo.
-    def output param    pc-closed-status    as char no-undo.
+    DEFINE INPUT PARAMETER     pc-CompanyCode      AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER    pc-open-status      AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER    pc-closed-status    AS CHARACTER NO-UNDO.
 
-    def buffer b-status for WebStatus.
+    DEFINE BUFFER b-status FOR WebStatus.
 
-    for each b-status no-lock
-        where b-status.CompanyCode = pc-companyCode
-        by ( if b-status.DisplayOrder = 0 then 99999 else b-status.DisplayOrder ):
-        if b-status.CompletedStatus = false 
-        then assign pc-open-status = trim(pc-open-status + ',' + b-status.StatusCode).
-        else assign pc-closed-status = trim(pc-closed-status + ',' + b-status.StatusCode).
+    FOR EACH b-status NO-LOCK
+        WHERE b-status.CompanyCode = pc-companyCode
+        BY ( IF b-status.DisplayOrder = 0 THEN 99999 ELSE b-status.DisplayOrder ):
+        IF b-status.CompletedStatus = FALSE 
+        THEN ASSIGN pc-open-status = TRIM(pc-open-status + ',' + b-status.StatusCode).
+        ELSE ASSIGN pc-closed-status = TRIM(pc-closed-status + ',' + b-status.StatusCode).
         
-    end.
+    END.
 
 END PROCEDURE.
 
@@ -1378,37 +1378,37 @@ END PROCEDURE.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AllowCustomerAccess Include 
 FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
-  ( pc-CompanyCode as char,
-    pc-LoginID as char,
-    pc-AccountNumber as char ) :
+  ( pc-CompanyCode AS CHARACTER,
+    pc-LoginID AS CHARACTER,
+    pc-AccountNumber AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer b-user       for WebUser.
-    def buffer b-ContAccess for ContAccess.
-    DEF BUFFER webusteam    FOR webusteam.
-    DEF BUFFER customer     FOR customer.
-    DEF VAR ll-Steam    AS LOG NO-UNDO.
-    DEF VAR ll-Access   AS LOG NO-UNDO.
+    DEFINE BUFFER b-user       FOR WebUser.
+    DEFINE BUFFER b-ContAccess FOR ContAccess.
+    DEFINE BUFFER webusteam    FOR webusteam.
+    DEFINE BUFFER customer     FOR customer.
+    DEFINE VARIABLE ll-Steam    AS LOG NO-UNDO.
+    DEFINE VARIABLE ll-Access   AS LOG NO-UNDO.
 
     
     ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid =  pc-LoginID NO-LOCK).
 
 
-    find b-user where b-user.LoginID = pc-LoginID no-lock no-error.
+    FIND b-user WHERE b-user.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
-    if not avail b-user then return false.
+    IF NOT AVAILABLE b-user THEN RETURN FALSE.
 
     /*
     ***
     *** If internal member of a team then customer must be in one of his/her team
     ***
     */
-    if b-user.UserClass = "{&INTERNAL}" then 
-    do:
-        IF NOT ll-Steam THEN return true.
+    IF b-user.UserClass = "{&INTERNAL}" THEN 
+    DO:
+        IF NOT ll-Steam THEN RETURN TRUE.
         FIND customer WHERE customer.companyCode = pc-CompanyCode
                         AND customer.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
         IF customer.st-num = 0 THEN RETURN FALSE.
@@ -1417,13 +1417,13 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
         RETURN ll-access.
     END.
 
-    if b-user.UserClass = "{&CUSTOMER}" then
-    do:
-        return b-user.AccountNumber = pc-AccountNumber.
-    end.
+    IF b-user.UserClass = "{&CUSTOMER}" THEN
+    DO:
+        RETURN b-user.AccountNumber = pc-AccountNumber.
+    END.
 
-    return can-find(first b-ContAccess where b-ContAccess.LoginID = pc-LoginID 
-                      and b-ContAccess.AccountNumber = pc-AccountNumber no-lock ).
+    RETURN CAN-FIND(FIRST b-ContAccess WHERE b-ContAccess.LoginID = pc-LoginID 
+                      AND b-ContAccess.AccountNumber = pc-AccountNumber NO-LOCK ).
 
 
  
@@ -1435,18 +1435,18 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AllowTicketSupport Include 
 FUNCTION com-AllowTicketSupport RETURNS LOGICAL
-  ( pr-rowid as rowid ) :
+  ( pr-rowid AS ROWID ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer customer for customer.
+    DEFINE BUFFER customer FOR customer.
 
-    find customer where rowid(customer) = pr-rowid no-lock no-error.
-    if not avail customer then return false.
+    FIND customer WHERE ROWID(customer) = pr-rowid NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE customer THEN RETURN FALSE.
 
-    return can-do(replace(lc-global-Allow-TicketSupport,"|",","),customer.SupportTicket).
+    RETURN CAN-DO(REPLACE(lc-global-Allow-TicketSupport,"|",","),customer.SupportTicket).
 
 END FUNCTION.
 
@@ -1455,14 +1455,14 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AreaName Include 
 FUNCTION com-AreaName RETURNS CHARACTER
-  ( pc-CompanyCode as char ,
-    pc-AreaCode    AS CHAR ) :
+  ( pc-CompanyCode AS CHARACTER ,
+    pc-AreaCode    AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    DEF BUFFER b1   FOR webissArea.
+    DEFINE BUFFER b1   FOR webissArea.
 
 
     FIND b1 WHERE b1.CompanyCode = pc-CompanyCode
@@ -1470,7 +1470,7 @@ FUNCTION com-AreaName RETURNS CHARACTER
                 NO-LOCK NO-ERROR.
 
 
-    RETURN IF AVAIL b1 THEN b1.DESCRIPTION ELSE "".
+    RETURN IF AVAILABLE b1 THEN b1.DESCRIPTION ELSE "".
 
 END FUNCTION.
 
@@ -1479,23 +1479,23 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AskTicket Include 
 FUNCTION com-AskTicket RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-AccountNumber      as char ) :
+  ( pc-companyCode  AS CHARACTER,
+    pc-AccountNumber      AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Customer for Customer.
+    DEFINE BUFFER Customer FOR Customer.
 
-    find Customer
-        where Customer.CompanyCode      = pc-companyCode
-          and Customer.AccountNumber    = pc-AccountNumber
-          no-lock no-error.
+    FIND Customer
+        WHERE Customer.CompanyCode      = pc-companyCode
+          AND Customer.AccountNumber    = pc-AccountNumber
+          NO-LOCK NO-ERROR.
     
-    if not avail Customer then return false.
+    IF NOT AVAILABLE Customer THEN RETURN FALSE.
     
-    return Customer.SupportTicket = "BOTH".
+    RETURN Customer.SupportTicket = "BOTH".
 
 END FUNCTION.
 
@@ -1504,34 +1504,34 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AssignedToUser Include 
 FUNCTION com-AssignedToUser RETURNS INTEGER
- ( pc-CompanyCode as char,
-   pc-LoginID     as char ) :
+ ( pc-CompanyCode AS CHARACTER,
+   pc-LoginID     AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return as int      no-undo.
+    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
 
-    def buffer Issue        for Issue.
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
 
 
-    for each Issue no-lock
-        where Issue.CompanyCode = pc-companyCode
-          and Issue.AssignTo = pc-LoginID
+    FOR EACH Issue NO-LOCK
+        WHERE Issue.CompanyCode = pc-companyCode
+          AND Issue.AssignTo = pc-LoginID
            ,
-          first WebStatus no-lock
-                where WebStatus.companyCode = Issue.CompanyCode
-                  and WebStatus.StatusCode  = Issue.StatusCode
-                  and WebStatus.Completed   = false
+          FIRST WebStatus NO-LOCK
+                WHERE WebStatus.companyCode = Issue.CompanyCode
+                  AND WebStatus.StatusCode  = Issue.StatusCode
+                  AND WebStatus.Completed   = FALSE
           :
 
-        assign li-return = li-return + 1.
+        ASSIGN li-return = li-return + 1.
 
-    end.
+    END.
 
-    return li-return.
+    RETURN li-return.
 
 END FUNCTION.
 
@@ -1540,66 +1540,66 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CanDelete Include 
 FUNCTION com-CanDelete RETURNS LOGICAL
-  ( pc-loginid  as char,
-    pc-table    as char,
-    pr-rowid    as rowid ) :
+  ( pc-loginid  AS CHARACTER,
+    pc-table    AS CHARACTER,
+    pr-rowid    AS ROWID ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer webuser      for webuser.
-    def buffer customer     for customer.
-    def buffer custiv       for custiv.
-    def buffer issue        for issue.
-    def buffer ivClass      for ivClass.
-    def buffer ivSub        for ivSub.
-    def buffer ivField      for IvField.
-    def buffer CustField    for CustField.
-    def buffer webIssCat    for WebIssCat.
-    def buffer issAction    for issAction.
-    def buffer issStatus    for issStatus.
-    def buffer issNote      for IssNote.
-    def buffer WebStatus    for WebStatus.
-    def buffer webNote      for WebNote.
-    def buffer webIssArea   for WebIssArea.
-    def buffer knbSection   for knbSection.
-    def buffer knbItem      for knbItem.
-    def buffer webissagrp   for webissagrp.
-    DEF BUFFER steam        FOR steam.
+    DEFINE BUFFER webuser      FOR webuser.
+    DEFINE BUFFER customer     FOR customer.
+    DEFINE BUFFER custiv       FOR custiv.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER ivClass      FOR ivClass.
+    DEFINE BUFFER ivSub        FOR ivSub.
+    DEFINE BUFFER ivField      FOR IvField.
+    DEFINE BUFFER CustField    FOR CustField.
+    DEFINE BUFFER webIssCat    FOR WebIssCat.
+    DEFINE BUFFER issAction    FOR issAction.
+    DEFINE BUFFER issStatus    FOR issStatus.
+    DEFINE BUFFER issNote      FOR IssNote.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER webNote      FOR WebNote.
+    DEFINE BUFFER webIssArea   FOR WebIssArea.
+    DEFINE BUFFER knbSection   FOR knbSection.
+    DEFINE BUFFER knbItem      FOR knbItem.
+    DEFINE BUFFER webissagrp   FOR webissagrp.
+    DEFINE BUFFER steam        FOR steam.
 
-    case pc-table:
-        when "webissagrp" then
-        do:
-            find webissagrp where rowid(webissagrp) = pr-rowid no-lock no-error.
-            if not avail webissagrp then return false.
-            return not 
-                    can-find(first WebIssArea 
-                             where webIssArea.CompanyCode = webissagrp.CompanyCode
-                               and webIssArea.GroupID = webissagrp.GroupId no-lock).
+    CASE pc-table:
+        WHEN "webissagrp" THEN
+        DO:
+            FIND webissagrp WHERE ROWID(webissagrp) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webissagrp THEN RETURN FALSE.
+            RETURN NOT 
+                    CAN-FIND(FIRST WebIssArea 
+                             WHERE webIssArea.CompanyCode = webissagrp.CompanyCode
+                               AND webIssArea.GroupID = webissagrp.GroupId NO-LOCK).
             
-        end.
-        when "webIssCat" then
-        do:
-            find webIssCat where rowid(webIssCat) = pr-rowid no-lock no-error.
-            if not avail webIssCat then return false.
-            if webIssCat.IsDefault then return false.
-            return not 
-                    can-find(first issue of webissCat no-lock).
-        end.
-        when "webEQClass" then
-        do:
-            return true.
+        END.
+        WHEN "webIssCat" THEN
+        DO:
+            FIND webIssCat WHERE ROWID(webIssCat) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webIssCat THEN RETURN FALSE.
+            IF webIssCat.IsDefault THEN RETURN FALSE.
+            RETURN NOT 
+                    CAN-FIND(FIRST issue OF webissCat NO-LOCK).
+        END.
+        WHEN "webEQClass" THEN
+        DO:
+            RETURN TRUE.
             /* PH - Allow delete regardless 
             find ivClass where rowid(ivClass) = pr-rowid no-lock no-error.
             if not avail ivClass then return false.
             return not
                 can-find(first ivSub of ivClass no-lock).
             */
-        end.
-        when "webSubClass" then
-        do:
-            return true.
+        END.
+        WHEN "webSubClass" THEN
+        DO:
+            RETURN TRUE.
             /*
             find ivSub where rowid(ivSub) = pr-rowid no-lock no-error.
             if not avail ivSub then return false.
@@ -1610,161 +1610,161 @@ FUNCTION com-CanDelete RETURNS LOGICAL
                                ivSub.ivSubID no-lock) then return false.
             return true.
             */    
-        end.
-        when "webInvField" then
-        do:
-            find ivfield where rowid(ivfield) = pr-rowid no-lock no-error.
-            if not avail ivfield then return false.
+        END.
+        WHEN "webInvField" THEN
+        DO:
+            FIND ivfield WHERE ROWID(ivfield) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE ivfield THEN RETURN FALSE.
 
-            return not 
-                can-find(first Custfield 
-                         where CustField.ivFieldID = ivField.ivFieldID
-                         no-lock).
+            RETURN NOT 
+                CAN-FIND(FIRST Custfield 
+                         WHERE CustField.ivFieldID = ivField.ivFieldID
+                         NO-LOCK).
 
 
-        end.
-        when "CUSTOMER" then
-        do:
-            find customer where rowid(customer) = pr-rowid no-lock no-error.
-            if not avail customer then return false.
-            if can-find(first issue
-                where issue.CompanyCode     = customer.CompanyCode
-                  and issue.AccountNumber   = customer.AccountNumber
-                  no-lock) then return false.
-            if can-find(first WebUser
-                where WebUser.CompanyCode     = customer.CompanyCode
-                  and WebUser.AccountNumber   = customer.AccountNumber
-                  no-lock) then return false.
-            return true.
-        end.
-        when "customerequip" then
-        do:
-            return true.
-        end.
-        when "WEBUSER" then
-        do:
-            find webuser where rowid(webuser) = pr-rowid no-lock no-error.
-            if not avail webuser then return false.
-            if can-find(first issue
-                where issue.AssignTo = webuser.LoginID 
-                  AND issue.companyCode = webuser.companyCode no-lock) 
-            then return false.
-            if can-find(first issue
-                where issue.RaisedLoginID = webuser.LoginID 
-                  AND issue.companyCode = webuser.companyCode no-lock) 
-            then return false.
-            if can-find(first issAction
-                        where issAction.AssignTo = webuser.LoginID no-lock)
-            then return false.
+        END.
+        WHEN "CUSTOMER" THEN
+        DO:
+            FIND customer WHERE ROWID(customer) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE customer THEN RETURN FALSE.
+            IF CAN-FIND(FIRST issue
+                WHERE issue.CompanyCode     = customer.CompanyCode
+                  AND issue.AccountNumber   = customer.AccountNumber
+                  NO-LOCK) THEN RETURN FALSE.
+            IF CAN-FIND(FIRST WebUser
+                WHERE WebUser.CompanyCode     = customer.CompanyCode
+                  AND WebUser.AccountNumber   = customer.AccountNumber
+                  NO-LOCK) THEN RETURN FALSE.
+            RETURN TRUE.
+        END.
+        WHEN "customerequip" THEN
+        DO:
+            RETURN TRUE.
+        END.
+        WHEN "WEBUSER" THEN
+        DO:
+            FIND webuser WHERE ROWID(webuser) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webuser THEN RETURN FALSE.
+            IF CAN-FIND(FIRST issue
+                WHERE issue.AssignTo = webuser.LoginID 
+                  AND issue.companyCode = webuser.companyCode NO-LOCK) 
+            THEN RETURN FALSE.
+            IF CAN-FIND(FIRST issue
+                WHERE issue.RaisedLoginID = webuser.LoginID 
+                  AND issue.companyCode = webuser.companyCode NO-LOCK) 
+            THEN RETURN FALSE.
+            IF CAN-FIND(FIRST issAction
+                        WHERE issAction.AssignTo = webuser.LoginID NO-LOCK)
+            THEN RETURN FALSE.
 
-            if can-find(first issAction
-                        where issAction.AssignBy = webuser.LoginID no-lock)
-            then return false.
-            if can-find(first issAction
-                        where issAction.CreatedBy = webuser.LoginID no-lock)
-            then return false.
-            return true.
-        end.
+            IF CAN-FIND(FIRST issAction
+                        WHERE issAction.AssignBy = webuser.LoginID NO-LOCK)
+            THEN RETURN FALSE.
+            IF CAN-FIND(FIRST issAction
+                        WHERE issAction.CreatedBy = webuser.LoginID NO-LOCK)
+            THEN RETURN FALSE.
+            RETURN TRUE.
+        END.
 
         
 
 
-        when "webactivetype" then
-        do:
-            return true.
-        end.
+        WHEN "webactivetype" THEN
+        DO:
+            RETURN TRUE.
+        END.
             
-        when "webeqcontract" then
-        do:
-              return true.
-        end.
+        WHEN "webeqcontract" THEN
+        DO:
+              RETURN TRUE.
+        END.
 
-        when "webattr" then
-        do:
-            return false.
-        end.
-        when "webmenu" then
-        do:
-            return false.
-        end.
-        when "webobject" then
-        do:
-            return false.
-        end.
-        when "webstatus" then
-        do:
-            find webStatus where rowid(webStatus) = pr-rowid no-lock no-error.
-            if not avail webStatus then return false.
-            if webStatus.DefaultCode then return false.
+        WHEN "webattr" THEN
+        DO:
+            RETURN FALSE.
+        END.
+        WHEN "webmenu" THEN
+        DO:
+            RETURN FALSE.
+        END.
+        WHEN "webobject" THEN
+        DO:
+            RETURN FALSE.
+        END.
+        WHEN "webstatus" THEN
+        DO:
+            FIND webStatus WHERE ROWID(webStatus) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webStatus THEN RETURN FALSE.
+            IF webStatus.DefaultCode THEN RETURN FALSE.
 
-            if can-find(first IssStatus where issStatus.CompanyCode = 
+            IF CAN-FIND(FIRST IssStatus WHERE issStatus.CompanyCode = 
                         webStatus.CompanyCode
-                        and IssStatus.NewStatusCode = webStatus.StatusCode
-                        no-lock)
-            or can-find(first IssStatus where issStatus.CompanyCode = 
+                        AND IssStatus.NewStatusCode = webStatus.StatusCode
+                        NO-LOCK)
+            OR CAN-FIND(FIRST IssStatus WHERE issStatus.CompanyCode = 
                         webStatus.CompanyCode
-                        and IssStatus.OldStatusCode = webStatus.StatusCode
-                        no-lock) then return false.
+                        AND IssStatus.OldStatusCode = webStatus.StatusCode
+                        NO-LOCK) THEN RETURN FALSE.
 
-            return true.
-
-
-        end.
-        when "webnote" then
-        do:
-            find webNote where rowid(webNote) = pr-rowid no-lock no-error.
-            if not avail webNote then return false.
-            if webNote.NoteCode begins "sys." then return false.
-
-            if can-find(first issNote
-                        where issNote.CompanyCode = webNote.CompanyCode
-                          and issNote.NoteCode    = webNote.NoteCode no-lock)
-            then return false.
+            RETURN TRUE.
 
 
-            return true.
+        END.
+        WHEN "webnote" THEN
+        DO:
+            FIND webNote WHERE ROWID(webNote) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webNote THEN RETURN FALSE.
+            IF webNote.NoteCode BEGINS "sys." THEN RETURN FALSE.
 
-        end.
-        when "webIssArea" then
-        do:
-            find webIssArea where rowid(webIssArea) = pr-rowid no-lock no-error.
-            if not avail webIssArea then return false.
-            if can-find(first issue
-                        where issue.CompanyCode = webIssArea.CompanyCode
-                          and issue.AreaCode    = webIssArea.AreaCode no-lock)
-            then return false.
+            IF CAN-FIND(FIRST issNote
+                        WHERE issNote.CompanyCode = webNote.CompanyCode
+                          AND issNote.NoteCode    = webNote.NoteCode NO-LOCK)
+            THEN RETURN FALSE.
 
-            return true.
 
-        end.
-        when "webcomp" then
-        do:
-            return false.
-        end.
-        when "WEBACTION" then
-        do:
-            find webAction where rowid(webAction) = pr-rowid no-lock no-error.
-            if not avail webAction then return false.
-            if can-find(first issAction
-                        where issAction.ActionID = webAction.ActionID
-                          no-lock)
-            then return false.
+            RETURN TRUE.
 
-            return true.
-        end.
-        when "knbsection" then
-        do:
-            find knbSection where rowid(knbSection) = pr-rowid no-lock no-error.
-            if not avail knbSection then return false.
-            if can-find(first knbItem of knbSection no-lock)
-            then return false.
+        END.
+        WHEN "webIssArea" THEN
+        DO:
+            FIND webIssArea WHERE ROWID(webIssArea) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webIssArea THEN RETURN FALSE.
+            IF CAN-FIND(FIRST issue
+                        WHERE issue.CompanyCode = webIssArea.CompanyCode
+                          AND issue.AreaCode    = webIssArea.AreaCode NO-LOCK)
+            THEN RETURN FALSE.
 
-            return true.
-        end.
-        when "knbitem" then
-        do:
-            return true.
-        end.
+            RETURN TRUE.
+
+        END.
+        WHEN "webcomp" THEN
+        DO:
+            RETURN FALSE.
+        END.
+        WHEN "WEBACTION" THEN
+        DO:
+            FIND webAction WHERE ROWID(webAction) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webAction THEN RETURN FALSE.
+            IF CAN-FIND(FIRST issAction
+                        WHERE issAction.ActionID = webAction.ActionID
+                          NO-LOCK)
+            THEN RETURN FALSE.
+
+            RETURN TRUE.
+        END.
+        WHEN "knbsection" THEN
+        DO:
+            FIND knbSection WHERE ROWID(knbSection) = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE knbSection THEN RETURN FALSE.
+            IF CAN-FIND(FIRST knbItem OF knbSection NO-LOCK)
+            THEN RETURN FALSE.
+
+            RETURN TRUE.
+        END.
+        WHEN "knbitem" THEN
+        DO:
+            RETURN TRUE.
+        END.
         WHEN "gentab" THEN
         DO:
             RETURN TRUE.
@@ -1784,14 +1784,14 @@ FUNCTION com-CanDelete RETURNS LOGICAL
 
 
         END.
-        otherwise
-            do:
-                message "com-CanDelete invalid table for " pc-table.
-                return false.
-            end.
-    end case.
+        OTHERWISE
+            DO:
+                MESSAGE "com-CanDelete invalid table for " pc-table.
+                RETURN FALSE.
+            END.
+    END CASE.
  
-    return true.
+    RETURN TRUE.
 
 END FUNCTION.
 
@@ -1800,20 +1800,20 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CatName Include 
 FUNCTION com-CatName RETURNS CHARACTER
-  ( pc-CompanyCode as char,
-    pc-Code AS CHAR
+  ( pc-CompanyCode AS CHARACTER,
+    pc-Code AS CHARACTER
     ) :
 
 
     
-    def buffer b-table for WebissCat.
+    DEFINE BUFFER b-table FOR WebissCat.
 
-    FIND b-table no-lock 
-        where b-table.CompanyCode = pc-CompanyCode
+    FIND b-table NO-LOCK 
+        WHERE b-table.CompanyCode = pc-CompanyCode
           AND b-table.CatCode = pc-Code NO-ERROR.
 
        
-    RETURN IF AVAIL  b-table THEN b-table.DESCRIPTION ELSE pc-code.
+    RETURN IF AVAILABLE  b-table THEN b-table.DESCRIPTION ELSE pc-code.
 
 
 
@@ -1825,7 +1825,7 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CheckSystemSetup Include 
 FUNCTION com-CheckSystemSetup RETURNS LOGICAL
-  ( pc-CompanyCode as char ) :
+  ( pc-CompanyCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
@@ -1837,29 +1837,29 @@ def var lc-System-Note-Desc                 as char
     initial 'System - Customer Emailed,System - Issue Assignment,Sys - SLA Assigned'
     no-undo.
 */
-    def var li-loop as int      no-undo.
+    DEFINE VARIABLE li-loop AS INTEGER      NO-UNDO.
   
-    def buffer WebNote      for WebNote.
-    def buffer KnbSection   for knbSection.
+    DEFINE BUFFER WebNote      FOR WebNote.
+    DEFINE BUFFER KnbSection   FOR knbSection.
 
-    if pc-companyCode = "" then return true.
+    IF pc-companyCode = "" THEN RETURN TRUE.
 
-    do transaction:
-        do li-loop = 1 to num-entries(lc-System-Note-Code):
-            if can-find(WebNote where WebNote.CompanyCode = pc-companyCode 
-                         and WebNote.NoteCode = entry(li-loop,lc-System-Note-Code) no-lock)
-                        then next.
-            create WebNote.
-            assign 
+    DO TRANSACTION:
+        DO li-loop = 1 TO NUM-ENTRIES(lc-System-Note-Code):
+            IF CAN-FIND(WebNote WHERE WebNote.CompanyCode = pc-companyCode 
+                         AND WebNote.NoteCode = entry(li-loop,lc-System-Note-Code) NO-LOCK)
+                        THEN NEXT.
+            CREATE WebNote.
+            ASSIGN 
                 WebNote.CompanyCode = pc-companyCode
-                WebNote.NoteCode    = entry(li-loop,lc-System-Note-Code)
-                WebNote.description = entry(li-loop,lc-System-Note-Desc)
-                WebNote.CustomerCanView = false.
-            release WebNote.
-        end.
+                WebNote.NoteCode    = ENTRY(li-loop,lc-System-Note-Code)
+                WebNote.description = ENTRY(li-loop,lc-System-Note-Desc)
+                WebNote.CustomerCanView = FALSE.
+            RELEASE WebNote.
+        END.
 
 
-    end.
+    END.
 END FUNCTION.
 
 /* _UIB-CODE-BLOCK-END */
@@ -1867,23 +1867,25 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CookieDate Include 
 FUNCTION com-CookieDate RETURNS DATE
-  ( pc-user as char ) :
+  ( pc-user AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer webuser for webuser.
-    def buffer company for company.
+    DEFINE BUFFER webuser FOR webuser.
+    DEFINE BUFFER company FOR company.
 
-    find webuser where webuser.LoginID = pc-user no-lock no-error.
-    if not avail webuser then return ?.
+    FIND webuser WHERE webuser.LoginID = pc-user NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE webuser THEN RETURN ?.
+    IF WebUser.disabletimeout THEN RETURN ?.
     
-    find company where company.CompanyCode = webuser.CompanyCode 
-        no-lock no-error.
-    if not avail company then return ?.
     
-    return if company.timeout = 0 then ? else today.
+    FIND company WHERE company.CompanyCode = webuser.CompanyCode 
+        NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE company THEN RETURN ?.
+    
+    RETURN IF company.timeout = 0 THEN ? ELSE TODAY.
         
  
 
@@ -1894,26 +1896,28 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CookieTime Include 
 FUNCTION com-CookieTime RETURNS INTEGER
-( pc-user as char ) :
+( pc-user AS CHARACTER ) :
 /*------------------------------------------------------------------------------
  Purpose:  
    Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer webuser for webuser.
-    def buffer company for company.
+    DEFINE BUFFER webuser FOR webuser.
+    DEFINE BUFFER company FOR company.
 
-    find webuser where webuser.LoginID = pc-user no-lock no-error.
-    if not avail webuser then return ?.
+    FIND webuser WHERE webuser.LoginID = pc-user NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE webuser THEN RETURN ?.
+    IF WebUser.disabletimeout THEN RETURN ?.
     
-    find company where company.CompanyCode = webuser.CompanyCode 
-        no-lock no-error.
-    if not avail company then return ?.
+    
+    FIND company WHERE company.CompanyCode = webuser.CompanyCode 
+        NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE company THEN RETURN ?.
     /*
     message "time * 60 = " string(time,"hh:mm:SS") " to = " company.timeout 
                     " rev = " string(time + ( company.timeout * 60 ),"hh:mm:SS").
     */
-    return if company.timeout = 0 then ? else time + ( company.timeout * 60 ).
+    RETURN IF company.timeout = 0 THEN ? ELSE TIME + ( company.timeout * 60 ).
 
 
 END FUNCTION.
@@ -1923,39 +1927,39 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CustomerAvailableSLA Include 
 FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
-  ( pc-CompanyCode as char,
-    pc-AccountNumber as char ) :
+  ( pc-CompanyCode AS CHARACTER,
+    pc-AccountNumber AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-return   as char     no-undo.
-    def var li-loop     as int      no-undo.
-    def var lc-char     as char     no-undo.
+    DEFINE VARIABLE lc-return   AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-char     AS CHARACTER     NO-UNDO.
 
-    def buffer slahead  for slahead.
+    DEFINE BUFFER slahead  FOR slahead.
 
 
-    do li-loop = 1 to 2:
-        assign
-            lc-char = if li-loop = 1 then pc-AccountNumber else "".
-        if li-loop = 1 and lc-char = "" then next.
+    DO li-loop = 1 TO 2:
+        ASSIGN
+            lc-char = IF li-loop = 1 THEN pc-AccountNumber ELSE "".
+        IF li-loop = 1 AND lc-char = "" THEN NEXT.
 
-        for each slahead no-lock
-            where slahead.companycode = pc-CompanyCode
-              and slahead.AccountNumber = lc-char
-              by slahead.SLACode:
+        FOR EACH slahead NO-LOCK
+            WHERE slahead.companycode = pc-CompanyCode
+              AND slahead.AccountNumber = lc-char
+              BY slahead.SLACode:
 
-            if lc-return = ""
-            then lc-return = string(rowid(slahead)).
-            else lc-return = lc-return + "|" + string(rowid(slahead)).
-        end.
+            IF lc-return = ""
+            THEN lc-return = STRING(ROWID(slahead)).
+            ELSE lc-return = lc-return + "|" + string(ROWID(slahead)).
+        END.
 
-    end.
+    END.
     
 
-    return lc-return.
+    RETURN lc-return.
 
 END FUNCTION.
 
@@ -1964,23 +1968,23 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CustomerName Include 
 FUNCTION com-CustomerName RETURNS CHARACTER
-  ( pc-Company as char,
-    pc-Account  as char ) :
+  ( pc-Company AS CHARACTER,
+    pc-Account  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
    
-    def buffer b-Customer   for Customer.
+    DEFINE BUFFER b-Customer   FOR Customer.
 
     
-    find b-Customer
-        where b-Customer.CompanyCode = pc-Company
-          and b-Customer.AccountNumber = pc-Account
-          no-lock no-error.
+    FIND b-Customer
+        WHERE b-Customer.CompanyCode = pc-Company
+          AND b-Customer.AccountNumber = pc-Account
+          NO-LOCK NO-ERROR.
 
-    return if avail b-Customer then b-Customer.name else "".
+    RETURN IF AVAILABLE b-Customer THEN b-Customer.name ELSE "".
 
 
 END FUNCTION.
@@ -1990,34 +1994,34 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CustomerOpenIssues Include 
 FUNCTION com-CustomerOpenIssues RETURNS INTEGER
- ( pc-CompanyCode as char,
-   pc-accountNumber as char ) :
+ ( pc-CompanyCode AS CHARACTER,
+   pc-accountNumber AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return as int      no-undo.
+    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
 
-    def buffer Issue        for Issue.
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
 
 
-    for each Issue no-lock
-        where Issue.CompanyCode = pc-companyCode
-          and Issue.AccountNumber = pc-AccountNumber
+    FOR EACH Issue NO-LOCK
+        WHERE Issue.CompanyCode = pc-companyCode
+          AND Issue.AccountNumber = pc-AccountNumber
           ,
-          first WebStatus no-lock
-                where WebStatus.companyCode = Issue.CompanyCode
-                  and WebStatus.StatusCode  = Issue.StatusCode
-                  and WebStatus.Completed   = false
+          FIRST WebStatus NO-LOCK
+                WHERE WebStatus.companyCode = Issue.CompanyCode
+                  AND WebStatus.StatusCode  = Issue.StatusCode
+                  AND WebStatus.Completed   = FALSE
           :
 
-        assign li-return = li-return + 1.
+        ASSIGN li-return = li-return + 1.
 
-    end.
+    END.
 
-    return li-return.
+    RETURN li-return.
 
 END FUNCTION.
 
@@ -2026,22 +2030,22 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-DecodeLookup Include 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
-  ( pc-code as char,
-    pc-code-list as char,
-    pc-code-display as char ) :
+  ( pc-code AS CHARACTER,
+    pc-code-list AS CHARACTER,
+    pc-code-display AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-index        as int          no-undo.
+    DEFINE VARIABLE li-index        AS INTEGER          NO-UNDO.
 
-    assign
-        li-index = lookup(pc-code,pc-code-list,"|").
+    ASSIGN
+        li-index = LOOKUP(pc-code,pc-code-list,"|").
 
-    return
-        if li-index = 0 then pc-code
-        else entry(li-index,pc-code-display,"|").
+    RETURN
+        IF li-index = 0 THEN pc-code
+        ELSE ENTRY(li-index,pc-code-display,"|").
 
 END FUNCTION.
 
@@ -2050,19 +2054,19 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-DescribeTicket Include 
 FUNCTION com-DescribeTicket RETURNS CHARACTER
-  ( pc-TxnType as char ) :
+  ( pc-TxnType AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    case pc-txntype:
-        when "TCK" then return "Ticket".
-        when "ADJ" then return "Adjustment".
-        when "ACT" then return "Activity".
-    end case.
+    CASE pc-txntype:
+        WHEN "TCK" THEN RETURN "Ticket".
+        WHEN "ADJ" THEN RETURN "Adjustment".
+        WHEN "ACT" THEN RETURN "Activity".
+    END CASE.
       
-    return pc-txntype.
+    RETURN pc-txntype.
 
 END FUNCTION.
 
@@ -2071,22 +2075,22 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-GenTabDesc Include 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
-  ( pc-CompanyCode as char,
-    pc-GType AS CHAR,
-    pc-Code AS CHAR
+  ( pc-CompanyCode AS CHARACTER,
+    pc-GType AS CHARACTER,
+    pc-Code AS CHARACTER
     ) :
 
 
     
-    def buffer b-GenTab for GenTab.
+    DEFINE BUFFER b-GenTab FOR GenTab.
 
-    FIND b-GenTab no-lock 
-        where b-GenTab.CompanyCode = pc-CompanyCode
+    FIND b-GenTab NO-LOCK 
+        WHERE b-GenTab.CompanyCode = pc-CompanyCode
           AND b-GenTab.gType = pc-gType
           AND b-gentab.gCode = pc-Code NO-ERROR.
 
        
-    RETURN IF AVAIL  b-gentab THEN b-GenTab.Descr ELSE "Missing".
+    RETURN IF AVAILABLE  b-gentab THEN b-GenTab.Descr ELSE "Missing".
 
 
 
@@ -2098,22 +2102,22 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-GetDefaultCategory Include 
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
-  ( pc-CompanyCode as char ) :
+  ( pc-CompanyCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer b-table for WebIssCat.
+    DEFINE BUFFER b-table FOR WebIssCat.
 
 
-    find first b-table
-        where b-table.CompanyCode = pc-CompanyCode
-          and b-table.isDefault   = true
-          no-lock no-error.
+    FIND FIRST b-table
+        WHERE b-table.CompanyCode = pc-CompanyCode
+          AND b-table.isDefault   = TRUE
+          NO-LOCK NO-ERROR.
 
-    return
-        if avail b-table then b-table.CatCode else "".
+    RETURN
+        IF AVAILABLE b-table THEN b-table.CatCode ELSE "".
 
 
 END FUNCTION.
@@ -2122,26 +2126,26 @@ END FUNCTION.
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-Initialise Include 
-FUNCTION com-Initialise RETURNS logical
+FUNCTION com-Initialise RETURNS LOGICAL
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-loop     as int      no-undo.
+    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
 
 
-    do li-loop = 0 to 23:
+    DO li-loop = 0 TO 23:
 
-        if li-loop = 0 then
-        do:
-            assign 
+        IF li-loop = 0 THEN
+        DO:
+            ASSIGN 
                 lc-global-hour-display = "00"
                 lc-global-hour-code    = "00".
-            next.
-        end.
-        assign 
+            NEXT.
+        END.
+        ASSIGN 
             lc-global-hour-code = lc-global-hour-code + "|" + 
                                   string(li-loop)
             lc-global-hour-display = lc-global-hour-display + "|" + 
@@ -2149,26 +2153,26 @@ FUNCTION com-Initialise RETURNS logical
 
        
                 
-    end.
+    END.
 
-    do li-loop = 0 to 55 by 5:
-        if li-loop = 0
-        then assign lc-global-min-code = string(li-loop)
-                    lc-global-min-display = string(li-loop,"99").
-        else assign lc-global-min-code = lc-global-min-code + "|" + string(li-loop)
+    DO li-loop = 0 TO 55 BY 5:
+        IF li-loop = 0
+        THEN ASSIGN lc-global-min-code = STRING(li-loop)
+                    lc-global-min-display = STRING(li-loop,"99").
+        ELSE ASSIGN lc-global-min-code = lc-global-min-code + "|" + string(li-loop)
                     lc-global-min-display = lc-global-min-display + "|" + string(li-loop,"99").
-    end.
+    END.
     
-    do li-loop = 0 to 59 by 1:
-        if li-loop = 0
-        then assign lc-global-min-code = string(li-loop)
-                    lc-global-min-display = string(li-loop,"99").
-        else assign lc-global-min-code = lc-global-min-code + "|" + string(li-loop)
+    DO li-loop = 0 TO 59 BY 1:
+        IF li-loop = 0
+        THEN ASSIGN lc-global-min-code = STRING(li-loop)
+                    lc-global-min-display = STRING(li-loop,"99").
+        ELSE ASSIGN lc-global-min-code = lc-global-min-code + "|" + string(li-loop)
                     lc-global-min-display = lc-global-min-display + "|" + string(li-loop,"99").
-    end.
+    END.
 
 
-    RETURN true.
+    RETURN TRUE.
 
 END FUNCTION.
 
@@ -2177,27 +2181,27 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-InitialSetup Include 
 FUNCTION com-InitialSetup RETURNS LOGICAL
-  ( pc-LoginID as char ) :
+  ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer webuser for webuser.
+    DEFINE BUFFER webuser FOR webuser.
 
-    assign lc-global-user = pc-LoginID.
+    ASSIGN lc-global-user = pc-LoginID.
 
 
-    find webuser where webuser.LoginID = pc-LoginID no-lock no-error.
+    FIND webuser WHERE webuser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
-    if avail webuser then 
-    do:
-        assign lc-global-company = webuser.CompanyCode.
+    IF AVAILABLE webuser THEN 
+    DO:
+        ASSIGN lc-global-company = webuser.CompanyCode.
         DYNAMIC-FUNCTION('com-CheckSystemSetup':U,lc-global-company).
-    end.
+    END.
 
 
-    return true.
+    RETURN TRUE.
 
 END FUNCTION.
 
@@ -2206,15 +2210,15 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-InternalTime Include 
 FUNCTION com-InternalTime RETURNS INTEGER
-  ( pi-hours as int,
-    pi-mins  as int ) :
+  ( pi-hours AS INTEGER,
+    pi-mins  AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
 
-    return ( ( pi-hours * 60 ) * 60 ) + ( pi-mins * 60 ).
+    RETURN ( ( pi-hours * 60 ) * 60 ) + ( pi-mins * 60 ).
 
 END FUNCTION.
 
@@ -2223,22 +2227,22 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IsContractor Include 
 FUNCTION com-IsContractor RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-LoginID      as char ) :
+  ( pc-companyCode  AS CHARACTER,
+    pc-LoginID      AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Webuser for WebUser.
+    DEFINE BUFFER Webuser FOR WebUser.
 
-    find WebUser
-        where WebUser.LoginID = pc-LoginID
-          no-lock no-error.
+    FIND WebUser
+        WHERE WebUser.LoginID = pc-LoginID
+          NO-LOCK NO-ERROR.
     
-    if not avail WebUser then return false.
+    IF NOT AVAILABLE WebUser THEN RETURN FALSE.
     
-    return WebUser.UserClass = "contract".
+    RETURN WebUser.UserClass = "contract".
 
 END FUNCTION.
 
@@ -2247,22 +2251,22 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IsCustomer Include 
 FUNCTION com-IsCustomer RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-LoginID      as char ) :
+  ( pc-companyCode  AS CHARACTER,
+    pc-LoginID      AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Webuser for WebUser.
+    DEFINE BUFFER Webuser FOR WebUser.
 
-    find WebUser
-        where WebUser.LoginID = pc-LoginID
-          no-lock no-error.
+    FIND WebUser
+        WHERE WebUser.LoginID = pc-LoginID
+          NO-LOCK NO-ERROR.
     
-    if not avail WebUser then return false.
+    IF NOT AVAILABLE WebUser THEN RETURN FALSE.
     
-    return WebUser.UserClass = "customer".
+    RETURN WebUser.UserClass = "customer".
 
 END FUNCTION.
 
@@ -2271,29 +2275,29 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IssueActionsStatus Include 
 FUNCTION com-IssueActionsStatus RETURNS INTEGER
-  ( pc-companyCode AS CHAR,
-    pi-issue   AS INT,
-    pc-status  AS CHAR) :
+  ( pc-companyCode AS CHARACTER,
+    pi-issue   AS INTEGER,
+    pc-status  AS CHARACTER) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return as int      no-undo.
+    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
 
-    def buffer IssAction    for IssAction.
+    DEFINE BUFFER IssAction    FOR IssAction.
 
 
-    for each IssAction no-lock
-        where IssAction.companycode = pc-companyCode
+    FOR EACH IssAction NO-LOCK
+        WHERE IssAction.companycode = pc-companyCode
           AND issAction.issuenumber = pi-issue 
-          and IssAction.ActionStatus = pc-status:
+          AND IssAction.ActionStatus = pc-status:
 
-        assign li-return = li-return + 1.
+        ASSIGN li-return = li-return + 1.
 
-    end.
+    END.
 
-    return li-return.
+    RETURN li-return.
     
 
   
@@ -2304,24 +2308,24 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IssueStatusAlert Include 
 FUNCTION com-IssueStatusAlert RETURNS LOGICAL
-  ( pc-CompanyCode as char,
-    pc-CreateSource as char,
-    pc-StatusCode   as char ) :
+  ( pc-CompanyCode AS CHARACTER,
+    pc-CreateSource AS CHARACTER,
+    pc-StatusCode   AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
 
-    if pc-CreateSource <> "EMAIL" then return true.
+    IF pc-CreateSource <> "EMAIL" THEN RETURN TRUE.
 
-    find WebStatus
-        where WebStatus.CompanyCode = pc-CompanyCode
-          and WebStatus.StatusCode  = pc-StatusCode no-lock no-error.
-    if not avail WebStatus then return true.
+    FIND WebStatus
+        WHERE WebStatus.CompanyCode = pc-CompanyCode
+          AND WebStatus.StatusCode  = pc-StatusCode NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE WebStatus THEN RETURN TRUE.
 
-    return not WebStatus.IgnoreEmail.
+    RETURN NOT WebStatus.IgnoreEmail.
     
 
 END FUNCTION.
@@ -2331,21 +2335,21 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IsSuperUser Include 
 FUNCTION com-IsSuperUser RETURNS LOGICAL
-  ( pc-LoginID      as char ) :
+  ( pc-LoginID      AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Webuser for WebUser.
+    DEFINE BUFFER Webuser FOR WebUser.
 
-    find WebUser
-        where WebUser.LoginID = pc-LoginID
-          no-lock no-error.
+    FIND WebUser
+        WHERE WebUser.LoginID = pc-LoginID
+          NO-LOCK NO-ERROR.
     
-    if not avail WebUser then return false.
+    IF NOT AVAILABLE WebUser THEN RETURN FALSE.
     
-    return WebUser.UserClass = "INTERNAL" and WebUser.SuperUser.
+    RETURN WebUser.UserClass = "INTERNAL" AND WebUser.SuperUser.
 
 END FUNCTION.
 
@@ -2354,13 +2358,13 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-MonthBegin Include 
 FUNCTION com-MonthBegin RETURNS DATE
-  ( pd-date as date) :
+  ( pd-date AS DATE) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  RETURN pd-date - ( day(pd-date) ) + 1.
+  RETURN pd-date - ( DAY(pd-date) ) + 1.
 
 END FUNCTION.
 
@@ -2369,7 +2373,7 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-MonthEnd Include 
 FUNCTION com-MonthEnd RETURNS DATE
-  ( pd-date as date ) :
+  ( pd-date AS DATE ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
@@ -2385,32 +2389,32 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NearestTimeUnit Include 
 FUNCTION com-NearestTimeUnit RETURNS INTEGER
-  ( pi-time as int ) :
+  ( pi-time AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   
-    def var lc-time     as char     no-undo.
-    def var li-mins     as int      no-undo.
-    def var li-rem      as int      no-undo.
+    DEFINE VARIABLE lc-time     AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE li-mins     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-rem      AS INTEGER      NO-UNDO.
 
 
-    assign
-        lc-time = string(pi-time,"hh:mm").
+    ASSIGN
+        lc-time = STRING(pi-time,"hh:mm").
 
 
-    assign
+    ASSIGN
         li-mins = int(substr(lc-time,4,2)).
 
 
-    if li-mins = 0 then return 0.
+    IF li-mins = 0 THEN RETURN 0.
 
-    assign
-        li-rem = li-mins mod 5.
+    ASSIGN
+        li-rem = li-mins MOD 5.
 
-    return ( li-mins - ( li-mins mod 5 ) ). 
+    RETURN ( li-mins - ( li-mins MOD 5 ) ). 
 
 END FUNCTION.
 
@@ -2419,26 +2423,26 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfActions Include 
 FUNCTION com-NumberOfActions RETURNS INTEGER
-  ( pc-LoginID as char ) :
+  ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return as int      no-undo.
+    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
 
-    def buffer IssAction    for IssAction.
+    DEFINE BUFFER IssAction    FOR IssAction.
 
 
-    for each IssAction no-lock
-        where IssAction.AssignTo = pc-LoginID
-          and IssAction.ActionStatus = "OPEN":
+    FOR EACH IssAction NO-LOCK
+        WHERE IssAction.AssignTo = pc-LoginID
+          AND IssAction.ActionStatus = "OPEN":
 
-        assign li-return = li-return + 1.
+        ASSIGN li-return = li-return + 1.
 
-    end.
+    END.
 
-    return li-return.
+    RETURN li-return.
     
 
 END FUNCTION.
@@ -2448,26 +2452,26 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfAlerts Include 
 FUNCTION com-NumberOfAlerts RETURNS INTEGER
- ( pc-LoginID as char ) :
+ ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return as int      no-undo.
+    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
 
-    def buffer IssAlert    for IssAlert.
+    DEFINE BUFFER IssAlert    FOR IssAlert.
 
 
-    for each IssAlert no-lock
-        where IssAlert.LoginID = pc-LoginID
+    FOR EACH IssAlert NO-LOCK
+        WHERE IssAlert.LoginID = pc-LoginID
           :
 
-        assign li-return = li-return + 1.
+        ASSIGN li-return = li-return + 1.
 
-    end.
+    END.
 
-    return li-return.
+    RETURN li-return.
 
 END FUNCTION.
 
@@ -2476,28 +2480,28 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfEmails Include 
 FUNCTION com-NumberOfEmails RETURNS INTEGER
-  ( pc-LoginID as char ) :
+  ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return       as int      no-undo.
-    def buffer webuser      for webuser.
-    def buffer e            for EmailH.
+    DEFINE VARIABLE li-return       AS INTEGER      NO-UNDO.
+    DEFINE BUFFER webuser      FOR webuser.
+    DEFINE BUFFER e            FOR EmailH.
 
-    find webuser where webuser.LoginID = pc-loginID no-lock no-error.
+    FIND webuser WHERE webuser.LoginID = pc-loginID NO-LOCK NO-ERROR.
 
-    if avail webuser
-    and webuser.userclass = "INTERNAL" and webuser.SuperUser then
-    do:
-        for each e where e.companyCode = webuser.CompanyCode no-lock:
-            assign
+    IF AVAILABLE webuser
+    AND webuser.userclass = "INTERNAL" AND webuser.SuperUser THEN
+    DO:
+        FOR EACH e WHERE e.companyCode = webuser.CompanyCode NO-LOCK:
+            ASSIGN
                 li-return = li-return + 1.
-        end.
-    end.
+        END.
+    END.
     
-    return li-return.
+    RETURN li-return.
     
 
 
@@ -2508,45 +2512,45 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfInventoryWarnings Include 
 FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
-    ( pc-LoginID as char ) :
+    ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
  Purpose:  
    Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return       as int      no-undo.
-    def var ld-WarnFrom     as date     no-undo.
-    def var ld-DueDate      as date     no-undo.
+    DEFINE VARIABLE li-return       AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE ld-WarnFrom     AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-DueDate      AS DATE     NO-UNDO.
     
-    def buffer webUser      for WebUser.
-    def buffer ivField      for ivField.
-    def buffer ivSub        for ivSub.
-    def buffer custField    for custField.
+    DEFINE BUFFER webUser      FOR WebUser.
+    DEFINE BUFFER ivField      FOR ivField.
+    DEFINE BUFFER ivSub        FOR ivSub.
+    DEFINE BUFFER custField    FOR custField.
 
-    find webuser where webuser.LoginID = pc-loginID no-lock no-error.
+    FIND webuser WHERE webuser.LoginID = pc-loginID NO-LOCK NO-ERROR.
 
-    if DYNAMIC-FUNCTION('com-IsSuperUser':U,pc-loginid) then
-    for each ivField no-lock
-        where ivField.dType = "date"
-          and ivField.dWarning > 0,
-          first ivSub of ivField no-lock:
+    IF DYNAMIC-FUNCTION('com-IsSuperUser':U,pc-loginid) THEN
+    FOR EACH ivField NO-LOCK
+        WHERE ivField.dType = "date"
+          AND ivField.dWarning > 0,
+          FIRST ivSub OF ivField NO-LOCK:
 
-        if ivSub.CompanyCode <> webuser.CompanyCode then next.
+        IF ivSub.CompanyCode <> webuser.CompanyCode THEN NEXT.
 
-        assign
-            ld-WarnFrom = today - ivField.dWarning.
+        ASSIGN
+            ld-WarnFrom = TODAY - ivField.dWarning.
 
-        for each CustField no-lock
-            where CustField.ivFieldID = ivField.ivFieldID:
+        FOR EACH CustField NO-LOCK
+            WHERE CustField.ivFieldID = ivField.ivFieldID:
 
             
-            if custField.FieldData = "" 
-            or custField.FieldData = ? then next.
+            IF custField.FieldData = "" 
+            OR custField.FieldData = ? THEN NEXT.
 
-            assign
-                ld-DueDate = date(custfield.FieldData) no-error.
-            if error-status:error 
-            or ld-DueDate = ? then next.
+            ASSIGN
+                ld-DueDate = DATE(custfield.FieldData) no-error.
+            IF ERROR-STATUS:ERROR 
+            OR ld-DueDate = ? THEN NEXT.
 
             /* 
             *** Waring base on
@@ -2555,16 +2559,16 @@ FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
             *** If the inventory date has passed then no more warnings
             ***
             */
-            if today >= ld-DueDate - ivField.dWarning
-            and ld-DueDate >= today  
-            then assign li-return = li-return + 1.
-        end.
+            IF TODAY >= ld-DueDate - ivField.dWarning
+            AND ld-DueDate >= TODAY  
+            THEN ASSIGN li-return = li-return + 1.
+        END.
             
 
 
-    end.
+    END.
 
-    return li-return.
+    RETURN li-return.
 
 END FUNCTION.
 
@@ -2573,33 +2577,33 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfOpenActions Include 
 FUNCTION com-NumberOfOpenActions RETURNS INTEGER
-  ( pc-LoginID as char ) :
+  ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return as int      no-undo.
+    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
 
-    def buffer IssAction    for IssAction.
-    def buffer WebUser      for WebUser.
-
-
-    find webuser where webuser.LoginID = pc-loginid no-lock no-error.
-
-    if not avail webuser then return 0.
+    DEFINE BUFFER IssAction    FOR IssAction.
+    DEFINE BUFFER WebUser      FOR WebUser.
 
 
-    if webUser.SuperUser then
-    for each IssAction no-lock
-        where IssAction.CompanyCode = webuser.CompanyCode
-          and IssAction.ActionStatus = "OPEN":
+    FIND webuser WHERE webuser.LoginID = pc-loginid NO-LOCK NO-ERROR.
 
-        assign li-return = li-return + 1.
+    IF NOT AVAILABLE webuser THEN RETURN 0.
 
-    end.
 
-    return li-return.
+    IF webUser.SuperUser THEN
+    FOR EACH IssAction NO-LOCK
+        WHERE IssAction.CompanyCode = webuser.CompanyCode
+          AND IssAction.ActionStatus = "OPEN":
+
+        ASSIGN li-return = li-return + 1.
+
+    END.
+
+    RETURN li-return.
     
 
 END FUNCTION.
@@ -2609,33 +2613,33 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberUnAssigned Include 
 FUNCTION com-NumberUnAssigned RETURNS INTEGER
- ( pc-CompanyCode as char ) :
+ ( pc-CompanyCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-return as int      no-undo.
+    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
 
-    def buffer Issue        for Issue.
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
 
 
-    for each Issue no-lock
-        where Issue.CompanyCode = pc-companyCode
-          and Issue.AssignTo = ""
+    FOR EACH Issue NO-LOCK
+        WHERE Issue.CompanyCode = pc-companyCode
+          AND Issue.AssignTo = ""
            ,
-          first WebStatus no-lock
-                where WebStatus.companyCode = Issue.CompanyCode
-                  and WebStatus.StatusCode  = Issue.StatusCode
-                  and WebStatus.Completed   = false
+          FIRST WebStatus NO-LOCK
+                WHERE WebStatus.companyCode = Issue.CompanyCode
+                  AND WebStatus.StatusCode  = Issue.StatusCode
+                  AND WebStatus.Completed   = FALSE
           :
 
-        assign li-return = li-return + 1.
+        ASSIGN li-return = li-return + 1.
 
-    end.
+    END.
 
-    return li-return.
+    RETURN li-return.
 
 END FUNCTION.
 
@@ -2643,27 +2647,27 @@ END FUNCTION.
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-QuickView Include 
-FUNCTION com-QuickView RETURNS logical
-  ( pc-LoginID  as char ) :
+FUNCTION com-QuickView RETURNS LOGICAL
+  ( pc-LoginID  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer b-WebUser    for webUser.
-    def buffer b-Customer   for Customer.
+    DEFINE BUFFER b-WebUser    FOR webUser.
+    DEFINE BUFFER b-Customer   FOR Customer.
 
-    find b-WebUser
-        where b-WebUser.LoginID = pc-LoginID no-lock no-error.
+    FIND b-WebUser
+        WHERE b-WebUser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
-    if not avail b-webuser
-    or b-webuser.UserClass = "{&CUSTOMER}" then return false.
+    IF NOT AVAILABLE b-webuser
+    OR b-webuser.UserClass = "{&CUSTOMER}" THEN RETURN FALSE.
 
-    if b-webuser.UserClass = "{&CONTRACT}" then return true.
+    IF b-webuser.UserClass = "{&CONTRACT}" THEN RETURN TRUE.
     
-    if b-webuser.SuperUser then return true.
+    IF b-webuser.SuperUser THEN RETURN TRUE.
 
-    return b-webuser.QuickView.
+    RETURN b-webuser.QuickView.
 
 
 END FUNCTION.
@@ -2673,36 +2677,36 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-RequirePasswordChange Include 
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
-  ( pc-user as char ) :
+  ( pc-user AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer webUser for WebUser.
-    def buffer company for company.
+    DEFINE BUFFER webUser FOR WebUser.
+    DEFINE BUFFER company FOR company.
   
 
-    find webUser
-        where webUser.loginid = pc-user exclusive-lock no-wait no-error.
+    FIND webUser
+        WHERE webUser.loginid = pc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
 
-    if locked webuser
-    or not avail webuser then return false.
-
-    
-    find company 
-        where company.CompanyCode = webuser.CompanyCode no-lock no-error.
-    if not avail company then return false.
-
-    if company.PasswordExpire = 0 then return false.
+    IF LOCKED webuser
+    OR NOT AVAILABLE webuser THEN RETURN FALSE.
 
     
-    if webuser.LastPasswordChange = ?
-        then assign webUser.LastPasswordChange = today.
+    FIND company 
+        WHERE company.CompanyCode = webuser.CompanyCode NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE company THEN RETURN FALSE.
+
+    IF company.PasswordExpire = 0 THEN RETURN FALSE.
+
+    
+    IF webuser.LastPasswordChange = ?
+        THEN ASSIGN webUser.LastPasswordChange = TODAY.
 
 
-    return ( webuser.LastPasswordChange + company.PasswordExpire ) <=
-           today.
+    RETURN ( webuser.LastPasswordChange + company.PasswordExpire ) <=
+           TODAY.
     
 
 END FUNCTION.
@@ -2712,21 +2716,21 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-SLADescription Include 
 FUNCTION com-SLADescription RETURNS CHARACTER
-    ( pf-SLAID as dec ) :
+    ( pf-SLAID AS DECIMAL ) :
 /*------------------------------------------------------------------------------
  Purpose:  
    Notes:  
 ------------------------------------------------------------------------------*/
 
-   def buffer slahead  for slahead.
+   DEFINE BUFFER slahead  FOR slahead.
 
-   find slahead
-       where slahead.SLAID = pf-SLAID
-       no-lock no-error.
+   FIND slahead
+       WHERE slahead.SLAID = pf-SLAID
+       NO-LOCK NO-ERROR.
 
 
-   return if avail slahead
-          then slahead.description else "".
+   RETURN IF AVAILABLE slahead
+          THEN slahead.description ELSE "".
 
 END FUNCTION.
 
@@ -2735,21 +2739,21 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-StatusTrackIssue Include 
 FUNCTION com-StatusTrackIssue RETURNS LOGICAL
-  ( pc-companycode as char,
-    pc-StatusCode  as char ) :
+  ( pc-companycode AS CHARACTER,
+    pc-StatusCode  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer  webStatus   for webStatus.
+    DEFINE BUFFER  webStatus   FOR webStatus.
 
-    find webStatus
-        where webStatus.companycode = pc-companycode
-          and webStatus.StatusCode  = pc-statuscode
-          no-lock no-error.
+    FIND webStatus
+        WHERE webStatus.companycode = pc-companycode
+          AND webStatus.StatusCode  = pc-statuscode
+          NO-LOCK NO-ERROR.
 
-    return if avail webstatus then webstatus.CustomerTrack else false.
+    RETURN IF AVAILABLE webstatus THEN webstatus.CustomerTrack ELSE FALSE.
 
 END FUNCTION.
 
@@ -2758,19 +2762,19 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-StringReturn Include 
 FUNCTION com-StringReturn RETURNS CHARACTER
-  ( pc-orig as char,
-    pc-add as char ) :
+  ( pc-orig AS CHARACTER,
+    pc-add AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    if pc-add = ""
-    or pc-add = ? then return pc-orig.
+    IF pc-add = ""
+    OR pc-add = ? THEN RETURN pc-orig.
 
-    if pc-orig = "" then return pc-add.
+    IF pc-orig = "" THEN RETURN pc-add.
 
-    return pc-orig + "~n" + pc-add.
+    RETURN pc-orig + "~n" + pc-add.
 
 END FUNCTION.
 
@@ -2779,30 +2783,30 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-SystemLog Include 
 FUNCTION com-SystemLog RETURNS LOGICAL
-  ( pc-ActType as char,
-    pc-LoginID as char,
-    pc-AttrData as char ) :
+  ( pc-ActType AS CHARACTER,
+    pc-LoginID AS CHARACTER,
+    pc-AttrData AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer SysAct for SysAct.
+    DEFINE BUFFER SysAct FOR SysAct.
 
-    do transaction:
-        create SysAct.
-        assign
-            SysAct.ActDate = today
-            SysAct.ActTime = time
+    DO TRANSACTION:
+        CREATE SysAct.
+        ASSIGN
+            SysAct.ActDate = TODAY
+            SysAct.ActTime = TIME
             SysAct.LoginID = pc-LoginID
             SysAct.ActType = pc-ActType
             SysAct.AttrData = pc-AttrData.
 
-        release SysAct.
-    end.
+        RELEASE SysAct.
+    END.
 
 
-    return true.
+    RETURN TRUE.
 
 END FUNCTION.
 
@@ -2811,23 +2815,23 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-TicketOnly Include 
 FUNCTION com-TicketOnly RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pc-AccountNumber      as char ) :
+  ( pc-companyCode  AS CHARACTER,
+    pc-AccountNumber      AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Customer for Customer.
+    DEFINE BUFFER Customer FOR Customer.
 
-    find Customer
-        where Customer.CompanyCode      = pc-companyCode
-          and Customer.AccountNumber    = pc-AccountNumber
-          no-lock no-error.
+    FIND Customer
+        WHERE Customer.CompanyCode      = pc-companyCode
+          AND Customer.AccountNumber    = pc-AccountNumber
+          NO-LOCK NO-ERROR.
     
-    if not avail Customer then return false.
+    IF NOT AVAILABLE Customer THEN RETURN FALSE.
     
-    return Customer.SupportTicket = "YES".
+    RETURN Customer.SupportTicket = "YES".
 
 END FUNCTION.
 
@@ -2836,17 +2840,17 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-TimeReturn Include 
 FUNCTION com-TimeReturn RETURNS CHARACTER
-  ( pc-Type as char ) :
+  ( pc-Type AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    case pc-Type:
-        when "HOUR" 
-        then      return lc-global-hour-code + "^" + lc-global-hour-display.
-        otherwise return lc-global-min-code + "^" + lc-global-min-display.
-    end case.
+    CASE pc-Type:
+        WHEN "HOUR" 
+        THEN      RETURN lc-global-hour-code + "^" + lc-global-hour-display.
+        OTHERWISE RETURN lc-global-min-code + "^" + lc-global-min-display.
+    END CASE.
 END FUNCTION.
 
 /* _UIB-CODE-BLOCK-END */
@@ -2854,31 +2858,31 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-TimeToString Include 
 FUNCTION com-TimeToString RETURNS CHARACTER
-  ( pi-time as int ) :
+  ( pi-time AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
-    def var li-sec-hours        as int      initial 3600 no-undo.
-    def var li-seconds          as int      no-undo.
-    def var li-mins             as int      no-undo.
-    def var li-hours            as int      no-undo.
-    def var ll-neg              as log      no-undo.
+    DEFINE VARIABLE li-sec-hours        AS INTEGER      INITIAL 3600 NO-UNDO.
+    DEFINE VARIABLE li-seconds          AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-mins             AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-hours            AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE ll-neg              AS LOG      NO-UNDO.
 
-    if pi-time < 0 then assign ll-neg = true
+    IF pi-time < 0 THEN ASSIGN ll-neg = TRUE
                                pi-time = pi-time * -1.
 
-    assign 
-        li-seconds = pi-time mod li-sec-hours
-        li-mins = truncate(li-seconds / 60,0).
+    ASSIGN 
+        li-seconds = pi-time MOD li-sec-hours
+        li-mins = TRUNCATE(li-seconds / 60,0).
         
-    assign
+    ASSIGN
         pi-time = pi-time - li-seconds.
         
-    assign
-        li-hours = truncate(pi-time / li-sec-hours,0).
+    ASSIGN
+        li-hours = TRUNCATE(pi-time / li-sec-hours,0).
 
-    return trim( ( if ll-neg then "-" else "" ) + string(li-hours) + ":" + string(li-mins,'99')).
+    RETURN TRIM( ( IF ll-neg THEN "-" ELSE "" ) + string(li-hours) + ":" + string(li-mins,'99')).
     
 END FUNCTION.
 
@@ -2887,26 +2891,26 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-UserName Include 
 FUNCTION com-UserName RETURNS CHARACTER
-  ( pc-LoginID as char ) :
+  ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer webuser  for webuser.
+    DEFINE BUFFER webuser  FOR webuser.
 
-    case pc-loginID:
-        when "SLA.ALERT" then return "SLA Processing".
-    end case.
+    CASE pc-loginID:
+        WHEN "SLA.ALERT" THEN RETURN "SLA Processing".
+    END CASE.
 
-    find webuser
-        where webuser.LoginID = pc-LoginID
-        no-lock no-error.
+    FIND webuser
+        WHERE webuser.LoginID = pc-LoginID
+        NO-LOCK NO-ERROR.
 
 
-    return if avail webuser
-           then trim(webuser.forename + " " + webuser.surname)
-           else pc-LoginID.
+    RETURN IF AVAILABLE webuser
+           THEN TRIM(webuser.forename + " " + webuser.surname)
+           ELSE pc-LoginID.
 
 
 END FUNCTION.
@@ -2916,27 +2920,27 @@ END FUNCTION.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-UsersCompany Include 
 FUNCTION com-UsersCompany RETURNS CHARACTER
-  ( pc-LoginID  as char ) :
+  ( pc-LoginID  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer b-WebUser    for webUser.
-    def buffer b-Customer   for Customer.
+    DEFINE BUFFER b-WebUser    FOR webUser.
+    DEFINE BUFFER b-Customer   FOR Customer.
 
-    find b-WebUser
-        where b-WebUser.LoginID = pc-LoginID no-lock no-error.
+    FIND b-WebUser
+        WHERE b-WebUser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
-    if not avail b-webuser
-    or b-webuser.UserClass <> "{&CUSTOMER}" then return "".
+    IF NOT AVAILABLE b-webuser
+    OR b-webuser.UserClass <> "{&CUSTOMER}" THEN RETURN "".
 
-    find b-Customer
-        where b-Customer.CompanyCode = b-WebUser.CompanyCode
-          and b-Customer.AccountNumber = b-WebUser.AccountNumber
-          no-lock no-error.
+    FIND b-Customer
+        WHERE b-Customer.CompanyCode = b-WebUser.CompanyCode
+          AND b-Customer.AccountNumber = b-WebUser.AccountNumber
+          NO-LOCK NO-ERROR.
 
-    return if avail b-Customer then b-Customer.name else "".
+    RETURN IF AVAILABLE b-Customer THEN b-Customer.name ELSE "".
 
 
 END FUNCTION.
@@ -2945,22 +2949,22 @@ END FUNCTION.
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-UserTrackIssue Include 
-FUNCTION com-UserTrackIssue RETURNS logical
-    ( pc-LoginID as char
+FUNCTION com-UserTrackIssue RETURNS LOGICAL
+    ( pc-LoginID AS CHARACTER
      ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer  webUser   for webUser.
+    DEFINE BUFFER  webUser   FOR webUser.
 
-    find webUser
-        where webUser.LoginID = pc-LoginID
-          no-lock no-error.
+    FIND webUser
+        WHERE webUser.LoginID = pc-LoginID
+          NO-LOCK NO-ERROR.
 
-    return if avail webUser and webUser.email <> "" 
-           then webUser.CustomerTrack else false.
+    RETURN IF AVAILABLE webUser AND webUser.email <> "" 
+           THEN webUser.CustomerTrack ELSE FALSE.
 
 END FUNCTION.
 

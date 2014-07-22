@@ -19,6 +19,7 @@
     17/08/2006  phoski      QuickView
     20/05/2014  phoski      DFS bug fixes & Team Selections
     13/06/2014  phoski      UX
+    22/07/2014  phoski      Timeout
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -29,73 +30,74 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg  AS CHARACTER NO-UNDO.
 
-def var li-curr-year      as int format "9999"  no-undo.
-def var li-end-week       as int format "99"    no-undo.
-def var ld-curr-hours     as dec  format "99.99" extent 7   no-undo.
-def var lc-day            as char initial "Mon,Tue,Wed,Thu,Fri,Sat,Sun" no-undo.
+DEFINE VARIABLE li-curr-year      AS INTEGER FORMAT "9999"  NO-UNDO.
+DEFINE VARIABLE li-end-week       AS INTEGER FORMAT "99"    NO-UNDO.
+DEFINE VARIABLE ld-curr-hours     AS DECIMAL  FORMAT "99.99" EXTENT 7   NO-UNDO.
+DEFINE VARIABLE lc-day            AS CHARACTER INITIAL "Mon,Tue,Wed,Thu,Fri,Sat,Sun" NO-UNDO.
 
-def var lc-mode as char no-undo.
-def var lc-rowid as char no-undo.
-def var lc-title as char no-undo.
-
-
-def buffer b-valid for webuser.
-def buffer b-table for webuser.
-DEF BUFFER webuSteam    FOR webuSteam.
-DEF BUFFER steam        FOR steam.
-
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-parameters   as char no-undo.
+DEFINE VARIABLE lc-mode AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title AS CHARACTER NO-UNDO.
 
 
-def var lc-link-label   as char no-undo.
-def var lc-submit-label as char no-undo.
-def var lc-link-url     as char no-undo.
-DEF VAR lc-selacc       AS CHAR NO-UNDO.
+DEFINE BUFFER b-valid       FOR webuser.
+DEFINE BUFFER b-table       FOR webuser.
+DEFINE BUFFER webuSteam     FOR webuSteam.
+DEFINE BUFFER steam         FOR steam.
+
+DEFINE VARIABLE lc-search    AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-firstrow  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-lastrow   AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-navigation AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters   AS CHARACTER NO-UNDO.
+
+
+DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selacc       AS CHARACTER NO-UNDO.
 
 
 
-def var lc-loginid      as char no-undo.
-def var lc-forename     as char no-undo.
-def var lc-surname      as char no-undo.
-def var lc-email        as char no-undo.
-def var lc-usertitle    as char no-undo.
-def var lc-pagename     as char no-undo.
-def var lc-disabled     as char no-undo.
-def var lc-accountnumber as char no-undo.
-def var lc-jobtitle     as char no-undo.
-def var lc-telephone    as char no-undo.
-def var lc-password     as char no-undo.
-def var lc-userClass    as char no-undo.
-def var lc-customertrack as char no-undo.
-def var lc-recordsperpage as char no-undo.
-def var lc-mobile         as char no-undo.
-def var lc-allowsms       as char no-undo.
-def var lc-accesssms      as char no-undo.
-def var lc-superuser      as char no-undo.
-def var lc-quickview      as char  no-undo.
-def var lc-DefaultUser    as char  no-undo.
-DEF VAR lc-html           AS CHAR NO-UNDO.
-DEF VAR ll-check          AS LOG  NO-UNDO.
-DEF VAR li-Count          AS INT  NO-UNDO.
-DEF VAR li-row            AS INT INITIAL 3 NO-UNDO.
+DEFINE VARIABLE lc-loginid      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-forename     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-surname      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-email        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-usertitle    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pagename     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-disabled     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accountnumber AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-jobtitle     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-telephone    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-password     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-userClass    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-customertrack AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-recordsperpage AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mobile         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-allowsms       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accesssms      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-superuser      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-quickview      AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-DefaultUser    AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-DisableTimeout AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-html           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-check          AS LOG  NO-UNDO.
+DEFINE VARIABLE li-Count          AS INTEGER  NO-UNDO.
+DEFINE VARIABLE li-row            AS INTEGER INITIAL 3 NO-UNDO.
 
 
-def var lc-usertitleCode  as char
-    initial ''    no-undo.
-def var lc-usertitleDesc  as char
-    initial '' no-undo.
+DEFINE VARIABLE lc-usertitleCode  AS CHARACTER
+    INITIAL ''    NO-UNDO.
+DEFINE VARIABLE lc-usertitleDesc  AS CHARACTER
+    INITIAL '' NO-UNDO.
 
-def var lc-HoursOnAm    as char  extent 7 initial "00:00" no-undo.
-def var lc-HoursOffAm   as char  extent 7 initial "00:00" no-undo.
-def var lc-HoursOnPm    as char  extent 7 initial "00:00" no-undo.
-def var lc-HoursOffPm   as char  extent 7 initial "00:00" no-undo.
+DEFINE VARIABLE lc-HoursOnAm    AS CHARACTER  EXTENT 7 INITIAL "00:00" NO-UNDO.
+DEFINE VARIABLE lc-HoursOffAm   AS CHARACTER  EXTENT 7 INITIAL "00:00" NO-UNDO.
+DEFINE VARIABLE lc-HoursOnPm    AS CHARACTER  EXTENT 7 INITIAL "00:00" NO-UNDO.
+DEFINE VARIABLE lc-HoursOffPm   AS CHARACTER  EXTENT 7 INITIAL "00:00" NO-UNDO.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -120,12 +122,12 @@ def var lc-HoursOffPm   as char  extent 7 initial "00:00" no-undo.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD html-InputFieldMasked Procedure 
 FUNCTION html-InputFieldMasked RETURNS CHARACTER
-  ( pc-name as char,
-    pc-maxlength as char,
-    pc-datatype as char,
-    pc-mask as char,
-    pc-value as char,
-    pc-style as char )  FORWARD.
+  ( pc-name AS CHARACTER,
+    pc-maxlength AS CHARACTER,
+    pc-datatype AS CHARACTER,
+    pc-mask AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-style AS CHARACTER )  FORWARD.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
@@ -195,13 +197,13 @@ PROCEDURE ip-Page :
 ------------------------------------------------------------------------------*/
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           ( if lookup("loginid",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("User Name")
-           else htmlib-SideLabel("User Name"))
+           ( IF LOOKUP("loginid",lc-error-field,'|') > 0 
+           THEN htmlib-SideLabelError("User Name")
+           ELSE htmlib-SideLabel("User Name"))
            '</TD>' skip
            .
 
-    if lc-mode = "ADD" then
+    IF lc-mode = "ADD" THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-InputField("loginid",20,lc-loginid) skip
            '</TD>'.
@@ -210,23 +212,23 @@ PROCEDURE ip-Page :
            skip.
     {&out} '</TR>' skip.
 
-    if not can-do("VIEW,DELETE",lc-mode) then
-    do:
+    IF NOT CAN-DO("VIEW,DELETE",lc-mode) THEN
+    DO:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="RIGHT">' 
-            if lookup("password",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Password")
-            else htmlib-SideLabel("Password")
+            IF LOOKUP("password",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Password")
+            ELSE htmlib-SideLabel("Password")
             '</TD><TD VALIGN="TOP" ALIGN="LEFT">'.
         {&out}  htmlib-InputPassword("password",20,"")
                 '</TD>' skip.
-    end.
+    END.
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("usertitle",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Title")
-            else htmlib-SideLabel("Title"))
+            (IF LOOKUP("usertitle",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Title")
+            ELSE htmlib-SideLabel("Title"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("usertitle",lc-usertitleCode,lc-usertitleDesc,lc-usertitle) 
             '</TD>' skip.
@@ -240,12 +242,12 @@ PROCEDURE ip-Page :
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("forename",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Forename")
-            else htmlib-SideLabel("Forename"))
+            (IF LOOKUP("forename",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Forename")
+            ELSE htmlib-SideLabel("Forename"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("forename",40,lc-forename) 
             '</TD>' skip.
@@ -256,12 +258,12 @@ PROCEDURE ip-Page :
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("surname",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Surname")
-            else htmlib-SideLabel("Surname"))
+            (IF LOOKUP("surname",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Surname")
+            ELSE htmlib-SideLabel("Surname"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("surname",40,lc-surname) 
             '</TD>' skip.
@@ -271,12 +273,12 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
      {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("jobtitle",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Job Title/Position")
-            else htmlib-SideLabel("Job Title/Position"))
+            (IF LOOKUP("jobtitle",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Job Title/Position")
+            ELSE htmlib-SideLabel("Job Title/Position"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("jobtitle",20,lc-jobtitle) 
             '</TD>' skip.
@@ -287,12 +289,12 @@ PROCEDURE ip-Page :
  
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("email",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Email")
-            else htmlib-SideLabel("Email"))
+            (IF LOOKUP("email",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Email")
+            ELSE htmlib-SideLabel("Email"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("email",40,lc-email) 
             '</TD>' skip.
@@ -302,15 +304,15 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("customertrack",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Customer Track?")
-            else htmlib-SideLabel("Customer Track?"))
+            (IF LOOKUP("customertrack",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Customer Track?")
+            ELSE htmlib-SideLabel("Customer Track?"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("customertrack", if lc-customertrack = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("customertrack", IF lc-customertrack = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-customertrack = 'on'
@@ -321,12 +323,12 @@ PROCEDURE ip-Page :
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("telephone",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Telephone")
-            else htmlib-SideLabel("Telephone"))
+            (IF LOOKUP("telephone",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Telephone")
+            ELSE htmlib-SideLabel("Telephone"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("telephone",20,lc-telephone) 
             '</TD>' skip.
@@ -336,12 +338,12 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("mobile",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Mobile")
-            else htmlib-SideLabel("Mobile"))
+            (IF LOOKUP("mobile",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Mobile")
+            ELSE htmlib-SideLabel("Mobile"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("mobile",20,lc-mobile) 
             '</TD>' skip.
@@ -351,15 +353,15 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("allowsms",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("SLA SMS Alerts?")
-            else htmlib-SideLabel("SLA SMS Alerts?"))
+            (IF LOOKUP("allowsms",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("SLA SMS Alerts?")
+            ELSE htmlib-SideLabel("SLA SMS Alerts?"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("allowsms", if lc-allowsms = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("allowsms", IF lc-allowsms = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-allowsms = 'on'
@@ -369,15 +371,15 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("accesssms",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Access SMS Web Page?")
-            else htmlib-SideLabel("Access SMS Web Page?"))
+            (IF LOOKUP("accesssms",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Access SMS Web Page?")
+            ELSE htmlib-SideLabel("Access SMS Web Page?"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("accesssms", if lc-accesssms = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("accesssms", IF lc-accesssms = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-accesssms = 'on'
@@ -388,20 +390,20 @@ PROCEDURE ip-Page :
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("pagename",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Menu Page")
-            else htmlib-SideLabel("Menu Page"))
+            (IF LOOKUP("pagename",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Menu Page")
+            ELSE htmlib-SideLabel("Menu Page"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("pagename",20,lc-pagename) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-pagename),'left')
            skip.
-    if can-do("add,update",lc-mode) then
-    do:
+    IF CAN-DO("add,update",lc-mode) THEN
+    DO:
         {&out} skip
                '<td>'
                htmlib-Lookup("Lookup Page",
@@ -410,16 +412,16 @@ PROCEDURE ip-Page :
                              appurl + '/lookup/menupage.p')
                '</TD>'
                skip.
-    end.
+    END.
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("userclass",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("User Type")
-            else htmlib-SideLabel("User Type"))
+            (IF LOOKUP("userclass",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("User Type")
+            ELSE htmlib-SideLabel("User Type"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("userclass","INTERNAL|CUSTOMER|CONTRACT","Internal|Customer|Contractor",lc-userclass) 
             '</TD>' skip.
@@ -431,15 +433,15 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("superuser",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Super User?")
-            else htmlib-SideLabel("Super User?"))
+            (IF LOOKUP("superuser",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Super User?")
+            ELSE htmlib-SideLabel("Super User?"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("superuser", if lc-superuser = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("superuser", IF lc-superuser = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-superuser = 'on'
@@ -449,15 +451,15 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("quickview",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Access To Quick View?")
-            else htmlib-SideLabel("Access To Quick View?"))
+            (IF LOOKUP("quickview",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Access To Quick View?")
+            ELSE htmlib-SideLabel("Access To Quick View?"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("quickview", if lc-quickview = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("quickview", IF lc-quickview = 'on'
+                                        THEN TRUE ELSE FALSE) 
            '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-quickview = 'on'
@@ -467,20 +469,20 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("accountnumber",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Account Number")
-            else htmlib-SideLabel("Account Number"))
+            (IF LOOKUP("accountnumber",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Account Number")
+            ELSE htmlib-SideLabel("Account Number"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("accountnumber",8,lc-accountnumber) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-accountnumber),'left')
            skip.
-    if can-do("add,update",lc-mode) then
-    do:
+    IF CAN-DO("add,update",lc-mode) THEN
+    DO:
         {&out} skip
                '<td>'
                htmlib-Lookup("Lookup Account",
@@ -489,20 +491,20 @@ PROCEDURE ip-Page :
                              appurl + '/lookup/customer.p')
                '</TD>'
                skip.
-    end.
+    END.
     {&out} '</TR>' skip.
 
    
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("disabled",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Disabled?")
-            else htmlib-SideLabel("Disabled?"))
+            (IF LOOKUP("disabled",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Disabled?")
+            ELSE htmlib-SideLabel("Disabled?"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("disabled", if lc-disabled = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("disabled", IF lc-disabled = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-disabled = 'on'
@@ -512,16 +514,16 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("defaultuser",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Main Customer Issue Contact?")
-            else htmlib-SideLabel("Main Customer Issue Contact?"))
+            (IF LOOKUP("defaultuser",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Main Customer Issue Contact?")
+            ELSE htmlib-SideLabel("Main Customer Issue Contact?"))
             
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("defaultuser", if lc-defaultuser = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("defaultuser", IF lc-defaultuser = 'on'
+                                        THEN TRUE ELSE FALSE) 
           
            '</TD>' skip.
     else 
@@ -531,14 +533,32 @@ PROCEDURE ip-Page :
     
     {&out} '</TR>' skip.
 
-
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("recordperpage",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Records Per Page")
-            else htmlib-SideLabel("Records Per Page"))
+            (IF LOOKUP("disabletimeout",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Disable Web Timeout?")
+            ELSE htmlib-SideLabel("Disable Web Timeout?"))
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+            htmlib-CheckBox("disabletimeout", IF lc-DisableTimeout = 'on'
+                                        THEN TRUE ELSE FALSE) 
+          
+           '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(if lc-DisableTimeout = 'on'
+                                         then 'yes' else 'no'),'left')
+           skip.
+    
+    {&out} '</TR>' skip.
+/* */
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("recordperpage",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Records Per Page")
+            ELSE htmlib-SideLabel("Records Per Page"))
+            '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("recordsperpage",2,lc-recordsperpage) 
             '</TD>' skip.
@@ -551,7 +571,7 @@ PROCEDURE ip-Page :
             htmlib-SideLabel("Assigned Support Teams")
             '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
     DO:
         {&out} '<TD VALIGN="TOP" ALIGN="left">'.
 
@@ -581,7 +601,7 @@ PROCEDURE ip-Page :
 
         {&out} '</TD>' skip.
     END.
-    else
+    ELSE
     DO:
         {&out} '<TD VALIGN="TOP" ALIGN="left">'.
 
@@ -635,20 +655,20 @@ PROCEDURE ip-ResetOtherMain :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-companycode      as char     no-undo.
-    def input param pc-accountNumber    as char     no-undo.
-    def input param pc-loginid          as char     no-undo.
+    DEFINE INPUT PARAMETER pc-companycode      AS CHARACTER     NO-UNDO.
+    DEFINE INPUT PARAMETER pc-accountNumber    AS CHARACTER     NO-UNDO.
+    DEFINE INPUT PARAMETER pc-loginid          AS CHARACTER     NO-UNDO.
 
-    def buffer b-user   for webUser.
+    DEFINE BUFFER b-user   FOR webUser.
 
     
-    for each b-user exclusive-lock
-        where b-user.companyCode = pc-companyCode
-          and b-user.AccountNumber = pc-AccountNumber:
+    FOR EACH b-user EXCLUSIVE-LOCK
+        WHERE b-user.companyCode = pc-companyCode
+          AND b-user.AccountNumber = pc-AccountNumber:
 
-        if b-user.LoginId <> pc-LoginId
-        then assign b-user.defaultUser = false.
-    end.
+        IF b-user.LoginId <> pc-LoginId
+        THEN ASSIGN b-user.defaultUser = FALSE.
+    END.
 END PROCEDURE.
 
 /* _UIB-CODE-BLOCK-END */
@@ -665,32 +685,32 @@ PROCEDURE ip-timestable :
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def var vx      as int  no-undo.
-    def var lc-year as char no-undo.
-    def var zx      as int  no-undo. 
-    def var lc-var  as char no-undo.
+    DEFINE VARIABLE vx      AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-year AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE zx      AS INTEGER  NO-UNDO. 
+    DEFINE VARIABLE lc-var  AS CHARACTER NO-UNDO.
 
 
         
 
     {&out} '<script>' skip.
 
-        for each WebStdTime where WebStdTime.companycode = lc-global-company     
-                            and   WebStdTime.LoginID     = b-table.loginID       
-                            no-lock:                             
+        FOR EACH WebStdTime WHERE WebStdTime.companycode = lc-global-company     
+                            AND   WebStdTime.LoginID     = b-table.loginID       
+                            NO-LOCK:                             
                lc-var = ''.
-               do vx = 1 to 7:
-                assign lc-var = lc-var +  string(WebStdTime.StdAMStTime[vx],"9999")   + ','
+               DO vx = 1 TO 7:
+                ASSIGN lc-var = lc-var +  string(WebStdTime.StdAMStTime[vx],"9999")   + ','
                        lc-var = lc-var +  string(WebStdTime.StdAMEndTime[vx],"9999")  + ','
                        lc-var = lc-var +  string(WebStdTime.StdPMStTime[vx],"9999")   + ','
                        lc-var = lc-var +  string(WebStdTime.StdPMEndTime[vx],"9999")  + ','  .
-               end.
-               lc-var = substr(lc-var,1,length(lc-var) - 1) . 
+               END.
+               lc-var = substr(lc-var,1,LENGTH(lc-var) - 1) . 
 
-               {&out} 'var YEAR' string(WebStdTime.StdWkYear) ' = ~'' lc-var '~' ;' skip.
+               {&out} 'var YEAR' STRING(WebStdTime.StdWkYear) ' = ~'' lc-var '~' ;' skip.
 
  
-        end.
+        END.
 
     {&out}  
            'function changeThisYear(varObj)' skip
@@ -753,10 +773,10 @@ PROCEDURE ip-timestable :
            '<select id="submityear" name="submityear" class="inputfield" ' skip
            ' onchange="changeThisYear(this);"  >' skip
            '<option value="" ' '>  Select Year </option>' skip.
-           do zx = -1 to 4:
-             lc-year = string(year(today) - zx).
-             {&out} '<option value="' lc-year '" ' if integer(lc-year) = li-curr-year then "selected" else "" '>'  html-encode(lc-year) '</option>' skip.
-           end.
+           DO zx = -1 TO 4:
+             lc-year = STRING(YEAR(TODAY) - zx).
+             {&out} '<option value="' lc-year '" ' IF INTEGER(lc-year) = li-curr-year THEN "selected" ELSE "" '>'  html-encode(lc-year) '</option>' skip.
+           END.
     {&out} '</select>' skip.
     {&out} '</div>'.
 
@@ -784,15 +804,15 @@ PROCEDURE ip-timestable :
           '<td valign="top" align="center">Off</td><td>&nbsp;</td> ' skip.
 
  
-    do vx = 1 to 7:
+    DO vx = 1 TO 7:
       
-       {&out} '<tr><td valign="top" align="right">' entry(vx,lc-day) skip
+       {&out} '<tr><td valign="top" align="right">' ENTRY(vx,lc-day) skip
        '<td valign="top" align="center">' html-InputFieldMasked("hoursOnAm"+ string(vx), "4","60","HH:MM",lc-HoursOnAm[vx],"font-family:verdana;font-size:10pt;width:50px;") '</td><td>&nbsp;</td>' skip     
        '<td valign="top" align="center">' html-InputFieldMasked("hoursOffAm"+ string(vx),"4","60","HH:MM",lc-HoursOffAm[vx],"font-family:verdana;font-size:10pt;width:50px;")'</td><td>&nbsp;</td>' skip     
        '<td valign="top" align="center">' html-InputFieldMasked("hoursOnPm"+ string(vx), "4","60","HH:MM",lc-HoursOnPm[vx],"font-family:verdana;font-size:10pt;width:50px;") '</td><td>&nbsp;</td>' skip     
        '<td valign="top" align="center">' html-InputFieldMasked("hoursOffPm"+ string(vx),"4","60","HH:MM",lc-HoursOffPm[vx],"font-family:verdana;font-size:10pt;width:50px;")'</td>' skip                    
        '</tr>' skip.                      
-     end.
+     END.
 
  
 
@@ -820,129 +840,129 @@ PROCEDURE ip-Validate :
   Parameters:  <none>
   emails:       
 ------------------------------------------------------------------------------*/
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    def var li-int      as int      no-undo.
+    DEFINE VARIABLE li-int      AS INTEGER      NO-UNDO.
 
-    if lc-mode = "ADD":U then
-    do:
-        if lc-loginid = ""
-        or lc-loginid = ?
-        then run htmlib-AddErrorMessage(
+    IF lc-mode = "ADD":U THEN
+    DO:
+        IF lc-loginid = ""
+        OR lc-loginid = ?
+        THEN RUN htmlib-AddErrorMessage(
                     'loginid', 
                     'You must enter the user name',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
         
 
-        if can-find(first b-valid
-                    where b-valid.loginid = lc-loginid
-                    no-lock)
-        then run htmlib-AddErrorMessage(
+        IF CAN-FIND(FIRST b-valid
+                    WHERE b-valid.loginid = lc-loginid
+                    NO-LOCK)
+        THEN RUN htmlib-AddErrorMessage(
                     'loginid', 
                     'This user already exists',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-    end.
+    END.
 
-    if lc-forename = ""
-    or lc-forename = ?
-    then run htmlib-AddErrorMessage(
+    IF lc-forename = ""
+    OR lc-forename = ?
+    THEN RUN htmlib-AddErrorMessage(
                     'forename', 
                     'You must enter the forename',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-    if lc-surname = ""
-    or lc-surname = ?
-    then run htmlib-AddErrorMessage(
+    IF lc-surname = ""
+    OR lc-surname = ?
+    THEN RUN htmlib-AddErrorMessage(
                 'surname', 
                 'You must enter the surname',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
 
-    if lc-allowsms = "on"
-    and lc-mobile = ""
-    then run htmlib-AddErrorMessage(
+    IF lc-allowsms = "on"
+    AND lc-mobile = ""
+    THEN RUN htmlib-AddErrorMessage(
                 'allowsms', 
                 'To allow SLA SMS alert messages you must enter a mobile number',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
 
-    if lc-allowsms = "on"
-    and lc-userClass = "CUSTOMER"
-    then run htmlib-AddErrorMessage(
+    IF lc-allowsms = "on"
+    AND lc-userClass = "CUSTOMER"
+    THEN RUN htmlib-AddErrorMessage(
                 'allowsms', 
                 'SLA SMS alert messages can not be sent to a customer',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
-    if lc-accesssms = "on"
-    and lc-userClass = "CUSTOMER"
-    then run htmlib-AddErrorMessage(
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
+    IF lc-accesssms = "on"
+    AND lc-userClass = "CUSTOMER"
+    THEN RUN htmlib-AddErrorMessage(
                 'accesssms', 
                 'Access to the SMS web page is restricted to internal users',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
 
-    if lc-userClass <> "INTERNAL"
-    and lc-superuser = "on" then
-    do:
-        run htmlib-AddErrorMessage(
+    IF lc-userClass <> "INTERNAL"
+    AND lc-superuser = "on" THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
                 'superuser', 
                 'Only Internal users can be super users',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
-    end.
-    if lc-userClass = "CUSTOMER"
-    and lc-quickview = "on" then
-    do:
-        run htmlib-AddErrorMessage(
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
+    END.
+    IF lc-userClass = "CUSTOMER"
+    AND lc-quickview = "on" THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
                 'quickview', 
                 'Only Internal users can have access to the quick view menu',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
-    end.
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
+    END.
 
-    if lc-userclass <> "CUSTOMER"
-    and lc-accountnumber <> "" then
-    do:
-        run htmlib-AddErrorMessage(
+    IF lc-userclass <> "CUSTOMER"
+    AND lc-accountnumber <> "" THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
                 'userclass', 
                 'Internal/Contractor users do not have an account',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
-    end.
-    else
-    if lc-userclass = "CUSTOMER"
-    and lc-accountnumber = "" then
-    do:
-        run htmlib-AddErrorMessage(
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
+    END.
+    ELSE
+    IF lc-userclass = "CUSTOMER"
+    AND lc-accountnumber = "" THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
                 'accountnumber', 
                 'You must enter an account',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
-    end.
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
+    END.
 
-    if lc-accountnumber <> "" then
-    do:
-        if not can-find(customer where customer.company = lc-global-company and customer.accountnumber = lc-accountnumber no-lock)
-        then run htmlib-AddErrorMessage(
+    IF lc-accountnumber <> "" THEN
+    DO:
+        IF NOT CAN-FIND(customer WHERE customer.company = lc-global-company AND customer.accountnumber = lc-accountnumber NO-LOCK)
+        THEN RUN htmlib-AddErrorMessage(
                 'accountnumber', 
                 'This account does not exist',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
-    end.
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
+    END.
 
-    assign li-int = int(lc-recordsperpage) no-error.
-    if error-status:error 
-    or li-int < 5 then run htmlib-AddErrorMessage(
+    ASSIGN li-int = int(lc-recordsperpage) no-error.
+    IF ERROR-STATUS:ERROR 
+    OR li-int < 5 THEN RUN htmlib-AddErrorMessage(
                 'recordsperpage', 
                 'This number of records to display must be 5 or greater',
-                 input-output pc-error-field,
-                 input-output pc-error-msg ).
+                 INPUT-OUTPUT pc-error-field,
+                 INPUT-OUTPUT pc-error-msg ).
 
 END PROCEDURE.
 
@@ -1021,93 +1041,93 @@ PROCEDURE process-web-request :
   emails:       
 ------------------------------------------------------------------------------*/
     
-    def var li-loop  as int  no-undo.
+    DEFINE VARIABLE li-loop  AS INTEGER  NO-UNDO.
 
     {lib/checkloggedin.i} 
 
 
-    assign lc-usertitleCode = htmlib-GetAttr("USER","Titles").
+    ASSIGN lc-usertitleCode = htmlib-GetAttr("USER","Titles").
 
-    if lc-usertitleCode =  "" 
-    then assign lc-usertitleCode = 'Mr|Mrs'.
+    IF lc-usertitleCode =  "" 
+    THEN ASSIGN lc-usertitleCode = 'Mr|Mrs'.
 
-    assign lc-usertitleDesc = lc-usertitleCode.
+    ASSIGN lc-usertitleDesc = lc-usertitleCode.
 
 
-    assign lc-mode = get-value("mode")
+    ASSIGN lc-mode = get-value("mode")
            lc-rowid = get-value("rowid")
            lc-search = get-value("search")
            lc-firstrow = get-value("firstrow")
            lc-lastrow  = get-value("lastrow")
            lc-navigation = get-value("navigation")
            lc-selacc    = get-value("selacc")
-           li-curr-year  = integer(get-value("submityear")).
+           li-curr-year  = INTEGER(get-value("submityear")).
 
-    if li-curr-year = ? or li-curr-year = 0 then li-curr-year = year(today).
+    IF li-curr-year = ? OR li-curr-year = 0 THEN li-curr-year = YEAR(TODAY).
 
-    if lc-mode = "" 
-    then assign lc-mode = get-field("savemode")
+    IF lc-mode = "" 
+    THEN ASSIGN lc-mode = get-field("savemode")
                 lc-rowid = get-field("saverowid")
                 lc-search = get-value("savesearch")
                 lc-firstrow = get-value("savefirstrow")
                 lc-lastrow  = get-value("savelastrow")
                 lc-navigation = get-value("savenavigation").
 
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
 
-    case lc-mode:
-        when 'add'
-        then assign lc-title = 'Add'
+    CASE lc-mode:
+        WHEN 'add'
+        THEN ASSIGN lc-title = 'Add'
                     lc-link-label = "Cancel addition"
                     lc-submit-label = "Add User".
-        when 'view'
-        then assign lc-title = 'View'
+        WHEN 'view'
+        THEN ASSIGN lc-title = 'View'
                     lc-link-label = "Back"
                     lc-submit-label = "".
-        when 'delete'
-        then assign lc-title = 'Delete'
+        WHEN 'delete'
+        THEN ASSIGN lc-title = 'Delete'
                     lc-link-label = 'Cancel deletion'
                     lc-submit-label = 'Delete User'.
-        when 'Update'
-        then assign lc-title = 'Update'
+        WHEN 'Update'
+        THEN ASSIGN lc-title = 'Update'
                     lc-link-label = 'Cancel update'
                     lc-submit-label = 'Update User'.
-    end case.
+    END CASE.
 
 
-    assign lc-title = lc-title + ' User'
+    ASSIGN lc-title = lc-title + ' User'
            lc-link-url = appurl + '/sys/webuser.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
                                    '&navigation=refresh' +
                                   '&selacc=' + lc-selacc + 
-                                  '&time=' + string(time)
+                                  '&time=' + string(TIME)
                            .
 
-    if can-do("view,update,delete",lc-mode) then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid)
-             no-lock no-error.
-        if not avail b-table then
-        do:
+    IF CAN-DO("view,update,delete",lc-mode) THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+             NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE b-table THEN
+        DO:
             set-user-field("mode",lc-mode).
             set-user-field("title",lc-title).
             set-user-field("nexturl",appurl + "/sys/webuser.p").
             RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
-            return.
-        end.
+            RETURN.
+        END.
 
-    end.
+    END.
 
 
-    if request_method = "POST" then
-    do:
-        if lc-mode <> "delete" then
-        do:
-            assign lc-loginid         = get-value("loginid")
+    IF request_method = "POST" THEN
+    DO:
+        IF lc-mode <> "delete" THEN
+        DO:
+            ASSIGN lc-loginid         = get-value("loginid")
                    lc-forename        = get-value("forename")
                    lc-surname         = get-value("surname")
                    lc-email           = get-value("email")
@@ -1127,45 +1147,45 @@ PROCEDURE process-web-request :
                    lc-superuser       = get-value("superuser")
                    lc-quickview       = get-value("quickview")
                    lc-defaultuser     = get-value("defaultuser")
-                   .
+                   lc-disableTimeout  = get-value("disabletimeout").
             
-            do li-loop = 1 to 7:
+            DO li-loop = 1 TO 7:
               lc-HoursOnAm[li-loop]  =  get-value("hoursOnAm" + string(li-loop)).
               lc-HoursOffAm[li-loop] =  get-value("hoursOffAm" + string(li-loop)).
               lc-HoursOnPm[li-loop]  =  get-value("hoursOnPm" + string(li-loop)).
               lc-HoursOffPm[li-loop] =  get-value("hoursOffPm" + string(li-loop)).
-            end.
+            END.
             
 
-            RUN ip-Validate( output lc-error-field,
-                             output lc-error-msg ).
+            RUN ip-Validate( OUTPUT lc-error-field,
+                             OUTPUT lc-error-msg ).
 
-            if lc-error-msg = "" then
-            do:
+            IF lc-error-msg = "" THEN
+            DO:
                 
-                if lc-mode = 'update' then
-                do:
-                    find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                        exclusive-lock no-wait no-error.
-                    if locked b-table 
-                    then  run htmlib-AddErrorMessage(
+                IF lc-mode = 'update' THEN
+                DO:
+                    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                        EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                    IF LOCKED b-table 
+                    THEN  RUN htmlib-AddErrorMessage(
                                    'none', 
                                    'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-                end.
-                else
-                do:
-                    create b-table.
-                    assign b-table.loginid = lc-loginid
+                                   INPUT-OUTPUT lc-error-field,
+                                   INPUT-OUTPUT lc-error-msg ).
+                END.
+                ELSE
+                DO:
+                    CREATE b-table.
+                    ASSIGN b-table.loginid = lc-loginid
                            b-table.CompanyCode = lc-global-company
-                           lc-firstrow      = string(rowid(b-table))
+                           lc-firstrow      = STRING(ROWID(b-table))
                            .
                    
-                end.
-                if lc-error-msg = "" then
-                do:
-                    assign b-table.forename         = lc-forename
+                END.
+                IF lc-error-msg = "" THEN
+                DO:
+                    ASSIGN b-table.forename         = lc-forename
                            b-table.surname          = lc-surname
                            b-table.email            = lc-email
                            b-table.usertitle        = lc-usertitle
@@ -1183,16 +1203,17 @@ PROCEDURE process-web-request :
                            b-table.superuser        = lc-superuser = "on"
                            b-table.quickview        = lc-quickview = "on"
                            b-table.defaultuser      = lc-defaultuser = "on"
+                           b-table.disabletimeout   = lc-disabletimeout = "on"
                            .
-                    assign b-table.name = b-table.forename + ' ' + 
+                    ASSIGN b-table.name = b-table.forename + ' ' + 
                                           b-table.surname.
-                    if lc-password <> "" then 
-                    do:
-                        assign b-table.PassWd = encode(lc-password).
+                    IF lc-password <> "" THEN 
+                    DO:
+                        ASSIGN b-table.PassWd = ENCODE(lc-password).
                         /*
                         dynamic-function("mlib-SendPassword",b-table.loginid,lc-password).
                         */
-                    end.
+                    END.
                     FOR EACH webusteam OF b-table  EXCLUSIVE-LOCK:
                     
                             DELETE webusteam.
@@ -1207,71 +1228,71 @@ PROCEDURE process-web-request :
                              webuSteam.st-num = steam.st-num.
 
                     END.
-                    if b-table.UserClass = "customer"
-                    and b-table.AccountNumber <> ""
-                    and b-table.DefaultUser = true then 
-                    do:
-                        b-table.CustomerTrack = true.
+                    IF b-table.UserClass = "customer"
+                    AND b-table.AccountNumber <> ""
+                    AND b-table.DefaultUser = TRUE THEN 
+                    DO:
+                        b-table.CustomerTrack = TRUE.
                         RUN ip-ResetOtherMain ( lc-global-company,
                                                  b-table.AccountNumber,
                                                  b-table.LoginId ).
-                    end.
-                    find first WebStdTime where WebStdTime.companycode = lc-global-company
-                                          and   WebStdTime.LoginID     = b-table.loginID
-                                          and   WebStdTime.StdWkYear   = li-curr-year
-                                          exclusive-lock no-error.
-                    if not avail WebStdTime then
-                    do:
-                      create WebStdTime.
-                      assign WebStdTime.companycode = lc-global-company
+                    END.
+                    FIND FIRST WebStdTime WHERE WebStdTime.companycode = lc-global-company
+                                          AND   WebStdTime.LoginID     = b-table.loginID
+                                          AND   WebStdTime.StdWkYear   = li-curr-year
+                                          EXCLUSIVE-LOCK NO-ERROR.
+                    IF NOT AVAILABLE WebStdTime THEN
+                    DO:
+                      CREATE WebStdTime.
+                      ASSIGN WebStdTime.companycode = lc-global-company
                              WebStdTime.LoginID     = b-table.loginID
                              WebStdTime.StdWkYear   = li-curr-year.
-                    end.
-                    do li-loop = 1 to 7:
-                      assign WebStdTime.StdAMStTime[li-loop]   = integer(replace(lc-HoursOnAm[li-loop],":",""))
-                             WebStdTime.StdAMEndTime[li-loop]  = integer(replace(lc-HoursOffAm[li-loop],":",""))
-                             WebStdTime.StdPMStTime[li-loop]   = integer(replace(lc-HoursOnPm[li-loop],":",""))
-                             WebStdTime.StdPMEndTime[li-loop]  = integer(replace(lc-HoursOffPm[li-loop],":",""))  .
-                    end.
-                end.
-            end.
-        end.
-        else
-        do:
-            find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                 exclusive-lock no-wait no-error.
-            if locked b-table 
-            then run htmlib-AddErrorMessage(
+                    END.
+                    DO li-loop = 1 TO 7:
+                      ASSIGN WebStdTime.StdAMStTime[li-loop]   = INTEGER(REPLACE(lc-HoursOnAm[li-loop],":",""))
+                             WebStdTime.StdAMEndTime[li-loop]  = INTEGER(REPLACE(lc-HoursOffAm[li-loop],":",""))
+                             WebStdTime.StdPMStTime[li-loop]   = INTEGER(REPLACE(lc-HoursOnPm[li-loop],":",""))
+                             WebStdTime.StdPMEndTime[li-loop]  = INTEGER(REPLACE(lc-HoursOffPm[li-loop],":",""))  .
+                    END.
+                END.
+            END.
+        END.
+        ELSE
+        DO:
+            FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                 EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+            IF LOCKED b-table 
+            THEN RUN htmlib-AddErrorMessage(
                                    'none', 
                                    'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-            else 
-            do:
+                                   INPUT-OUTPUT lc-error-field,
+                                   INPUT-OUTPUT lc-error-msg ).
+            ELSE 
+            DO:
                 FOR EACH webusteam OF b-table  EXCLUSIVE-LOCK:
                     
                     DELETE webusteam.
                 END.
-                delete b-table.
+                DELETE b-table.
             END.
-        end.
+        END.
 
-        if lc-error-field = "" then
-        do:
+        IF lc-error-field = "" THEN
+        DO:
             RUN outputHeader.
             set-user-field("navigation",'refresh').
             set-user-field("firstrow",lc-firstrow).
             set-user-field("search",lc-search).
              set-user-field("selacc",lc-selacc).
             RUN run-web-object IN web-utilities-hdl ("sys/webuser.p").
-            return.
-        end.
-    end.
+            RETURN.
+        END.
+    END.
 
-    if lc-mode <> 'add' then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
-        assign lc-loginid = b-table.loginid.
+    IF lc-mode <> 'add' THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
+        ASSIGN lc-loginid = b-table.loginid.
         IF request_method = "GET" THEN
         FOR EACH webUsteam OF b-table NO-LOCK:
                 
@@ -1281,52 +1302,54 @@ PROCEDURE process-web-request :
         END.
 
 
-        if can-do("view,delete",lc-mode) 
-        or request_method <> "post" then 
-        do:
-            assign 
+        IF CAN-DO("view,delete",lc-mode) 
+        OR request_method <> "post" THEN 
+        DO:
+            ASSIGN 
                 lc-surname        = b-table.surname
                 lc-email          = b-table.email
                 lc-forename       = b-table.forename
                 lc-usertitle      = b-table.usertitle
                 lc-pagename       = b-table.pagename
-                lc-disabled       = if b-table.disabled then 'on' else ''
+                lc-disabled       = IF b-table.disabled THEN 'on' ELSE ''
                 lc-accountnumber  = b-table.accountnumber
                 lc-jobtitle       = b-table.jobtitle
                 lc-telephone      = b-table.telephone
                 lc-userclass      = b-table.userclass
-                lc-customertrack  = if b-table.customertrack then 'on' else ''
-                lc-recordsperpage = string(b-table.recordsperpage)
+                lc-customertrack  = IF b-table.customertrack THEN 'on' ELSE ''
+                lc-recordsperpage = STRING(b-table.recordsperpage)
                 lc-mobile         = b-table.mobile
-                lc-accesssms      = if b-table.accesssms then 'on' else ''
-                lc-allowsms       = if b-table.allowsms then 'on' 
-                                    else ''
-                lc-superuser      = if b-table.superuser then 'on'
-                                    else ''
-                lc-quickview      = if b-table.QuickView then 'on' 
-                                    else '' 
-                lc-defaultuser    = if b-table.DefaultUser then 'on'
-                                    else ''
+                lc-accesssms      = IF b-table.accesssms THEN 'on' ELSE ''
+                lc-allowsms       = IF b-table.allowsms THEN 'on' 
+                                    ELSE ''
+                lc-superuser      = IF b-table.superuser THEN 'on'
+                                    ELSE ''
+                lc-quickview      = IF b-table.QuickView THEN 'on' 
+                                    ELSE '' 
+                lc-defaultuser    = IF b-table.DefaultUser THEN 'on'
+                                    ELSE ''
+                lc-disableTimeout  = IF b-table.disabletimeout THEN 'on'
+                                    ELSE ''
                     .
-            find first WebStdTime where WebStdTime.companycode = lc-global-company
-                                and   WebStdTime.LoginID     = b-table.loginID
-                                and   WebStdTime.StdWkYear   = li-curr-year
-                                no-lock no-error.
-            if  avail WebStdTime then
-            do li-loop = 1 to 7:
-                assign lc-HoursOnAm[li-loop]  = string(WebStdTime.StdAMStTime[li-loop],"9999")
-                       lc-HoursOffAm[li-loop] = string(WebStdTime.StdAMEndTime[li-loop],"9999")
-                       lc-HoursOnPm[li-loop]  = string(WebStdTime.StdPMStTime[li-loop],"9999")
-                       lc-HoursOffPm[li-loop] = string(WebStdTime.StdPMEndTime[li-loop],"9999")   .
-             end.
+            FIND FIRST WebStdTime WHERE WebStdTime.companycode = lc-global-company
+                                AND   WebStdTime.LoginID     = b-table.loginID
+                                AND   WebStdTime.StdWkYear   = li-curr-year
+                                NO-LOCK NO-ERROR.
+            IF  AVAILABLE WebStdTime THEN
+            DO li-loop = 1 TO 7:
+                ASSIGN lc-HoursOnAm[li-loop]  = STRING(WebStdTime.StdAMStTime[li-loop],"9999")
+                       lc-HoursOffAm[li-loop] = STRING(WebStdTime.StdAMEndTime[li-loop],"9999")
+                       lc-HoursOnPm[li-loop]  = STRING(WebStdTime.StdPMStTime[li-loop],"9999")
+                       lc-HoursOffPm[li-loop] = STRING(WebStdTime.StdPMEndTime[li-loop],"9999")   .
+             END.
         END.
 
        
-    end.
+    END.
     
-    if request_method = "GET" and lc-mode = "ADD" then
-    do:
-        assign 
+    IF request_method = "GET" AND lc-mode = "ADD" THEN
+    DO:
+        ASSIGN 
             lc-recordsperpage = "10".
 
         IF lc-selacc <> "ALLC"
@@ -1337,7 +1360,7 @@ PROCEDURE process-web-request :
                 lc-userClass = "CUSTOMER"
                 lc-accountnumber = lc-selacc.
         END.
-    end.
+    END.
 
     RUN outputHeader.
     
@@ -1376,27 +1399,27 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-StartMntTable().
     
-    if available b-table and b-table.UserClass <> "customer" 
-      then run ip-timestable.
+    IF AVAILABLE b-table AND b-table.UserClass <> "customer" 
+      THEN RUN ip-timestable.
     {&out} htmlib-EndTable() skip.
     {&out} '</td></tr></table>' skip.
 
 
-    if lc-error-msg <> "" then
-    do:
+    IF lc-error-msg <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
                 htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+    END.
 
-    if lc-submit-label <> "" then
-    do:
+    IF lc-submit-label <> "" THEN
+    DO:
         {&out} '<center>' htmlib-SubmitButton("submitform",lc-submit-label) 
                '</center>' skip.
-    end.
+    END.
          
    
     
-    if lc-mode <> 'add'  and lc-userclass <> 'customer' then
+    IF lc-mode <> 'add'  AND lc-userclass <> 'customer' THEN
       {&out} '<script>' skip
       ' forceDisplay("mainform","60") ; ' skip
       ' focusDisplay("hoursOnAm1"); ' skip
@@ -1419,18 +1442,18 @@ END PROCEDURE.
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION html-InputFieldMasked Procedure 
 FUNCTION html-InputFieldMasked RETURNS CHARACTER
-  ( pc-name as char,
-    pc-maxlength as char,
-    pc-datatype as char,
-    pc-mask as char,
-    pc-value as char,
-    pc-style as char ) :
+  ( pc-name AS CHARACTER,
+    pc-maxlength AS CHARACTER,
+    pc-datatype AS CHARACTER,
+    pc-mask AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-style AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-def var r-htm as char no-undo.
+DEFINE VARIABLE r-htm AS CHARACTER NO-UNDO.
    
 r-htm = '<input type="text" id="' + pc-name + '" name="' + pc-name + '" value="' + pc-value + '"' +
         ' maxlength="' + pc-maxlength + '" datatype="' + pc-datatype + '" mask="' + pc-mask + '"' +
@@ -1440,7 +1463,7 @@ r-htm = '<input type="text" id="' + pc-name + '" name="' + pc-name + '" value="'
         ' onkeypress="return tbMask(this);"' +
         ' style="' + pc-style + '">'.
         
-return r-htm.
+RETURN r-htm.
 
 END FUNCTION.
 
