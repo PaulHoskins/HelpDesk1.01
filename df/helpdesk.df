@@ -4281,6 +4281,15 @@ ADD FIELD "DefaultUser" OF "WebUser" AS logical
   MAX-WIDTH 1
   ORDER 270
 
+ADD FIELD "DisableTimeOut" OF "WebUser" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Disable Time Out?"
+  POSITION 30
+  MAX-WIDTH 1
+  VIEW-AS "VIEW-AS TOGGLE-BOX"
+  ORDER 280
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -4425,4 +4434,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000087010
+0000087204

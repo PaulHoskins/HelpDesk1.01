@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        iss/addissue.p
@@ -18,8 +15,9 @@
     18/07/2006  phoski      Ticket Job
     
     09/08/2010  DJS         3667 - view only active co's & users
-    24/04/2012  Phoski      Timer problem when customer is creating
+    24/04/2014  Phoski      Timer problem when customer is creating
                             & various
+    23/07/2014  phoski      Telphone on add user default's to customer                        
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -30,123 +28,120 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var v-debug             as log initial false.
+DEFINE VARIABLE v-debug             AS LOG INITIAL FALSE NO-UNDO.
 
-def var lf-Audit            as dec  no-undo.
+DEFINE VARIABLE lf-Audit            AS DECIMAL  NO-UNDO.
 
-def var lc-error-field      as char no-undo.
-def var lc-error-msg        as char no-undo.
+DEFINE VARIABLE lc-error-field      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg        AS CHARACTER NO-UNDO.
 
-def var lc-accountnumber    as char no-undo.
-def var lc-briefdescription as char no-undo.
-def var lc-longdescription  as char no-undo.
-def var lc-submitsource     as char no-undo.
-def var lc-raisedlogin      as char no-undo.
-def var li-issue            as int no-undo.
-def var lc-date             as char no-undo.
-def var lc-AreaCode         as char no-undo.
-def var lc-Address          as char no-undo.
-def var lc-Ticket           as char no-undo.
-def var lc-title            as char no-undo.
+DEFINE VARIABLE lc-accountnumber    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-briefdescription AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-longdescription  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submitsource     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-raisedlogin      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-issue            AS INTEGER NO-UNDO.
+DEFINE VARIABLE lc-date             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AreaCode         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Address          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Ticket           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title            AS CHARACTER NO-UNDO.
 
-def var lc-list-number      as char no-undo.
-def var lc-list-name        as char no-undo.
+DEFINE VARIABLE lc-list-number      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-name        AS CHARACTER NO-UNDO.
 
-def var lc-list-login       as char no-undo.
-def var lc-list-lname       as char no-undo.
-
-
-def var lc-list-area        as char no-undo.
-def var lc-list-aname       as char no-undo.
-def var lc-gotomaint        as char no-undo.
-
-def var lc-sla-rows         as char no-undo.
-def var lc-sla-selected     as char no-undo.
-def var ll-customer         as log  no-undo.
-
-def var lc-default-catcode  as char no-undo.
-def var lc-catcode          as char no-undo.
-def var lc-list-catcode     as char no-undo.
-def var lc-list-cname       as char no-undo.
-DEF VAR lc-iclass           AS CHAR NO-UNDO.
+DEFINE VARIABLE lc-list-login       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-lname       AS CHARACTER NO-UNDO.
 
 
-def var lc-issuesource      as char no-undo.
-def var lc-emailid          as char no-undo.
+DEFINE VARIABLE lc-list-area        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-aname       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-gotomaint        AS CHARACTER NO-UNDO.
 
-def var lc-list-actcode     as char no-undo.
-def var lc-list-actdesc     as char no-undo.
+DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-customer         AS LOG  NO-UNDO.
+
+DEFINE VARIABLE lc-default-catcode  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-catcode          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-catcode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-cname       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-iclass           AS CHARACTER NO-UNDO.
+
+
+DEFINE VARIABLE lc-issuesource      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-emailid          AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-list-actcode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-actdesc     AS CHARACTER NO-UNDO.
 
 /* Action Stuff */
 
-def var lc-Quick            as char no-undo.
-def var lc-actioncode       as char no-undo.
-def var lc-ActionNote       as char no-undo.
-def var lc-CustomerView     as char no-undo.
-def var lc-activitycharge   as char no-undo.
-def var lc-actionstatus     as char no-undo.
-def var lc-list-assign      as char no-undo.
-def var lc-list-assname     as char no-undo.
-def var lc-currentassign    as char no-undo.
+DEFINE VARIABLE lc-Quick            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-actioncode       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ActionNote       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-CustomerView     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-activitycharge   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-actionstatus     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assign      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assname     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentassign    AS CHARACTER NO-UNDO.
 
 
 /* Activity */
-def var lc-hours            as char no-undo.
-def var lc-mins             as char no-undo.
-def var lc-secs             as char no-undo.
-def var li-hours            as int  no-undo.
-def var li-mins             as int  no-undo.
-def var lc-StartDate        as char no-undo.
-def var lc-starthour        as char no-undo.
-def var lc-startmin         as char no-undo.
-def var lc-endDate          as char no-undo.
-def var lc-endhour          as char no-undo.
-def var lc-endmin           as char no-undo.
-def var lc-ActDescription   as char no-undo.
-def var lc-list-actid       as char no-undo.  
-def var lc-list-activtype   as char no-undo. 
-def var lc-list-activdesc   as char no-undo.  
-def var lc-list-activtime   as char no-undo. 
+DEFINE VARIABLE lc-hours            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mins             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-secs             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-hours            AS INTEGER  NO-UNDO.
+DEFINE VARIABLE li-mins             AS INTEGER  NO-UNDO.
+DEFINE VARIABLE lc-StartDate        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-starthour        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-startmin         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endDate          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endhour          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endmin           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ActDescription   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-actid       AS CHARACTER NO-UNDO.  
+DEFINE VARIABLE lc-list-activtype   AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-list-activdesc   AS CHARACTER NO-UNDO.  
+DEFINE VARIABLE lc-list-activtime   AS CHARACTER NO-UNDO. 
 
 
-def var lc-activitytype     as char no-undo.
-def var lc-saved-contract   as char no-undo.
-def var lc-saved-billable   as char no-undo.
-def var lc-saved-activity   as char no-undo.
+DEFINE VARIABLE lc-activitytype     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-saved-contract   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-saved-billable   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-saved-activity   AS CHARACTER NO-UNDO.
 
 /* Status */
-def var lc-list-status      as char no-undo.
-def var lc-list-sname       as char no-undo.
-def var lc-currentstatus    as char no-undo.
+DEFINE VARIABLE lc-list-status      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-sname       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentstatus    AS CHARACTER NO-UNDO.
 
 /* Contract stuff  */
 
-def var lc-list-ctype       as char no-undo.
-def var lc-list-cdesc       as char no-undo.
-def var lc-contract-type    as char no-undo.
+DEFINE VARIABLE lc-list-ctype       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-cdesc       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-contract-type    AS CHARACTER NO-UNDO.
 
-def var lc-billable-flag    as char no-undo.
+DEFINE VARIABLE lc-billable-flag    AS CHARACTER NO-UNDO.
 
-def var ll-billing          as log  no-undo.
-def var lc-timeSecondSet    as char no-undo.
-def var lc-timeMinuteSet    as char no-undo.
-def var lc-DefaultTimeSet   as char no-undo.
-def var lc-manChecked       as char no-undo.
+DEFINE VARIABLE ll-billing          AS LOG  NO-UNDO.
+DEFINE VARIABLE lc-timeSecondSet    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-timeMinuteSet    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-DefaultTimeSet   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-manChecked       AS CHARACTER NO-UNDO.
 
-def buffer webStatus        for webStatus.
+DEFINE BUFFER webStatus        FOR webStatus.
 
 /** Adding user on the fly */
 
-DEF VAR lc-uadd-loginid AS CHAR NO-UNDO.
-DEF VAR lc-uadd-name    AS CHAR NO-UNDO.
-DEF VAR lc-uadd-email   AS CHAR NO-UNDO.
-DEF VAR lc-uadd-phone   AS CHAR NO-UNDO.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-uadd-loginid AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-uadd-name    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-uadd-email   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-uadd-phone   AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -155,119 +150,85 @@ DEF VAR lc-uadd-phone   AS CHAR NO-UNDO.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Account Procedure 
 FUNCTION Format-Select-Account RETURNS CHARACTER
-  ( pc-htm as char )  FORWARD.
+  ( pc-htm AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Activity Procedure 
 FUNCTION Format-Select-Activity RETURNS CHARACTER
-  ( pc-htm as char  )  FORWARD.
+  ( pc-htm AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Desc) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Desc Procedure 
 FUNCTION Format-Select-Desc RETURNS CHARACTER
-  ( pc-htm as char  )  FORWARD.
+  ( pc-htm AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Duration) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Duration Procedure 
 FUNCTION Format-Select-Duration RETURNS CHARACTER
-  ( pc-htm as char   )  FORWARD.
+  ( pc-htm AS CHARACTER   )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Get-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Get-Activity Procedure 
 FUNCTION Get-Activity RETURNS INTEGER
-  ( pc-inp as char)  FORWARD.
+  ( pc-inp AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-htmlib-ThisInputField) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ThisInputField Procedure 
 FUNCTION htmlib-ThisInputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char )  FORWARD.
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Return-Submit-Button) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Return-Submit-Button Procedure 
 FUNCTION Return-Submit-Button RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pc-post as char
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-post AS CHARACTER
     )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 10.31
          WIDTH              = 30.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
@@ -275,34 +236,28 @@ FUNCTION Return-Submit-Button RETURNS CHARACTER
 {iss/issue.i}
 {lib/ticket.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
 
-find first webStatus
-     where webStatus.CompanyCode = lc-global-company
-       and webStatus.CompletedStatus = true no-lock no-error.                                   
+FIND FIRST webStatus
+     WHERE webStatus.CompanyCode = lc-global-company
+       AND webStatus.CompletedStatus = TRUE NO-LOCK NO-ERROR.                                   
                                    
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-AreaSelect) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-AreaSelect Procedure 
 PROCEDURE ip-AreaSelect :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -312,44 +267,41 @@ PROCEDURE ip-AreaSelect :
     {&out}  skip
             '<select id="areacode" name="areacode" class="inputfield">' skip.
     {&out}
-            '<option value="' dynamic-function("htmlib-Null") '" ' if lc-AreaCode = dynamic-function("htmlib-Null") 
-                then "selected" else "" '>Select Area</option>' skip
+            '<option value="' DYNAMIC-FUNCTION("htmlib-Null") '" ' IF lc-AreaCode = dynamic-function("htmlib-Null") 
+                THEN "selected" ELSE "" '>Select Area</option>' skip
             '<option value="" ' if lc-AreaCode = ""
                 then "selected" else "" '>Not Applicable/Unknown</option>' skip        
             .
-    for each webIssArea no-lock
-        where webIssArea.CompanyCode = lc-Global-Company 
-          break by webIssArea.GroupID
-                by webIssArea.AreaCode:
+    FOR EACH webIssArea NO-LOCK
+        WHERE webIssArea.CompanyCode = lc-Global-Company 
+          BREAK BY webIssArea.GroupID
+                BY webIssArea.AreaCode:
 
-        if first-of(webissArea.GroupID) then
-        do:
-            find webissagrp
-                where webissagrp.companycode = webissArea.CompanyCode
-                  and webissagrp.Groupid     = webissArea.GroupID no-lock no-error.
+        IF FIRST-OF(webissArea.GroupID) THEN
+        DO:
+            FIND webissagrp
+                WHERE webissagrp.companycode = webissArea.CompanyCode
+                  AND webissagrp.Groupid     = webissArea.GroupID NO-LOCK NO-ERROR.
             {&out}
-                '<optgroup label="' html-encode(if avail webissagrp then webissagrp.description else "Unknown") '">' skip.
-        end.
+                '<optgroup label="' html-encode(IF AVAILABLE webissagrp THEN webissagrp.description ELSE "Unknown") '">' skip.
+        END.
 
         {&out}
-            '<option value="' webIssArea.AreaCode '" ' if lc-AreaCode = webIssArea.AreaCode  
-                then "selected" else "" '>' html-encode(webIssArea.Description) '</option>' skip.
+            '<option value="' webIssArea.AreaCode '" ' IF lc-AreaCode = webIssArea.AreaCode  
+                THEN "selected" ELSE "" '>' html-encode(webIssArea.Description) '</option>' skip.
 
-        if last-of(WebIssArea.GroupID) then {&out} '</optgroup>' skip.
-    end.
+        IF LAST-OF(WebIssArea.GroupID) THEN {&out} '</optgroup>' skip.
+    END.
 
     {&out} '</select>'.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ContractSelect) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ContractSelect Procedure 
 PROCEDURE ip-ContractSelect :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -365,63 +317,60 @@ PROCEDURE ip-ContractSelect :
             .
  
 
-    if lc-accountnumber <> "" then
-    do:
+    IF lc-accountnumber <> "" THEN
+    DO:
 
-      if lc-saved-contract <> "" then  
-      do:
-        assign lc-contract-type = lc-saved-contract
+      IF lc-saved-contract <> "" THEN  
+      DO:
+        ASSIGN lc-contract-type = lc-saved-contract
                ll-billing       = lc-saved-billable = "on"
                lc-billable-flag = lc-saved-billable.
-      end.
+      END.
 
-      if can-find (first WebIssCont                           
-               where WebIssCont.CompanyCode     = lc-global-company     
-                 and WebIssCont.Customer        = lc-accountnumber            
-                 and WebIssCont.ConActive       = true ) 
-      then
-      do:
+      IF CAN-FIND (FIRST WebIssCont                           
+               WHERE WebIssCont.CompanyCode     = lc-global-company     
+                 AND WebIssCont.Customer        = lc-accountnumber            
+                 AND WebIssCont.ConActive       = TRUE ) 
+      THEN
+      DO:
 
-        for each WebIssCont no-lock                             
-               where WebIssCont.CompanyCode     = lc-global-company     
-                 and WebIssCont.Customer        = lc-accountnumber            
-                 and WebIssCont.ConActive       = true
+        FOR EACH WebIssCont NO-LOCK                             
+               WHERE WebIssCont.CompanyCode     = lc-global-company     
+                 AND WebIssCont.Customer        = lc-accountnumber            
+                 AND WebIssCont.ConActive       = TRUE
                  :                 
 
-          find first ContractType  where ContractType.CompanyCode = WebIssCont.CompanyCode
-                                    and  ContractType.ContractNumber = WebIssCont.ContractCode 
-            no-lock no-error.
+          FIND FIRST ContractType  WHERE ContractType.CompanyCode = WebIssCont.CompanyCode
+                                    AND  ContractType.ContractNumber = WebIssCont.ContractCode 
+            NO-LOCK NO-ERROR.
                                       
-           if WebIssCont.DefCon and lc-saved-contract = "" then 
-              assign lc-contract-type = WebIssCont.ContractCode
+           IF WebIssCont.DefCon AND lc-saved-contract = "" THEN 
+              ASSIGN lc-contract-type = WebIssCont.ContractCode
                      ll-billing       = WebissCont.Billable
-                     lc-billable-flag = if ll-billing then "on" else "".
+                     lc-billable-flag = IF ll-billing THEN "on" ELSE "".
 
       {&out}
-            '<option value="' WebIssCont.ContractCode "|" string(WebissCont.Billable) '" ' 
+            '<option value="' WebIssCont.ContractCode "|" STRING(WebissCont.Billable) '" ' 
              
-             if lc-contract-type = WebIssCont.ContractCode
-                then " selected " else "" '>' 
+             IF lc-contract-type = WebIssCont.ContractCode
+                THEN " selected " ELSE "" '>' 
                   
-                  html-encode(if avail ContractType then ContractType.Description else "Unknown") '</option>' skip.
+                  html-encode(IF AVAILABLE ContractType THEN ContractType.Description ELSE "Unknown") '</option>' skip.
  
-        end.
-      end.
-    end.
+        END.
+      END.
+    END.
       
 
     {&out} '</select>'.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
 PROCEDURE ip-ExportJScript :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -521,8 +470,8 @@ PROCEDURE ip-ExportJScript :
         'function Quick(box) ~{' skip
         ' if ( box.checked == true) ~{' skip
         '   document.mainform.actionstatus.value="CLOSED";' skip.
-          if avail webStatus 
-          then {&out} '   document.mainform.currentstatus.value="' webStatus.StatusCode '";' skip.
+          IF AVAILABLE webStatus 
+          THEN {&out} '   document.mainform.currentstatus.value="' webStatus.StatusCode '";' skip.
     {&out}
         '   return;' skip
         '~}' skip
@@ -616,14 +565,11 @@ PROCEDURE ip-ExportJScript :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GenHTML) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GenHTML Procedure 
 PROCEDURE ip-GenHTML :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -635,37 +581,37 @@ PROCEDURE ip-GenHTML :
 
     {&out} htmlib-StartForm("mainform","post", appurl + '/iss/addissue.p' ) htmlib-ProgramTitle(lc-title) skip.
     
-    if not ll-Customer then
-    do:
+    IF NOT ll-Customer THEN
+    DO:
             {&out} htmlib-StartInputTable() skip
                     '<tr><td>&nbsp;</td><td  align="right" width="50%">' skip
                     '<span id="clockface" class="clockface">' skip
                     '0:00:00' skip
                     '</span><img id="throbber" src="/images/ajax/ajax-loader-red.gif"></td></tr>' skip
                     '<tr><td valign="top"><fieldset><legend>Main Issue Entry</legend>' skip                 .
-    end.
-    run ip-MainEntry.
-    if not ll-Customer then 
-    do: 
+    END.
+    RUN ip-MainEntry.
+    IF NOT ll-Customer THEN 
+    DO: 
             {&out} '</td><td valign="top" style="padding-left: 5px;">' skip .
             RUN ip-QuickFinish.
             {&out} '</td></tr>'.
             {&out} htmlib-EndTable().
             {&out} '</fieldset>' skip
                     '</td></tr>' skip.
-    end.
-    if lc-error-msg <> "" then
-    do:
+    END.
+    IF lc-error-msg <> "" THEN
+    DO:
             {&out} '<br><br><center>' 
                                             htmlib-MultiplyErrorMessage(lc-error-msg) '</center>' skip.
-    end.
+    END.
     {&out} '<center>' Return-Submit-Button("submitform","Add Issue","PrePost()") 
                                      '</center>' skip.
-    if not ll-Customer and can-find(customer where customer.CompanyCode = lc-global-company and 
-                                    customer.AccountNumber = lc-AccountNumber) then
-    do:
+    IF NOT ll-Customer AND CAN-FIND(customer WHERE customer.CompanyCode = lc-global-company AND 
+                                    customer.AccountNumber = lc-AccountNumber) THEN
+    DO:
         RUN ip-Inventory ( lc-global-company, lc-AccountNumber ).
-    end.
+    END.
 
     {&out} htmlib-Hidden("submitsource","null") skip
          htmlib-Hidden("emailid",lc-emailid) skip
@@ -680,7 +626,7 @@ PROCEDURE ip-GenHTML :
          htmlib-Hidden("actTime",lc-list-activtime) skip 
          htmlib-Hidden("actID",lc-list-actid) skip 
          htmlib-EndForm() skip.
-    if not ll-customer then
+    IF NOT ll-customer THEN
     {&out}  htmlib-CalendarScript("date") skip
                                     htmlib-CalendarScript("startdate") skip
                                     htmlib-CalendarScript("enddate") skip.
@@ -692,43 +638,40 @@ PROCEDURE ip-GenHTML :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GetAccountNumbers) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetAccountNumbers Procedure 
 PROCEDURE ip-GetAccountNumbers :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-user          as char no-undo.
-    def output param pc-AccountNumber as char no-undo.
-    def output param pc-Name          as char no-undo.
+    DEFINE INPUT  PARAMETER pc-user          AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-AccountNumber AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name          AS CHARACTER NO-UNDO.
 
-    def buffer b-user for WebUser.
-    def buffer b-cust for Customer.
+    DEFINE BUFFER b-user FOR WebUser.
+    DEFINE BUFFER b-cust FOR Customer.
  
-    DEF VAR ll-Steam    AS LOG NO-UNDO.
+    DEFINE VARIABLE ll-Steam    AS LOG NO-UNDO.
     
-    find b-user where b-user.LoginID = pc-user no-lock no-error.
+    FIND b-user WHERE b-user.LoginID = pc-user NO-LOCK NO-ERROR.
     
     ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-user NO-LOCK).
 
 
 
-    assign pc-AccountNumber = htmlib-Null()
+    ASSIGN pc-AccountNumber = htmlib-Null()
            pc-Name          = "Select Account".
 
 
-    for each b-cust no-lock
-        where b-cust.CompanyCode = b-user.CompanyCode
-         and  b-cust.isActive = true   
-         by b-cust.name:
+    FOR EACH b-cust NO-LOCK
+        WHERE b-cust.CompanyCode = b-user.CompanyCode
+         AND  b-cust.isActive = TRUE   
+         BY b-cust.name:
 
         /*
         *** if user is in teams then customer must be in 1 of the users teams
@@ -739,21 +682,18 @@ PROCEDURE ip-GetAccountNumbers :
                             WHERE webusteam.loginid = pc-user
                               AND webusteam.st-num = b-cust.st-num NO-LOCK) THEN NEXT. 
 
-        assign pc-AccountNumber = pc-AccountNumber + '|' + b-cust.AccountNumber
+        ASSIGN pc-AccountNumber = pc-AccountNumber + '|' + b-cust.AccountNumber
                pc-Name          = pc-Name + '|' + b-cust.name.
 
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GetArea) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetArea Procedure 
 PROCEDURE ip-GetArea :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -762,35 +702,32 @@ PROCEDURE ip-GetArea :
 ------------------------------------------------------------------------------*/
     
 
-    def output param pc-AreaCode as char no-undo.
-    def output param pc-Description          as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-AreaCode AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Description          AS CHARACTER NO-UNDO.
 
     
-    def buffer b-cust for WebIssArea.
+    DEFINE BUFFER b-cust FOR WebIssArea.
 
    
-    assign pc-AreaCode = htmlib-Null() + '|'
+    ASSIGN pc-AreaCode = htmlib-Null() + '|'
            pc-Description          = "Select Area|Not Applicable/Known".
 
 
-    for each b-cust no-lock
-        where b-cust.CompanyCode = lc-global-company
+    FOR EACH b-cust NO-LOCK
+        WHERE b-cust.CompanyCode = lc-global-company
             :
 
-        assign pc-AreaCode       = pc-AreaCode + '|' + b-cust.AreaCode
+        ASSIGN pc-AreaCode       = pc-AreaCode + '|' + b-cust.AreaCode
                pc-Description    = pc-Description + '|' + b-cust.Description.
 
-    end.
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GetCatCode) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetCatCode Procedure 
 PROCEDURE ip-GetCatCode :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -798,66 +735,63 @@ PROCEDURE ip-GetCatCode :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def output param pc-CatCode as char no-undo.
-    def output param pc-Description          as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-CatCode AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Description          AS CHARACTER NO-UNDO.
 
     
-    def buffer b-Cat for WebIssCat.
+    DEFINE BUFFER b-Cat FOR WebIssCat.
 
    
-    assign pc-CatCode = ""
+    ASSIGN pc-CatCode = ""
            pc-Description = "".
 
-    for each b-Cat no-lock
-        where b-Cat.CompanyCode = lc-global-company
-           by b-Cat.description
+    FOR EACH b-Cat NO-LOCK
+        WHERE b-Cat.CompanyCode = lc-global-company
+           BY b-Cat.description
             :
 
-        if pc-CatCode = ""
-        then assign  pc-CatCode     = b-Cat.CatCode
+        IF pc-CatCode = ""
+        THEN ASSIGN  pc-CatCode     = b-Cat.CatCode
                      pc-Description = b-Cat.Description.
-        else assign pc-CatCode      = pc-CatCode + '|' + b-Cat.CatCode
+        ELSE ASSIGN pc-CatCode      = pc-CatCode + '|' + b-Cat.CatCode
                     pc-Description  = pc-Description + '|' + b-Cat.Description.
 
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GetContract) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetContract Procedure 
 PROCEDURE ip-GetContract :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-Account       as char no-undo.
-    def output param pc-Type          as char no-undo.
-    def output param pc-Contract      as char no-undo.
+    DEFINE INPUT  PARAMETER pc-Account       AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Type          AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Contract      AS CHARACTER NO-UNDO.
 
  
 
-    if pc-Account <> "" then
-    do:
-      if can-find (first WebIssCont                           
-               where WebIssCont.CompanyCode     = lc-global-company     
-                 and WebIssCont.Customer        = pc-Account            
-                 and WebIssCont.ConActive       = true ) 
-      then
-      do:
-        assign pc-Type  = '0'
+    IF pc-Account <> "" THEN
+    DO:
+      IF CAN-FIND (FIRST WebIssCont                           
+               WHERE WebIssCont.CompanyCode     = lc-global-company     
+                 AND WebIssCont.Customer        = pc-Account            
+                 AND WebIssCont.ConActive       = TRUE ) 
+      THEN
+      DO:
+        ASSIGN pc-Type  = '0'
                pc-Contract = "AdHoc".
 
-        for each WebIssCont no-lock                             
-               where WebIssCont.CompanyCode     = lc-global-company     
-                 and WebIssCont.Customer        = pc-Account            
-                 and WebIssCont.ConActive       = true
+        FOR EACH WebIssCont NO-LOCK                             
+               WHERE WebIssCont.CompanyCode     = lc-global-company     
+                 AND WebIssCont.Customer        = pc-Account            
+                 AND WebIssCont.ConActive       = TRUE
                  :                 
                                                                   
                                       
@@ -867,89 +801,83 @@ PROCEDURE ip-GetContract :
 /*                   pc-Contract      = "Select Contract|AdHoc". */
    
     
-            assign pc-Type     = pc-Type      + '|' + string(WebIssCont.ContractCode)
+            ASSIGN pc-Type     = pc-Type      + '|' + string(WebIssCont.ContractCode)
                    pc-Contract = pc-Contract  + '|' + WebIssCont.Description.
     
-        end.
-      end.
-      else
-      do:
-        assign pc-Type  = '0'
+        END.
+      END.
+      ELSE
+      DO:
+        ASSIGN pc-Type  = '0'
                pc-Contract = "AdHoc".
-      end.
-    end.                                                        
-    else
-    do:
-      assign pc-Type  = '0'
+      END.
+    END.                                                        
+    ELSE
+    DO:
+      ASSIGN pc-Type  = '0'
              pc-Contract = "AdHoc".
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GetOwner) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetOwner Procedure 
 PROCEDURE ip-GetOwner :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input  param pc-Account       as char no-undo.
-    def output param pc-Login         as char no-undo.
-    def output param pc-Name          as char no-undo.
+    DEFINE INPUT  PARAMETER pc-Account       AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Login         AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name          AS CHARACTER NO-UNDO.
 
-    def buffer b-user for WebUser.
+    DEFINE BUFFER b-user FOR WebUser.
 
-    if pc-Account <> "" then
-    do:                                                          /* 3667 */  
-      find first b-user no-lock                                  /* 3667 */
-             where b-user.CompanyCode   = lc-global-company      /* 3667 */
-               and b-user.AccountNumber = pc-Account             /* 3667 */  
-               and b-user.Disabled      = false                  /* 3667 */  
-               and b-user.DefaultUser   = true                   /* 3667 */  
-                                      no-error.                  /* 3667 */  
+    IF pc-Account <> "" THEN
+    DO:                                                          /* 3667 */  
+      FIND FIRST b-user NO-LOCK                                  /* 3667 */
+             WHERE b-user.CompanyCode   = lc-global-company      /* 3667 */
+               AND b-user.AccountNumber = pc-Account             /* 3667 */  
+               AND b-user.Disabled      = FALSE                  /* 3667 */  
+               AND b-user.DefaultUser   = TRUE                   /* 3667 */  
+                                      NO-ERROR.                  /* 3667 */  
                                                                  
-      if avail b-user then                                       /* 3667 */  
-         assign pc-login = b-user.loginid  + '|'                 /* 3667 */  
+      IF AVAILABLE b-user THEN                                       /* 3667 */  
+         ASSIGN pc-login = b-user.loginid  + '|'                 /* 3667 */  
                 pc-Name  = b-user.name     + '|Add New'.  
-      else
-         assign pc-login = htmlib-Null() + '|'
+      ELSE
+         ASSIGN pc-login = htmlib-Null() + '|'
                 pc-Name  = "Select Person|Add New".
 
-      for each b-user no-lock
-               where b-user.CompanyCode   = lc-global-company
-                 and b-user.AccountNumber = pc-Account
-                 and b-user.Disabled      = false               /* 3667 */  
-                 and b-user.DefaultUser   = false               /* 3667 */  
-               by b-user.name:
+      FOR EACH b-user NO-LOCK
+               WHERE b-user.CompanyCode   = lc-global-company
+                 AND b-user.AccountNumber = pc-Account
+                 AND b-user.Disabled      = FALSE               /* 3667 */  
+                 AND b-user.DefaultUser   = FALSE               /* 3667 */  
+               BY b-user.name:
   
-          assign pc-login = pc-login  + '|' + b-user.loginid
+          ASSIGN pc-login = pc-login  + '|' + b-user.loginid
                  pc-Name  = pc-Name + '|' + b-user.name.
   
-      end.
-    end.                                                        /* 3667 */  
-    else
-    do:
-      assign pc-login = htmlib-Null() + '|'
+      END.
+    END.                                                        /* 3667 */  
+    ELSE
+    DO:
+      ASSIGN pc-login = htmlib-Null() + '|'
              pc-Name  = "Select Person|Not Applicable".
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-HeaderInclude-Calendar) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-HeaderInclude-Calendar Procedure 
 PROCEDURE ip-HeaderInclude-Calendar :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -959,43 +887,40 @@ PROCEDURE ip-HeaderInclude-Calendar :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Inventory) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Inventory Procedure 
 PROCEDURE ip-Inventory :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-companycode      as char     no-undo.
-    def input param pc-AccountNumber    as char     no-undo.
+    DEFINE INPUT PARAMETER pc-companycode      AS CHARACTER     NO-UNDO.
+    DEFINE INPUT PARAMETER pc-AccountNumber    AS CHARACTER     NO-UNDO.
     
-    def buffer Customer for Customer.
-    def buffer ivClass  for ivClass.
-    def buffer ivSub    for ivSub.
-    def buffer b-query for CustIv.
-    def buffer b-search for CustIv.
+    DEFINE BUFFER Customer FOR Customer.
+    DEFINE BUFFER ivClass  FOR ivClass.
+    DEFINE BUFFER ivSub    FOR ivSub.
+    DEFINE BUFFER b-query FOR CustIv.
+    DEFINE BUFFER b-search FOR CustIv.
 
-    def var lc-object           as char no-undo.
-    def var lc-subobject        as char no-undo.
-    def var lc-ajaxSubWindow    as char no-undo.
-    def var lc-expand           as char no-undo.
+    DEFINE VARIABLE lc-object           AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-subobject        AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-ajaxSubWindow    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-expand           AS CHARACTER NO-UNDO.
     
-    def var lc-update-id as char no-undo.
+    DEFINE VARIABLE lc-update-id AS CHARACTER NO-UNDO.
 
 
     lc-expand = "yes".
 
-    find customer 
-        where customer.CompanyCode = pc-CompanyCode
-          and customer.AccountNumber = pc-AccountNumber
-          no-lock.
+    FIND customer 
+        WHERE customer.CompanyCode = pc-CompanyCode
+          AND customer.AccountNumber = pc-AccountNumber
+          NO-LOCK.
 
     
     {&out} skip
@@ -1011,26 +936,26 @@ PROCEDURE ip-Inventory :
         '<tr class="tabrow1">'
         '<td valign="top" nowrap class="tree">' skip
         .
-    for each b-query no-lock of customer,
-        first ivSub no-lock of b-query,
-        first ivClass no-lock of ivSub
-        break 
-              by ivClass.DisplayPriority desc
-              by ivClass.name
-              by ivSub.DisplayPriority desc
-              by ivSub.name
-              by b-query.Ref:
+    FOR EACH b-query NO-LOCK OF customer,
+        FIRST ivSub NO-LOCK OF b-query,
+        FIRST ivClass NO-LOCK OF ivSub
+        BREAK 
+              BY ivClass.DisplayPriority DESCENDING
+              BY ivClass.name
+              BY ivSub.DisplayPriority DESCENDING
+              BY ivSub.name
+              BY b-query.Ref:
 
         
         
 
-        assign 
-            lc-object = "CLASS" + string(rowid(ivClass))
-            lc-subobject = "SUB" + string(rowid(ivSub)).
-        if first-of(ivClass.name) then
-        do:
-            if lc-expand = "yes" 
-            then {&out} '<img src="/images/general/menuopen.gif" onClick="hdexpandcontent(this, ~''
+        ASSIGN 
+            lc-object = "CLASS" + string(ROWID(ivClass))
+            lc-subobject = "SUB" + string(ROWID(ivSub)).
+        IF FIRST-OF(ivClass.name) THEN
+        DO:
+            IF lc-expand = "yes" 
+            THEN {&out} '<img src="/images/general/menuopen.gif" onClick="hdexpandcontent(this, ~''
                         lc-object '~')">'
                 '&nbsp;' '<span style="' ivClass.Style '">' html-encode(ivClass.name) '</span><br>'
                 '<div id="' lc-object '" style="padding-left: 15px; display: block;">' skip.
@@ -1039,13 +964,13 @@ PROCEDURE ip-Inventory :
                         lc-object '~')">'
                 '&nbsp;' '<span style="' ivClass.Style '">' html-encode(ivClass.name) '</span><br>'
                 '<div id="' lc-object '" style="padding-left: 15px; display: none;">' skip.
-        end.
+        END.
 
-        if first-of(ivSub.name) then
-        do:
+        IF FIRST-OF(ivSub.name) THEN
+        DO:
             
-            if lc-expand = "yes"
-            then {&out} 
+            IF lc-expand = "yes"
+            THEN {&out} 
                 '<img src="/images/general/menuopen.gif" onClick="hdexpandcontent(this, ~''
                         lc-subobject '~')">'
                 '&nbsp;'
@@ -1060,12 +985,12 @@ PROCEDURE ip-Inventory :
                 '<span style="' ivSub.Style '">'
                 html-encode(ivSub.name) '</span><br>' skip
                 '<div id="' lc-subobject '" style="padding-left: 15px; display: none;">' skip.
-        end.
+        END.
        
         {&out} '<a href="'
                     "javascript:ahah('" 
                     
-                    appurl "/cust/custequiptable.p?rowid=" string(rowid(b-query))
+                    appurl "/cust/custequiptable.p?rowid=" STRING(ROWID(b-query))
 
                     "','inventory');".
 
@@ -1075,23 +1000,23 @@ PROCEDURE ip-Inventory :
 
         
         
-        if last-of(ivSub.name) then
-        do:
+        IF LAST-OF(ivSub.name) THEN
+        DO:
             {&out} '</div>' skip.
             
              
-        end.
+        END.
 
 
-        if last-of(ivClass.name) then
-        do:
+        IF LAST-OF(ivClass.name) THEN
+        DO:
             {&out} '</div>' skip.
             
-        end.
+        END.
 
         
             
-    end.
+    END.
 
     {&out} '</td>' skip.
                 
@@ -1105,14 +1030,11 @@ PROCEDURE ip-Inventory :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-MainEntry) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-MainEntry Procedure 
 PROCEDURE ip-MainEntry :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1122,50 +1044,50 @@ PROCEDURE ip-MainEntry :
 
     {&out} htmlib-StartInputTable() skip.
     
-    DEF BUFFER bcust    FOR customer.
+    DEFINE BUFFER bcust    FOR customer.
 
-    if not ll-customer then
-    do:
+    IF NOT ll-customer THEN
+    DO:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("accountnumber",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Account")
-            else htmlib-SideLabel("Account"))
+            (IF LOOKUP("accountnumber",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Account")
+            ELSE htmlib-SideLabel("Account"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">'
             format-Select-Account(htmlib-Select("accountnumber",lc-list-number,lc-list-name,
                 lc-accountnumber) )
             '</TD></TR>' skip. 
-    end.
-    else
-    do:
+    END.
+    ELSE
+    DO:
         {&out} '<tr><td valign="top" align="right">'
                     htmlib-SideLabel("Account")
                     '</td>'
                     htmlib-TableField(
-                        replace(html-encode(lc-accountnumber + " " + customer.name + '~n' + lc-address),
+                        REPLACE(html-encode(lc-accountnumber + " " + customer.name + '~n' + lc-address),
                                 "~n","<br>")
                         
                         ,'left')
                     
 
                 '</tr>' skip.
-        find company where company.companycode = lc-global-company
-            no-lock no-error.
-        if company.issueinfo <> "" then
-        do:
+        FIND company WHERE company.companycode = lc-global-company
+            NO-LOCK NO-ERROR.
+        IF company.issueinfo <> "" THEN
+        DO:
             {&out} '<tr><td colspan="2">'
                 '<div class="infobox">'
-                replace(html-encode(company.issueinfo),'~n','<br>')
+                REPLACE(html-encode(company.issueinfo),'~n','<br>')
                 '</div>'
                 '</td></tr>' skip.
 
-        end.
+        END.
 
-    end.
+    END.
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("raisedlogin",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Raised By")
-            else htmlib-SideLabel("Raised By"))
+            (IF LOOKUP("raisedlogin",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Raised By")
+            ELSE htmlib-SideLabel("Raised By"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("raisedlogin",lc-list-login,lc-list-lname,lc-raisedlogin)
@@ -1181,18 +1103,18 @@ PROCEDURE ip-MainEntry :
         {&out} '</td></tr>' SKIP. /* end of new user */
     END.
 
-    IF NOT ll-customer  AND can-find(customer where customer.companycode = lc-global-company
-                                     and customer.AccountNumber = lc-AccountNumber) THEN
+    IF NOT ll-customer  AND CAN-FIND(customer WHERE customer.companycode = lc-global-company
+                                     AND customer.AccountNumber = lc-AccountNumber) THEN
     DO:
 
-        FIND bcust where bcust.companycode = lc-global-company
-                     and bcust.AccountNumber = lc-AccountNumber NO-LOCK NO-ERROR.
+        FIND bcust WHERE bcust.companycode = lc-global-company
+                     AND bcust.AccountNumber = lc-AccountNumber NO-LOCK NO-ERROR.
 
-       IF AVAIL bcust AND bcust.SupportTicket <> "none" THEN
+       IF AVAILABLE bcust AND bcust.SupportTicket <> "none" THEN
        {&out} '<TR><TD VALIGN="TOP" ALIGN="center" colspan=2>'
               '<div class="infobox" style="font-size: 15px;">'
                "Ticketed Customer Balance: "
-               dynamic-function("com-TimeToString",bcust.ticketBalance)
+               DYNAMIC-FUNCTION("com-TimeToString",bcust.ticketBalance)
                '</TD></TR>' skip. 
 
 
@@ -1202,25 +1124,25 @@ PROCEDURE ip-MainEntry :
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("areacode",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Area")
-            else htmlib-SideLabel("Area"))
+            (IF LOOKUP("areacode",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Area")
+            ELSE htmlib-SideLabel("Area"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">'
-            skip(4).
+            SKIP(4).
 
     RUN ip-AreaSelect.
 
     {&out}
             '</TD></TR>' skip. 
 
-    if not ll-customer then
-    do:
+    IF NOT ll-customer THEN
+    DO:
 
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-                (if lookup("date",lc-error-field,'|') > 0 
-                then htmlib-SideLabelError("Date")
-                else htmlib-SideLabel("Date"))
+                (IF LOOKUP("date",lc-error-field,'|') > 0 
+                THEN htmlib-SideLabelError("Date")
+                ELSE htmlib-SideLabel("Date"))
                 '</TD>'
                 '<TD VALIGN="TOP" ALIGN="left">'
                 htmlib-InputField("date",10,lc-date) 
@@ -1231,9 +1153,9 @@ PROCEDURE ip-MainEntry :
 
     
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-                (if lookup("contract",lc-error-field,'|') > 0 
-                then htmlib-SideLabelError("Contract")
-                else htmlib-SideLabel("Contract"))
+                (IF LOOKUP("contract",lc-error-field,'|') > 0 
+                THEN htmlib-SideLabelError("Contract")
+                ELSE htmlib-SideLabel("Contract"))
                 '</TD>' 
                 '<TD VALIGN="TOP" ALIGN="left">'.
 
@@ -1245,23 +1167,23 @@ PROCEDURE ip-MainEntry :
         {&out} '<tr><td valign="top" align="right">' 
             htmlib-SideLabel("Billable?")
             '</td><td valign="top" align="left">'
-            replace(htmlib-CheckBox("billcheck", if ll-billing then true else false),
+            REPLACE(htmlib-CheckBox("billcheck", IF ll-billing THEN TRUE ELSE FALSE),
                     '>',' onClick="ChangeBilling(this);">')
             '</td></tr>' skip.
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-                (if lookup("iclass",lc-error-field,'|') > 0 
-                then htmlib-SideLabelError("Class")
-                else htmlib-SideLabel("Class"))
+                (IF LOOKUP("iclass",lc-error-field,'|') > 0 
+                THEN htmlib-SideLabelError("Class")
+                ELSE htmlib-SideLabel("Class"))
                 '</TD>' 
                 '<TD VALIGN="TOP" ALIGN="left">'
                 htmlib-Select("iclass",lc-global-iclass-code,lc-global-iclass-code,lc-iclass)
                 '</TD></TR>' skip. 
 
-    end.
+    END.
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("briefdescription",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Brief Description")
-            else htmlib-SideLabel("Brief Description"))
+            (IF LOOKUP("briefdescription",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Brief Description")
+            ELSE htmlib-SideLabel("Brief Description"))
             '</TD>'
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("briefdescription",50,lc-briefdescription) 
@@ -1269,21 +1191,21 @@ PROCEDURE ip-MainEntry :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           (if lookup("longdescription",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Details")
-           else htmlib-SideLabel("Details"))
+           (IF LOOKUP("longdescription",lc-error-field,'|') > 0 
+           THEN htmlib-SideLabelError("Details")
+           ELSE htmlib-SideLabel("Details"))
            '</TD>' skip
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-TextArea("longdescription",lc-longdescription,10,40)
            '</TD>' skip
             skip.
     
-    if lc-sla-rows <> "" and lc-accountnumber <> "" and not ll-customer then
-    do:
+    IF lc-sla-rows <> "" AND lc-accountnumber <> "" AND NOT ll-customer THEN
+    DO:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-               (if lookup("sla",lc-error-field,'|') > 0 
-               then htmlib-SideLabelError("SLA")
-               else htmlib-SideLabel("SLA"))
+               (IF LOOKUP("sla",lc-error-field,'|') > 0 
+               THEN htmlib-SideLabelError("SLA")
+               ELSE htmlib-SideLabel("SLA"))
                '</TD>'
                '<TD VALIGN="TOP" ALIGN="left">' skip.
         RUN ip-SLATable.
@@ -1291,31 +1213,31 @@ PROCEDURE ip-MainEntry :
                '</TD>' skip.
         {&out} '</TR>' skip.
 
-    end. 
+    END. 
 
    
-    if can-find(customer where customer.companycode = lc-global-company
-                           and customer.AccountNumber = lc-AccountNumber)
-    and com-AskTicket(lc-global-company,lc-AccountNumber) then
-    do:
+    IF CAN-FIND(customer WHERE customer.companycode = lc-global-company
+                           AND customer.AccountNumber = lc-AccountNumber)
+    AND com-AskTicket(lc-global-company,lc-AccountNumber) THEN
+    DO:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("ticket",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Ticketed Issue?")
-            else htmlib-SideLabel("Ticketed Issue?"))
+            (IF LOOKUP("ticket",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Ticketed Issue?")
+            ELSE htmlib-SideLabel("Ticketed Issue?"))
             '</TD>'
             '<TD VALIGN="TOP" ALIGN="left">'
-                htmlib-CheckBox("ticket", if lc-ticket = 'on'
-                                        then true else false) 
+                htmlib-CheckBox("ticket", IF lc-ticket = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD></TR>' skip.
-    end.
+    END.
 
-    if not ll-customer then
-    do:
-        if lc-list-catcode <> "" then
+    IF NOT ll-customer THEN
+    DO:
+        IF lc-list-catcode <> "" THEN
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("catcode",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Category")
-            else htmlib-SideLabel("Category"))
+            (IF LOOKUP("catcode",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Category")
+            ELSE htmlib-SideLabel("Category"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("catcode",lc-list-catcode,lc-list-cname,
@@ -1323,15 +1245,15 @@ PROCEDURE ip-MainEntry :
             '</TD></TR>' skip. 
 
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("gotomaint",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Update Issue Now?")
-            else htmlib-SideLabel("Update Issue Now?"))
+            (IF LOOKUP("gotomaint",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Update Issue Now?")
+            ELSE htmlib-SideLabel("Update Issue Now?"))
             '</TD>'
             '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("gotomaint", if lc-gotomaint = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("gotomaint", IF lc-gotomaint = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD></TR>' skip.
-    end.
+    END.
 
     
 
@@ -1341,14 +1263,11 @@ PROCEDURE ip-MainEntry :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-NewUserHTML) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-NewUserHTML Procedure 
 PROCEDURE ip-NewUserHTML :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1364,34 +1283,34 @@ PROCEDURE ip-NewUserHTML :
     {&out} '</td></tr>' SKIP.
     
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (if lookup("uadd-loginid",lc-error-field,'|') > 0 
-        then htmlib-SideLabelError("User ID")
-        else htmlib-SideLabel("User ID"))
+        (IF LOOKUP("uadd-loginid",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("User ID")
+        ELSE htmlib-SideLabel("User ID"))
         '</TD>' 
         '<TD VALIGN="TOP" ALIGN="left">'
          htmlib-InputField("uadd-loginid",20,lc-uadd-loginid) 
         '</TD></TR>' skip. 
         
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-         (if lookup("uadd-name",lc-error-field,'|') > 0 
-         then htmlib-SideLabelError("Name")
-         else htmlib-SideLabel("Name"))
+         (IF LOOKUP("uadd-name",lc-error-field,'|') > 0 
+         THEN htmlib-SideLabelError("Name")
+         ELSE htmlib-SideLabel("Name"))
          '</TD>' 
          '<TD VALIGN="TOP" ALIGN="left">'
           htmlib-InputField("uadd-name",40,lc-uadd-name) 
          '</TD></TR>' skip. 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (if lookup("uadd-email",lc-error-field,'|') > 0 
-        then htmlib-SideLabelError("Email")
-        else htmlib-SideLabel("Email"))
+        (IF LOOKUP("uadd-email",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Email")
+        ELSE htmlib-SideLabel("Email"))
         '</TD>' 
         '<TD VALIGN="TOP" ALIGN="left">'
         htmlib-InputField("uadd-email",40,lc-uadd-email) 
         '</TD></TR>' skip. 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-         (if lookup("uadd-phone",lc-error-field,'|') > 0 
-         then htmlib-SideLabelError("Telephone")
-         else htmlib-SideLabel("Telephone"))
+         (IF LOOKUP("uadd-phone",lc-error-field,'|') > 0 
+         THEN htmlib-SideLabelError("Telephone")
+         ELSE htmlib-SideLabel("Telephone"))
          '</TD>' 
          '<TD VALIGN="TOP" ALIGN="left">'
           htmlib-InputField("uadd-phone",40,lc-uadd-phone) 
@@ -1403,14 +1322,11 @@ PROCEDURE ip-NewUserHTML :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-QuickFinish) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-QuickFinish Procedure 
 PROCEDURE ip-QuickFinish :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1431,24 +1347,24 @@ PROCEDURE ip-QuickFinish :
     {&out} '<tr><td valign="top" align="right">' 
             htmlib-SideLabel("Issue Resolved?")
             '</td><td valign="top" align="left">'
-            replace(htmlib-CheckBox("quick", if lc-quick = 'on'
-                                        then true else false),
+            REPLACE(htmlib-CheckBox("quick", IF lc-quick = 'on'
+                                        THEN TRUE ELSE FALSE),
                     '>',' onClick="Quick(this);">')
             '</td></tr>' skip.
 
     {&out} '<tr><td valign="top" align="right">' 
-             (if lookup("currentstatus",lc-error-field,'|') > 0 
-             then htmlib-SideLabelError("Issue Status")
-             else htmlib-SideLabel("Issue Status"))
+             (IF LOOKUP("currentstatus",lc-error-field,'|') > 0 
+             THEN htmlib-SideLabelError("Issue Status")
+             ELSE htmlib-SideLabel("Issue Status"))
              '</td>' 
              '<td valign="top" align="left">'
              htmlib-Select("currentstatus",lc-list-status,lc-list-sname,lc-currentstatus)
              '</td></tr>' skip. 
 
   {&out} '<tr><td valign="top" align="right">' 
-          (if lookup("currentassign",lc-error-field,'|') > 0 
-          then htmlib-SideLabelError("Issue/Action Assigned To")
-          else htmlib-SideLabel("Issue/Action Assigned To"))
+          (IF LOOKUP("currentassign",lc-error-field,'|') > 0 
+          THEN htmlib-SideLabelError("Issue/Action Assigned To")
+          ELSE htmlib-SideLabel("Issue/Action Assigned To"))
           '</td>' 
           '<td valign="top" align="left">'
           htmlib-Select("currentassign",lc-list-assign,lc-list-assname,
@@ -1456,9 +1372,9 @@ PROCEDURE ip-QuickFinish :
           '</td></tr>' skip. 
 
     {&out} '<tr><td valign="top" align="right">' 
-           ( if lookup("actioncode",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Action Type")
-           else htmlib-SideLabel("Action Type"))
+           ( IF LOOKUP("actioncode",lc-error-field,'|') > 0 
+           THEN htmlib-SideLabelError("Action Type")
+           ELSE htmlib-SideLabel("Action Type"))
            '</td>' skip
            '<td valign="top" align="left">'
            htmlib-Select("actioncode",lc-list-actcode,lc-list-actdesc,
@@ -1466,9 +1382,9 @@ PROCEDURE ip-QuickFinish :
            '</td></tr>' skip.
 
     {&out} '<tr><td valign="top" align="right">' 
-          (if lookup("actionnote",lc-error-field,'|') > 0 
-          then htmlib-SideLabelError("Note")
-          else htmlib-SideLabel("Note"))
+          (IF LOOKUP("actionnote",lc-error-field,'|') > 0 
+          THEN htmlib-SideLabelError("Note")
+          ELSE htmlib-SideLabel("Note"))
           '</td>' skip
            '<td valign="top" align="left">'
            '<input type="button" class="submitbutton" onclick="copyinfo();" value="Copy Issue Details"><br>'
@@ -1479,14 +1395,14 @@ PROCEDURE ip-QuickFinish :
     {&out} '<tr><td valign="top" align="right">' 
             htmlib-SideLabel("Customer View?")
             '</td><td valign="top" align="left">'
-            htmlib-CheckBox("customerview", if lc-customerview = 'on'
-                                        then true else false) 
+            htmlib-CheckBox("customerview", IF lc-customerview = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</td></tr>' skip.
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("actionstatus",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Action Status")
-            else htmlib-SideLabel("Action Status"))
+            (IF LOOKUP("actionstatus",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Action Status")
+            ELSE htmlib-SideLabel("Action Status"))
             '</td><td valign="top" align="left">'
             htmlib-Select("actionstatus",lc-global-action-code,lc-global-action-display,lc-actionstatus)
             '</td></tr>' 
@@ -1494,9 +1410,9 @@ PROCEDURE ip-QuickFinish :
         skip.
 
     {&out} '<tr><td valign="top" align="right">' 
-             (if lookup("activitytype",lc-error-field,'|') > 0 
-             then htmlib-SideLabelError("Activity Type")
-             else htmlib-SideLabel("Activity Type"))
+             (IF LOOKUP("activitytype",lc-error-field,'|') > 0 
+             THEN htmlib-SideLabelError("Activity Type")
+             ELSE htmlib-SideLabel("Activity Type"))
              '</td>' 
              '<td valign="top" align="left">'
              Format-Select-Activity(htmlib-Select("activitytype",lc-list-actid,lc-list-activtype,lc-saved-activity)) skip
@@ -1513,9 +1429,9 @@ PROCEDURE ip-QuickFinish :
 /*             '</td></tr>'.                                                                                            */
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("startdate",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Start Date")
-            else htmlib-SideLabel("Start Date"))
+            (IF LOOKUP("startdate",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Start Date")
+            ELSE htmlib-SideLabel("Start Date"))
             '</td>'.
     
     
@@ -1530,9 +1446,9 @@ PROCEDURE ip-QuickFinish :
     {&out} '</tr>' skip.
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("enddate",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("End Date")
-            else htmlib-SideLabel("End Date"))
+            (IF LOOKUP("enddate",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("End Date")
+            ELSE htmlib-SideLabel("End Date"))
             '</td>'.
     
     {&out} '<td valign="top" align="left">'
@@ -1547,9 +1463,9 @@ PROCEDURE ip-QuickFinish :
 
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("hours",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Duration (HH:MM)")
-            else htmlib-SideLabel("Duration (HH:MM)"))
+            (IF LOOKUP("hours",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Duration (HH:MM)")
+            ELSE htmlib-SideLabel("Duration (HH:MM)"))
             '</td>'.
     
     {&out} '<td valign="top" align="left">'
@@ -1561,9 +1477,9 @@ PROCEDURE ip-QuickFinish :
     {&out} '</tr>' skip.
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("manualTime",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Manual Time Entry?")
-            else htmlib-SideLabel("Manual Time Entry?"))
+            (IF LOOKUP("manualTime",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Manual Time Entry?")
+            ELSE htmlib-SideLabel("Manual Time Entry?"))
             '</td>'.
 
 
@@ -1575,9 +1491,9 @@ PROCEDURE ip-QuickFinish :
 
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("actdescription",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Activity Description")
-            else htmlib-SideLabel("Activity Description"))
+            (IF LOOKUP("actdescription",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Activity Description")
+            ELSE htmlib-SideLabel("Activity Description"))
             '</td><td valign="top" align="left">'
 /*             htmlib-InputField("actdescription",40,lc-actdescription) */
       Format-Select-Desc(htmlib-ThisInputField("actdescription",40,lc-actdescription) )
@@ -1603,14 +1519,11 @@ PROCEDURE ip-QuickFinish :
                 '</td></tr>' skip.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-QuickUpdate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-QuickUpdate Procedure 
 PROCEDURE ip-QuickUpdate :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1618,81 +1531,81 @@ PROCEDURE ip-QuickUpdate :
   Notes:       
 ------------------------------------------------------------------------------*/
     
-    def var lr-Action       as rowid        no-undo.
-    def var lr-Issue        as rowid        no-undo.
-    def var li-amount       as int          no-undo.
+    DEFINE VARIABLE lr-Action       AS ROWID        NO-UNDO.
+    DEFINE VARIABLE lr-Issue        AS ROWID        NO-UNDO.
+    DEFINE VARIABLE li-amount       AS INTEGER          NO-UNDO.
 
-    if lc-actionCode <> lc-global-selcode then
-    do:
-        find WebAction
-            where WebAction.CompanyCode = lc-global-company
-              and WebAction.ActionCode  = lc-ActionCode
-              no-lock no-error.
-        create IssAction.
-        assign IssAction.actionID     = WebAction.ActionID
+    IF lc-actionCode <> lc-global-selcode THEN
+    DO:
+        FIND WebAction
+            WHERE WebAction.CompanyCode = lc-global-company
+              AND WebAction.ActionCode  = lc-ActionCode
+              NO-LOCK NO-ERROR.
+        CREATE IssAction.
+        ASSIGN IssAction.actionID     = WebAction.ActionID
                IssAction.CompanyCode  = lc-global-company
                IssAction.IssueNumber  = issue.IssueNumber
-               IssAction.CreateDate   = today
-               IssAction.CreateTime   = time
+               IssAction.CreateDate   = TODAY
+               IssAction.CreateTime   = TIME
                IssAction.CreatedBy    = lc-global-user
                IssAction.customerview = lc-customerview = "on"
                .
     
-        do while true:
-            run lib/makeaudit.p (
+        DO WHILE TRUE:
+            RUN lib/makeaudit.p (
                 "",
-                output lf-audit
+                OUTPUT lf-audit
                 ).
-            if can-find(first IssAction
-                        where IssAction.IssActionID = lf-audit no-lock)
-                        then next.
-            assign
+            IF CAN-FIND(FIRST IssAction
+                        WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                        THEN NEXT.
+            ASSIGN
                 IssAction.IssActionID = lf-audit.
-            leave.
-        end.
-        assign IssAction.notes        = lc-actionnote
+            LEAVE.
+        END.
+        ASSIGN IssAction.notes        = lc-actionnote
                IssAction.ActionStatus = lc-ActionStatus
-               IssAction.ActionDate   = today
+               IssAction.ActionDate   = TODAY
                IssAction.customerview = lc-customerview = "on"
                IssAction.AssignTo     = lc-currentassign
-               IssAction.AssignDate   = today
-               IssAction.AssignTime   = time.
+               IssAction.AssignDate   = TODAY
+               IssAction.AssignTime   = TIME.
     
-        assign
-            lr-Action = rowid(issAction).
-        release issAction.
+        ASSIGN
+            lr-Action = ROWID(issAction).
+        RELEASE issAction.
         
-        find issAction where rowid(issAction) = lr-Action exclusive-lock.
+        FIND issAction WHERE ROWID(issAction) = lr-Action EXCLUSIVE-LOCK.
     
-        dynamic-function("islib-CreateAutoAction",issAction.IssActionID).
+        DYNAMIC-FUNCTION("islib-CreateAutoAction",issAction.IssActionID).
     
-        if lc-ActDescription <> "" then
-        do:
+        IF lc-ActDescription <> "" THEN
+        DO:
     
             
-            create IssActivity.
-            assign IssActivity.IssActionID = IssAction.IssActionID
+            CREATE IssActivity.
+            ASSIGN IssActivity.IssActionID = IssAction.IssActionID
                    IssActivity.CompanyCode = lc-global-company
                    IssActivity.IssueNumber = issue.IssueNumber
-                   IssActivity.CreateDate  = today
-                   IssActivity.CreateTime  = time
+                   IssActivity.CreateDate  = TODAY
+                   IssActivity.CreateTime  = TIME
                    IssActivity.CreatedBy   = lc-global-user
                    IssActivity.ActivityBy  = lc-CurrentAssign .
         
-            do while true:
-                run lib/makeaudit.p (
+            DO WHILE TRUE:
+                RUN lib/makeaudit.p (
                     "",
-                    output lf-audit
+                    OUTPUT lf-audit
                     ).
-                if can-find(first IssActivity
-                            where IssActivity.IssActivityID = lf-audit no-lock)
-                            then next.
-                assign
+                IF CAN-FIND(FIRST IssActivity
+                            WHERE IssActivity.IssActivityID = lf-audit NO-LOCK)
+                            THEN NEXT.
+                ASSIGN
                     IssActivity.IssActivityID = lf-audit.
-                leave.
-            end.
-            assign IssActivity.Description     = lc-briefdescription
-                   IssActivity.ActDate         = today
+                LEAVE.
+            END.
+            ASSIGN IssActivity.Description     = lc-briefdescription
+                   IssActivity.ActDate         = TODAY
                    IssActivity.Customerview    = lc-customerview = "on"
                    issActivity.ActDescription  = lc-actdescription
                    issActivity.Billable        = lc-billable-flag = "on"
@@ -1700,114 +1613,111 @@ PROCEDURE ip-QuickUpdate :
                    issActivity.CustomerView    = lc-customerview = "on"
                    issActivity.Notes           = lc-actionnote.
         
-            if lc-startdate <> "" then
-            do:
-                assign IssActivity.StartDate = date(lc-StartDate).
+            IF lc-startdate <> "" THEN
+            DO:
+                ASSIGN IssActivity.StartDate = DATE(lc-StartDate).
         
-                assign IssActivity.StartTime = dynamic-function("com-InternalTime",
+                ASSIGN IssActivity.StartTime = DYNAMIC-FUNCTION("com-InternalTime",
                                  int(lc-starthour),
                                  int(lc-startmin)
                                  ).
-            end.
-            else assign IssActivity.StartDate = ?
+            END.
+            ELSE ASSIGN IssActivity.StartDate = ?
                         IssActivity.StartTime = 0.
         
-            if lc-enddate <> "" then
-            do:
-                assign IssActivity.EndDate = date(lc-endDate).
+            IF lc-enddate <> "" THEN
+            DO:
+                ASSIGN IssActivity.EndDate = DATE(lc-endDate).
         
-                assign IssActivity.Endtime = dynamic-function("com-InternalTime",
+                ASSIGN IssActivity.Endtime = DYNAMIC-FUNCTION("com-InternalTime",
                                 int(lc-endhour),
                                 int(lc-endmin)
                                 ).
                 
-            end.
-            else assign IssActivity.EndDate = ?
+            END.
+            ELSE ASSIGN IssActivity.EndDate = ?
                         IssActivity.EndTime = 0.
         
         
-            assign IssActivity.Duration = 
+            ASSIGN IssActivity.Duration = 
                 ( ( int(lc-hours) * 60 ) * 60 ) + 
                 ( int(lc-mins) * 60 ).
         
         
-            if Issue.Ticket then
-            do:
-                assign
+            IF Issue.Ticket THEN
+            DO:
+                ASSIGN
                     li-amount = IssActivity.Duration.
-                if li-amount <> 0 then
-                do:
-                    empty temp-table tt-ticket.
-                    create tt-ticket.
-                    assign
+                IF li-amount <> 0 THEN
+                DO:
+                    EMPTY TEMP-TABLE tt-ticket.
+                    CREATE tt-ticket.
+                    ASSIGN
                         tt-ticket.CompanyCode       =   issue.CompanyCode
                         tt-ticket.AccountNumber     =   issue.AccountNumber
                         tt-ticket.Amount            =   li-Amount * -1
                         tt-ticket.CreateBy          =   lc-global-user
-                        tt-ticket.CreateDate        =   today
-                        tt-ticket.CreateTime        =   time
+                        tt-ticket.CreateDate        =   TODAY
+                        tt-ticket.CreateTime        =   TIME
                         tt-ticket.IssueNumber       =   Issue.IssueNumber
                         tt-ticket.Reference         =   IssActivity.description
                         tt-ticket.TickID            =   ?
                         tt-ticket.TxnDate           =   IssActivity.ActDate
-                        tt-ticket.TxnTime           =   time
+                        tt-ticket.TxnTime           =   TIME
                         tt-ticket.TxnType           =   "ACT"
                         tt-ticket.IssActivityID     =   IssActivity.IssActivityID.
                     RUN tlib-PostTicket.
         
         
-                end.
+                END.
         
-            end.
+            END.
     
-        end.
+        END.
 
-    end.
+    END.
 
     /*
     *** 
     *** final update of the issue
     ***
     */
-    assign
+    ASSIGN
         Issue.AssignTo  = lc-CurrentAssign
-        Issue.AssignDate = today
-        Issue.AssignTime = time
-        lr-Issue       = rowid(Issue).
+        Issue.AssignDate = TODAY
+        Issue.AssignTime = TIME
+        lr-Issue       = ROWID(Issue).
 
-    if Issue.StatusCode <> lc-currentstatus then
-    do:
-        release issue.
-        find Issue where rowid(Issue) = lr-Issue exclusive-lock.
-        run islib-StatusHistory(
+    IF Issue.StatusCode <> lc-currentstatus THEN
+    DO:
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = lr-Issue EXCLUSIVE-LOCK.
+        RUN islib-StatusHistory(
                         Issue.CompanyCode,
                         Issue.IssueNumber,
                         lc-global-user,
                         Issue.StatusCode,
                         lc-currentStatus ).
-        release issue.
-        find Issue where rowid(Issue) = lr-Issue exclusive-lock.
-        assign
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = lr-Issue EXCLUSIVE-LOCK.
+        ASSIGN
             Issue.StatusCode = lc-CurrentStatus.
         
-    end.
+    END.
 
-    if dynamic-function("islib-StatusIsClosed",
+    IF DYNAMIC-FUNCTION("islib-StatusIsClosed",
                         Issue.CompanyCode,
                         Issue.StatusCode)
-    then dynamic-function("islib-RemoveAlerts",rowid(Issue)).
+    THEN DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-SetUpQuick) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-SetUpQuick Procedure 
 PROCEDURE ip-SetUpQuick :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1815,22 +1725,22 @@ PROCEDURE ip-SetUpQuick :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def var li-end      as int      no-undo.
+    DEFINE VARIABLE li-end      AS INTEGER      NO-UNDO.
 
-    assign 
-        lc-StartDate      = string(today,"99/99/9999")
-        lc-EndDate        = string(today,"99/99/9999")
+    ASSIGN 
+        lc-StartDate      = STRING(TODAY,"99/99/9999")
+        lc-EndDate        = STRING(TODAY,"99/99/9999")
         lc-hours          = "00"
         lc-mins           = "0"
         lc-secs           = "1"
-        lc-starthour      = string(int(substr(string(time,"hh:mm"),1,2)))
+        lc-starthour      = STRING(int(substr(STRING(TIME,"hh:mm"),1,2)))
         lc-endhour        = lc-starthour
-        lc-startmin       = string(int(substr(string(time,"hh:mm"),4,2)))
+        lc-startmin       = STRING(int(substr(STRING(TIME,"hh:mm"),4,2)))
         lc-endmin         = lc-startmin
         lc-currentassign  = lc-global-user
-        lc-timeSecondSet  = if lc-timeSecondSet <> "" then lc-timeSecondSet else lc-secs 
-        lc-timeMinuteSet  = if lc-timeMinuteSet <> "" then lc-timeMinuteSet else lc-mins
-        lc-DefaultTimeSet = entry(1,lc-list-activtime,"|")
+        lc-timeSecondSet  = IF lc-timeSecondSet <> "" THEN lc-timeSecondSet ELSE lc-secs 
+        lc-timeMinuteSet  = IF lc-timeMinuteSet <> "" THEN lc-timeMinuteSet ELSE lc-mins
+        lc-DefaultTimeSet = ENTRY(1,lc-list-activtime,"|")
         lc-saved-activity = "0"
       
       .
@@ -1838,14 +1748,11 @@ PROCEDURE ip-SetUpQuick :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-SLATable) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-SLATable Procedure 
 PROCEDURE ip-SLATable :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1853,10 +1760,10 @@ PROCEDURE ip-SLATable :
   Notes:       
 ------------------------------------------------------------------------------*/
     
-    def buffer slahead  for slahead.
-    def var li-loop     as int      no-undo.
-    def var lc-object   as char     no-undo.
-    def var lc-rowid    as char     no-undo.
+    DEFINE BUFFER slahead  FOR slahead.
+    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-object   AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-rowid    AS CHARACTER     NO-UNDO.
 
 {&out} htmlib-Hidden("djs",lc-sla-selected) skip.
 
@@ -1866,36 +1773,36 @@ PROCEDURE ip-SLATable :
         "Select?^left|SLA"
         ) skip.
 
-    if lc-global-company = "MICAR" then
-    do:
+    IF lc-global-company = "MICAR" THEN
+    DO:
     {&out}
         htmlib-trmouse()
             '<td>'
-                htmlib-Radio("sla", "slanone" , if lc-sla-selected = "slanone" then true else false)
+                htmlib-Radio("sla", "slanone" , IF lc-sla-selected = "slanone" THEN TRUE ELSE FALSE)
             '</td>'
             htmlib-TableField(html-encode("None"),'left')
     
         '</tr>' skip.
-    end.
+    END.
 
-    do li-loop = 1 to num-entries(lc-sla-rows,"|"):
-        assign
-            lc-rowid = entry(li-loop,lc-sla-rows,"|").
+    DO li-loop = 1 TO NUM-ENTRIES(lc-sla-rows,"|"):
+        ASSIGN
+            lc-rowid = ENTRY(li-loop,lc-sla-rows,"|").
 
-        find slahead where rowid(slahead) = to-rowid(lc-rowid) no-lock no-error.
-        if not avail slahead then next.
-        assign
+        FIND slahead WHERE ROWID(slahead) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE slahead THEN NEXT.
+        ASSIGN
             lc-object = "sla" + lc-rowid.
         {&out}
             htmlib-trmouse()
                 '<td>'
-                    htmlib-Radio("sla" , lc-object, if lc-sla-selected = lc-object then true else false) 
+                    htmlib-Radio("sla" , lc-object, IF lc-sla-selected = lc-object THEN TRUE ELSE FALSE) 
                 '</td>'
                 htmlib-TableField(html-encode(slahead.description),'left')
                 
             '</tr>' skip.
 
-    end.
+    END.
     
         
     {&out} skip 
@@ -1905,81 +1812,78 @@ PROCEDURE ip-SLATable :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    def var ld-date as date no-undo.
-    def var ld-startd   as date     no-undo.
-    def var ld-endd     as date     no-undo.
-    def var li-startt   as int      no-undo.
-    def var li-endt     as int      no-undo.
-    def var li-int      as int      no-undo.
-    DEF BUFFER b FOR webuser.
+    DEFINE VARIABLE ld-date AS DATE NO-UNDO.
+    DEFINE VARIABLE ld-startd   AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-endd     AS DATE     NO-UNDO.
+    DEFINE VARIABLE li-startt   AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-endt     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-int      AS INTEGER      NO-UNDO.
+    DEFINE BUFFER b FOR webuser.
     
 
-    if not can-find(customer where customer.accountnumber 
+    IF NOT CAN-FIND(customer WHERE customer.accountnumber 
                         = lc-accountnumber 
-                        and customer.companycode = lc-global-company
-                        no-lock) 
-    then run htmlib-AddErrorMessage(
+                        AND customer.companycode = lc-global-company
+                        NO-LOCK) 
+    THEN RUN htmlib-AddErrorMessage(
                     'accountnumber', 
                     'You must select the account',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-    if pc-error-field = "" 
-    and ( lc-raisedlogin = htmlib-Null() OR lc-raisedLogin = "" ) THEN 
-    do:
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
+    IF pc-error-field = "" 
+    AND ( lc-raisedlogin = htmlib-Null() OR lc-raisedLogin = "" ) THEN 
+    DO:
         
         IF lc-uadd-loginId = "" THEN
-        run htmlib-AddErrorMessage(
+        RUN htmlib-AddErrorMessage(
                     'raisedlogin', 
                     'Select the person who raised the issue or create one',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
         /* Oherwise adding a new user! */
         ELSE
         DO:
             IF CAN-FIND(b WHERE b.loginid = lc-uadd-loginid NO-LOCK) 
-            THEN run htmlib-AddErrorMessage(
+            THEN RUN htmlib-AddErrorMessage(
                     'uadd-loginid', 
                     'This user already exists',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
             ELSE
             DO:
                 IF lc-uadd-name = "" THEN
-                 run htmlib-AddErrorMessage(
+                 RUN htmlib-AddErrorMessage(
                     'uadd-name', 
                     'You must enter the users name',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
                  IF lc-uadd-email = "" THEN
-                 run htmlib-AddErrorMessage(
+                 RUN htmlib-AddErrorMessage(
                     'uadd-email', 
                     'You must enter the users email',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
                  IF lc-uadd-phone = "" THEN
-                 run htmlib-AddErrorMessage(
+                 RUN htmlib-AddErrorMessage(
                     'uadd-phone', 
                     'You must enter the users phone number',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
 
 
@@ -1987,204 +1891,201 @@ PROCEDURE ip-Validate :
         END.
     END.
 
-    if lc-areacode = htmlib-Null() 
-    then run htmlib-AddErrorMessage(
+    IF lc-areacode = htmlib-Null() 
+    THEN RUN htmlib-AddErrorMessage(
                     'areacode', 
                     'Select the issue area',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
 
 
 
 
-    assign ld-date = date(lc-date) no-error.
-    if error-status:error
-    or ld-date = ? 
-    then run htmlib-AddErrorMessage(
+    ASSIGN ld-date = DATE(lc-date) no-error.
+    IF ERROR-STATUS:ERROR
+    OR ld-date = ? 
+    THEN RUN htmlib-AddErrorMessage(
                     'date', 
                     'You must enter the date',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
     
-    if lc-briefdescription = ""
-    then run htmlib-AddErrorMessage(
+    IF lc-briefdescription = ""
+    THEN RUN htmlib-AddErrorMessage(
                     'briefdescription', 
                     'You must enter a brief description for the issue',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-    if lc-longdescription = ""
-    then run htmlib-AddErrorMessage(
+    IF lc-longdescription = ""
+    THEN RUN htmlib-AddErrorMessage(
                     'longdescription', 
                     'You must enter the details for the issue',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-    if not ll-Customer then
-    do:
-        if lc-actionCode = lc-global-selcode then 
-        do:
-            if lc-quick = "on" then
-            do:
-                run htmlib-AddErrorMessage(
+    IF NOT ll-Customer THEN
+    DO:
+        IF lc-actionCode = lc-global-selcode THEN 
+        DO:
+            IF lc-quick = "on" THEN
+            DO:
+                RUN htmlib-AddErrorMessage(
                     'actioncode', 
                     'You have not selected an action type but have closed the issue',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-            end.
-            if lc-actionnote <> "" then
-            do:
-                run htmlib-AddErrorMessage(
+            END.
+            IF lc-actionnote <> "" THEN
+            DO:
+                RUN htmlib-AddErrorMessage(
                     'actioncode', 
                     'You have not selected an action type but have entered a note',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-            end.
-        end.
-        else
-        do:
-            if lc-actionnote = "" then
-            run htmlib-AddErrorMessage(
+            END.
+        END.
+        ELSE
+        DO:
+            IF lc-actionnote = "" THEN
+            RUN htmlib-AddErrorMessage(
                     'actionnote', 
                     'You must enter the action note',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-            if lc-startdate <> "" then
-            do:
-                assign ld-startd = date(lc-startdate) no-error.
-                if error-status:error
-                or ld-startd = ? then
-                do:
-                    run htmlib-AddErrorMessage(
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
+            IF lc-startdate <> "" THEN
+            DO:
+                ASSIGN ld-startd = DATE(lc-startdate) no-error.
+                IF ERROR-STATUS:ERROR
+                OR ld-startd = ? THEN
+                DO:
+                    RUN htmlib-AddErrorMessage(
                             'startdate', 
                             'The start date is invalid',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
         
-                end.
-            end.
-            else assign ld-startd = ?.
+                END.
+            END.
+            ELSE ASSIGN ld-startd = ?.
         
-            if lc-enddate <> "" then
-            do:
-                assign ld-endd = date(lc-enddate) no-error.
-                if error-status:error
-                or ld-endd = ? then
-                do:
-                    run htmlib-AddErrorMessage(
+            IF lc-enddate <> "" THEN
+            DO:
+                ASSIGN ld-endd = DATE(lc-enddate) no-error.
+                IF ERROR-STATUS:ERROR
+                OR ld-endd = ? THEN
+                DO:
+                    RUN htmlib-AddErrorMessage(
                             'enddate', 
                             'The end date is invalid',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
         
-                end.
-            end.
-            else assign ld-endd = ?.
+                END.
+            END.
+            ELSE ASSIGN ld-endd = ?.
 
-            if ld-endd <> ?
-            and ld-startd = ? then
-            do:
-                run htmlib-AddErrorMessage(
+            IF ld-endd <> ?
+            AND ld-startd = ? THEN
+            DO:
+                RUN htmlib-AddErrorMessage(
                             'enddate', 
                             'You must enter a start date if you enter an end date',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
-            end.
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
+            END.
         
-            if ( ld-endd <> ? and ld-startd <> ? ) then
-            do:
-                if ( ld-startd > ld-endd ) 
-                then run htmlib-AddErrorMessage(
+            IF ( ld-endd <> ? AND ld-startd <> ? ) THEN
+            DO:
+                IF ( ld-startd > ld-endd ) 
+                THEN RUN htmlib-AddErrorMessage(
                             'enddate', 
                             'The end date can not be before the start date',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
-                assign
-                    li-startt = dynamic-function("com-InternalTime",
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
+                ASSIGN
+                    li-startt = DYNAMIC-FUNCTION("com-InternalTime",
                                                  int(lc-starthour),
                                                  int(lc-startmin)
                                                  ).
-                    li-endt = dynamic-function("com-InternalTime",
+                    li-endt = DYNAMIC-FUNCTION("com-InternalTime",
                                                  int(lc-endhour),
                                                  int(lc-endmin)
                                                 ).
-                if ld-endd = ld-startd
-                and li-endt < li-startt then
-                do:
-                    run htmlib-AddErrorMessage(
+                IF ld-endd = ld-startd
+                AND li-endt < li-startt THEN
+                DO:
+                    RUN htmlib-AddErrorMessage(
                             'enddate', 
                             'The end time can not be before the start time',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
         
-                end.
-            end.
+                END.
+            END.
 
-            assign li-int = int(lc-hours) no-error.
-            if error-status:error or li-int < 0
-            then run htmlib-AddErrorMessage(
+            ASSIGN li-int = int(lc-hours) no-error.
+            IF ERROR-STATUS:ERROR OR li-int < 0
+            THEN RUN htmlib-AddErrorMessage(
                             'hours', 
                             'The hours are invalid',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
         
-            assign li-int = int(lc-mins) no-error.
-            if error-status:error or li-int < 0 or li-int > 59
-            then run htmlib-AddErrorMessage(
+            ASSIGN li-int = int(lc-mins) no-error.
+            IF ERROR-STATUS:ERROR OR li-int < 0 OR li-int > 59
+            THEN RUN htmlib-AddErrorMessage(
                             'hours', 
                             'The minutes are invalid',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
         
             
-            assign li-int = int(lc-hours + lc-mins) no-error.
-            if not error-status:error
-            and li-int = 0 
-            then run htmlib-AddErrorMessage(
+            ASSIGN li-int = int(lc-hours + lc-mins) no-error.
+            IF NOT ERROR-STATUS:ERROR
+            AND li-int = 0 
+            THEN RUN htmlib-AddErrorMessage(
                             'hours', 
                             'You must enter the duration',
-                            input-output pc-error-field,
-                            input-output pc-error-msg ).
+                            INPUT-OUTPUT pc-error-field,
+                            INPUT-OUTPUT pc-error-msg ).
 
 
-            if lc-actdescription = "" 
-            then run htmlib-AddErrorMessage(
+            IF lc-actdescription = "" 
+            THEN RUN htmlib-AddErrorMessage(
                     'actdescription', 
                     'You must enter the activity description',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
             
 
-        end.
-    end.
+        END.
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ipCreateNewUser) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipCreateNewUser Procedure 
 PROCEDURE ipCreateNewUser :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-   DEF BUFFER b FOR webuser.
-   DEF BUFFER c FOR webuser.
+   DEFINE BUFFER b FOR webuser.
+   DEFINE BUFFER c FOR webuser.
 
    FIND FIRST c 
        WHERE c.companyCode = issue.companyCode
        AND  c.accountnumber = issue.accountnumber
        AND c.defaultuser NO-LOCK NO-ERROR.
-   IF NOT AVAIL c THEN
+   IF NOT AVAILABLE c THEN
     FIND FIRST c 
        WHERE c.companyCode = issue.companyCode
        AND  c.accountnumber = issue.accountnumber
@@ -2192,7 +2093,7 @@ PROCEDURE ipCreateNewUser :
        NO-LOCK NO-ERROR.
 
    CREATE b.
-   IF AVAIL c
+   IF AVAILABLE c
    THEN BUFFER-COPY c EXCEPT c.loginid TO b.
    ASSIGN
        b.loginid = lc-uadd-loginid
@@ -2205,7 +2106,7 @@ PROCEDURE ipCreateNewUser :
        b.telephone = lc-uadd-phone
        b.mobile = ""
        b.userclass = "CUSTOMER"
-       b.defaultuser = no
+       b.defaultuser = NO
        b.forename = ""
        b.surname = ""
        b.lastDate = ?
@@ -2213,7 +2114,7 @@ PROCEDURE ipCreateNewUser :
        b.lastTime = 0
        b.userTitle = ""
         .
-    IF num-entries(b.NAME," ") > 1 THEN
+    IF NUM-ENTRIES(b.NAME," ") > 1 THEN
     DO:
         ASSIGN
             b.forename = ENTRY(1,b.NAME," ")
@@ -2225,14 +2126,11 @@ PROCEDURE ipCreateNewUser :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -2285,80 +2183,77 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/    
-    def buffer b for webUser.
-    def var ll-ok as log no-undo.
+    DEFINE BUFFER b FOR webUser.
+    DEFINE VARIABLE ll-ok AS LOG NO-UNDO.
 
     {lib/checkloggedin.i}
 
-    assign  lc-title = 'Add Issue'
+    ASSIGN  lc-title = 'Add Issue'
             lc-default-catcode = 
-            dynamic-function("com-GetDefaultCategory",lc-global-company)
+            DYNAMIC-FUNCTION("com-GetDefaultCategory",lc-global-company)
             lc-emailid  = get-value("emailid")
             lc-issuesource = get-value("issuesource")
             lc-iclass = ENTRY(1,lc-global-iclass-code,"|").
-    find webuser where webuser.LoginID = lc-global-user no-lock no-error.
+    FIND webuser WHERE webuser.LoginID = lc-global-user NO-LOCK NO-ERROR.
 
-    RUN com-GetAction ( lc-global-company , output lc-list-actcode, output lc-list-actdesc ).
-    RUN com-GetStatusIssue ( lc-global-company , output lc-list-status, output lc-list-sname ).
-    RUN com-GetActivityType ( lc-global-company , output lc-list-actid, output lc-list-activtype, output lc-list-activdesc, output lc-list-activtime ).
-    RUN com-GetAssignList ( lc-global-company , output lc-list-assign , output lc-list-assname ).
-    assign  lc-list-actcode = lc-global-selcode + "|" + lc-list-actcode
+    RUN com-GetAction ( lc-global-company , OUTPUT lc-list-actcode, OUTPUT lc-list-actdesc ).
+    RUN com-GetStatusIssue ( lc-global-company , OUTPUT lc-list-status, OUTPUT lc-list-sname ).
+    RUN com-GetActivityType ( lc-global-company , OUTPUT lc-list-actid, OUTPUT lc-list-activtype, OUTPUT lc-list-activdesc, OUTPUT lc-list-activtime ).
+    RUN com-GetAssignList ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
+    ASSIGN  lc-list-actcode = lc-global-selcode + "|" + lc-list-actcode
             lc-list-actdesc = lc-global-seldesc + "|" + lc-list-actdesc
-            lc-actdescription = entry(1,lc-list-activdesc,"|").
+            lc-actdescription = ENTRY(1,lc-list-activdesc,"|").
 
-    if lc-IssueSource = "custenq" then
-    do:
-        assign
+    IF lc-IssueSource = "custenq" THEN
+    DO:
+        ASSIGN
             lc-AccountNumber = get-value("accountnumber") .
             lc-sla-selected = "slanone". 
-    end.
-    if WebUser.UserClass = "CUSTOMER" then
-    do:
-        assign
+    END.
+    IF WebUser.UserClass = "CUSTOMER" THEN
+    DO:
+        ASSIGN
             lc-emailid = ""
             lc-issuesource = "".
-        find Customer where Customer.CompanyCode   = lc-global-company
-                        and Customer.AccountNumber = WebUser.AccountNumber
-                        no-lock no-error.
-        assign lc-AccountNumber = WebUser.AccountNumber
+        FIND Customer WHERE Customer.CompanyCode   = lc-global-company
+                        AND Customer.AccountNumber = WebUser.AccountNumber
+                        NO-LOCK NO-ERROR.
+        ASSIGN lc-AccountNumber = WebUser.AccountNumber
                lc-raisedlogin   = WebUser.LoginID
-               ll-customer      = true.
-        if request_method = "get" then
-        do:
+               ll-customer      = TRUE.
+        IF request_method = "get" THEN
+        DO:
             set-user-field("raisedlogin",lc-raisedLogin).
-        end.
-        else 
-        do:
-            assign lc-raisedlogin = get-value("raisedlogin").
-        end.
+        END.
+        ELSE 
+        DO:
+            ASSIGN lc-raisedlogin = get-value("raisedlogin").
+        END.
         set-user-field("accountnumber",lc-accountNumber).
         set-user-field("raisedlogin",lc-raisedLogin).
-        assign
+        ASSIGN
         lc-address = "".
-        lc-address = dynamic-function("com-StringReturn",lc-address,customer.Address1).
-        lc-address = dynamic-function("com-StringReturn",lc-address,customer.Address2).
-        lc-address = dynamic-function("com-StringReturn",lc-address,customer.City).
-        lc-address = dynamic-function("com-StringReturn",lc-address,customer.County).
-        lc-address = dynamic-function("com-StringReturn",lc-address,customer.Country).
-        lc-address = dynamic-function("com-StringReturn",lc-address,customer.PostCode).
-    end.
-    if request_method = 'post' then
-    do:
-            assign 
+        lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.Address1).
+        lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.Address2).
+        lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.City).
+        lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.County).
+        lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.Country).
+        lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.PostCode).
+    END.
+    IF request_method = 'post' THEN
+    DO:
+            ASSIGN 
                  lc-accountnumber    = get-value("accountnumber")
                  lc-briefdescription = get-value("briefdescription")
                  lc-longdescription  = get-value("longdescription")
@@ -2378,9 +2273,9 @@ PROCEDURE process-web-request :
                 .
             IF lc-iclass = ""
             THEN lc-iclass = ENTRY(1,lc-global-iclass-code,"|").
-            if not ll-customer then
-            do:
-                 assign
+            IF NOT ll-customer THEN
+            DO:
+                 ASSIGN
                     lc-quick            = get-value("quick")
                     lc-currentstatus    = get-value("currentstatus")
                     lc-currentassign    = get-value("currentassign")
@@ -2398,7 +2293,7 @@ PROCEDURE process-web-request :
                     lc-hours            = get-value("hours")
                     lc-mins             = get-value("mins")
                     lc-manChecked       = get-value("manualTime")
-                    lc-manChecked       = if lc-manChecked =  "on" then "checked" else ""
+                    lc-manChecked       = IF lc-manChecked =  "on" THEN "checked" ELSE ""
                     lc-actdescription   = get-value("actdescription")
                     lc-timeSecondSet    = get-value("timeSecondSet")
                     lc-timeMinuteSet    = get-value("timeMinuteSet")
@@ -2408,37 +2303,37 @@ PROCEDURE process-web-request :
                     lc-saved-activity   = get-value("savedactivetype")                
                     lc-saved-contract   = lc-contract-type 
                     lc-saved-billable   = lc-billable-flag.
-                    if lc-manChecked <> "checked"  then
-                    lc-mins             = string(integer(lc-mins) + 1).
-            end.
-            if ll-customer
-            then ASSIGN lc-date     = string(today,"99/99/9999")
+                    IF lc-manChecked <> "checked"  THEN
+                    lc-mins             = STRING(INTEGER(lc-mins) + 1).
+            END.
+            IF ll-customer
+            THEN ASSIGN lc-date     = STRING(TODAY,"99/99/9999")
                         lc-catcode  = lc-default-catcode.
-            if lc-submitsource <> "accountchange" then
-            do:
-                RUN ip-Validate( output lc-error-field,output lc-error-msg ).
-                if lc-error-field = "" then
-                do:
-                    repeat:
-                        find last issue 
-                                        where issue.companycode = lc-global-company
-                                        no-lock no-error.
-                        assign
-                                        li-issue = if avail issue then issue.issueNumber + 1 else 1.
-                        leave.
-                    end.
-                    if com-TicketOnly(lc-global-company,lc-AccountNumber) then assign lc-ticket = "on".
-                    create issue.
-                    assign issue.IssueNumber  = li-issue
+            IF lc-submitsource <> "accountchange" THEN
+            DO:
+                RUN ip-Validate( OUTPUT lc-error-field,OUTPUT lc-error-msg ).
+                IF lc-error-field = "" THEN
+                DO:
+                    REPEAT:
+                        FIND LAST issue 
+                                        WHERE issue.companycode = lc-global-company
+                                        NO-LOCK NO-ERROR.
+                        ASSIGN
+                                        li-issue = IF AVAILABLE issue THEN issue.issueNumber + 1 ELSE 1.
+                        LEAVE.
+                    END.
+                    IF com-TicketOnly(lc-global-company,lc-AccountNumber) THEN ASSIGN lc-ticket = "on".
+                    CREATE issue.
+                    ASSIGN issue.IssueNumber  = li-issue
                          issue.BriefDescription   = lc-BriefDescription
                          issue.LongDescription    = lc-LongDescription
                          issue.AccountNumber      = lc-accountnumber
                          issue.CompanyCode        = lc-global-company
-                         issue.CreateDate         = today
-                         issue.CreateTime         = time
+                         issue.CreateDate         = TODAY
+                         issue.CreateTime         = TIME
                          issue.CreateBy           = lc-user
-                         issue.IssueDate          = date(lc-date)
-                         issue.IssueTime          = time
+                         issue.IssueDate          = DATE(lc-date)
+                         issue.IssueTime          = TIME
                          issue.areacode           = lc-areacode
                          issue.CatCode            = lc-catcode
                          issue.Ticket             = lc-ticket = "on"
@@ -2447,216 +2342,216 @@ PROCEDURE process-web-request :
                          Issue.ContractType       = lc-contract-type   
                          Issue.Billable           = lc-billable-flag = "on"
                          issue.iclass             = lc-iclass.
-                    if lc-emailID <> ""
-                    then assign issue.CreateSource = "EMAIL".
-                    if ll-customer then
-                    do:
-                        assign 
+                    IF lc-emailID <> ""
+                    THEN ASSIGN issue.CreateSource = "EMAIL".
+                    IF ll-customer THEN
+                    DO:
+                        ASSIGN 
                                         lc-sla-selected = "slanone".
-                        if customer.DefaultSLAID <> 0 then
-                        do:
-                                        find slahead where slahead.SLAID = Customer.DefaultSLAID no-lock no-error.
-                                        if avail slahead then assign lc-sla-selected = "sla" + string(rowid(slahead)).
-                        end.
-                    end.
-                    assign lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,lc-AccountNumber).
-                    if lc-sla-selected = "slanone" 
-                    or lc-sla-rows = "" then 
-                    do:
-                        assign Issue.link-SLAID = 0
+                        IF customer.DefaultSLAID <> 0 THEN
+                        DO:
+                                        FIND slahead WHERE slahead.SLAID = Customer.DefaultSLAID NO-LOCK NO-ERROR.
+                                        IF AVAILABLE slahead THEN ASSIGN lc-sla-selected = "sla" + string(ROWID(slahead)).
+                        END.
+                    END.
+                    ASSIGN lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,lc-AccountNumber).
+                    IF lc-sla-selected = "slanone" 
+                    OR lc-sla-rows = "" THEN 
+                    DO:
+                        ASSIGN Issue.link-SLAID = 0
                                Issue.SLAStatus = "OFF".
-                    end.
-                    else
-                    do:
-                        find slahead where rowid(slahead) = to-rowid(substr(lc-sla-selected,4)) no-lock no-error.
-                        if avail slahead then 
-                        do:
-                            assign Issue.link-SLAID = slahead.SLAID.
-                            empty temp-table tt-sla-sched.
-                            run lib/slacalc.p
+                    END.
+                    ELSE
+                    DO:
+                        FIND slahead WHERE ROWID(slahead) = to-rowid(substr(lc-sla-selected,4)) NO-LOCK NO-ERROR.
+                        IF AVAILABLE slahead THEN 
+                        DO:
+                            ASSIGN Issue.link-SLAID = slahead.SLAID.
+                            EMPTY TEMP-TABLE tt-sla-sched.
+                            RUN lib/slacalc.p
                                             ( Issue.IssueDate,
                                                     Issue.IssueTime,
                                                     Issue.link-SLAID,
-                                                    output table tt-sla-sched ).
-                            assign
+                                                    OUTPUT table tt-sla-sched ).
+                            ASSIGN
                                 Issue.SLADate = ?
                                 Issue.SLALevel = 0
                                 Issue.SLAStatus = "OFF"
                                 Issue.SLATime  = 0
                                 issue.SLATrip = ?
                                 issue.SLAAmber = ?.
-                            for each tt-sla-sched no-lock where tt-sla-sched.Level > 0:
-                                assign Issue.SLADate[tt-sla-sched.Level] = tt-sla-sched.sDate
+                            FOR EACH tt-sla-sched NO-LOCK WHERE tt-sla-sched.Level > 0:
+                                ASSIGN Issue.SLADate[tt-sla-sched.Level] = tt-sla-sched.sDate
                                        Issue.SLATime[tt-sla-sched.Level] = tt-sla-sched.sTime.
-                                assign Issue.SLAStatus = "ON".
-                            end.
+                                ASSIGN Issue.SLAStatus = "ON".
+                            END.
                             IF issue.slaDate[2] <> ? 
                             THEN ASSIGN issue.SLATrip = 
                              DATETIME(STRING(Issue.SLADate[2],"99/99/9999") + " " 
                                     + STRING(Issue.SLATime[2],"HH:MM")).
 
-                        end.
-                    end.
-                    if lc-raisedlogin <> htmlib-Null() 
-                    then assign issue.RaisedLoginid = lc-raisedlogin.
+                        END.
+                    END.
+                    IF lc-raisedlogin <> htmlib-Null() 
+                    THEN ASSIGN issue.RaisedLoginid = lc-raisedlogin.
 
                     IF lc-raisedLogin = ""
                     OR lc-raisedLogin =  htmlib-Null() 
                     AND lc-uadd-loginid <> "" THEN
                     DO:
                         RUN ipCreateNewUser.
-                        assign issue.RaisedLoginid = lc-uadd-loginid.
+                        ASSIGN issue.RaisedLoginid = lc-uadd-loginid.
 
                     END.
-                    assign issue.StatusCode = htmlib-GetAttr("System","DefaultStatus").
-                    run islib-StatusHistory(
+                    ASSIGN issue.StatusCode = htmlib-GetAttr("System","DefaultStatus").
+                    RUN islib-StatusHistory(
                             issue.CompanyCode,
                             issue.IssueNumber,
                             lc-user,
                             "",
                             issue.StatusCode ).
-                    if lc-emailid <> "" then
-                    do:
-                        find emailh where emailh.EmailID = dec(lc-EmailID) exclusive-lock no-error.
-                        if avail emailh then
-                        do:
-                            for each doch where doch.CompanyCode = lc-global-company
-                                            and doch.RelType     = "EMAIL"
-                                            and doch.RelKey      = string(emailh.EmailID) exclusive-lock:
-                                assign
+                    IF lc-emailid <> "" THEN
+                    DO:
+                        FIND emailh WHERE emailh.EmailID = dec(lc-EmailID) EXCLUSIVE-LOCK NO-ERROR.
+                        IF AVAILABLE emailh THEN
+                        DO:
+                            FOR EACH doch WHERE doch.CompanyCode = lc-global-company
+                                            AND doch.RelType     = "EMAIL"
+                                            AND doch.RelKey      = string(emailh.EmailID) EXCLUSIVE-LOCK:
+                                ASSIGN
                                     doch.RelType = "ISSUE"  
-                                    doch.RelKey  = string(Issue.IssueNumber)
+                                    doch.RelKey  = STRING(Issue.IssueNumber)
                                     doch.CreateBy = lc-user.
-                            end.
-                            delete emailh.
-                        end.
-                    end.
+                            END.
+                            DELETE emailh.
+                        END.
+                    END.
                     islib-DefaultActions(lc-global-company,Issue.IssueNumber).
-                    if not ll-Customer 
-                    then RUN ip-QuickUpdate.
+                    IF NOT ll-Customer 
+                    THEN RUN ip-QuickUpdate.
 
-                    if lc-gotomaint = "" then
-                    do:
-                        find customer where customer.CompanyCode = issue.CompanyCode
-                                        and customer.AccountNumber = issue.AccountNumber no-lock no-error.
-                        set-user-field("newissue",string(issue.IssueNumber)).
-                        release issue.
+                    IF lc-gotomaint = "" THEN
+                    DO:
+                        FIND customer WHERE customer.CompanyCode = issue.CompanyCode
+                                        AND customer.AccountNumber = issue.AccountNumber NO-LOCK NO-ERROR.
+                        set-user-field("newissue",STRING(issue.IssueNumber)).
+                        RELEASE issue.
 
-                        if lc-issueSource = "custenq" and not ll-customer then
-                        do:
+                        IF lc-issueSource = "custenq" AND NOT ll-customer THEN
+                        DO:
                             set-user-field("mode","view").
                             set-user-field("source","menu").
-                            set-user-field("rowid",string(rowid(customer))).
+                            set-user-field("rowid",STRING(ROWID(customer))).
                             RUN run-web-object IN web-utilities-hdl ("cust/custview.p").
 
-                        end.
-                        else RUN run-web-object IN web-utilities-hdl ("iss/confissue.p").
-                    end.
-                    else
-                    do:
+                        END.
+                        ELSE RUN run-web-object IN web-utilities-hdl ("iss/confissue.p").
+                    END.
+                    ELSE
+                    DO:
                         set-user-field("mode","update").
                         set-user-field("return","home").
-                        set-user-field("rowid",string(rowid(issue))).
-                        release issue.
+                        set-user-field("rowid",STRING(ROWID(issue))).
+                        RELEASE issue.
                         RUN run-web-object IN web-utilities-hdl ("iss/issueframe.p").
-                    end.
-                    return.
-                end.
-            end.
-            else 
-            do:
-                assign lc-raisedLogin = htmlib-Null().
-                find customer
-                                where customer.CompanyCode = lc-global-company
-                                        and customer.AccountNumber = lc-AccountNumber   no-lock no-error.
-                if avail customer then
-                do:
-                    assign lc-customerview =  if Customer.ViewAction then "on" else "".
+                    END.
+                    RETURN.
+                END.
+            END.
+            ELSE 
+            DO:
+                ASSIGN lc-raisedLogin = htmlib-Null().
+                FIND Customer WHERE customer.CompanyCode = lc-global-company
+                              AND customer.AccountNumber = lc-AccountNumber   NO-LOCK NO-ERROR.
+                IF AVAILABLE customer THEN
+                DO:
+                    ASSIGN lc-customerview =  IF Customer.ViewAction THEN "on" ELSE ""
+                           lc-uadd-phone = Customer.telephone.
                                                      .
-                    if customer.DefaultSLAID <> 0 then
-                    do:
-                        find slahead where slahead.SLAID = customer.DefaultSLAID no-lock no-error.
-                        if avail slahead then assign lc-sla-selected = "sla" + string(rowid(slahead)).
-                    end.
-                end.
-            end.
-    end.
-    RUN ip-GetCatCode ( output lc-list-catcode,output lc-list-cname ).
-    if lc-IssueSource = "custenq" then
-    do:
-            find customer where customer.CompanyCode = lc-global-company
-                           and customer.AccountNumber = lc-AccountNumber   no-lock no-error.
-            assign
+                    IF customer.DefaultSLAID <> 0 THEN
+                    DO:
+                        FIND slahead WHERE slahead.SLAID = customer.DefaultSLAID NO-LOCK NO-ERROR.
+                        IF AVAILABLE slahead THEN ASSIGN lc-sla-selected = "sla" + string(ROWID(slahead)).
+                    END.
+                END.
+            END.
+    END.
+    RUN ip-GetCatCode ( OUTPUT lc-list-catcode,OUTPUT lc-list-cname ).
+    IF lc-IssueSource = "custenq" THEN
+    DO:
+            FIND customer WHERE customer.CompanyCode = lc-global-company
+                           AND customer.AccountNumber = lc-AccountNumber   NO-LOCK NO-ERROR.
+            ASSIGN
                 lc-list-number = customer.AccountNumber
                 lc-list-name   = customer.Name.
-            if request_method = "GET"
-            then assign lc-customerview = if Customer.ViewAction then "on" else "".
-    end.
-    else RUN ip-GetAccountNumbers ( input lc-user,output lc-list-number,output lc-list-name ).
-    RUN ip-GetOwner ( input lc-accountnumber,output lc-list-login,output lc-list-lname ).
-    RUN ip-GetContract ( input lc-accountnumber,output lc-list-ctype,output lc-list-cdesc   ).
-    run ip-GetArea ( output lc-list-area,output lc-list-aname ).
-    assign
+            IF request_method = "GET"
+            THEN ASSIGN lc-customerview = IF Customer.ViewAction THEN "on" ELSE "".
+    END.
+    ELSE RUN ip-GetAccountNumbers ( INPUT lc-user,OUTPUT lc-list-number,OUTPUT lc-list-name ).
+    RUN ip-GetOwner ( INPUT lc-accountnumber,OUTPUT lc-list-login,OUTPUT lc-list-lname ).
+    RUN ip-GetContract ( INPUT lc-accountnumber,OUTPUT lc-list-ctype,OUTPUT lc-list-cdesc   ).
+    RUN ip-GetArea ( OUTPUT lc-list-area,OUTPUT lc-list-aname ).
+    ASSIGN
         lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,lc-AccountNumber).
 
-    if request_method = "get" then 
-    do:
-            find slahead where slahead.SLAID = Customer.DefaultSLAID no-lock no-error.
+    IF request_method = "get" THEN 
+    DO:
+            FIND slahead WHERE slahead.SLAID = Customer.DefaultSLAID NO-LOCK NO-ERROR.
 
-            assign lc-date = string(today,'99/99/9999')
-                             lc-raisedlogin = if ll-customer then lc-user else htmlib-Null()
+            ASSIGN lc-date = STRING(TODAY,'99/99/9999')
+                             lc-raisedlogin = IF ll-customer THEN lc-user ELSE htmlib-Null()
                              lc-areacode = htmlib-Null()
                              lc-gotomaint = "on"
-                             lc-sla-selected = if lc-global-company = "MICAR" then "slanone" 
-                             else if avail slahead then  "sla" + string(rowid(slahead))
-                             else "slanoneZZZZ" 
+                             lc-sla-selected = IF lc-global-company = "MICAR" THEN "slanone" 
+                             ELSE IF AVAILABLE slahead THEN  "sla" + string(ROWID(slahead))
+                             ELSE "slanoneZZZZ" 
                              lc-catcode      = lc-default-catcode.
-            if not ll-Customer 
-            then RUN ip-SetUpQuick.
-    end.
-    if lc-issuesource = "email" then
-    do:
-            find emailh where emailh.EmailID = dec(lc-emailid)
-                                            no-lock no-error.
-            if not avail emailh 
-            then assign lc-emailid = ""
+            IF NOT ll-Customer 
+            THEN RUN ip-SetUpQuick.
+    END.
+    IF lc-issuesource = "email" THEN
+    DO:
+            FIND emailh WHERE emailh.EmailID = dec(lc-emailid)
+                                            NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE emailh 
+            THEN ASSIGN lc-emailid = ""
                         lc-issuesource = "".
-            else
-            do:
-                if request_method = "GET" then
-                assign lc-briefdescription = emailh.Subject
+            ELSE
+            DO:
+                IF request_method = "GET" THEN
+                ASSIGN lc-briefdescription = emailh.Subject
                        lc-longdescription  = emailh.mText.
-                if emailh.AccountNumber <> "" then
-                do:
-                    find customer
-                        where customer.CompanyCode      = lc-global-company
-                          and customer.AccountNumber    = emailh.AccountNumber
-                          no-lock no-error.
-                    if avail customer then
-                    do:
-                        assign lc-customerview = if Customer.ViewAction then "on" else ""
+                IF emailh.AccountNumber <> "" THEN
+                DO:
+                    FIND customer
+                        WHERE customer.CompanyCode      = lc-global-company
+                          AND customer.AccountNumber    = emailh.AccountNumber
+                          NO-LOCK NO-ERROR.
+                    IF AVAILABLE customer THEN
+                    DO:
+                        ASSIGN lc-customerview = IF Customer.ViewAction THEN "on" ELSE ""
                                                  lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,customer.AccountNumber)
                                                  lc-list-number = customer.AccountNumber
                                                  lc-list-name   = customer.name
                                                  lc-accountnumber = customer.AccountNumber.
-                        RUN ip-GetOwner ( input lc-accountnumber,
-                                                output lc-list-login,
-                                                output lc-list-lname ).
-                        if request_method = "GET" then
-                        do:
-                            find first b 
-                                where b.CompanyCode = lc-global-company
-                                        and b.Email       = emailh.Email
-                                        and b.UserClass   = "CUSTOMER"
-                                        and b.AccountNumber = customer.AccountNumber
-                                        no-lock no-error.
-                            if avail b
-                            then assign lc-raisedlogin = b.LoginID.
-                        end.
-                    end.
-                end.
-            end.
-    end.
+                        RUN ip-GetOwner ( INPUT lc-accountnumber,
+                                                OUTPUT lc-list-login,
+                                                OUTPUT lc-list-lname ).
+                        IF request_method = "GET" THEN
+                        DO:
+                            FIND FIRST b 
+                                WHERE b.CompanyCode = lc-global-company
+                                        AND b.Email       = emailh.Email
+                                        AND b.UserClass   = "CUSTOMER"
+                                        AND b.AccountNumber = customer.AccountNumber
+                                        NO-LOCK NO-ERROR.
+                            IF AVAILABLE b
+                            THEN ASSIGN lc-raisedlogin = b.LoginID.
+                        END.
+                    END.
+                END.
+            END.
+    END.
     RUN outputHeader.
 
     RUN ip-GenHTML.
@@ -2665,8 +2560,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -2674,17 +2567,16 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Account Procedure 
 FUNCTION Format-Select-Account RETURNS CHARACTER
-  ( pc-htm as char ) :
+  ( pc-htm AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+  DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<select',
+  lc-htm = REPLACE(pc-htm,'<select',
                    '<select onChange="ChangeAccount()"'). 
 
 
@@ -2692,24 +2584,21 @@ FUNCTION Format-Select-Account RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Activity Procedure 
 FUNCTION Format-Select-Activity RETURNS CHARACTER
-  ( pc-htm as char  ) :
+  ( pc-htm AS CHARACTER  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+  DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<select',
+  lc-htm = REPLACE(pc-htm,'<select',
                    '<select onChange="ChangeActivityType()"'). 
 
 
@@ -2717,24 +2606,21 @@ FUNCTION Format-Select-Activity RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Desc) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Desc Procedure 
 FUNCTION Format-Select-Desc RETURNS CHARACTER
-  ( pc-htm as char  ) :
+  ( pc-htm AS CHARACTER  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+  DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<input',
+  lc-htm = REPLACE(pc-htm,'<input',
                    '<input onChange="ChangeActivityDesc()"'). 
 
 
@@ -2742,46 +2628,40 @@ FUNCTION Format-Select-Desc RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Duration) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Duration Procedure 
 FUNCTION Format-Select-Duration RETURNS CHARACTER
-  ( pc-htm as char   ) :
+  ( pc-htm AS CHARACTER   ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+  DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<input',
+  lc-htm = REPLACE(pc-htm,'<input',
                    '<input onChange="ChangeDuration()"'). 
 
   RETURN lc-htm.
 
   END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Get-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Get-Activity Procedure 
 FUNCTION Get-Activity RETURNS INTEGER
-  ( pc-inp as char) :
+  ( pc-inp AS CHARACTER) :
 /*------------------------------------------------------------------------------
   Purpose:  Get-Activity
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  RETURN  integer( entry( lookup(  pc-inp , lc-list-activdesc , "|" ),lc-list-actid , "|" ) ).   /* Function return value. */
+  RETURN  INTEGER( ENTRY( LOOKUP(  pc-inp , lc-list-activdesc , "|" ),lc-list-actid , "|" ) ).   /* Function return value. */
 
 END FUNCTION.
 
@@ -2791,51 +2671,45 @@ END FUNCTION.
 /*   lc-list-activdesc = Logging Issue|Travelling to Client|Travelling from Client|Meeting with Client|Telephone Contact with Client|Network/Site Survey|Configuration and Installation|Diagnosis of Problem|Project Work|Research|Testing|Client Take-On|Administration|Other  */
 /*   lc-list-activtime = 5|1|1|1|1|1|1|1|1|1|1|1|1|1                                                                                                                                                                                                                            */
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-htmlib-ThisInputField) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ThisInputField Procedure 
 FUNCTION htmlib-ThisInputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char ) :
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   RETURN 
-        substitute(
+        SUBSTITUTE(
             '<input class="inputfield" type="text" name="&1" id="&1" size="&2" value="&3">',
             pc-name,
-            string(pi-size),
+            STRING(pi-size),
             pc-value).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Return-Submit-Button) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Return-Submit-Button Procedure 
 FUNCTION Return-Submit-Button RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pc-post as char
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-post AS CHARACTER
     ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  RETURN substitute('<input class="submitbutton" type="button" name="&1" value="&2" onclick="&3"  >',
+  RETURN SUBSTITUTE('<input class="submitbutton" type="button" name="&1" value="&2" onclick="&3"  >',
                     pc-name,
                     pc-value,
                     pc-post
@@ -2843,8 +2717,6 @@ FUNCTION Return-Submit-Button RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

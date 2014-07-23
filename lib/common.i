@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Include 
 /***********************************************************************
 
     Program:        lib/common.i
@@ -110,422 +107,262 @@ DEFINE VARIABLE li-global-sla-amber     AS INTEGER INITIAL  20  NO-UNDO.
 DEFINE VARIABLE li-global-sla-ok        AS INTEGER INITIAL  30  NO-UNDO.
 DEFINE VARIABLE li-global-sla-na        AS INTEGER INITIAL  99  NO-UNDO.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AllowCustomerAccess Include 
 FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
   ( pc-CompanyCode AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AccountNumber AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AllowTicketSupport Include 
 FUNCTION com-AllowTicketSupport RETURNS LOGICAL
   ( pr-rowid AS ROWID )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AreaName Include 
 FUNCTION com-AreaName RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER ,
     pc-AreaCode    AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AskTicket Include 
 FUNCTION com-AskTicket RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-AssignedToUser Include 
 FUNCTION com-AssignedToUser RETURNS INTEGER
  ( pc-CompanyCode AS CHARACTER,
    pc-LoginID     AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CanDelete Include 
 FUNCTION com-CanDelete RETURNS LOGICAL
   ( pc-loginid  AS CHARACTER,
     pc-table    AS CHARACTER,
     pr-rowid    AS ROWID )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CatName Include 
 FUNCTION com-CatName RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER,
     pc-Code AS CHARACTER
     )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CheckSystemSetup Include 
 FUNCTION com-CheckSystemSetup RETURNS LOGICAL
   ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CookieDate Include 
 FUNCTION com-CookieDate RETURNS DATE
   ( pc-user AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CookieTime Include 
 FUNCTION com-CookieTime RETURNS INTEGER
 ( pc-user AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CustomerAvailableSLA Include 
 FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER,
     pc-AccountNumber AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CustomerName Include 
 FUNCTION com-CustomerName RETURNS CHARACTER
   ( pc-Company AS CHARACTER,
     pc-Account  AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-CustomerOpenIssues Include 
 FUNCTION com-CustomerOpenIssues RETURNS INTEGER
  ( pc-CompanyCode AS CHARACTER,
    pc-accountNumber AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-DecodeLookup Include 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
   ( pc-code AS CHARACTER,
     pc-code-list AS CHARACTER,
     pc-code-display AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-DescribeTicket Include 
 FUNCTION com-DescribeTicket RETURNS CHARACTER
   ( pc-TxnType AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-GenTabDesc Include 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER,
     pc-GType AS CHARACTER,
     pc-Code AS CHARACTER
     )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-GetDefaultCategory Include 
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-Initialise Include 
 FUNCTION com-Initialise RETURNS LOGICAL
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-InitialSetup Include 
 FUNCTION com-InitialSetup RETURNS LOGICAL
   ( pc-LoginID AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-InternalTime Include 
 FUNCTION com-InternalTime RETURNS INTEGER
   ( pi-hours AS INTEGER,
     pi-mins  AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IsContractor Include 
 FUNCTION com-IsContractor RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IsCustomer Include 
 FUNCTION com-IsCustomer RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IssueActionsStatus Include 
 FUNCTION com-IssueActionsStatus RETURNS INTEGER
   ( pc-companyCode AS CHARACTER,
     pi-issue   AS INTEGER,
     pc-status  AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IssueStatusAlert Include 
 FUNCTION com-IssueStatusAlert RETURNS LOGICAL
   ( pc-CompanyCode AS CHARACTER,
     pc-CreateSource AS CHARACTER,
     pc-StatusCode   AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-IsSuperUser Include 
 FUNCTION com-IsSuperUser RETURNS LOGICAL
   ( pc-LoginID      AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-MonthBegin Include 
 FUNCTION com-MonthBegin RETURNS DATE
   ( pd-date AS DATE)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-MonthEnd Include 
 FUNCTION com-MonthEnd RETURNS DATE
   ( pd-date AS DATE )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NearestTimeUnit Include 
 FUNCTION com-NearestTimeUnit RETURNS INTEGER
   ( pi-time AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfActions Include 
 FUNCTION com-NumberOfActions RETURNS INTEGER
   ( pc-LoginID AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfAlerts Include 
 FUNCTION com-NumberOfAlerts RETURNS INTEGER
  ( pc-LoginID AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfEmails Include 
 FUNCTION com-NumberOfEmails RETURNS INTEGER
   ( pc-LoginID AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfInventoryWarnings Include 
 FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
     ( pc-LoginID AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberOfOpenActions Include 
 FUNCTION com-NumberOfOpenActions RETURNS INTEGER
   ( pc-LoginID AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-NumberUnAssigned Include 
 FUNCTION com-NumberUnAssigned RETURNS INTEGER
  ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-QuickView Include 
 FUNCTION com-QuickView RETURNS LOGICAL
   ( pc-LoginID  AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-RequirePasswordChange Include 
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
   ( pc-user AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-SLADescription Include 
 FUNCTION com-SLADescription RETURNS CHARACTER
     ( pf-SLAID AS DECIMAL )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-StatusTrackIssue Include 
 FUNCTION com-StatusTrackIssue RETURNS LOGICAL
   ( pc-companycode AS CHARACTER,
     pc-StatusCode  AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-StringReturn Include 
 FUNCTION com-StringReturn RETURNS CHARACTER
   ( pc-orig AS CHARACTER,
     pc-add AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-SystemLog Include 
 FUNCTION com-SystemLog RETURNS LOGICAL
   ( pc-ActType AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AttrData AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-TicketOnly Include 
 FUNCTION com-TicketOnly RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-TimeReturn Include 
 FUNCTION com-TimeReturn RETURNS CHARACTER
   ( pc-Type AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-TimeToString Include 
 FUNCTION com-TimeToString RETURNS CHARACTER
   ( pi-time AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-UserName Include 
 FUNCTION com-UserName RETURNS CHARACTER
   ( pc-LoginID AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-UsersCompany Include 
 FUNCTION com-UsersCompany RETURNS CHARACTER
   ( pc-LoginID  AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-UserTrackIssue Include 
 FUNCTION com-UserTrackIssue RETURNS LOGICAL
     ( pc-LoginID AS CHARACTER
      )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD com-WriteQueryInfo Include 
 FUNCTION com-WriteQueryInfo RETURNS LOGICAL
   ( hQuery AS HANDLE )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Include
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: INCLUDE-ONLY
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Include ASSIGN
          HEIGHT             = 15.38
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Include 
 
 
 /* ***************************  Main Block  *************************** */
 
 DYNAMIC-FUNCTION('com-Initialise':U).
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GenTabSelect Include 
 PROCEDURE com-GenTabSelect :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -565,10 +402,7 @@ PROCEDURE com-GenTabSelect :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetAction Include 
 PROCEDURE com-GetAction :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -596,10 +430,7 @@ PROCEDURE com-GetAction :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetActivityType Include 
 PROCEDURE com-GetActivityType :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -650,10 +481,7 @@ PROCEDURE com-GetActivityType :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetArea Include 
 PROCEDURE com-GetArea :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -682,10 +510,7 @@ PROCEDURE com-GetArea :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetAreaIssue Include 
 PROCEDURE com-GetAreaIssue :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -714,10 +539,7 @@ PROCEDURE com-GetAreaIssue :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetAssign Include 
 PROCEDURE com-GetAssign :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -746,10 +568,7 @@ PROCEDURE com-GetAssign :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetAssignIssue Include 
 PROCEDURE com-GetAssignIssue :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -778,10 +597,7 @@ PROCEDURE com-GetAssignIssue :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetAssignList Include 
 PROCEDURE com-GetAssignList :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -811,10 +627,60 @@ PROCEDURE com-GetAssignList :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetAutoAction Include 
+PROCEDURE com-GetAssignRoot:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pc-userid      AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
+    
+    DEFINE BUFFER webUStream FOR WebUSteam.
+    DEFINE BUFFER webUx      FOR WebUSteam.
+    DEFINE BUFFER b-user FOR WebUser.
+    
+    DEF VAR ll-Steam    AS LOG NO-UNDO.
+    
+    
+    ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-userID NO-LOCK).
+    
+    IF ll-steam THEN
+    DO:
+        ASSIGN pc-LoginID = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
+               pc-name = "All People In Your Team(s)|Not Assigned".
+           
+        FOR EACH WebUSteam NO-LOCK
+            WHERE WebUSteam.LoginID = pc-UserID,
+            EACH webux NO-LOCK
+                WHERE webux.st-num = WebUSteam.st-num,
+                EACH b-user NO-LOCK
+                    WHERE b-user.LoginID = webux.LoginID
+                    BREAK 
+                        BY b-user.name
+                        BY b-user.LoginID:
+            IF FIRST-OF(b-user.loginid) 
+            THEN ASSIGN 
+                    pc-LoginID = pc-LoginID + '|' + b-user.LoginID
+                    pc-name = pc-name + '|' + b-user.Name.
+                           
+                    
+        END.
+             
+    END.
+    ELSE 
+    RUN com-GetAssign ( pc-companyCode, 
+        OUTPUT pc-loginID , 
+        OUTPUT pc-name ).
+    
+    
+    
+
+
+END PROCEDURE.
+
 PROCEDURE com-GetAutoAction :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -845,10 +711,7 @@ PROCEDURE com-GetAutoAction :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetCategoryIssue Include 
 PROCEDURE com-GetCategoryIssue :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -881,10 +744,7 @@ PROCEDURE com-GetCategoryIssue :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetCatSelect Include 
 PROCEDURE com-GetCatSelect :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -913,10 +773,7 @@ PROCEDURE com-GetCatSelect :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetCustomer Include 
 PROCEDURE com-GetCustomer :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -956,10 +813,7 @@ PROCEDURE com-GetCustomer :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetCustomerAccount Include 
 PROCEDURE com-GetCustomerAccount :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -995,10 +849,7 @@ PROCEDURE com-GetCustomerAccount :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetInternalUser Include 
 PROCEDURE com-GetInternalUser :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1028,10 +879,7 @@ PROCEDURE com-GetInternalUser :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetKBSection Include 
 PROCEDURE com-GetKBSection :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1058,10 +906,7 @@ PROCEDURE com-GetKBSection :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetStatus Include 
 PROCEDURE com-GetStatus :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1101,10 +946,7 @@ PROCEDURE com-GetStatus :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetStatusIssue Include 
 PROCEDURE com-GetStatusIssue :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1142,10 +984,7 @@ PROCEDURE com-GetStatusIssue :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetStatusIssueOpen Include 
 PROCEDURE com-GetStatusIssueOpen :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1184,10 +1023,7 @@ PROCEDURE com-GetStatusIssueOpen :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetStatusOpenOnly Include 
 PROCEDURE com-GetStatusOpenOnly :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1229,10 +1065,7 @@ PROCEDURE com-GetStatusOpenOnly :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-GetTeams Include 
 PROCEDURE com-GetTeams :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1261,10 +1094,7 @@ PROCEDURE com-GetTeams :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-getTemplateSelect Include 
 PROCEDURE com-getTemplateSelect :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1291,10 +1121,7 @@ PROCEDURE com-getTemplateSelect :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-ResetDefaultStatus Include 
 PROCEDURE com-ResetDefaultStatus :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1314,10 +1141,7 @@ PROCEDURE com-ResetDefaultStatus :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-SplitTime Include 
 PROCEDURE com-SplitTime :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1344,10 +1168,7 @@ PROCEDURE com-SplitTime :
     
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE com-StatusType Include 
 PROCEDURE com-StatusType :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -1371,12 +1192,9 @@ PROCEDURE com-StatusType :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 /* ************************  Function Implementations ***************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AllowCustomerAccess Include 
 FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
   ( pc-CompanyCode AS CHARACTER,
     pc-LoginID AS CHARACTER,
@@ -1430,10 +1248,7 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AllowTicketSupport Include 
 FUNCTION com-AllowTicketSupport RETURNS LOGICAL
   ( pr-rowid AS ROWID ) :
 /*------------------------------------------------------------------------------
@@ -1450,10 +1265,7 @@ FUNCTION com-AllowTicketSupport RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AreaName Include 
 FUNCTION com-AreaName RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER ,
     pc-AreaCode    AS CHARACTER ) :
@@ -1474,10 +1286,7 @@ FUNCTION com-AreaName RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AskTicket Include 
 FUNCTION com-AskTicket RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER ) :
@@ -1499,10 +1308,7 @@ FUNCTION com-AskTicket RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-AssignedToUser Include 
 FUNCTION com-AssignedToUser RETURNS INTEGER
  ( pc-CompanyCode AS CHARACTER,
    pc-LoginID     AS CHARACTER ) :
@@ -1535,10 +1341,7 @@ FUNCTION com-AssignedToUser RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CanDelete Include 
 FUNCTION com-CanDelete RETURNS LOGICAL
   ( pc-loginid  AS CHARACTER,
     pc-table    AS CHARACTER,
@@ -1795,10 +1598,7 @@ FUNCTION com-CanDelete RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CatName Include 
 FUNCTION com-CatName RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER,
     pc-Code AS CHARACTER
@@ -1820,10 +1620,7 @@ FUNCTION com-CatName RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CheckSystemSetup Include 
 FUNCTION com-CheckSystemSetup RETURNS LOGICAL
   ( pc-CompanyCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -1862,10 +1659,7 @@ def var lc-System-Note-Desc                 as char
     END.
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CookieDate Include 
 FUNCTION com-CookieDate RETURNS DATE
   ( pc-user AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -1891,10 +1685,7 @@ FUNCTION com-CookieDate RETURNS DATE
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CookieTime Include 
 FUNCTION com-CookieTime RETURNS INTEGER
 ( pc-user AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -1922,10 +1713,7 @@ FUNCTION com-CookieTime RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CustomerAvailableSLA Include 
 FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER,
     pc-AccountNumber AS CHARACTER ) :
@@ -1963,10 +1751,7 @@ FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CustomerName Include 
 FUNCTION com-CustomerName RETURNS CHARACTER
   ( pc-Company AS CHARACTER,
     pc-Account  AS CHARACTER ) :
@@ -1989,10 +1774,7 @@ FUNCTION com-CustomerName RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-CustomerOpenIssues Include 
 FUNCTION com-CustomerOpenIssues RETURNS INTEGER
  ( pc-CompanyCode AS CHARACTER,
    pc-accountNumber AS CHARACTER ) :
@@ -2025,10 +1807,7 @@ FUNCTION com-CustomerOpenIssues RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-DecodeLookup Include 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
   ( pc-code AS CHARACTER,
     pc-code-list AS CHARACTER,
@@ -2049,10 +1828,7 @@ FUNCTION com-DecodeLookup RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-DescribeTicket Include 
 FUNCTION com-DescribeTicket RETURNS CHARACTER
   ( pc-TxnType AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2070,10 +1846,7 @@ FUNCTION com-DescribeTicket RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-GenTabDesc Include 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER,
     pc-GType AS CHARACTER,
@@ -2097,10 +1870,7 @@ FUNCTION com-GenTabDesc RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-GetDefaultCategory Include 
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
   ( pc-CompanyCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2122,10 +1892,7 @@ FUNCTION com-GetDefaultCategory RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-Initialise Include 
 FUNCTION com-Initialise RETURNS LOGICAL
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -2176,10 +1943,7 @@ FUNCTION com-Initialise RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-InitialSetup Include 
 FUNCTION com-InitialSetup RETURNS LOGICAL
   ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2205,10 +1969,7 @@ FUNCTION com-InitialSetup RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-InternalTime Include 
 FUNCTION com-InternalTime RETURNS INTEGER
   ( pi-hours AS INTEGER,
     pi-mins  AS INTEGER ) :
@@ -2222,10 +1983,7 @@ FUNCTION com-InternalTime RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IsContractor Include 
 FUNCTION com-IsContractor RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER ) :
@@ -2246,10 +2004,7 @@ FUNCTION com-IsContractor RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IsCustomer Include 
 FUNCTION com-IsCustomer RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER ) :
@@ -2270,10 +2025,7 @@ FUNCTION com-IsCustomer RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IssueActionsStatus Include 
 FUNCTION com-IssueActionsStatus RETURNS INTEGER
   ( pc-companyCode AS CHARACTER,
     pi-issue   AS INTEGER,
@@ -2303,10 +2055,7 @@ FUNCTION com-IssueActionsStatus RETURNS INTEGER
   
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IssueStatusAlert Include 
 FUNCTION com-IssueStatusAlert RETURNS LOGICAL
   ( pc-CompanyCode AS CHARACTER,
     pc-CreateSource AS CHARACTER,
@@ -2330,10 +2079,7 @@ FUNCTION com-IssueStatusAlert RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-IsSuperUser Include 
 FUNCTION com-IsSuperUser RETURNS LOGICAL
   ( pc-LoginID      AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2353,10 +2099,7 @@ FUNCTION com-IsSuperUser RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-MonthBegin Include 
 FUNCTION com-MonthBegin RETURNS DATE
   ( pd-date AS DATE) :
 /*------------------------------------------------------------------------------
@@ -2368,10 +2111,7 @@ FUNCTION com-MonthBegin RETURNS DATE
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-MonthEnd Include 
 FUNCTION com-MonthEnd RETURNS DATE
   ( pd-date AS DATE ) :
 /*------------------------------------------------------------------------------
@@ -2384,10 +2124,7 @@ FUNCTION com-MonthEnd RETURNS DATE
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NearestTimeUnit Include 
 FUNCTION com-NearestTimeUnit RETURNS INTEGER
   ( pi-time AS INTEGER ) :
 /*------------------------------------------------------------------------------
@@ -2418,10 +2155,7 @@ FUNCTION com-NearestTimeUnit RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfActions Include 
 FUNCTION com-NumberOfActions RETURNS INTEGER
   ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2447,10 +2181,7 @@ FUNCTION com-NumberOfActions RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfAlerts Include 
 FUNCTION com-NumberOfAlerts RETURNS INTEGER
  ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2475,10 +2206,7 @@ FUNCTION com-NumberOfAlerts RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfEmails Include 
 FUNCTION com-NumberOfEmails RETURNS INTEGER
   ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2507,10 +2235,7 @@ FUNCTION com-NumberOfEmails RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfInventoryWarnings Include 
 FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
     ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2572,10 +2297,7 @@ FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberOfOpenActions Include 
 FUNCTION com-NumberOfOpenActions RETURNS INTEGER
   ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2608,10 +2330,7 @@ FUNCTION com-NumberOfOpenActions RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-NumberUnAssigned Include 
 FUNCTION com-NumberUnAssigned RETURNS INTEGER
  ( pc-CompanyCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2643,10 +2362,7 @@ FUNCTION com-NumberUnAssigned RETURNS INTEGER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-QuickView Include 
 FUNCTION com-QuickView RETURNS LOGICAL
   ( pc-LoginID  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2672,10 +2388,7 @@ FUNCTION com-QuickView RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-RequirePasswordChange Include 
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
   ( pc-user AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2711,10 +2424,7 @@ FUNCTION com-RequirePasswordChange RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-SLADescription Include 
 FUNCTION com-SLADescription RETURNS CHARACTER
     ( pf-SLAID AS DECIMAL ) :
 /*------------------------------------------------------------------------------
@@ -2734,10 +2444,7 @@ FUNCTION com-SLADescription RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-StatusTrackIssue Include 
 FUNCTION com-StatusTrackIssue RETURNS LOGICAL
   ( pc-companycode AS CHARACTER,
     pc-StatusCode  AS CHARACTER ) :
@@ -2757,10 +2464,7 @@ FUNCTION com-StatusTrackIssue RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-StringReturn Include 
 FUNCTION com-StringReturn RETURNS CHARACTER
   ( pc-orig AS CHARACTER,
     pc-add AS CHARACTER ) :
@@ -2778,10 +2482,7 @@ FUNCTION com-StringReturn RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-SystemLog Include 
 FUNCTION com-SystemLog RETURNS LOGICAL
   ( pc-ActType AS CHARACTER,
     pc-LoginID AS CHARACTER,
@@ -2810,10 +2511,7 @@ FUNCTION com-SystemLog RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-TicketOnly Include 
 FUNCTION com-TicketOnly RETURNS LOGICAL
   ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER ) :
@@ -2835,10 +2533,7 @@ FUNCTION com-TicketOnly RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-TimeReturn Include 
 FUNCTION com-TimeReturn RETURNS CHARACTER
   ( pc-Type AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2853,10 +2548,7 @@ FUNCTION com-TimeReturn RETURNS CHARACTER
     END CASE.
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-TimeToString Include 
 FUNCTION com-TimeToString RETURNS CHARACTER
   ( pi-time AS INTEGER ) :
 /*------------------------------------------------------------------------------
@@ -2886,10 +2578,7 @@ FUNCTION com-TimeToString RETURNS CHARACTER
     
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-UserName Include 
 FUNCTION com-UserName RETURNS CHARACTER
   ( pc-LoginID AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2915,10 +2604,7 @@ FUNCTION com-UserName RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-UsersCompany Include 
 FUNCTION com-UsersCompany RETURNS CHARACTER
   ( pc-LoginID  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -2945,10 +2631,7 @@ FUNCTION com-UsersCompany RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-UserTrackIssue Include 
 FUNCTION com-UserTrackIssue RETURNS LOGICAL
     ( pc-LoginID AS CHARACTER
      ) :
@@ -2968,10 +2651,7 @@ FUNCTION com-UserTrackIssue RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION com-WriteQueryInfo Include 
 FUNCTION com-WriteQueryInfo RETURNS LOGICAL
   ( hQuery AS HANDLE ) :
 /*------------------------------------------------------------------------------
@@ -2994,6 +2674,4 @@ FUNCTION com-WriteQueryInfo RETURNS LOGICAL
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
