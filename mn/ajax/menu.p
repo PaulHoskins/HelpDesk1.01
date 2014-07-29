@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        mn/menupanel.p
@@ -29,62 +26,59 @@ CREATE WIDGET-POOL.
 /* Local Variable Definitions ---                                       */
 
 
-def var lc-error-field as char no-undo.
-def var lc-error-mess  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-def var lc-user as char no-undo.
-def var lc-pass as char no-undo.
+DEFINE VARIABLE lc-user AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pass AS CHARACTER NO-UNDO.
 
-def var li-item as int no-undo.
-def var ll-Alert        as log no-undo.
+DEFINE VARIABLE li-item AS INTEGER NO-UNDO.
+DEFINE VARIABLE ll-Alert        AS LOG NO-UNDO.
 
 DEFINE VARIABLE MyUUID AS RAW       NO-UNDO.
 DEFINE VARIABLE cGUID  AS CHARACTER NO-UNDO. 
 
-DEF VAR lc-unq  AS CHAR     NO-UNDO.
+DEFINE VARIABLE lc-unq  AS CHARACTER     NO-UNDO.
 
 
-def temp-table tt-menu no-undo
-    field ItemNo        as int
-    field Level         as int
-    field Description   as char 
-    field ObjURL        as char
-    field ObjTarget     as char
-    field ObjType       as char
-    field AltInfo       as char
-    field aTitle        as char 
-    field OverDue       as log
+DEFINE TEMP-TABLE tt-menu NO-UNDO
+    FIELD ItemNo        AS INTEGER
+    FIELD Level         AS INTEGER
+    FIELD Description   AS CHARACTER 
+    FIELD ObjURL        AS CHARACTER
+    FIELD ObjTarget     AS CHARACTER
+    FIELD ObjType       AS CHARACTER
+    FIELD AltInfo       AS CHARACTER
+    FIELD aTitle        AS CHARACTER 
+    FIELD OverDue       AS LOG
 
-    index i-ItemNo is primary unique
+    INDEX i-ItemNo IS PRIMARY UNIQUE
             ItemNo.
 
-def var lc-system as char no-undo.
-def var lc-image  as char no-undo.
-def var lc-company as char no-undo.
+DEFINE VARIABLE lc-system AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-image  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-company AS CHARACTER NO-UNDO.
 
-def var lc-address      as char     no-undo.
-def var li-cust-open    as int      no-undo.
-def var li-user-open    as int      no-undo.
+DEFINE VARIABLE lc-address      AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE li-cust-open    AS INTEGER      NO-UNDO.
+DEFINE VARIABLE li-user-open    AS INTEGER      NO-UNDO.
 
-def var li-total    as int      no-undo.
+DEFINE VARIABLE li-total    AS INTEGER      NO-UNDO.
 
-def temp-table tt   no-undo
-    field ACode         as char
-    field ADescription  as char
-    field ACount        as int
-    FIELD CCount        AS INT EXTENT 3
-    index i-ACode     is primary ACode 
-    index i-ACount    ACount DESCENDING ADescription.
+DEFINE TEMP-TABLE tt   NO-UNDO
+    FIELD ACode         AS CHARACTER
+    FIELD ADescription  AS CHARACTER
+    FIELD ACount        AS INTEGER
+    FIELD CCount        AS INTEGER EXTENT 3
+    INDEX i-ACode     IS PRIMARY ACode 
+    INDEX i-ACount    ACount DESCENDING ADescription.
 
-DEF VAR mytime AS INT.
+DEFINE VARIABLE mytime AS INTEGER.
 
 ETIME(YES).
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -93,48 +87,32 @@ ETIME(YES).
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -142,28 +120,25 @@ ETIME(YES).
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-InternalUser) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-InternalUser Procedure 
 PROCEDURE ip-InternalUser :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def var li-ActionCount  as int no-undo.
-    def var li-AlertCount   as int no-undo.
-    def var li-EmailCount   as int no-undo.
-    def var li-UnCount      as int no-undo.
-    def var li-Inventory    as int no-undo.
-    def var lc-Random       as char no-undo.
-    def var li-OpenAction  as int no-undo.
+    DEFINE VARIABLE li-ActionCount  AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-AlertCount   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-EmailCount   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-UnCount      AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-Inventory    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lc-Random       AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-OpenAction  AS INTEGER NO-UNDO.
 
 
     li-ActionCount = com-NumberOfActions(webUser.LoginID).
@@ -172,66 +147,66 @@ PROCEDURE ip-InternalUser :
     li-OpenAction  = com-NumberOfOpenActions(webUser.LoginId).
 
 
-    if WebUser.SuperUser
-    and WebUser.UserClass = "INTERNAL"
-    then li-uncount = com-NumberUnAssigned(webuser.CompanyCode).
-    assign
-        ll-Alert = li-ActionCount > 0 or li-AlertCount > 0 
-                   or li-unCount > 0 or li-EmailCount > 0
-                   or li-Inventory > 0
-                   or li-OpenAction > 0
+    IF WebUser.SuperUser
+    AND WebUser.UserClass = "INTERNAL"
+    THEN li-uncount = com-NumberUnAssigned(webuser.CompanyCode).
+    ASSIGN
+        ll-Alert = li-ActionCount > 0 OR li-AlertCount > 0 
+                   OR li-unCount > 0 OR li-EmailCount > 0
+                   OR li-Inventory > 0
+                   OR li-OpenAction > 0
                 .
 
-    if WebUser.UserClass = "INTERNAL" then
-    do:
+    IF WebUser.UserClass = "INTERNAL" THEN
+    DO:
         {&out} 
                 '<br /><a class="tlink" style="width: 100%;" href="' appurl
                 '/time/diaryframe.p' lc-random '" target="mainwindow" title="Diary View">' skip
                 'Your Diary' 
                 '</a><br /><br />' skip.      
-    end.
+    END.
 
 
 
-    if ll-Alert then
-    do:
+    IF ll-Alert THEN
+    DO:
         {&out} '<div class="menualert">'.
-        assign
-            lc-Random = "?random=" + string(int(today)) + string(time) + string(etime) + string(rowid(webuser)).
-        if li-ActionCount > 0
-        or li-AlertCount > 0 then
-        do:
+        ASSIGN
+            lc-Random = "?random=" + string(int(TODAY)) + string(TIME) + string(ETIME) + string(ROWID(webuser)).
+        IF li-ActionCount > 0
+        OR li-AlertCount > 0 THEN
+        DO:
             {&out} 
                 '<a class="tlink" style="border:none; width: 100%;" href="' appurl
                 '/mn/alertpage.p' lc-random '" target="mainwindow" title="Alerts">Your' skip.
          
-            if li-ActionCount > 0 then
+            IF li-ActionCount > 0 THEN
             {&out} ' actions (' li-ActionCount ')'.
-            if li-AlertCount > 0 then
-            do:
-                {&out} ( if li-ActionCount > 0 then ' & ' else ' ' ) 'SLA alerts (' li-AlertCount ')'.
-            end.
+            IF li-AlertCount > 0 THEN
+            DO:
+                {&out} ( IF li-ActionCount > 0 THEN ' & ' ELSE ' ' ) 'SLA alerts (' li-AlertCount ')'.
+            END.
             {&out} '</a><br />' skip.
-        end.
-        if li-unCount > 0 
-        then {&out} 
+        END.
+        IF li-unCount > 0 
+        THEN {&out} 
                 '<a class="tlink" style="border: none; width: 100%;" href="' appurl
                 '/iss/issue.p' lc-random '&status=allopen&assign=NotAssigned" target="mainwindow" title="Unassigned Issues">'
                 li-uncount ' Unassigned Issues</a><br />'.
 
-        if li-EmailCount > 0 
-        then {&out} 
+        IF li-EmailCount > 0 
+        THEN {&out} 
                 '<a class="tlink" style="border: none; width: 100%;" href="' appurl
                 '/mail/mail.p' lc-random '" target="mainwindow" title="HelpDesk Emails">'
                 li-EmailCount ' HelpDesk Emails</a><br />'.
 
-        if li-Inventory > 0 
-        then {&out} 
+        IF li-Inventory > 0 
+        THEN {&out} 
                 '<a class="tlink" style="border: none; width: 100%;" href="' appurl
                 '/cust/ivrenewal.p' lc-random '" target="mainwindow" title="Inventory Renewals">'
                 li-Inventory ' Inventory Renewals</a><br />'.
-        if li-OpenAction > 0
-        then {&out} 
+        IF li-OpenAction > 0
+        THEN {&out} 
                 '<a class="tlink" style="border: none; width: 100%;" href="' appurl
                 '/iss/openaction.p' lc-random '" target="mainwindow" title="Open Actions">' skip
                 'Open Actions (' li-OpenAction ')'
@@ -240,18 +215,15 @@ PROCEDURE ip-InternalUser :
    
         {&out} '</div>'.
 
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-NewMenu) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-NewMenu Procedure 
 PROCEDURE ip-NewMenu :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -259,26 +231,26 @@ PROCEDURE ip-NewMenu :
   Notes:       
 ------------------------------------------------------------------------------*/
    
-    def buffer b-tt-menu      for tt-menu.
-    def buffer b-sub-menu     for tt-menu.
-    def var lc-object       as char no-undo.
+    DEFINE BUFFER b-tt-menu      FOR tt-menu.
+    DEFINE BUFFER b-sub-menu     FOR tt-menu.
+    DEFINE VARIABLE lc-object       AS CHARACTER NO-UNDO.
 
     
 
 
-    def var lc-desc         as char     no-undo.
+    DEFINE VARIABLE lc-desc         AS CHARACTER     NO-UNDO.
 
 
     {&out} '<div id="menustrip" style="margin: 7px;">' htmlib-BeginCriteria("Menu").
 
     {&out} '<div id="menu">' skip.
 
-    for each tt-menu no-lock :
-        if tt-menu.Level > 1 then next.
+    FOR EACH tt-menu NO-LOCK :
+        IF tt-menu.Level > 1 THEN NEXT.
         
        
-        if tt-menu.ObjType = "WS" then
-        do:
+        IF tt-menu.ObjType = "WS" THEN
+        DO:
 
             IF INDEX(tt-menu.ObjURL,"?") > 0
             THEN lc-unq = '&UniqueID='  + cGUID.
@@ -296,12 +268,12 @@ PROCEDURE ip-NewMenu :
             {&out} '</td></tr>'.
             {&out} '</table></div>' skip.
 
-            next.
-        end.
+            NEXT.
+        END.
        
-        assign lc-desc = html-encode(tt-menu.description).
+        ASSIGN lc-desc = html-encode(tt-menu.description).
 
-        assign
+        ASSIGN
             lc-object = "msub" + string(tt-menu.ItemNo).
 
         {&out}
@@ -316,11 +288,11 @@ PROCEDURE ip-NewMenu :
 
         {&out} '<table>'.
 
-        for each b-sub-menu where b-sub-menu.ItemNo > tt-menu.ItemNo no-lock   :
+        FOR EACH b-sub-menu WHERE b-sub-menu.ItemNo > tt-menu.ItemNo NO-LOCK   :
 
-            if b-sub-menu.Level = 1 then leave.
+            IF b-sub-menu.Level = 1 THEN LEAVE.
 
-            if rowid(b-sub-menu) = rowid(tt-menu) then next.
+            IF ROWID(b-sub-menu) = rowid(tt-menu) THEN NEXT.
             {&out} '<tr><td nowrap>'.
 
             
@@ -338,12 +310,12 @@ PROCEDURE ip-NewMenu :
             {&out} '</td></tr>'.
                    
             
-        end.
+        END.
         {&out} '</table>'.
 
         {&out} '</div>' skip.
 
-    end.
+    END.
 
     {&out} '</div>' skip.
 
@@ -351,83 +323,90 @@ PROCEDURE ip-NewMenu :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-SuperUserAnalysis) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-SuperUserAnalysis Procedure 
 PROCEDURE ip-SuperUserAnalysis :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def buffer b-Issue      for Issue.
-    def buffer Issue        for Issue.
-    DEF BUFFER webUsteam FOR webUsteam.
-    DEF BUFFER customer FOR customer.
+    DEFINE BUFFER b-Issue      FOR Issue.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER webUsteam FOR webUsteam.
+    DEFINE BUFFER customer FOR customer.
 
 
 
-    def buffer b-WebStatus    for WebStatus.
-    DEF VAR ll-Steam    AS LOG NO-UNDO.
+    DEFINE BUFFER b-WebStatus    FOR WebStatus.
+    DEFINE VARIABLE ll-Steam    AS LOG NO-UNDO.
 
-    def var    badList        as char no-undo.
-    DEF VAR    iloop        AS INT NO-UNDO.
+    DEFINE VARIABLE    badList        AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE    iloop        AS INTEGER NO-UNDO.
 
-    ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-user NO-LOCK).
+    ll-Steam = DYNAMIC-FUNCTION("com-isTeamMember", lc-global-company,lc-user,?).
 
-    for each WebStatus 
-        where WebStatus.Completed = true 
-          and WebStatus.CompanyCode = lc-global-company
-           no-lock:
-      assign badList =   WebStatus.StatusCode + "," + badList.
-    end.
+    FOR EACH WebStatus 
+        WHERE WebStatus.Completed = TRUE 
+          AND WebStatus.CompanyCode = lc-global-company
+           NO-LOCK:
+      ASSIGN badList =   WebStatus.StatusCode + "," + badList.
+    END.
 
-    for each Issue no-lock
-      where Issue.CompanyCode = lc-global-company
-        and Issue.AssignTo    <> ""
-        and index(badList,Issue.StatusCode)  = 0:
+    FOR EACH Issue NO-LOCK
+      WHERE Issue.CompanyCode = lc-global-company
+        AND Issue.AssignTo    <> ""
+        AND INDEX(badList,Issue.StatusCode)  = 0:
     
         IF ll-Steam THEN
         DO:
             FIND customer OF issue NO-LOCK NO-ERROR.
-            IF NOT AVAIL customer THEN NEXT.
+            IF NOT AVAILABLE customer THEN NEXT.
+            IF Customer.st-num = 0 THEN NEXT.
+           
+    
             IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-user
                                        AND webusteam.st-num = customer.st-num NO-LOCK) 
+            
             THEN NEXT.
+            
+            IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = Issue.assignTo
+                                       AND webusteam.st-num = customer.st-num NO-LOCK) 
+            
+            THEN NEXT.
+            
+            
+            
+            
 
         END.
-        assign li-total = li-total + 1.
+        ASSIGN li-total = li-total + 1.
     
-        find tt where tt.ACode = Issue.AssignTo use-index i-Acode no-error.
-        if not avail tt then
-        do:
-            create tt.
-            assign tt.Acode = Issue.AssignTo.
-            assign tt.ADescription = dynamic-function("com-UserName",Issue.AssignTo).
+        FIND tt WHERE tt.ACode = Issue.AssignTo USE-INDEX i-Acode NO-ERROR.
+        IF NOT AVAILABLE tt THEN
+        DO:
+            CREATE tt.
+            ASSIGN tt.Acode = Issue.AssignTo.
+            ASSIGN tt.ADescription = DYNAMIC-FUNCTION("com-UserName",Issue.AssignTo).
     
-        end.
-        assign tt.Acount = tt.ACount + 1.
+        END.
+        ASSIGN tt.Acount = tt.ACount + 1.
         DO iloop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
             IF issue.iclass = ENTRY(iloop,lc-global-iclass-code,"|")
             THEN ASSIGN tt.ccount[iloop] = tt.ccount[iloop] + 1.
         END.
     
-    end.
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-SuperUserFinal) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-SuperUserFinal Procedure 
 PROCEDURE ip-SuperUserFinal :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -437,31 +416,31 @@ PROCEDURE ip-SuperUserFinal :
 
     RUN ip-SuperUserAnalysis.
 
-    DEF VAR iloop   AS INT  NO-UNDO.
-    DEF VAR lc-class AS CHAR NO-UNDO.
+    DEFINE VARIABLE iloop   AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-class AS CHARACTER NO-UNDO.
 
-    find first tt no-lock no-error.
+    FIND FIRST tt NO-LOCK NO-ERROR.
     
-    mytime = etime.
+    mytime = ETIME.
     
-    if avail tt then
-    do:
+    IF AVAILABLE tt THEN
+    DO:
         {&out} '<div style="margin: 7px;">'.
 
 
-        {&out} htmlib-BeginCriteria("Assignments - " + string(time,'hh:mm am')).
+        {&out} htmlib-BeginCriteria("Assignments - " + string(TIME,'hh:mm am')).
 
         {&out} '<table style="font-size: 10px;">'.
 
-        find first tt where tt.ACode = "Renewals" no-lock no-error.
+        FIND FIRST tt WHERE tt.ACode = "Renewals" NO-LOCK NO-ERROR.
         {&out} 
             '<tr><td>'
-            '<a title="View Issues" target="mainwindow" class="tlink" style="border:none;' if avail tt then 'color: red;' else ''
+            '<a title="View Issues" target="mainwindow" class="tlink" style="border:none;' IF AVAILABLE tt THEN 'color: red;' ELSE ''
             '" href="' appurl '/iss/issue.p?frommenu=yes&status=allopen&assign=Renewals">'
             html-encode("Renewals")
-            '</a></td><td align=right class="menuinfo">' if avail tt then tt.ACount else 0 '</td></tr>'.
+            '</a></td><td align=right class="menuinfo">' IF AVAILABLE tt THEN tt.ACount ELSE 0 '</td></tr>'.
 
-        for each tt no-lock where tt.ACode <> "Renewals" use-index i-ACount :
+        FOR EACH tt NO-LOCK WHERE tt.ACode <> "Renewals" USE-INDEX i-ACount :
             lc-Class = TRIM(SUBSTR(tt.ADescription,1,15)).
             {&out} 
                 '<tr><td nowrap  style="vertical-align:top">'
@@ -481,7 +460,7 @@ PROCEDURE ip-SuperUserFinal :
                      {&out} 
                          '<a title="View Issues For ' lc-class '" target="mainwindow" class="tlink" style="border:none;" href="' 
                             appurl '/iss/issue.p?frommenu=yes&status=allopen&iclass=' lc-class ' &assign=' tt.ACode '">'
-                            string(tt.CCount[iloop]) '</a>' SKIP.
+                            STRING(tt.CCount[iloop]) '</a>' SKIP.
 
 
                  END.
@@ -494,22 +473,19 @@ PROCEDURE ip-SuperUserFinal :
              END.
 
             
-        end.
+        END.
         {&out} '</table>'.
         {&out} htmlib-EndCriteria().
         {&out} '</div>'.
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-mnlib-BuildIssueMenu) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE mnlib-BuildIssueMenu Procedure 
 PROCEDURE mnlib-BuildIssueMenu :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -517,149 +493,146 @@ PROCEDURE mnlib-BuildIssueMenu :
   Notes:       
 ------------------------------------------------------------------------------*/
     
-    def input param pc-menu     as char no-undo.
-    def input param pi-level    as int  no-undo.
+    DEFINE INPUT PARAMETER pc-menu     AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pi-level    AS INTEGER  NO-UNDO.
 
-    def buffer b-menu for webmhead.
-    def buffer b2-menu for webmhead.
-    def buffer b-line for webmline.
-    def buffer b2-line for webmline.
-    def buffer b-object for webobject.
-    def buffer b-user   for webuser.
+    DEFINE BUFFER b-menu FOR webmhead.
+    DEFINE BUFFER b2-menu FOR webmhead.
+    DEFINE BUFFER b-line FOR webmline.
+    DEFINE BUFFER b2-line FOR webmline.
+    DEFINE BUFFER b-object FOR webobject.
+    DEFINE BUFFER b-user   FOR webuser.
 
-    def var li-ItemNo       as int no-undo.
-    def var lc-desc         as char no-undo.
+    DEFINE VARIABLE li-ItemNo       AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lc-desc         AS CHARACTER NO-UNDO.
 
-    find b-user where b-user.loginid = lc-user no-lock no-error.
+    FIND b-user WHERE b-user.loginid = lc-user NO-LOCK NO-ERROR.
 
-    if can-do("INTERNAL,CONTRACT",b-user.UserClass) then
-    do:
-        for each Issue no-lock
-            where Issue.CompanyCode = b-user.CompanyCode
-              and Issue.AssignTo = b-user.LoginID,
-            first WebStatus NO-LOCK
-                     where WebStatus.CompanyCode = Issue.CompanyCode 
-                       and WebStatus.StatusCode = Issue.StatusCode
-                       and WebStatus.CompletedStatus = false
+    IF CAN-DO("INTERNAL,CONTRACT",b-user.UserClass) THEN
+    DO:
+        FOR EACH Issue NO-LOCK
+            WHERE Issue.CompanyCode = b-user.CompanyCode
+              AND Issue.AssignTo = b-user.LoginID,
+            FIRST WebStatus NO-LOCK
+                     WHERE WebStatus.CompanyCode = Issue.CompanyCode 
+                       AND WebStatus.StatusCode = Issue.StatusCode
+                       AND WebStatus.CompletedStatus = FALSE
 
-            break by Issue.AccountNumber
-                  by Issue.IssueNumber desc:
+            BREAK BY Issue.AccountNumber
+                  BY Issue.IssueNumber DESCENDING:
 
-            find Customer of Issue no-lock no-error.
+            FIND Customer OF Issue NO-LOCK NO-ERROR.
 
-            assign lc-desc = if avail customer then customer.name 
-                             else "No Customer".
+            ASSIGN lc-desc = IF AVAILABLE customer THEN customer.name 
+                             ELSE "No Customer".
 
-            if first-of(issue.AccountNumber) then
-            do:
-                find last tt-menu no-lock no-error.
-                assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-                create tt-menu.
-                assign tt-menu.ItemNo = li-itemno
+            IF FIRST-OF(issue.AccountNumber) THEN
+            DO:
+                FIND LAST tt-menu NO-LOCK NO-ERROR.
+                ASSIGN li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+                CREATE tt-menu.
+                ASSIGN tt-menu.ItemNo = li-itemno
                        tt-menu.Level  = pi-level
                        tt-menu.Description = lc-desc.
 
-                find first CustIV of customer no-lock no-error.
-                if avail custIV then
-                do:
-                    find last tt-menu no-lock no-error.
-                    assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-                    create tt-menu.
-                    assign tt-menu.itemno = li-itemno
+                FIND FIRST CustIV OF customer NO-LOCK NO-ERROR.
+                IF AVAILABLE custIV THEN
+                DO:
+                    FIND LAST tt-menu NO-LOCK NO-ERROR.
+                    ASSIGN li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+                    CREATE tt-menu.
+                    ASSIGN tt-menu.itemno = li-itemno
                        tt-menu.Level =  pi-level + 1
                        tt-menu.Description = "Inventory"
                        tt-menu.ObjType = "WS"
                        tt-menu.ObjTarget = "mainwindow"
-                       tt-menu.ObjURL  = "cust/custequiplist.p?expand=yes&customer=" + string(rowid(customer)).
+                       tt-menu.ObjURL  = "cust/custequiplist.p?expand=yes&customer=" + string(ROWID(customer)).
 
-                    assign 
+                    ASSIGN 
                        tt-menu.aTitle  = 'Inventory for ' + html-encode(customer.name).
                        .
-                end.
-            end.
-            find last tt-menu no-lock no-error.
-            assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-            create tt-menu.
-            assign tt-menu.itemno = li-itemno
+                END.
+            END.
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+            CREATE tt-menu.
+            ASSIGN tt-menu.itemno = li-itemno
                    tt-menu.Level =  pi-level + 1
-                   tt-menu.Description = string(Issue.IssueNumber) + ' ' + 
+                   tt-menu.Description = STRING(Issue.IssueNumber) + ' ' + 
                                          Issue.BriefDescription
                    tt-menu.ObjType = "WS"
                    tt-menu.ObjTarget = "mainwindow"
-                   tt-menu.ObjURL  = "iss/issueframe.p?mode=update&return=home&rowid=" + string(rowid(issue)).
+                   tt-menu.ObjURL  = "iss/issueframe.p?mode=update&return=home&rowid=" + string(ROWID(issue)).
                    .
 
-            if Issue.PlannedCompletion <> ?
-            and Issue.PlannedCompletion < today then
-            assign tt-menu.OverDue = true.
+            IF Issue.PlannedCompletion <> ?
+            AND Issue.PlannedCompletion < TODAY THEN
+            ASSIGN tt-menu.OverDue = TRUE.
            
-        end.
-    end.
-    else
+        END.
+    END.
+    ELSE
     /*
     ***
     *** Customer 
     ***
     */
-    do:
-        for each Issue no-lock
-            where Issue.CompanyCode = b-user.CompanyCode
-              and Issue.AccountNumber = b-user.AccountNumber,
-            first WebStatus where webStatus.CompanyCode = Issue.CompanyCode
-                              and WebStatus.StatusCode = Issue.StatusCode
-                              and WebStatus.CompletedStatus = false
+    DO:
+        FOR EACH Issue NO-LOCK
+            WHERE Issue.CompanyCode = b-user.CompanyCode
+              AND Issue.AccountNumber = b-user.AccountNumber,
+            FIRST WebStatus WHERE webStatus.CompanyCode = Issue.CompanyCode
+                              AND WebStatus.StatusCode = Issue.StatusCode
+                              AND WebStatus.CompletedStatus = FALSE
 
-            break by Issue.AreaCode
-                  by Issue.IssueNumber desc:
+            BREAK BY Issue.AreaCode
+                  BY Issue.IssueNumber DESCENDING:
 
-            find WebIssArea of Issue no-lock no-error.
+            FIND WebIssArea OF Issue NO-LOCK NO-ERROR.
 
-            assign lc-desc = if avail WebIssArea then WebIssArea.Description 
-                             else "Not Known".
+            ASSIGN lc-desc = IF AVAILABLE WebIssArea THEN WebIssArea.Description 
+                             ELSE "Not Known".
 
-            if first-of(issue.AreaCode) then
-            do:
-                find last tt-menu no-lock no-error.
-                assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-                create tt-menu.
-                assign tt-menu.ItemNo = li-itemno
+            IF FIRST-OF(issue.AreaCode) THEN
+            DO:
+                FIND LAST tt-menu NO-LOCK NO-ERROR.
+                ASSIGN li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+                CREATE tt-menu.
+                ASSIGN tt-menu.ItemNo = li-itemno
                        tt-menu.Level  = pi-level
                        tt-menu.Description = lc-desc.
-            end.
-            find last tt-menu no-lock no-error.
-            assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-            create tt-menu.
-            assign tt-menu.itemno = li-itemno
+            END.
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+            CREATE tt-menu.
+            ASSIGN tt-menu.itemno = li-itemno
                    tt-menu.Level =  pi-level + 1
-                   tt-menu.Description = string(Issue.IssueNumber) + ' ' + 
+                   tt-menu.Description = STRING(Issue.IssueNumber) + ' ' + 
                                          Issue.BriefDescription
                    tt-menu.ObjType = "WS"
                    tt-menu.ObjTarget = "mainwindow"
-                   tt-menu.ObjURL  = "iss/issueview.p?mode=update&return=home&rowid=" + string(rowid(issue)).
+                   tt-menu.ObjURL  = "iss/issueview.p?mode=update&return=home&rowid=" + string(ROWID(issue)).
                    .
            
-        end.
-    end.
+        END.
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-mnlib-BuildMenu) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE mnlib-BuildMenu Procedure 
 PROCEDURE mnlib-BuildMenu :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -667,83 +640,80 @@ PROCEDURE mnlib-BuildMenu :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def input param pc-menu     as char no-undo.
-    def input param pi-level    as int  no-undo.
+    DEFINE INPUT PARAMETER pc-menu     AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pi-level    AS INTEGER  NO-UNDO.
 
-    def buffer b-menu for webmhead.
-    def buffer b2-menu for webmhead.
-    def buffer b-line for webmline.
-    def buffer b2-line for webmline.
-    def buffer b-object for webobject.
+    DEFINE BUFFER b-menu FOR webmhead.
+    DEFINE BUFFER b2-menu FOR webmhead.
+    DEFINE BUFFER b-line FOR webmline.
+    DEFINE BUFFER b2-line FOR webmline.
+    DEFINE BUFFER b-object FOR webobject.
 
-    def var li-ItemNo       as int no-undo.
-    def var ll-has-side     as log no-undo.
+    DEFINE VARIABLE li-ItemNo       AS INTEGER NO-UNDO.
+    DEFINE VARIABLE ll-has-side     AS LOG NO-UNDO.
 
-    find b-menu where b-menu.pagename = pc-menu no-lock no-error.
+    FIND b-menu WHERE b-menu.pagename = pc-menu NO-LOCK NO-ERROR.
 
-    if not avail b-menu then return.
+    IF NOT AVAILABLE b-menu THEN RETURN.
 
-    for each b-line of b-menu no-lock:
-        if b-line.linktype = 'page' then
-        do:
-            find b2-menu where b2-menu.pagename = b-line.linkobject
-                 no-lock no-error.
-            if not avail b2-menu then next.
-            find first b2-line of b2-menu no-lock no-error.
-            if not avail b2-line then next.
-            assign ll-has-side = false.
-            for each b2-line of b2-menu no-lock:
-                find b-object where b-object.objectid = b2-line.linkobject no-lock no-error.
-                if not avail b-object then next.
-                if can-do("l,b",b-object.menulocation) = false then next.
-                assign ll-has-side = true.
-                leave.
-            end.
-            if not ll-has-side then next.
-        end.
-        else
-        do:
-            find b-object where b-object.objectid = b-line.linkobject
-                          no-lock no-error.
-            if not avail b-object then next.
-            if can-do("l,b",b-object.menulocation) = false then next.
-        end.
-        find last tt-menu no-lock no-error.
-        assign li-itemno = if avail tt-menu 
-                           then tt-menu.itemno + 1
-                           else 1.
-        if b-line.linktype = 'Page' then
-        do:
-            create tt-menu.
-            assign tt-menu.ItemNo       = li-itemno
+    FOR EACH b-line OF b-menu NO-LOCK:
+        IF b-line.linktype = 'page' THEN
+        DO:
+            FIND b2-menu WHERE b2-menu.pagename = b-line.linkobject
+                 NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE b2-menu THEN NEXT.
+            FIND FIRST b2-line OF b2-menu NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE b2-line THEN NEXT.
+            ASSIGN ll-has-side = FALSE.
+            FOR EACH b2-line OF b2-menu NO-LOCK:
+                FIND b-object WHERE b-object.objectid = b2-line.linkobject NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE b-object THEN NEXT.
+                IF CAN-DO("l,b",b-object.menulocation) = FALSE THEN NEXT.
+                ASSIGN ll-has-side = TRUE.
+                LEAVE.
+            END.
+            IF NOT ll-has-side THEN NEXT.
+        END.
+        ELSE
+        DO:
+            FIND b-object WHERE b-object.objectid = b-line.linkobject
+                          NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE b-object THEN NEXT.
+            IF CAN-DO("l,b",b-object.menulocation) = FALSE THEN NEXT.
+        END.
+        FIND LAST tt-menu NO-LOCK NO-ERROR.
+        ASSIGN li-itemno = IF AVAILABLE tt-menu 
+                           THEN tt-menu.itemno + 1
+                           ELSE 1.
+        IF b-line.linktype = 'Page' THEN
+        DO:
+            CREATE tt-menu.
+            ASSIGN tt-menu.ItemNo       = li-itemno
                    tt-menu.Level        = pi-Level
                    tt-menu.Description  = b2-menu.PageDesc.
-            run mnlib-BuildMenu( b2-menu.PageName, pi-level + 1 ).
+            RUN mnlib-BuildMenu( b2-menu.PageName, pi-level + 1 ).
 
-        end.
-        else
-        do:
-            create tt-menu.
-            assign tt-menu.ItemNo      = li-itemno
+        END.
+        ELSE
+        DO:
+            CREATE tt-menu.
+            ASSIGN tt-menu.ItemNo      = li-itemno
                    tt-menu.Level       = pi-Level
                    tt-menu.Description = b-object.Description
                    tt-menu.ObjURL      = b-object.ObjURL
                    tt-menu.ObjTarget   = b-object.ObjTarget
                    tt-menu.ObjType     = b-object.ObjType.
 
-        end.
-    end.
+        END.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -796,14 +766,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -812,7 +779,7 @@ PROCEDURE process-web-request :
 ------------------------------------------------------------------------------*/
 
 
-    assign lc-user = get-value("user").
+    ASSIGN lc-user = get-value("user").
 
 
 
@@ -824,43 +791,43 @@ PROCEDURE process-web-request :
     RUN outputHeader.
     
     
-    find webuser where webuser.loginid = lc-user no-lock no-error.
+    FIND webuser WHERE webuser.loginid = lc-user NO-LOCK NO-ERROR.
 
     
     
-    if avail webuser then
-    do:
-        assign
+    IF AVAILABLE webuser THEN
+    DO:
+        ASSIGN
             lc-global-company = webuser.Company.
 
         {&out} '<div class="inform"><fieldset>'
                '<span class="menuinfo">'.
 
-        if can-do(lc-global-internal,WebUser.UserClass) then
-        do:
+        IF CAN-DO(lc-global-internal,WebUser.UserClass) THEN
+        DO:
             /* {&out} "You are logged in as " + html-encode(webuser.name). */
             
             
             RUN ip-InternalUser.
-        end.
-        else
-        do:
-            find customer where customer.CompanyCode = WebUser.CompanyCode
-                          and Customer.AccountNumber = webUser.AccountNumber
-                          no-lock no-error.
-            assign
+        END.
+        ELSE
+        DO:
+            FIND customer WHERE customer.CompanyCode = WebUser.CompanyCode
+                          AND Customer.AccountNumber = webUser.AccountNumber
+                          NO-LOCK NO-ERROR.
+            ASSIGN
                 lc-address = customer.name
                 li-cust-open = com-CustomerOpenIssues(customer.companycode,
                                                       customer.AccountNumber).
 
-            lc-address = dynamic-function("com-StringReturn",lc-address,customer.Address1).
-            lc-address = dynamic-function("com-StringReturn",lc-address,customer.Address2).
-            lc-address = dynamic-function("com-StringReturn",lc-address,customer.City).
-            lc-address = dynamic-function("com-StringReturn",lc-address,customer.County).
-            lc-address = dynamic-function("com-StringReturn",lc-address,customer.Country).
-            lc-address = dynamic-function("com-StringReturn",lc-address,customer.PostCode).
+            lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.Address1).
+            lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.Address2).
+            lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.City).
+            lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.County).
+            lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.Country).
+            lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,customer.PostCode).
 
-            {&out} '<p>' replace(lc-address,"~n","<br>") '</p>'.
+            {&out} '<p>' REPLACE(lc-address,"~n","<br>") '</p>'.
             {&out} SKIP
                 '<a title="Your Details" target="mainwindow" class="tlink" style="border:none;" href="' appurl '/cust/custview.p?source=menu&rowid=' 
                     string(rowid(customer)) '">'
@@ -868,22 +835,22 @@ PROCEDURE process-web-request :
                 '</a>' SKIP.
 
 
-        end.
+        END.
         {&out} '</span>'.
         {&out}
                 '</fieldset></div>'.
 
-        if can-do(lc-global-internal,WebUser.UserClass) then
-        do:
+        IF CAN-DO(lc-global-internal,WebUser.UserClass) THEN
+        DO:
         
-            if webUser.UserClass = "INTERNAL" 
-            and webUser.SuperUser then
-            do:
-                find last tt-menu no-lock no-error.
-                assign li-item = if avail tt-menu then tt-menu.itemno + 1 
-                             else 1.
-                create tt-menu.
-                assign tt-menu.itemno = li-item
+            IF webUser.UserClass = "INTERNAL" 
+            AND webUser.SuperUser THEN
+            DO:
+                FIND LAST tt-menu NO-LOCK NO-ERROR.
+                ASSIGN li-item = IF AVAILABLE tt-menu THEN tt-menu.itemno + 1 
+                             ELSE 1.
+                CREATE tt-menu.
+                ASSIGN tt-menu.itemno = li-item
                    tt-menu.Level =  1
                    tt-menu.Description = "HelpDesk Monitor"
                    tt-menu.ObjType = "WS"
@@ -891,15 +858,15 @@ PROCEDURE process-web-request :
                    tt-menu.ObjURL  = 'iss/issueoverview.p?frommenu=yes'
                    tt-menu.AltInfo = "Monitor HelpDesk issues"
                    .
-            end.
+            END.
 
-            assign li-user-open = com-AssignedToUser(webuser.CompanyCode,
+            ASSIGN li-user-open = com-AssignedToUser(webuser.CompanyCode,
                                                      webuser.LoginID).
-            find last tt-menu no-lock no-error.
-            assign li-item = if avail tt-menu then tt-menu.itemno + 1 
-                         else 1.
-            create tt-menu.
-            assign tt-menu.itemno = li-item
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN li-item = IF AVAILABLE tt-menu THEN tt-menu.itemno + 1 
+                         ELSE 1.
+            CREATE tt-menu.
+            ASSIGN tt-menu.itemno = li-item
                tt-menu.Level =  1
                tt-menu.Description = "Your Issues"
                tt-menu.ObjType = "WS"
@@ -908,31 +875,31 @@ PROCEDURE process-web-request :
                     '&status=AllOpen&iclass=All&lodate=01/01/1990&hidate=01/01/2050'
                tt-menu.AltInfo = "View your issues"
                .
-            if li-user-open > 0 
-            then assign tt-menu.description = tt-menu.description + ' (' + 
+            IF li-user-open > 0 
+            THEN ASSIGN tt-menu.description = tt-menu.description + ' (' + 
                         string(li-user-open) + ' open)'.
 
-        end.
-        else
-        do:
-            find last tt-menu no-lock no-error.
-            assign li-item = if avail tt-menu then tt-menu.itemno + 1 
-                         else 1.
+        END.
+        ELSE
+        DO:
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN li-item = IF AVAILABLE tt-menu THEN tt-menu.itemno + 1 
+                         ELSE 1.
 
-            create tt-menu.
-            assign tt-menu.itemno = li-item
+            CREATE tt-menu.
+            ASSIGN tt-menu.itemno = li-item
                    tt-menu.Level =  1
                    tt-menu.Description = "Add New Issue"
                    tt-menu.ObjType = "WS"
                    tt-menu.ObjTarget = "mainwindow"
                    tt-menu.ObjURL  = 'iss/addissue.p'.
                .
-           find last tt-menu no-lock no-error.
-           assign li-item = if avail tt-menu then tt-menu.itemno + 1 
-                        else 1.
+           FIND LAST tt-menu NO-LOCK NO-ERROR.
+           ASSIGN li-item = IF AVAILABLE tt-menu THEN tt-menu.itemno + 1 
+                        ELSE 1.
 
-            create tt-menu.
-            assign tt-menu.itemno = li-item
+            CREATE tt-menu.
+            ASSIGN tt-menu.itemno = li-item
                tt-menu.Level =  1
                tt-menu.Description = "Your Issues"
                tt-menu.ObjType = "WS"
@@ -940,22 +907,22 @@ PROCEDURE process-web-request :
                tt-menu.ObjURL  = 'iss/issue.p?frommenu=yes&status=allopen&iclass=All'
                tt-menu.AltInfo = "View your issues"
                .
-            if li-cust-open > 0 
-            then assign tt-menu.description = tt-menu.description + ' (' + 
+            IF li-cust-open > 0 
+            THEN ASSIGN tt-menu.description = tt-menu.description + ' (' + 
                         string(li-cust-open) + ' open)'.
-        end.
+        END.
 
         RUN mnlib-BuildIssueMenu ( webuser.pagename, 1 ).
 
         RUN mnlib-BuildMenu ( webuser.pagename, 1 ).
 
 
-        find last tt-menu no-lock no-error.
-        assign li-item = if avail tt-menu then tt-menu.itemno + 1 
-                         else 1.
+        FIND LAST tt-menu NO-LOCK NO-ERROR.
+        ASSIGN li-item = IF AVAILABLE tt-menu THEN tt-menu.itemno + 1 
+                         ELSE 1.
 
-        create tt-menu.
-        assign tt-menu.itemno = li-item
+        CREATE tt-menu.
+        ASSIGN tt-menu.itemno = li-item
                tt-menu.Level =  1
                tt-menu.Description = "Preferences"
                tt-menu.ObjType = "WS"
@@ -963,12 +930,12 @@ PROCEDURE process-web-request :
                tt-menu.ObjURL  = 'sys/webuserpref.p'.
                .
 
-        find last tt-menu no-lock no-error.
-        assign li-item = if avail tt-menu then tt-menu.itemno + 1 
-                         else 1.
+        FIND LAST tt-menu NO-LOCK NO-ERROR.
+        ASSIGN li-item = IF AVAILABLE tt-menu THEN tt-menu.itemno + 1 
+                         ELSE 1.
 
-        create tt-menu.
-        assign tt-menu.itemno = li-item
+        CREATE tt-menu.
+        ASSIGN tt-menu.itemno = li-item
                tt-menu.Level =  1
                tt-menu.Description = "Change Your Password"
                tt-menu.ObjType = "WS"
@@ -978,18 +945,16 @@ PROCEDURE process-web-request :
 
         RUN ip-NewMenu.
         
-        if WebUser.UserClass = "INTERNAL" 
-        and WebUser.SuperUser
-        then RUN ip-SuperUserFinal.
+        IF WebUser.UserClass = "INTERNAL" 
+        AND WebUser.SuperUser
+        THEN RUN ip-SuperUserFinal.
 
-    end.
+    END.
 
     
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Include 
 /***********************************************************************
 
     Program:        lib/htmlib.i
@@ -26,731 +23,478 @@
 {lib/common.i}
 {lib/toolbar.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-AcrobatReport Include 
 FUNCTION htmlib-AcrobatReport RETURNS CHARACTER
- ( pc-url as char
+ ( pc-url AS CHARACTER
   )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ActionHidden Include 
 FUNCTION htmlib-ActionHidden RETURNS CHARACTER
-  ( pc-value as char )  FORWARD.
+  ( pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-AddLink Include 
 FUNCTION htmlib-AddLink RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ALookup Include 
 FUNCTION htmlib-ALookup RETURNS CHARACTER
-  ( pc-field-name as char,
-    pc-desc-name as char,
-    pc-program as char  )  FORWARD.
+  ( pc-field-name AS CHARACTER,
+    pc-desc-name AS CHARACTER,
+    pc-program AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-AnswerHyperLink Include 
 FUNCTION htmlib-AnswerHyperLink RETURNS CHARACTER
   (INPUT pc-FieldName AS CHARACTER,
    INPUT pc-Value AS CHARACTER,
-   input pc-descfield as char,
-   input pc-descvalue as char,
+   INPUT pc-descfield AS CHARACTER,
+   INPUT pc-descvalue AS CHARACTER,
    INPUT pc-Description AS CHARACTER) FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-BeginCriteria Include 
 FUNCTION htmlib-BeginCriteria RETURNS CHARACTER
-  ( pc-legend as char )  FORWARD.
+  ( pc-legend AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-BlankTableLines Include 
 FUNCTION htmlib-BlankTableLines RETURNS CHARACTER
-  ( pi-lines as int )  FORWARD.
+  ( pi-lines AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Button Include 
 FUNCTION htmlib-Button RETURNS CHARACTER
   ( 
-    pc-name as char,
-    pc-value as char,
-    pc-param as char
+    pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-param AS CHARACTER
    ) FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CalendarInclude Include 
 FUNCTION htmlib-CalendarInclude RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CalendarInputField Include 
 FUNCTION htmlib-CalendarInputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char )  FORWARD.
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CalendarLink Include 
 FUNCTION htmlib-CalendarLink RETURNS CHARACTER
-  ( pc-name as char )  FORWARD.
+  ( pc-name AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CalendarScript Include 
 FUNCTION htmlib-CalendarScript RETURNS CHARACTER
-  ( pc-name as char )  FORWARD.
+  ( pc-name AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CheckBox Include 
 FUNCTION htmlib-CheckBox RETURNS CHARACTER
-    ( pc-name as char,
-      pl-checked as log
+    ( pc-name AS CHARACTER,
+      pl-checked AS LOG
      )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CloseHeader Include 
 FUNCTION htmlib-CloseHeader RETURNS CHARACTER
-  ( params as char )  FORWARD.
+  ( params AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CustomerDocs Include 
 FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
-( pc-companyCode as char,
-    pc-AccountNumber as char,  
-    pc-appurl as char , 
+( pc-companyCode AS CHARACTER,
+    pc-AccountNumber AS CHARACTER,  
+    pc-appurl AS CHARACTER , 
     pl-isCustomer AS LOG
 
  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-CustomerViewable Include 
 FUNCTION htmlib-CustomerViewable RETURNS CHARACTER
-  ( pc-companyCode as char,
-    pc-AccountNumber as char
+  ( pc-companyCode AS CHARACTER,
+    pc-AccountNumber AS CHARACTER
  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-DecodeUser Include 
 FUNCTION htmlib-DecodeUser RETURNS CHARACTER
-  ( pc-value as char )  FORWARD.
+  ( pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-EncodeUser Include 
 FUNCTION htmlib-EncodeUser RETURNS CHARACTER
-  ( pc-user as char )  FORWARD.
+  ( pc-user AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-EndCriteria Include 
 FUNCTION htmlib-EndCriteria RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-EndFieldSet Include 
 FUNCTION htmlib-EndFieldSet RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-EndForm Include 
 FUNCTION htmlib-EndForm RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-EndPanel Include 
 FUNCTION htmlib-EndPanel RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-EndTable Include 
 FUNCTION htmlib-EndTable RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ErrorMessage Include 
 FUNCTION htmlib-ErrorMessage RETURNS CHARACTER
-   ( pc-error as char )  FORWARD.
+   ( pc-error AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ExpandBox Include 
 FUNCTION htmlib-ExpandBox RETURNS CHARACTER
-  ( pc-objectID as char,
-    pc-Data     as char )  FORWARD.
+  ( pc-objectID AS CHARACTER,
+    pc-Data     AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Footer Include 
 FUNCTION htmlib-Footer RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-GenPassword Include 
 FUNCTION htmlib-GenPassword RETURNS CHARACTER
-  ( pi-Length as int )  FORWARD.
+  ( pi-Length AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-GetAttr Include 
 FUNCTION htmlib-GetAttr RETURNS CHARACTER
-  ( pc-systemid as char,
-    pc-attrid   as char
+  ( pc-systemid AS CHARACTER,
+    pc-attrid   AS CHARACTER
     )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Header Include 
 FUNCTION htmlib-Header RETURNS CHARACTER
-  ( pc-title as char )  FORWARD.
+  ( pc-title AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-HelpButton Include 
 FUNCTION htmlib-HelpButton RETURNS CHARACTER
-  ( pc-appurl as char,
-    pc-program as char  )  FORWARD.
+  ( pc-appurl AS CHARACTER,
+    pc-program AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Hidden Include 
 FUNCTION htmlib-Hidden RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char )  FORWARD.
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ImageLink Include 
 FUNCTION htmlib-ImageLink RETURNS CHARACTER
   ( 
-    pc-image as char,
-    pc-url as char,
-    pc-alt as char)  FORWARD.
+    pc-image AS CHARACTER,
+    pc-url AS CHARACTER,
+    pc-alt AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-InputField Include 
 FUNCTION htmlib-InputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char )  FORWARD.
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-InputPassword Include 
 FUNCTION htmlib-InputPassword RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char )  FORWARD.
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Jscript-Lookup Include 
 FUNCTION htmlib-Jscript-Lookup RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-JScript-Maintenance Include 
 FUNCTION htmlib-JScript-Maintenance RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-JScript-Spinner Include 
 FUNCTION htmlib-JScript-Spinner RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Lookup Include 
 FUNCTION htmlib-Lookup RETURNS CHARACTER
-  ( pc-label as char ,
-    pc-field-name as char,
-    pc-desc-name as char,
-    pc-program as char  )  FORWARD.
+  ( pc-label AS CHARACTER ,
+    pc-field-name AS CHARACTER,
+    pc-desc-name AS CHARACTER,
+    pc-program AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-LookupAction Include 
 FUNCTION htmlib-LookupAction RETURNS CHARACTER
-  ( pc-url as char,
-    pc-action as char,
-    pc-label as char )  FORWARD.
+  ( pc-url AS CHARACTER,
+    pc-action AS CHARACTER,
+    pc-label AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-mBanner Include 
 FUNCTION htmlib-mBanner RETURNS CHARACTER
-  ( pc-companyCode as CHAR )  FORWARD.
+  ( pc-companyCode AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-MntButton Include 
 FUNCTION htmlib-MntButton RETURNS CHARACTER
-  ( pc-url as char,
-    pc-action as char,
-    pc-label as char )  FORWARD.
+  ( pc-url AS CHARACTER,
+    pc-action AS CHARACTER,
+    pc-label AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-MntLink Include 
 FUNCTION htmlib-MntLink RETURNS CHARACTER
-  ( pc-mode as char,
-    pr-rowid as rowid,
-    pc-url as char,
-    pc-other-params as char )  FORWARD.
+  ( pc-mode AS CHARACTER,
+    pr-rowid AS ROWID,
+    pc-url AS CHARACTER,
+    pc-other-params AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-MntTableField Include 
 FUNCTION htmlib-MntTableField RETURNS CHARACTER
-    ( pc-data as char,
-      pc-align as char)  FORWARD.
+    ( pc-data AS CHARACTER,
+      pc-align AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-MntTableFieldComplex Include 
 FUNCTION htmlib-MntTableFieldComplex RETURNS CHARACTER
-    ( pc-data as char,
-      pc-align as char,
-      pi-cols as int,
-      pi-rows as int)  FORWARD.
+    ( pc-data AS CHARACTER,
+      pc-align AS CHARACTER,
+      pi-cols AS INTEGER,
+      pi-rows AS INTEGER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-MultiplyErrorMessage Include 
 FUNCTION htmlib-MultiplyErrorMessage RETURNS CHARACTER
-  ( pc-error as char )  FORWARD.
+  ( pc-error AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-NexusParam Include 
 FUNCTION htmlib-NexusParam RETURNS CHARACTER
-  ( pc-param as char  )  FORWARD.
+  ( pc-param AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-NormalTextLink Include 
 FUNCTION htmlib-NormalTextLink RETURNS CHARACTER
-    ( pc-text as char,
-    pc-url  as char )  FORWARD.
+    ( pc-text AS CHARACTER,
+    pc-url  AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Null Include 
 FUNCTION htmlib-Null RETURNS CHARACTER
   ( )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-OpenHeader Include 
 FUNCTION htmlib-OpenHeader RETURNS CHARACTER
-  ( pc-title as char )  FORWARD.
+  ( pc-title AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ProgramTitle Include 
 FUNCTION htmlib-ProgramTitle RETURNS CHARACTER
-  ( pc-title as char )  FORWARD.
+  ( pc-title AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Radio Include 
 FUNCTION htmlib-Radio RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pl-checked as log
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pl-checked AS LOG
      )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-RandomURL Include 
 FUNCTION htmlib-RandomURL RETURNS CHARACTER
   (  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ReportButton Include 
 FUNCTION htmlib-ReportButton RETURNS CHARACTER
-  ( pc-url as char
+  ( pc-url AS CHARACTER
   )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Select Include 
 FUNCTION htmlib-Select RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-value as char ,
-    pc-display as char,
-    pc-selected as char )  FORWARD.
+  ( pc-name AS CHARACTER ,
+    pc-value AS CHARACTER ,
+    pc-display AS CHARACTER,
+    pc-selected AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-Select-By-ID Include 
 FUNCTION htmlib-Select-By-ID RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-value as char ,
-    pc-display as char,
-    pc-selected as char )  FORWARD.
+  ( pc-name AS CHARACTER ,
+    pc-value AS CHARACTER ,
+    pc-display AS CHARACTER,
+    pc-selected AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SelectJS Include 
 FUNCTION htmlib-SelectJS RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-js  AS CHAR,
-    pc-value as char ,
-    pc-display as char,
-    pc-selected as char )  FORWARD.
+  ( pc-name AS CHARACTER ,
+    pc-js  AS CHARACTER,
+    pc-value AS CHARACTER ,
+    pc-display AS CHARACTER,
+    pc-selected AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SideLabel Include 
 FUNCTION htmlib-SideLabel RETURNS CHARACTER
-  ( pc-Label as char )  FORWARD.
+  ( pc-Label AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SideLabelError Include 
 FUNCTION htmlib-SideLabelError RETURNS CHARACTER
-  ( pc-Label as char )  FORWARD.
+  ( pc-Label AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SimpleBackButton Include 
 FUNCTION htmlib-SimpleBackButton RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SimpleExpandBox Include 
 FUNCTION htmlib-SimpleExpandBox RETURNS CHARACTER
-  ( pc-objectID as char,
-    pc-Data     as char )  FORWARD.
+  ( pc-objectID AS CHARACTER,
+    pc-Data     AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-StartFieldSet Include 
 FUNCTION htmlib-StartFieldSet RETURNS CHARACTER
-  ( pc-legend as char  )  FORWARD.
+  ( pc-legend AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-StartForm Include 
 FUNCTION htmlib-StartForm RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-method as char,
-    pc-action as char )  FORWARD.
+  ( pc-name AS CHARACTER ,
+    pc-method AS CHARACTER,
+    pc-action AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-StartInputTable Include 
 FUNCTION htmlib-StartInputTable RETURNS CHARACTER FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-StartMntTable Include 
 FUNCTION htmlib-StartMntTable RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-StartPanel Include 
 FUNCTION htmlib-StartPanel RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-StartTable Include 
 FUNCTION htmlib-StartTable RETURNS CHARACTER
-  ( pc-name as char,
-    pi-width as int,
-    pi-border as int,
-    pi-padding as int,
-    pi-spacing as int,
-    pc-align as char
+  ( pc-name AS CHARACTER,
+    pi-width AS INTEGER,
+    pi-border AS INTEGER,
+    pi-padding AS INTEGER,
+    pi-spacing AS INTEGER,
+    pc-align AS CHARACTER
      )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-StyleSheet Include 
 FUNCTION htmlib-StyleSheet RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-SubmitButton Include 
 FUNCTION htmlib-SubmitButton RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char 
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER 
     )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-TableField Include 
 FUNCTION htmlib-TableField RETURNS CHARACTER
-  ( pc-data as char,
-    pc-align as char)  FORWARD.
+  ( pc-data AS CHARACTER,
+    pc-align AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-TableHeading Include 
 FUNCTION htmlib-TableHeading RETURNS CHARACTER
-  ( pc-param as char )  FORWARD.
+  ( pc-param AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-TextArea Include 
 FUNCTION htmlib-TextArea RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pi-rows as int,
-    pi-cols as int )  FORWARD.
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pi-rows AS INTEGER,
+    pi-cols AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-TextLink Include 
 FUNCTION htmlib-TextLink RETURNS CHARACTER
-  ( pc-text as char,
-    pc-url  as char )  FORWARD.
+  ( pc-text AS CHARACTER,
+    pc-url  AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-TimeSelect Include 
 FUNCTION htmlib-TimeSelect RETURNS CHARACTER
-  ( pc-hour-name    as char,
-    pc-hour-value   as char,
-    pc-min-name     as char,
-    pc-min-value    as char )  FORWARD.
+  ( pc-hour-name    AS CHARACTER,
+    pc-hour-value   AS CHARACTER,
+    pc-min-name     AS CHARACTER,
+    pc-min-value    AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-TimeSelect-By-Id Include 
 FUNCTION htmlib-TimeSelect-By-Id RETURNS CHARACTER
-  ( pc-hour-name    as char,
-    pc-hour-value   as char,
-    pc-min-name     as char,
-    pc-min-value    as char )  FORWARD.
+  ( pc-hour-name    AS CHARACTER,
+    pc-hour-value   AS CHARACTER,
+    pc-min-name     AS CHARACTER,
+    pc-min-value    AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-trmouse Include 
 FUNCTION htmlib-trmouse RETURNS CHARACTER
   ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Include
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: INCLUDE-ONLY
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Include ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Include 
 
 
 /* ***************************  Main Block  *************************** */
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE htmlib-AddErrorMessage Include 
 PROCEDURE htmlib-AddErrorMessage :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-field        as char no-undo.
-    def input param pc-message      as char no-undo.
+    DEFINE INPUT PARAMETER pc-field        AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-message      AS CHARACTER NO-UNDO.
 
-    def input-output param pc-field-list  as char no-undo.
-    def input-output param pc-mess-list   as char no-undo.
+    DEFINE INPUT-OUTPUT PARAMETER pc-field-list  AS CHARACTER NO-UNDO.
+    DEFINE INPUT-OUTPUT PARAMETER pc-mess-list   AS CHARACTER NO-UNDO.
 
-    if pc-field-list = ""
-    or pc-field-list = ""
-    then assign pc-field-list = pc-field
+    IF pc-field-list = ""
+    OR pc-field-list = ""
+    THEN ASSIGN pc-field-list = pc-field
                 pc-mess-list  = pc-message.
-    else assign pc-field-list = pc-field-list + '|' + pc-field
+    ELSE ASSIGN pc-field-list = pc-field-list + '|' + pc-field
                 pc-mess-list  = pc-mess-list + '|' + pc-message.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 /* ************************  Function Implementations ***************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-AcrobatReport Include 
 FUNCTION htmlib-AcrobatReport RETURNS CHARACTER
- ( pc-url as char
+ ( pc-url AS CHARACTER
   ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    return  substitute(
+    RETURN  SUBSTITUTE(
             '<a class="imglink" onclick="RepWindow(~'&1~')"><img src="/images/general/acrobat.gif"></a>',
             pc-url).
   
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ActionHidden Include 
 FUNCTION htmlib-ActionHidden RETURNS CHARACTER
-  ( pc-value as char ) :
+  ( pc-value AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    return htmlib-Hidden("action", pc-value).
+    RETURN htmlib-Hidden("action", pc-value).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-AddLink Include 
 FUNCTION htmlib-AddLink RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -767,22 +511,19 @@ FUNCTION htmlib-AddLink RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ALookup Include 
 FUNCTION htmlib-ALookup RETURNS CHARACTER
-  ( pc-field-name as char,
-    pc-desc-name as char,
-    pc-program as char  ) :
+  ( pc-field-name AS CHARACTER,
+    pc-desc-name AS CHARACTER,
+    pc-program AS CHARACTER  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
-    def var lc-htm      as char no-undo.
-    def var lc-click    as char no-undo.
+    DEFINE VARIABLE lc-htm      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-click    AS CHARACTER NO-UNDO.
 
-    assign
+    ASSIGN
         lc-click = 
         'javascript:LookupWindow('
             + '~'' + pc-program + '~','
@@ -790,7 +531,7 @@ FUNCTION htmlib-ALookup RETURNS CHARACTER
             + '~'' + pc-desc-name + '~''
 
         + ')'.
-    assign 
+    ASSIGN 
         lc-htm = 
         '<a href="' 
             + lc-click +
@@ -800,19 +541,16 @@ FUNCTION htmlib-ALookup RETURNS CHARACTER
         .
     
    
-    return lc-htm.
+    RETURN lc-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-AnswerHyperLink Include 
 FUNCTION htmlib-AnswerHyperLink RETURNS CHARACTER
   (INPUT pc-FieldName AS CHARACTER,
    INPUT pc-Value AS CHARACTER,
-   input pc-descfield as char,
-   input pc-descvalue as char,
+   INPUT pc-descfield AS CHARACTER,
+   INPUT pc-descvalue AS CHARACTER,
    INPUT pc-Description AS CHARACTER):
 
 
@@ -833,71 +571,59 @@ FUNCTION htmlib-AnswerHyperLink RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-BeginCriteria Include 
 FUNCTION htmlib-BeginCriteria RETURNS CHARACTER
-  ( pc-legend as char ) :
+  ( pc-legend AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    if pc-legend <> ""
-    then return '<div class="crit"><fieldset><legend>' + 
+    IF pc-legend <> ""
+    THEN RETURN '<div class="crit"><fieldset><legend>' + 
         dynamic-function("html-encode",pc-legend) + '</legend>'.
-    else return '<div class="crit"><fieldset>'.
+    ELSE RETURN '<div class="crit"><fieldset>'.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-BlankTableLines Include 
 FUNCTION htmlib-BlankTableLines RETURNS CHARACTER
-  ( pi-lines as int ) :
+  ( pi-lines AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-char as char no-undo.
+  DEFINE VARIABLE lc-char AS CHARACTER NO-UNDO.
 
-  assign lc-char = '<tr>' + htmlib-TableField("&nbsp;",'left') + '</tr>'.
+  ASSIGN lc-char = '<tr>' + htmlib-TableField("&nbsp;",'left') + '</tr>'.
 
-  if pi-lines > 0 then
-  RETURN fill(lc-char,pi-lines).   /* Function return value. */
-  else return "".
+  IF pi-lines > 0 THEN
+  RETURN FILL(lc-char,pi-lines).   /* Function return value. */
+  ELSE RETURN "".
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Button Include 
 FUNCTION htmlib-Button RETURNS CHARACTER
   ( 
-    pc-name as char,
-    pc-value as char,
-    pc-param as char
+    pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-param AS CHARACTER
    ):
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    RETURN substitute('<input onclick="SubmitThePage(~'&3~')" class="submitbutton" type="button" name="&1" value="&2">',
+    RETURN SUBSTITUTE('<input onclick="SubmitThePage(~'&3~')" class="submitbutton" type="button" name="&1" value="&2">',
                     pc-name,
                     pc-value,
                     pc-param).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CalendarInclude Include 
 FUNCTION htmlib-CalendarInclude RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -906,7 +632,7 @@ FUNCTION htmlib-CalendarInclude RETURNS CHARACTER
 ------------------------------------------------------------------------------*/
 
   RETURN '~n' + 
-          '<link rel="stylesheet" href="/scripts/cal/calendar-blue.css?fn="' + string(time) + string(random(1,100)) + '" type="text/css" >' + '~n' +
+          '<link rel="stylesheet" href="/scripts/cal/calendar-blue.css?fn="' + string(TIME) + string(RANDOM(1,100)) + '" type="text/css" >' + '~n' +
           '<script type="text/javascript" src="/scripts/cal/calendar.js"></script>' + '~n' + 
           '<script type="text/javascript" src="/scripts/cal/lang/calendar-en.js"></script>' + '~n' + 
           '<script type="text/javascript" src="/scripts/cal/calendar-setup.js"></script>' + '~n'.
@@ -914,59 +640,50 @@ FUNCTION htmlib-CalendarInclude RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CalendarInputField Include 
 FUNCTION htmlib-CalendarInputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char ) :
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   RETURN 
-        substitute(
+        SUBSTITUTE(
             '<input class="inputfield" type="text" name="&1" id="ff&1" size="&2" value="&3" onChange="ChangeDates()">',
             pc-name,
-            string(pi-size),
+            STRING(pi-size),
             pc-value).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CalendarLink Include 
 FUNCTION htmlib-CalendarLink RETURNS CHARACTER
-  ( pc-name as char ) :
+  ( pc-name AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   RETURN 
-      substitute('<img src="/images/general/calendar.gif" id="trigger-ff&1" class="calimg">',
+      SUBSTITUTE('<img src="/images/general/calendar.gif" id="trigger-ff&1" class="calimg">',
                  pc-name).
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CalendarScript Include 
 FUNCTION htmlib-CalendarScript RETURNS CHARACTER
-  ( pc-name as char ) :
+  ( pc-name AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   
-    return 
+    RETURN 
         
             '<script type="text/javascript">' + '~n' +
             'Calendar.setup(' + '~n' +
@@ -982,26 +699,23 @@ FUNCTION htmlib-CalendarScript RETURNS CHARACTER
             '</script>' + '~n'.
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CheckBox Include 
 FUNCTION htmlib-CheckBox RETURNS CHARACTER
-    ( pc-name as char,
-      pl-checked as log
+    ( pc-name AS CHARACTER,
+      pl-checked AS LOG
      ) :
   /*------------------------------------------------------------------------------
     Purpose:  
       Notes:  
   ------------------------------------------------------------------------------*/
 
-    def var lc-checked as char no-undo.
+    DEFINE VARIABLE lc-checked AS CHARACTER NO-UNDO.
 
-    if pl-checked
-    then assign lc-checked = 'checked'.
+    IF pl-checked
+    THEN ASSIGN lc-checked = 'checked'.
 
     RETURN 
-          substitute(
+          SUBSTITUTE(
               '<input class="inputfield" type="checkbox" id="&1" name="&1" &2 >',
               pc-name,
               lc-checked).
@@ -1009,39 +723,33 @@ FUNCTION htmlib-CheckBox RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CloseHeader Include 
 FUNCTION htmlib-CloseHeader RETURNS CHARACTER
-  ( params as char ) :
+  ( params AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
-  def var lc-header     as char no-undo.
-  def var lc-return     as char no-undo.
+  DEFINE VARIABLE lc-header     AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-return     AS CHARACTER NO-UNDO.
   
-  if params <> "" then
-  assign
+  IF params <> "" THEN
+  ASSIGN
       lc-return = lc-return + '~n</HEAD>' + '<body class="normaltext" onUnload="ClosePage()" onLoad="' + params + '">'.
-  else
-  assign
+  ELSE
+  ASSIGN
       lc-return = lc-return + '~n</HEAD>' + '<body class="normaltext" onUnload="ClosePage()">'.
 
-  return lc-return.
+  RETURN lc-return.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CustomerDocs Include 
 FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
-( pc-companyCode as char,
-    pc-AccountNumber as char,  
-    pc-appurl as char , 
+( pc-companyCode AS CHARACTER,
+    pc-AccountNumber AS CHARACTER,  
+    pc-appurl AS CHARACTER , 
     pl-isCustomer AS LOG
 
  ) :
@@ -1050,34 +758,34 @@ FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Customer for Customer.
-    def var btnLink     as char   no-undo.
-    def var vx          as int    no-undo.
-    def var lc-return as char       no-undo.
+    DEFINE BUFFER Customer FOR Customer.
+    DEFINE VARIABLE btnLink     AS CHARACTER   NO-UNDO.
+    DEFINE VARIABLE vx          AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE lc-return AS CHARACTER       NO-UNDO.
     
-    find customer
-    where customer.CompanyCode = pc-CompanyCode
-    and customer.AccountNumber = pc-AccountNumber no-lock no-error.
+    FIND customer
+    WHERE customer.CompanyCode = pc-CompanyCode
+    AND customer.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
     
-    if not avail customer then return "".
-    
-    
-    assign lc-return = '<div class="buttonbox" >'.
+    IF NOT AVAILABLE customer THEN RETURN "".
     
     
-    for each doch no-lock
-        where doch.CompanyCode = lc-global-company
-        and doch.RelType       = "customer"
-        and doch.RelKey        = customer.AccountNumber
-        and doch.QuickView     = true
-        by doch.CreateDate DESC
+    ASSIGN lc-return = '<div class="buttonbox" >'.
+    
+    
+    FOR EACH doch NO-LOCK
+        WHERE doch.CompanyCode = lc-global-company
+        AND doch.RelType       = "customer"
+        AND doch.RelKey        = customer.AccountNumber
+        AND doch.QuickView     = TRUE
+        BY doch.CreateDate DESCENDING
         :
         
         IF pl-isCustomer AND doch.CustomerView = FALSE THEN NEXT.
         
     
         vx = vx + 1.
-        if vx > 3 then leave.
+        IF vx > 3 THEN LEAVE.
       
         btnLink = 'javascript:OpenNewWindow('
               + '~'' + pc-appurl
@@ -1088,105 +796,99 @@ FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
                             + '" onclick="this.blur();"><span> &nbsp;&nbsp; ' 
                             + trim(doch.descr) + '</span></a>' .   
     
-    end.
-    assign lc-return = lc-return + '</div>'.
+    END.
+    ASSIGN lc-return = lc-return + '</div>'.
     
-    if vx = 0 then return "". 
-    else return lc-return.
+    IF vx = 0 THEN RETURN "". 
+    ELSE RETURN lc-return.
     
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-CustomerViewable Include 
 FUNCTION htmlib-CustomerViewable RETURNS CHARACTER
-  ( pc-companyCode as char,
-    pc-AccountNumber as char
+  ( pc-companyCode AS CHARACTER,
+    pc-AccountNumber AS CHARACTER
  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Customer for Customer.
+    DEFINE BUFFER Customer FOR Customer.
 
-    def var lc-return as char       no-undo.
+    DEFINE VARIABLE lc-return AS CHARACTER       NO-UNDO.
 
-    find customer
-        where customer.CompanyCode = pc-CompanyCode
-          and customer.AccountNumber = pc-AccountNumber no-lock no-error.
-
-
-    if not avail customer then return "".
+    FIND customer
+        WHERE customer.CompanyCode = pc-CompanyCode
+          AND customer.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
 
 
-    assign 
+    IF NOT AVAILABLE customer THEN RETURN "".
+
+
+    ASSIGN 
         lc-return = '<div class="infobox" style="font-size: 10px;">'.
 
-    if not customer.ViewAction then
-    do:
-        assign lc-return = lc-return + "This customer can NOT view Actions/Activities".
-    end.
-    else
-    do:
-        if not customer.ViewActivity 
-        then assign lc-return = lc-return + "This customer can view Actions only, Activities are not shown".
-        else assign lc-return = lc-return + "<span style='color: red;'>This customer can view Actions AND Activities</span>".
-    end.
+    IF NOT customer.ViewAction THEN
+    DO:
+        ASSIGN lc-return = lc-return + "This customer can NOT view Actions/Activities".
+    END.
+    ELSE
+    DO:
+        IF NOT customer.ViewActivity 
+        THEN ASSIGN lc-return = lc-return + "This customer can view Actions only, Activities are not shown".
+        ELSE ASSIGN lc-return = lc-return + "<span style='color: red;'>This customer can view Actions AND Activities</span>".
+    END.
 
-    assign 
+    ASSIGN 
         lc-return = lc-return + '</div>'.
 
 
-    return lc-return.
+    RETURN lc-return.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-DecodeUser Include 
 FUNCTION htmlib-DecodeUser RETURNS CHARACTER
-  ( pc-value as char ) :
+  ( pc-value AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-part1 as char no-undo.
-    def var lc-part2 as char no-undo.
-    def var lc-part3 as char no-undo.
-    DEF VAR lc-part4 AS CHAR NO-UNDO.
-    def var lr-rowid as rowid no-undo.
-    DEF VAR lc-remote AS CHAR   NO-UNDO.
+    DEFINE VARIABLE lc-part1 AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-part2 AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-part3 AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-part4 AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lr-rowid AS ROWID NO-UNDO.
+    DEFINE VARIABLE lc-remote AS CHARACTER   NO-UNDO.
     
-    def buffer b-webuser for webuser.
+    DEFINE BUFFER b-webuser FOR webuser.
 
-    if num-entries(pc-value,':') <> 4 then return "".
+    IF NUM-ENTRIES(pc-value,':') <> 4 THEN RETURN "".
 
     
-    assign lc-part1 = entry(1,pc-value,':')
-           lc-part2 = entry(2,pc-value,':')
-           lc-part3 = entry(3,pc-value,':')
+    ASSIGN lc-part1 = ENTRY(1,pc-value,':')
+           lc-part2 = ENTRY(2,pc-value,':')
+           lc-part3 = ENTRY(3,pc-value,':')
            lc-part4 = ENTRY(4,pc-value,":").
 
 
-    assign lr-rowid = to-rowid(lc-part2) no-error.
-    if error-status:error then return "".
+    ASSIGN lr-rowid = TO-ROWID(lc-part2) no-error.
+    IF ERROR-STATUS:ERROR THEN RETURN "".
  
-    find b-webuser where rowid(b-webuser) = lr-rowid no-lock no-error.
-    if not avail b-webuser 
-    then return "".
+    FIND b-webuser WHERE ROWID(b-webuser) = lr-rowid NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE b-webuser 
+    THEN RETURN "".
 
 
-    if lc-part1 <> encode(lc(b-webuser.loginid)) 
-    then return "".
+    IF lc-part1 <> encode(LC(b-webuser.loginid)) 
+    THEN RETURN "".
 
-    if lc-part3 <> encode('ExtraInfo')
-    then return "".
+    IF lc-part3 <> encode('ExtraInfo')
+    THEN RETURN "".
 
     /*
     IF lc-part4 <> ENCODE(lc-remote) THEN
@@ -1196,31 +898,28 @@ FUNCTION htmlib-DecodeUser RETURNS CHARACTER
     END.
     */
 
-    return b-webuser.loginid.
+    RETURN b-webuser.loginid.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-EncodeUser Include 
 FUNCTION htmlib-EncodeUser RETURNS CHARACTER
-  ( pc-user as char ) :
+  ( pc-user AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-code as char no-undo.
-    def buffer b-web for webuser.
-    DEF VAR lc-remote AS CHAR   NO-UNDO.
+    DEFINE VARIABLE lc-code AS CHARACTER NO-UNDO.
+    DEFINE BUFFER b-web FOR webuser.
+    DEFINE VARIABLE lc-remote AS CHARACTER   NO-UNDO.
     
-    find b-web where b-web.loginid = pc-user no-lock no-error.
+    FIND b-web WHERE b-web.loginid = pc-user NO-LOCK NO-ERROR.
 
-    if avail b-web 
-    then assign lc-code = encode(lc(pc-user)) +
+    IF AVAILABLE b-web 
+    THEN ASSIGN lc-code = ENCODE(LC(pc-user)) +
                         ':' +
-                        string(rowid(b-web)) + 
+                        string(ROWID(b-web)) + 
                         ':' + 
                         encode('ExtraInfo') +
                         ":" + 
@@ -1231,10 +930,7 @@ FUNCTION htmlib-EncodeUser RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-EndCriteria Include 
 FUNCTION htmlib-EndCriteria RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1246,10 +942,7 @@ FUNCTION htmlib-EndCriteria RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-EndFieldSet Include 
 FUNCTION htmlib-EndFieldSet RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1257,14 +950,11 @@ FUNCTION htmlib-EndFieldSet RETURNS CHARACTER
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  return '</fieldset></span>'.
+  RETURN '</fieldset></span>'.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-EndForm Include 
 FUNCTION htmlib-EndForm RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1277,10 +967,7 @@ FUNCTION htmlib-EndForm RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-EndPanel Include 
 FUNCTION htmlib-EndPanel RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1292,10 +979,7 @@ FUNCTION htmlib-EndPanel RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-EndTable Include 
 FUNCTION htmlib-EndTable RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1307,61 +991,52 @@ FUNCTION htmlib-EndTable RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ErrorMessage Include 
 FUNCTION htmlib-ErrorMessage RETURNS CHARACTER
-   ( pc-error as char ) :
+   ( pc-error AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   
-    assign pc-error = '<span class="errormessage">' + pc-error + '</span>'.
+    ASSIGN pc-error = '<span class="errormessage">' + pc-error + '</span>'.
 
       
-    return pc-error.
+    RETURN pc-error.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ExpandBox Include 
 FUNCTION htmlib-ExpandBox RETURNS CHARACTER
-  ( pc-objectID as char,
-    pc-Data     as char ) :
+  ( pc-objectID AS CHARACTER,
+    pc-Data     AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-dummy-return as char initial "MYXXX111PPP2222"   no-undo.
+    DEFINE VARIABLE lc-dummy-return AS CHARACTER INITIAL "MYXXX111PPP2222"   NO-UNDO.
 
 
-    def var lc-return           as char     no-undo.
+    DEFINE VARIABLE lc-return           AS CHARACTER     NO-UNDO.
 
-    assign lc-return = 
+    ASSIGN lc-return = 
         '<div class="expandboxc" id="' + pc-objectID +
          '" style="display: none;"><fieldset><legend>Details</legend>'.
     
-    assign lc-return = lc-return + 
+    ASSIGN lc-return = lc-return + 
         replace(
-            dynamic-function("html-encode",replace(pc-data,"~n",lc-dummy-return)),
+            DYNAMIC-FUNCTION("html-encode",REPLACE(pc-data,"~n",lc-dummy-return)),
                            lc-dummy-return,'<br/>').
        
-    assign lc-return = lc-return + '</fieldset></div>'.
+    ASSIGN lc-return = lc-return + '</fieldset></div>'.
 
-    return lc-return.
+    RETURN lc-return.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Footer Include 
 FUNCTION htmlib-Footer RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1374,113 +1049,104 @@ FUNCTION htmlib-Footer RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-GenPassword Include 
 FUNCTION htmlib-GenPassword RETURNS CHARACTER
-  ( pi-Length as int ) :
+  ( pi-Length AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-const as char
-        initial 'abcdefghijklmnopqrstuvwxyz0123456789'
-        no-undo.
+    DEFINE VARIABLE lc-const AS CHARACTER
+        INITIAL 'abcdefghijklmnopqrstuvwxyz0123456789'
+        NO-UNDO.
 
-    def var lc-string as char no-undo.
-    def var li-loop   as int  no-undo.
-    def var lc-last   as char case-sensitive no-undo.
-    def var lc-this   as char case-sensitive no-undo.
-    def var lc-return as char no-undo.
+    DEFINE VARIABLE lc-string AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-loop   AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-last   AS CHARACTER CASE-SENSITIVE NO-UNDO.
+    DEFINE VARIABLE lc-this   AS CHARACTER CASE-SENSITIVE NO-UNDO.
+    DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
 
-    repeat:
-        assign li-loop = random(0,etime).
+    REPEAT:
+        ASSIGN li-loop = RANDOM(0,ETIME).
 
-        assign li-loop = random(1,length(lc-const)).
+        ASSIGN li-loop = RANDOM(1,LENGTH(lc-const)).
 
-        assign lc-this = substr(lc-const,li-loop,1).
+        ASSIGN lc-this = substr(lc-const,li-loop,1).
 
-        if random(1,100) > 50
-        then assign lc-this = caps(lc-this).
+        IF RANDOM(1,100) > 50
+        THEN ASSIGN lc-this = CAPS(lc-this).
 
-        if lc-this = lc-last then next.
+        IF lc-this = lc-last THEN NEXT.
 
         lc-last = lc-this.
 
-        if lc-return = ""
-        then lc-return = lc-this.
-        else lc-return = lc-return + lc-this.
+        IF lc-return = ""
+        THEN lc-return = lc-this.
+        ELSE lc-return = lc-return + lc-this.
 
-        if length(lc-return) = pi-length then leave.
+        IF LENGTH(lc-return) = pi-length THEN LEAVE.
 
 
 
-    end.
+    END.
 
-    return lc-return.
+    RETURN lc-return.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-GetAttr Include 
 FUNCTION htmlib-GetAttr RETURNS CHARACTER
-  ( pc-systemid as char,
-    pc-attrid   as char
+  ( pc-systemid AS CHARACTER,
+    pc-attrid   AS CHARACTER
     ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer b-attr for webattr.
-    def buffer webuser for webuser.
+    DEFINE BUFFER b-attr FOR webattr.
+    DEFINE BUFFER webuser FOR webuser.
 
-    if pc-attrid = "MNTNoLinesDown" and lc-global-user <> ""
-    and can-find(webuser where webuser.loginid = lc-global-user no-lock) then
-    do:
-        find webuser where webuser.loginid = lc-global-user no-lock no-error.
+    IF pc-attrid = "MNTNoLinesDown" AND lc-global-user <> ""
+    AND CAN-FIND(webuser WHERE webuser.loginid = lc-global-user NO-LOCK) THEN
+    DO:
+        FIND webuser WHERE webuser.loginid = lc-global-user NO-LOCK NO-ERROR.
 
-        if webuser.recordsperpage > 0 
-        then return string(webuser.recordsperpage).
-    end.
+        IF webuser.recordsperpage > 0 
+        THEN RETURN STRING(webuser.recordsperpage).
+    END.
 
-    find b-attr where b-attr.systemid = pc-systemid
-                  and b-attr.attrid   = pc-attrid no-lock no-error.
+    FIND b-attr WHERE b-attr.systemid = pc-systemid
+                  AND b-attr.attrid   = pc-attrid NO-LOCK NO-ERROR.
 
-    return if avail b-attr
-           then b-attr.attrvalue
-           else "".
+    RETURN IF AVAILABLE b-attr
+           THEN b-attr.attrvalue
+           ELSE "".
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Header Include 
 FUNCTION htmlib-Header RETURNS CHARACTER
-  ( pc-title as char ) :
+  ( pc-title AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-header     as char no-undo.
-  def var lc-return     as char no-undo.
+  DEFINE VARIABLE lc-header     AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-return     AS CHARACTER NO-UNDO.
 
-  def var ll-backbase       as log no-undo.
+  DEFINE VARIABLE ll-backbase       AS LOG NO-UNDO.
 
 
-  if lookup("ip-HTM-Header",this-procedure:internal-entries) > 0 then
-  do:
-      run ip-HTM-Header in this-procedure 
-          ( output lc-header ).
-  end.
+  IF LOOKUP("ip-HTM-Header",THIS-PROCEDURE:INTERNAL-ENTRIES) > 0 THEN
+  DO:
+      RUN ip-HTM-Header IN this-procedure 
+          ( OUTPUT lc-header ).
+  END.
 
-  assign 
+  ASSIGN 
       lc-return = 
          '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">' + '~n' +
          '<html>' +
@@ -1499,38 +1165,35 @@ FUNCTION htmlib-Header RETURNS CHARACTER
    
   
 
-  if lookup("ip-HeaderInclude-Calendar",this-procedure:internal-entries) > 0 then
-  do:
-      assign lc-return = lc-return + DYNAMIC-FUNCTION('htmlib-CalendarInclude':U).
+  IF LOOKUP("ip-HeaderInclude-Calendar",THIS-PROCEDURE:INTERNAL-ENTRIES) > 0 THEN
+  DO:
+      ASSIGN lc-return = lc-return + DYNAMIC-FUNCTION('htmlib-CalendarInclude':U).
           
-  end.
+  END.
 
-    assign
+    ASSIGN
       lc-return = lc-return + '~n</HEAD>' + '<body class="normaltext" onUnload="ClosePage()">'
         .
 
-  return lc-return.
+  RETURN lc-return.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-HelpButton Include 
 FUNCTION htmlib-HelpButton RETURNS CHARACTER
-  ( pc-appurl as char,
-    pc-program as char  ) :
+  ( pc-appurl AS CHARACTER,
+    pc-program AS CHARACTER  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-url as char no-undo.
+    DEFINE VARIABLE lc-url AS CHARACTER NO-UNDO.
 
-    def buffer b-attr for webattr.
+    DEFINE BUFFER b-attr FOR webattr.
 
-    return "".
+    RETURN "".
     /*
     find b-attr 
           where b-attr.systemid = 'help'
@@ -1550,19 +1213,16 @@ FUNCTION htmlib-HelpButton RETURNS CHARACTER
   
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Hidden Include 
 FUNCTION htmlib-Hidden RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char ) :
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
   RETURN 
-        substitute(
+        SUBSTITUTE(
             '<input  type="hidden" id="&1" name="&1" value="&2">',
             pc-name,
             pc-value).
@@ -1570,22 +1230,19 @@ FUNCTION htmlib-Hidden RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ImageLink Include 
 FUNCTION htmlib-ImageLink RETURNS CHARACTER
   ( 
-    pc-image as char,
-    pc-url as char,
-    pc-alt as char) :
+    pc-image AS CHARACTER,
+    pc-url AS CHARACTER,
+    pc-alt AS CHARACTER) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    return
-        substitute(
+    RETURN
+        SUBSTITUTE(
         '<a href="&1"><img border="0" src="&2" alt="&3"></a>',
         pc-url,
         pc-image,
@@ -1594,55 +1251,46 @@ FUNCTION htmlib-ImageLink RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-InputField Include 
 FUNCTION htmlib-InputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char ) :
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   RETURN 
-        substitute(
+        SUBSTITUTE(
             '<input class="inputfield" type="text" name="&1" id="ff&1" size="&2" value="&3">',
             pc-name,
-            string(pi-size),
+            STRING(pi-size),
             pc-value).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-InputPassword Include 
 FUNCTION htmlib-InputPassword RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char ) :
+  ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   RETURN 
-        substitute(
+        SUBSTITUTE(
             '<input class="inputfield" type="password" name="&1" size="&2" value="&3">',
             pc-name,
-            string(pi-size),
+            STRING(pi-size),
             pc-value).
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Jscript-Lookup Include 
 FUNCTION htmlib-Jscript-Lookup RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1654,10 +1302,7 @@ FUNCTION htmlib-Jscript-Lookup RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-JScript-Maintenance Include 
 FUNCTION htmlib-JScript-Maintenance RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1669,10 +1314,7 @@ FUNCTION htmlib-JScript-Maintenance RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-JScript-Spinner Include 
 FUNCTION htmlib-JScript-Spinner RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -1681,27 +1323,24 @@ FUNCTION htmlib-JScript-Spinner RETURNS CHARACTER
 ------------------------------------------------------------------------------*/
 
   RETURN '~n' +
-         '<link rel="stylesheet" href="/style/spinner.css?fn="' + string(time) + string(random(1,100)) + '" type="text/css" >' + '~n' +
+         '<link rel="stylesheet" href="/style/spinner.css?fn="' + string(TIME) + string(RANDOM(1,100)) + '" type="text/css" >' + '~n' +
          '<script language="JavaScript" src="/scripts/js/spinner.js"></script>'. 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Lookup Include 
 FUNCTION htmlib-Lookup RETURNS CHARACTER
-  ( pc-label as char ,
-    pc-field-name as char,
-    pc-desc-name as char,
-    pc-program as char  ) :
+  ( pc-label AS CHARACTER ,
+    pc-field-name AS CHARACTER,
+    pc-desc-name AS CHARACTER,
+    pc-program AS CHARACTER  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
     
 
-    return DYNAMIC-FUNCTION('htmlib-ALookup':U,
+    RETURN DYNAMIC-FUNCTION('htmlib-ALookup':U,
                             pc-field-name,
                             pc-desc-name,
                             pc-program).
@@ -1724,20 +1363,17 @@ FUNCTION htmlib-Lookup RETURNS CHARACTER
 */
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-LookupAction Include 
 FUNCTION htmlib-LookupAction RETURNS CHARACTER
-  ( pc-url as char,
-    pc-action as char,
-    pc-label as char ) :
+  ( pc-url AS CHARACTER,
+    pc-action AS CHARACTER,
+    pc-label AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    return  substitute(
+    RETURN  SUBSTITUTE(
             '<INPUT onclick="LookupButtonPress(~'&1~',~'&2~')" type=button class="actionbutton" value="&3">',
             pc-action,
             pc-url,
@@ -1746,63 +1382,57 @@ FUNCTION htmlib-LookupAction RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-mBanner Include 
 FUNCTION htmlib-mBanner RETURNS CHARACTER
-  ( pc-companyCode as CHAR ) :
+  ( pc-companyCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    DEF BUFFER company  FOR company.
+    DEFINE BUFFER company  FOR company.
 
 
     FIND company WHERE company.companycode = pc-companycode NO-LOCK NO-ERROR.
 
-    RETURN IF AVAIL company THEN trim(company.mBanner) ELSE "".
+    RETURN IF AVAILABLE company THEN TRIM(company.mBanner) ELSE "".
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-MntButton Include 
 FUNCTION htmlib-MntButton RETURNS CHARACTER
-  ( pc-url as char,
-    pc-action as char,
-    pc-label as char ) :
+  ( pc-url AS CHARACTER,
+    pc-action AS CHARACTER,
+    pc-label AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    if pc-action = "prevpage" 
-    then return 
+    IF pc-action = "prevpage" 
+    THEN RETURN 
             '<a href="javascript:MntButtonPress(~'' + pc-action + '~',~'' + pc-url + '~')">'
             + '<img src="/images/toolbar/prev.gif" border=0 alt="Previous Page"></a>'
             .
-    else
-    if pc-action = "nextpage" 
-    then return 
+    ELSE
+    IF pc-action = "nextpage" 
+    THEN RETURN 
             '<a href="javascript:MntButtonPress(~'' + pc-action + '~',~'' + pc-url + '~')">'
             + '<img src="/images/toolbar/next.gif" border=0 alt="Next Page"></a>'
             .
-    else
-    if pc-action = "firstpage" 
-    then return 
+    ELSE
+    IF pc-action = "firstpage" 
+    THEN RETURN 
             '<a href="javascript:MntButtonPress(~'' + pc-action + '~',~'' + pc-url + '~')">'
             + '<img src="/images/toolbar/begin.gif" border=0 alt="First Page"></a>'
             .
-    else
-    if pc-action = "lastpage" 
-    then return 
+    ELSE
+    IF pc-action = "lastpage" 
+    THEN RETURN 
             '<a href="javascript:MntButtonPress(~'' + pc-action + '~',~'' + pc-url + '~')">'
             + '<img src="/images/toolbar/end.gif" border=0 alt="Last Page"></a>'
             .
-    else return  substitute(
+    ELSE RETURN  SUBSTITUTE(
             '<INPUT onclick="MntButtonPress(~'&1~',~'&2~')" type=button class="actionbutton" value="&3">',
             pc-action,
             pc-url,
@@ -1811,236 +1441,215 @@ FUNCTION htmlib-MntButton RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-MntLink Include 
 FUNCTION htmlib-MntLink RETURNS CHARACTER
-  ( pc-mode as char,
-    pr-rowid as rowid,
-    pc-url as char,
-    pc-other-params as char ) :
+  ( pc-mode AS CHARACTER,
+    pr-rowid AS ROWID,
+    pc-url AS CHARACTER,
+    pc-other-params AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-image as char no-undo.
-    def var lc-alt-text as char no-undo.
+    DEFINE VARIABLE lc-image AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-alt-text AS CHARACTER NO-UNDO.
 
-    case pc-mode:
-        when 'add':U
-        then assign lc-image = '/images/maintenance/add.gif'
+    CASE pc-mode:
+        WHEN 'add':U
+        THEN ASSIGN lc-image = '/images/maintenance/add.gif'
                     lc-alt-text = 'Add'.
-        when 'delete':U
-        then assign lc-image = '/images/maintenance/delete.gif'
+        WHEN 'delete':U
+        THEN ASSIGN lc-image = '/images/maintenance/delete.gif'
                     lc-alt-text = 'Delete'.
-        when 'update':U
-        then assign lc-image = '/images/maintenance/update.gif'
+        WHEN 'update':U
+        THEN ASSIGN lc-image = '/images/maintenance/update.gif'
                     lc-alt-text = 'Update'.
-        when 'view':u
-        then assign lc-image = '/images/maintenance/view.gif'
+        WHEN 'view':u
+        THEN ASSIGN lc-image = '/images/maintenance/view.gif'
                     lc-alt-text = 'View'.
-        when 'genpassword' 
-        then assign lc-image = '/images/maintenance/lock.gif'
+        WHEN 'genpassword' 
+        THEN ASSIGN lc-image = '/images/maintenance/lock.gif'
                     lc-alt-text = 'Generate password'.
-        when "contaccess" 
-        then assign lc-image = '/images/maintenance/contaccess.gif'
+        WHEN "contaccess" 
+        THEN ASSIGN lc-image = '/images/maintenance/contaccess.gif'
                     lc-alt-text = 'Contractor account access'.
-        when "doclist" 
-        then assign lc-image = '/images/maintenance/doclist.gif'
+        WHEN "doclist" 
+        THEN ASSIGN lc-image = '/images/maintenance/doclist.gif'
                     lc-alt-text = 'Documents'.
-        when "eqsubclass"
-        then assign lc-image = '/images/maintenance/eqsubedit.gif'
+        WHEN "eqsubclass"
+        THEN ASSIGN lc-image = '/images/maintenance/eqsubedit.gif'
                     lc-alt-text = 'Inventory subclassifications'.
-        when "customfield"
-        then assign lc-image = '/images/maintenance/customfield.gif'
+        WHEN "customfield"
+        THEN ASSIGN lc-image = '/images/maintenance/customfield.gif'
                     lc-alt-text = 'Define custom fields'.
-        when "custequip"
-        then assign lc-image = '/images/maintenance/custequip.gif'
+        WHEN "custequip"
+        THEN ASSIGN lc-image = '/images/maintenance/custequip.gif'
                     lc-alt-text = 'Customer equipment'.
-    end case.
-    assign pc-url = pc-url + '?mode=' + pc-mode
-                    + '&rowid=' + if pr-rowid = ? then "" else string(pr-rowid).
-    if pc-other-params <> ""
-    and pc-other-params <> ?
-    then assign pc-url = pc-url + "&" + pc-other-params.
+    END CASE.
+    ASSIGN pc-url = pc-url + '?mode=' + pc-mode
+                    + '&rowid=' + IF pr-rowid = ? THEN "" ELSE STRING(pr-rowid).
+    IF pc-other-params <> ""
+    AND pc-other-params <> ?
+    THEN ASSIGN pc-url = pc-url + "&" + pc-other-params.
 
 
-    return htmlib-ImageLink(lc-image,pc-url,
+    RETURN htmlib-ImageLink(lc-image,pc-url,
                              lc-alt-text).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-MntTableField Include 
 FUNCTION htmlib-MntTableField RETURNS CHARACTER
-    ( pc-data as char,
-      pc-align as char) :
+    ( pc-data AS CHARACTER,
+      pc-align AS CHARACTER) :
   /*------------------------------------------------------------------------------
     Purpose:  
       Notes:  
   ------------------------------------------------------------------------------*/
 
-      def var lc-return as char no-undo.
+      DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
 
       /*
       assign lc-return = '<td class="mnttablefield" valign="top"'.
       */
 
-      assign lc-return = '<td valign="top"'.
+      ASSIGN lc-return = '<td valign="top"'.
 
-      if pc-data = ""
-      then pc-data = "&nbsp;".
+      IF pc-data = ""
+      THEN pc-data = "&nbsp;".
 
-      if pc-align <> ""
-      then lc-return = lc-return + ' align="' + pc-align + '">'.
-      else lc-return = lc-return + '>'.
+      IF pc-align <> ""
+      THEN lc-return = lc-return + ' align="' + pc-align + '">'.
+      ELSE lc-return = lc-return + '>'.
 
-      assign lc-return = lc-return + pc-data + '</td>'.
+      ASSIGN lc-return = lc-return + pc-data + '</td>'.
 
-      return lc-return.
+      RETURN lc-return.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-MntTableFieldComplex Include 
 FUNCTION htmlib-MntTableFieldComplex RETURNS CHARACTER
-    ( pc-data as char,
-      pc-align as char,
-      pi-cols as int,
-      pi-rows as int) :
+    ( pc-data AS CHARACTER,
+      pc-align AS CHARACTER,
+      pi-cols AS INTEGER,
+      pi-rows AS INTEGER) :
   /*------------------------------------------------------------------------------
     Purpose:  
       Notes:  
   ------------------------------------------------------------------------------*/
 
-      def var lc-return as char no-undo.
+      DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
 
       /*
       assign lc-return = '<td class="mnttablefield" valign="top"'.
       */
 
-      assign lc-return = '<td valign="top"'.
+      ASSIGN lc-return = '<td valign="top"'.
 
-      if pi-cols > 1 then
-      do:
+      IF pi-cols > 1 THEN
+      DO:
           lc-return = lc-return + ' colspan="' + string(pi-cols) 
               + '" '.
         
-      end.
+      END.
 
-      if pi-rows > 1 then
-      do:
+      IF pi-rows > 1 THEN
+      DO:
           lc-return = lc-return + ' rowspan="' + string(pi-rows) 
               + '" '.
           
-      end.
-      if pc-data = ""
-      then pc-data = "&nbsp;".
+      END.
+      IF pc-data = ""
+      THEN pc-data = "&nbsp;".
 
-      if pc-align <> ""
-      then lc-return = lc-return + ' align="' + pc-align + '">'.
-      else lc-return = lc-return + '>'.
+      IF pc-align <> ""
+      THEN lc-return = lc-return + ' align="' + pc-align + '">'.
+      ELSE lc-return = lc-return + '>'.
 
-      assign lc-return = lc-return + pc-data + '</td>'.
+      ASSIGN lc-return = lc-return + pc-data + '</td>'.
 
-      return lc-return.
+      RETURN lc-return.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-MultiplyErrorMessage Include 
 FUNCTION htmlib-MultiplyErrorMessage RETURNS CHARACTER
-  ( pc-error as char ) :
+  ( pc-error AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var li-loop as int no-undo.
-    def var lc-message as char no-undo.
-    def var lc-line as char no-undo.
+    DEFINE VARIABLE li-loop AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lc-message AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-line AS CHARACTER NO-UNDO.
    
-    if num-entries(pc-error,'|') > 0
-    and pc-error <> "" then
-    do:
+    IF NUM-ENTRIES(pc-error,'|') > 0
+    AND pc-error <> "" THEN
+    DO:
     
-        assign lc-message = '<p class="errormessage">'.
+        ASSIGN lc-message = '<p class="errormessage">'.
         
-        do li-loop = 1 to num-entries(pc-error,'|'):
+        DO li-loop = 1 TO NUM-ENTRIES(pc-error,'|'):
 
-            if li-loop > 1
-            then assign lc-message = lc-message + "<br>".
+            IF li-loop > 1
+            THEN ASSIGN lc-message = lc-message + "<br>".
 
-            assign lc-line = entry(li-loop,pc-error,'|').
+            ASSIGN lc-line = ENTRY(li-loop,pc-error,'|').
 
-            if lc-message = ""
-            then lc-message = lc-line.
-            else lc-message = lc-message + lc-line.
+            IF lc-message = ""
+            THEN lc-message = lc-line.
+            ELSE lc-message = lc-message + lc-line.
 
-        end.
-        assign 
+        END.
+        ASSIGN 
             lc-message = lc-message + "</p>".
-    end.
-    return lc-message.
+    END.
+    RETURN lc-message.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-NexusParam Include 
 FUNCTION htmlib-NexusParam RETURNS CHARACTER
-  ( pc-param as char  ) :
+  ( pc-param AS CHARACTER  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-value as char no-undo.
+  DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
 
-  assign lc-value = htmlib-GetAttr("Nexus",pc-param).
+  ASSIGN lc-value = htmlib-GetAttr("Nexus",pc-param).
 
-  if lc-value = "" 
-  then message 'Nexus missing ' pc-param.
-  else lc-value = '<param name="' + pc-param + '" value="' +
+  IF lc-value = "" 
+  THEN MESSAGE 'Nexus missing ' pc-param.
+  ELSE lc-value = '<param name="' + pc-param + '" value="' +
             lc-value + '">'.
 
   RETURN lc-value.   /* Function return value. */
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-NormalTextLink Include 
 FUNCTION htmlib-NormalTextLink RETURNS CHARACTER
-    ( pc-text as char,
-    pc-url  as char ) :
+    ( pc-text AS CHARACTER,
+    pc-url  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    return substitute('<a href="&2">&1</a>',
+    RETURN SUBSTITUTE('<a href="&2">&1</a>',
                       pc-text,
                       pc-url ).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Null Include 
 FUNCTION htmlib-Null RETURNS CHARACTER
   ( ) :
 /*------------------------------------------------------------------------------
@@ -2052,30 +1661,27 @@ FUNCTION htmlib-Null RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-OpenHeader Include 
 FUNCTION htmlib-OpenHeader RETURNS CHARACTER
-  ( pc-title as char ) :
+  ( pc-title AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-header     as char no-undo.
-  def var lc-return     as char no-undo.
+  DEFINE VARIABLE lc-header     AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-return     AS CHARACTER NO-UNDO.
 
-  def var ll-backbase       as log no-undo.
+  DEFINE VARIABLE ll-backbase       AS LOG NO-UNDO.
 
 
-  if lookup("ip-HTM-Header",this-procedure:internal-entries) > 0 then
-  do:
-      run ip-HTM-Header in this-procedure 
-          ( output lc-header ).
-  end.
+  IF LOOKUP("ip-HTM-Header",THIS-PROCEDURE:INTERNAL-ENTRIES) > 0 THEN
+  DO:
+      RUN ip-HTM-Header IN this-procedure 
+          ( OUTPUT lc-header ).
+  END.
 
-  assign 
+  ASSIGN 
       lc-return = 
          '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">' + '~n' +
          '<html>' +
@@ -2094,24 +1700,21 @@ FUNCTION htmlib-OpenHeader RETURNS CHARACTER
    
   
 
-  if lookup("ip-HeaderInclude-Calendar",this-procedure:internal-entries) > 0 then
-  do:
-      assign lc-return = lc-return + DYNAMIC-FUNCTION('htmlib-CalendarInclude':U).
+  IF LOOKUP("ip-HeaderInclude-Calendar",THIS-PROCEDURE:INTERNAL-ENTRIES) > 0 THEN
+  DO:
+      ASSIGN lc-return = lc-return + DYNAMIC-FUNCTION('htmlib-CalendarInclude':U).
           
-  end.
+  END.
 
  
-  return lc-return.
+  RETURN lc-return.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ProgramTitle Include 
 FUNCTION htmlib-ProgramTitle RETURNS CHARACTER
-  ( pc-title as char ) :
+  ( pc-title AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
@@ -2125,27 +1728,24 @@ FUNCTION htmlib-ProgramTitle RETURNS CHARACTER
   
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Radio Include 
 FUNCTION htmlib-Radio RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pl-checked as log
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pl-checked AS LOG
      ) :
   /*------------------------------------------------------------------------------
     Purpose:  
       Notes:  
   ------------------------------------------------------------------------------*/
 
-    def var lc-checked as char no-undo.
+    DEFINE VARIABLE lc-checked AS CHARACTER NO-UNDO.
 
-    if pl-checked
-    then assign lc-checked = 'checked'.
+    IF pl-checked
+    THEN ASSIGN lc-checked = 'checked'.
 
     RETURN 
-          substitute(
+          SUBSTITUTE(
               '<input class="inputfield" type="radio" id="&1" name="&1" value="&2" &3 >',
               pc-name,
               pc-value,
@@ -2155,10 +1755,7 @@ FUNCTION htmlib-Radio RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-RandomURL Include 
 FUNCTION htmlib-RandomURL RETURNS CHARACTER
   (  ) :
 /*------------------------------------------------------------------------------
@@ -2168,18 +1765,15 @@ FUNCTION htmlib-RandomURL RETURNS CHARACTER
 
   RETURN 
       "RanDomTimeValue=" + 
-      string(int(today)) +
-      string(time) +
-      string(random(1,1000)).
+      string(int(TODAY)) +
+      string(TIME) +
+      string(RANDOM(1,1000)).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ReportButton Include 
 FUNCTION htmlib-ReportButton RETURNS CHARACTER
-  ( pc-url as char
+  ( pc-url AS CHARACTER
   ) :
 /*------------------------------------------------------------------------------
   Purpose:  
@@ -2187,7 +1781,7 @@ FUNCTION htmlib-ReportButton RETURNS CHARACTER
 ------------------------------------------------------------------------------*/
 
   
-    return  substitute(
+    RETURN  SUBSTITUTE(
             '<a class="imglink" onclick="RepWindow(~'&1~')"><img src="/images/general/print.gif"></a>',
             pc-url).
     /*
@@ -2199,38 +1793,35 @@ FUNCTION htmlib-ReportButton RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Select Include 
 FUNCTION htmlib-Select RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-value as char ,
-    pc-display as char,
-    pc-selected as char ) :
+  ( pc-name AS CHARACTER ,
+    pc-value AS CHARACTER ,
+    pc-display AS CHARACTER,
+    pc-selected AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-data as char no-undo.
-  def var li-loop as int  no-undo.
-  def var lc-value as char no-undo.
-  def var lc-display as char no-undo.
-  def var lc-selected as char no-undo.
+  DEFINE VARIABLE lc-data AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE li-loop AS INTEGER  NO-UNDO.
+  DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-display AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-selected AS CHARACTER NO-UNDO.
 
-  if pc-display = ""
-  then pc-display = pc-value.
+  IF pc-display = ""
+  THEN pc-display = pc-value.
 
-  assign lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name + '">'.
+  ASSIGN lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name + '">'.
 
-  do li-loop = 1 to num-entries(pc-value,'|'):
-      assign lc-value = entry(li-loop,pc-value,'|')
-             lc-display = entry(li-loop,pc-display,'|').
-      if lc-value = pc-selected 
-      then lc-selected = 'selected'.
-      else lc-selected = "".
-      assign lc-data = lc-data + 
+  DO li-loop = 1 TO NUM-ENTRIES(pc-value,'|'):
+      ASSIGN lc-value = ENTRY(li-loop,pc-value,'|')
+             lc-display = ENTRY(li-loop,pc-display,'|').
+      IF lc-value = pc-selected 
+      THEN lc-selected = 'selected'.
+      ELSE lc-selected = "".
+      ASSIGN lc-data = lc-data + 
                        '<option ' +
                        lc-selected + 
                        ' value="' + 
@@ -2238,9 +1829,9 @@ FUNCTION htmlib-Select RETURNS CHARACTER
                        '">' + 
                        lc-display +
                        '</option>'.
-  end.
+  END.
   
-  assign lc-data = lc-data + '</select>'.
+  ASSIGN lc-data = lc-data + '</select>'.
 
   RETURN lc-data.
 
@@ -2248,38 +1839,35 @@ FUNCTION htmlib-Select RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-Select-By-ID Include 
 FUNCTION htmlib-Select-By-ID RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-value as char ,
-    pc-display as char,
-    pc-selected as char ) :
+  ( pc-name AS CHARACTER ,
+    pc-value AS CHARACTER ,
+    pc-display AS CHARACTER,
+    pc-selected AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-data as char no-undo.
-  def var li-loop as int  no-undo.
-  def var lc-value as char no-undo.
-  def var lc-display as char no-undo.
-  def var lc-selected as char no-undo.
+  DEFINE VARIABLE lc-data AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE li-loop AS INTEGER  NO-UNDO.
+  DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-display AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-selected AS CHARACTER NO-UNDO.
 
-  if pc-display = ""
-  then pc-display = pc-value.
+  IF pc-display = ""
+  THEN pc-display = pc-value.
 
-  assign lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name + '">'.
+  ASSIGN lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name + '">'.
 
-  do li-loop = 1 to num-entries(pc-value,'|'):
-      assign lc-value = entry(li-loop,pc-value,'|')
-             lc-display = entry(li-loop,pc-display,'|').
-      if lc-value = pc-selected 
-      then lc-selected = 'selected'.
-      else lc-selected = "".
-      assign lc-data = lc-data + 
+  DO li-loop = 1 TO NUM-ENTRIES(pc-value,'|'):
+      ASSIGN lc-value = ENTRY(li-loop,pc-value,'|')
+             lc-display = ENTRY(li-loop,pc-display,'|').
+      IF lc-value = pc-selected 
+      THEN lc-selected = 'selected'.
+      ELSE lc-selected = "".
+      ASSIGN lc-data = lc-data + 
                        '<option ' +
                        lc-selected +
                        ' id="' +
@@ -2291,9 +1879,9 @@ FUNCTION htmlib-Select-By-ID RETURNS CHARACTER
                        '">' + 
                        lc-display +
                        '</option>'.
-  end.
+  END.
   
-  assign lc-data = lc-data + '</select>'.
+  ASSIGN lc-data = lc-data + '</select>'.
 
   RETURN lc-data.
 
@@ -2306,40 +1894,37 @@ FUNCTION htmlib-Select-By-ID RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-SelectJS Include 
 FUNCTION htmlib-SelectJS RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-js  AS CHAR,
-    pc-value as char ,
-    pc-display as char,
-    pc-selected as char ) :
+  ( pc-name AS CHARACTER ,
+    pc-js  AS CHARACTER,
+    pc-value AS CHARACTER ,
+    pc-display AS CHARACTER,
+    pc-selected AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-data as char no-undo.
-  def var li-loop as int  no-undo.
-  def var lc-value as char no-undo.
-  def var lc-display as char no-undo.
-  def var lc-selected as char no-undo.
+  DEFINE VARIABLE lc-data AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE li-loop AS INTEGER  NO-UNDO.
+  DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-display AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE lc-selected AS CHARACTER NO-UNDO.
 
-  if pc-display = ""
-  then pc-display = pc-value.
+  IF pc-display = ""
+  THEN pc-display = pc-value.
 /* onChange="ChangeAccount()"') */
-  assign lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name 
+  ASSIGN lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name 
         + '" onChange="' + pc-js + '")>'.
 
-  do li-loop = 1 to num-entries(pc-value,'|'):
-      assign lc-value = entry(li-loop,pc-value,'|')
-             lc-display = entry(li-loop,pc-display,'|').
-      if lc-value = pc-selected 
-      then lc-selected = 'selected'.
-      else lc-selected = "".
-      assign lc-data = lc-data + 
+  DO li-loop = 1 TO NUM-ENTRIES(pc-value,'|'):
+      ASSIGN lc-value = ENTRY(li-loop,pc-value,'|')
+             lc-display = ENTRY(li-loop,pc-display,'|').
+      IF lc-value = pc-selected 
+      THEN lc-selected = 'selected'.
+      ELSE lc-selected = "".
+      ASSIGN lc-data = lc-data + 
                        '<option ' +
                        lc-selected + 
                        ' value="' + 
@@ -2347,52 +1932,43 @@ FUNCTION htmlib-SelectJS RETURNS CHARACTER
                        '">' + 
                        lc-display +
                        '</option>'.
-  end.
+  END.
   
-  assign lc-data = lc-data + '</select>'.
+  ASSIGN lc-data = lc-data + '</select>'.
 
   RETURN lc-data.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-SideLabel Include 
 FUNCTION htmlib-SideLabel RETURNS CHARACTER
-  ( pc-Label as char ) :
+  ( pc-Label AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  RETURN substitute('<span class="sidelabel">&1:</span>',
+  RETURN SUBSTITUTE('<span class="sidelabel">&1:</span>',
                     pc-label).
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-SideLabelError Include 
 FUNCTION htmlib-SideLabelError RETURNS CHARACTER
-  ( pc-Label as char ) :
+  ( pc-Label AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  RETURN substitute('<span class="sidelabelerror">&1*:</span>',
+  RETURN SUBSTITUTE('<span class="sidelabelerror">&1*:</span>',
                     pc-label).
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-SimpleBackButton Include 
 FUNCTION htmlib-SimpleBackButton RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -2401,78 +1977,69 @@ FUNCTION htmlib-SimpleBackButton RETURNS CHARACTER
 ------------------------------------------------------------------------------*/
 
 
-    return string('<a class="tlink" href="javascript:history.go(-1);">'
+    RETURN STRING('<a class="tlink" href="javascript:history.go(-1);">'
                       + dynamic-function("html-encode","<<") 
                       + '&nbsp;Back</a>' ).
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-SimpleExpandBox Include 
 FUNCTION htmlib-SimpleExpandBox RETURNS CHARACTER
-  ( pc-objectID as char,
-    pc-Data     as char ) :
+  ( pc-objectID AS CHARACTER,
+    pc-Data     AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-dummy-return as char initial "MYXXX111PPP2222"   no-undo.
+    DEFINE VARIABLE lc-dummy-return AS CHARACTER INITIAL "MYXXX111PPP2222"   NO-UNDO.
 
 
-    def var lc-return           as char     no-undo.
+    DEFINE VARIABLE lc-return           AS CHARACTER     NO-UNDO.
 
-    assign lc-return = 
+    ASSIGN lc-return = 
         '<div class="expandboxc" id="' + pc-objectID +
          '" style="display: none;">'.
     
-    assign lc-return = lc-return + 
+    ASSIGN lc-return = lc-return + 
         replace(
-            dynamic-function("html-encode",replace(pc-data,"~n",lc-dummy-return)),
+            DYNAMIC-FUNCTION("html-encode",REPLACE(pc-data,"~n",lc-dummy-return)),
                            lc-dummy-return,'<br/>').
        
-    assign lc-return = lc-return + '</div>'.
+    ASSIGN lc-return = lc-return + '</div>'.
 
-    return lc-return.
+    RETURN lc-return.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-StartFieldSet Include 
 FUNCTION htmlib-StartFieldSet RETURNS CHARACTER
-  ( pc-legend as char  ) :
+  ( pc-legend AS CHARACTER  ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    if pc-legend = ""
-    then return '<span class="inform"><fieldset>'.
-    else return '<span class="inform"><fieldset><legend>' + 
+    IF pc-legend = ""
+    THEN RETURN '<span class="inform"><fieldset>'.
+    ELSE RETURN '<span class="inform"><fieldset><legend>' + 
             dynamic-function("html-encode",pc-legend) +
             '</legend>'.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-StartForm Include 
 FUNCTION htmlib-StartForm RETURNS CHARACTER
-  ( pc-name as char ,
-    pc-method as char,
-    pc-action as char ) :
+  ( pc-name AS CHARACTER ,
+    pc-method AS CHARACTER,
+    pc-action AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
   RETURN 
-      substitute('<form name="&1" method="&2" action="&3">',
+      SUBSTITUTE('<form name="&1" method="&2" action="&3">',
                  pc-name,
                  pc-method,
                  pc-action) + 
@@ -2481,10 +2048,7 @@ FUNCTION htmlib-StartForm RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-StartInputTable Include 
 FUNCTION htmlib-StartInputTable RETURNS CHARACTER:
   
   RETURN htmlib-StartTable(
@@ -2498,10 +2062,7 @@ FUNCTION htmlib-StartInputTable RETURNS CHARACTER:
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-StartMntTable Include 
 FUNCTION htmlib-StartMntTable RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -2509,7 +2070,7 @@ FUNCTION htmlib-StartMntTable RETURNS CHARACTER
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-table as char no-undo.
+  DEFINE VARIABLE lc-table AS CHARACTER NO-UNDO.
 /*
 pc-name as char,
     pi-width as int,
@@ -2518,7 +2079,7 @@ pc-name as char,
     pi-spacing as int,
     pc-align as char
     */
-  assign lc-table = replace(htmlib-StartTable(
+  ASSIGN lc-table = REPLACE(htmlib-StartTable(
             "mnt",
             100,
             0,
@@ -2526,15 +2087,12 @@ pc-name as char,
             0,
             "center"),'>',' class="tableback" >').
 
-  return lc-table.
+  RETURN lc-table.
 /* style="background-color: #E0E3E7;" */
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-StartPanel Include 
 FUNCTION htmlib-StartPanel RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -2546,17 +2104,14 @@ FUNCTION htmlib-StartPanel RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-StartTable Include 
 FUNCTION htmlib-StartTable RETURNS CHARACTER
-  ( pc-name as char,
-    pi-width as int,
-    pi-border as int,
-    pi-padding as int,
-    pi-spacing as int,
-    pc-align as char
+  ( pc-name AS CHARACTER,
+    pi-width AS INTEGER,
+    pi-border AS INTEGER,
+    pi-padding AS INTEGER,
+    pi-spacing AS INTEGER,
+    pc-align AS CHARACTER
      ) :
 /*------------------------------------------------------------------------------
   Purpose:  
@@ -2564,42 +2119,39 @@ FUNCTION htmlib-StartTable RETURNS CHARACTER
 ------------------------------------------------------------------------------*/
 
   
-    def var lc-htm as char no-undo.
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-    assign lc-htm = '<table'.
+    ASSIGN lc-htm = '<table'.
    
-    if pc-name <> ""
-    then assign lc-htm = lc-htm + ' name="' + pc-name + '"'.
+    IF pc-name <> ""
+    THEN ASSIGN lc-htm = lc-htm + ' name="' + pc-name + '"'.
 
-    if pi-width <> 0
-    then assign lc-htm = lc-htm + ' width="' + string(pi-width) + '%"'.
+    IF pi-width <> 0
+    THEN ASSIGN lc-htm = lc-htm + ' width="' + string(pi-width) + '%"'.
 
-    if pi-border <> 0
-    then assign lc-htm = lc-htm + ' border="' + string(pi-border) + '"'.
+    IF pi-border <> 0
+    THEN ASSIGN lc-htm = lc-htm + ' border="' + string(pi-border) + '"'.
 
    
     /* new */
-    assign lc-htm = lc-htm + ' cellpadding="' + string(pi-padding) + '"'.
+    ASSIGN lc-htm = lc-htm + ' cellpadding="' + string(pi-padding) + '"'.
     
     
-    assign lc-htm = lc-htm + ' cellspacing="' + string(pi-spacing) + '"'.
+    ASSIGN lc-htm = lc-htm + ' cellspacing="' + string(pi-spacing) + '"'.
 
 
 
-    if pc-align <> ""
-    then assign lc-htm = lc-htm + ' align="' + pc-align + '"'.
+    IF pc-align <> ""
+    THEN ASSIGN lc-htm = lc-htm + ' align="' + pc-align + '"'.
 
-    assign lc-htm = lc-htm + '>'.
+    ASSIGN lc-htm = lc-htm + '>'.
 
-    return lc-htm.
+    RETURN lc-htm.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-StyleSheet Include 
 FUNCTION htmlib-StyleSheet RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -2607,79 +2159,70 @@ FUNCTION htmlib-StyleSheet RETURNS CHARACTER
     Notes:  
 ------------------------------------------------------------------------------*/
     
-    return 
+    RETURN 
         
-        replace(htmlib-GetAttr("system","stylesheet"),
+        REPLACE(htmlib-GetAttr("system","stylesheet"),
                 ".css",
-                ".css?fn=" + string(time) + string(random(1,100))
+                ".css?fn=" + string(TIME) + string(RANDOM(1,100))
                 ).
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-SubmitButton Include 
 FUNCTION htmlib-SubmitButton RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char 
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER 
     ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  RETURN substitute('<input class="submitbutton" type="submit" name="&1" value="&2">',
+  RETURN SUBSTITUTE('<input class="submitbutton" type="submit" name="&1" value="&2">',
                     pc-name,
                     pc-value).
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-TableField Include 
 FUNCTION htmlib-TableField RETURNS CHARACTER
-  ( pc-data as char,
-    pc-align as char) :
+  ( pc-data AS CHARACTER,
+    pc-align AS CHARACTER) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-return as char no-undo.
+    DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
 
-    assign lc-return = '<td class="tablefield" valign="top"'.
+    ASSIGN lc-return = '<td class="tablefield" valign="top"'.
 
-    if pc-align <> ""
-    then lc-return = lc-return + ' align="' + pc-align + '">'.
-    else lc-return = lc-return + '>'.
+    IF pc-align <> ""
+    THEN lc-return = lc-return + ' align="' + pc-align + '">'.
+    ELSE lc-return = lc-return + '>'.
 
-    assign lc-return = lc-return + pc-data + '</td>'.
+    ASSIGN lc-return = lc-return + pc-data + '</td>'.
 
-    return lc-return.
+    RETURN lc-return.
 
 
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-TableHeading Include 
 FUNCTION htmlib-TableHeading RETURNS CHARACTER
-  ( pc-param as char ) :
+  ( pc-param AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
-    def var li-loop as int          no-undo.
-    def var lc-entry as char        no-undo.
-    def var lc-return as char       no-undo.
-    def var lc-label as char        no-undo.
-    def var lc-align as char        no-undo.
-    def var lc-colspan as char      no-undo.
+    DEFINE VARIABLE li-loop AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-entry AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-return AS CHARACTER       NO-UNDO.
+    DEFINE VARIABLE lc-label AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-align AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-colspan AS CHARACTER      NO-UNDO.
 
 
     /*
@@ -2708,44 +2251,41 @@ FUNCTION htmlib-TableHeading RETURNS CHARACTER
     return lc-return.
     */
 
-    assign lc-return = '<tr>'.
+    ASSIGN lc-return = '<tr>'.
 
 
-   do li-loop = 1 to num-entries(pc-param,'|'):
-       assign lc-entry = entry(li-loop,pc-param,'|').
+   DO li-loop = 1 TO NUM-ENTRIES(pc-param,'|'):
+       ASSIGN lc-entry = ENTRY(li-loop,pc-param,'|').
 
-       assign lc-label = entry(1,lc-entry,'^')
+       ASSIGN lc-label = ENTRY(1,lc-entry,'^')
               lc-align = ''.
-       if num-entries(lc-entry,'^') > 1 
-       then assign lc-align = ' style=" text-align: ' + entry(2,lc-entry,'^') + '"'.
+       IF NUM-ENTRIES(lc-entry,'^') > 1 
+       THEN ASSIGN lc-align = ' style=" text-align: ' + entry(2,lc-entry,'^') + '"'.
 
-       if li-loop = num-entries(pc-param,'|')
-       then assign lc-colspan = " colspan='8'".
-       else assign lc-colspan = "".
+       IF li-loop = num-entries(pc-param,'|')
+       THEN ASSIGN lc-colspan = " colspan='8'".
+       ELSE ASSIGN lc-colspan = "".
 
-       assign lc-return = lc-return + '<th valign="bottom" ' + lc-align + lc-colspan + '>' + lc-label + '</th>'.
+       ASSIGN lc-return = lc-return + '<th valign="bottom" ' + lc-align + lc-colspan + '>' + lc-label + '</th>'.
 
 
-   end.
+   END.
 
-   assign lc-return = lc-return + '</tr>'.
+   ASSIGN lc-return = lc-return + '</tr>'.
 
-   return lc-return.
+   RETURN lc-return.
 
 
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-TextArea Include 
 FUNCTION htmlib-TextArea RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pi-rows as int,
-    pi-cols as int ) :
+  ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pi-rows AS INTEGER,
+    pi-cols AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
@@ -2753,73 +2293,67 @@ FUNCTION htmlib-TextArea RETURNS CHARACTER
 
 
 
-  return substitute(
+  RETURN SUBSTITUTE(
         '<textarea class="inputfield" id="&1" name="&1" rows="&3" cols="&4">&2</textarea>',
         pc-name,
         pc-value,
-        string(pi-rows),
-        string(pi-cols)).
+        STRING(pi-rows),
+        STRING(pi-cols)).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-TextLink Include 
 FUNCTION htmlib-TextLink RETURNS CHARACTER
-  ( pc-text as char,
-    pc-url  as char ) :
+  ( pc-text AS CHARACTER,
+    pc-url  AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
     
-    if pc-text begins "Back" 
-    or pc-text begins "Cancel"
-    then pc-text = 
-                    dynamic-function("html-encode","<<") + 
+    IF pc-text BEGINS "Back" 
+    OR pc-text BEGINS "Cancel"
+    THEN pc-text = 
+                    DYNAMIC-FUNCTION("html-encode","<<") + 
                     "&nbsp;" + 
                     pc-text.
-    return substitute('<a class="tlink" href="&2">&1</a>',
+    RETURN SUBSTITUTE('<a class="tlink" href="&2">&1</a>',
                       pc-text,
                       pc-url ).
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-TimeSelect Include 
 FUNCTION htmlib-TimeSelect RETURNS CHARACTER
-  ( pc-hour-name    as char,
-    pc-hour-value   as char,
-    pc-min-name     as char,
-    pc-min-value    as char ) :
+  ( pc-hour-name    AS CHARACTER,
+    pc-hour-value   AS CHARACTER,
+    pc-min-name     AS CHARACTER,
+    pc-min-value    AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-hour-info        as char     no-undo.
-    def var lc-min-info         as char     no-undo.
+    DEFINE VARIABLE lc-hour-info        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-min-info         AS CHARACTER     NO-UNDO.
 
-    assign
-        lc-hour-info = dynamic-function("com-TimeReturn","HOUR")
-        lc-min-info  = dynamic-function("com-TimeReturn","MINUTE").
+    ASSIGN
+        lc-hour-info = DYNAMIC-FUNCTION("com-TimeReturn","HOUR")
+        lc-min-info  = DYNAMIC-FUNCTION("com-TimeReturn","MINUTE").
 
 
-    return
+    RETURN
         htmlib-Select(
             pc-hour-name,
-            entry(1,lc-hour-info,"^"),
-            entry(2,lc-hour-info,"^"),
+            ENTRY(1,lc-hour-info,"^"),
+            ENTRY(2,lc-hour-info,"^"),
             pc-hour-value
             ) 
             + " : " +
      htmlib-Select(
             pc-min-name,
-            entry(1,lc-min-info,"^"),
-            entry(2,lc-min-info,"^"),
+            ENTRY(1,lc-min-info,"^"),
+            ENTRY(2,lc-min-info,"^"),
             pc-min-value
             ) .
 
@@ -2827,40 +2361,37 @@ FUNCTION htmlib-TimeSelect RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-TimeSelect-By-Id Include 
 FUNCTION htmlib-TimeSelect-By-Id RETURNS CHARACTER
-  ( pc-hour-name    as char,
-    pc-hour-value   as char,
-    pc-min-name     as char,
-    pc-min-value    as char ) :
+  ( pc-hour-name    AS CHARACTER,
+    pc-hour-value   AS CHARACTER,
+    pc-min-name     AS CHARACTER,
+    pc-min-value    AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def var lc-hour-info        as char     no-undo.
-    def var lc-min-info         as char     no-undo.
+    DEFINE VARIABLE lc-hour-info        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-min-info         AS CHARACTER     NO-UNDO.
 
-    assign
-        lc-hour-info = dynamic-function("com-TimeReturn","HOUR")
-        lc-min-info  = dynamic-function("com-TimeReturn","MINUTE").
+    ASSIGN
+        lc-hour-info = DYNAMIC-FUNCTION("com-TimeReturn","HOUR")
+        lc-min-info  = DYNAMIC-FUNCTION("com-TimeReturn","MINUTE").
 
 
-    return
+    RETURN
         htmlib-Select-By-Id(
             pc-hour-name,
-            entry(1,lc-hour-info,"^"),
-            entry(2,lc-hour-info,"^"),
+            ENTRY(1,lc-hour-info,"^"),
+            ENTRY(2,lc-hour-info,"^"),
             pc-hour-value
             ) 
             + " : " +
      htmlib-Select-By-Id(
             pc-min-name,
-            entry(1,lc-min-info,"^"),
-            entry(2,lc-min-info,"^"),
+            ENTRY(1,lc-min-info,"^"),
+            ENTRY(2,lc-min-info,"^"),
             pc-min-value
             ) .
 
@@ -2868,10 +2399,7 @@ FUNCTION htmlib-TimeSelect-By-Id RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-trmouse Include 
 FUNCTION htmlib-trmouse RETURNS CHARACTER
   ( /* parameter-definitions */ ) :
 /*------------------------------------------------------------------------------
@@ -2879,10 +2407,8 @@ FUNCTION htmlib-trmouse RETURNS CHARACTER
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    return '<tr class="tabrow1" onmouseover="this.className=~'tabrow2~'" onmouseout="this.className=~'tabrow1~'">'.
+    RETURN '<tr class="tabrow1" onmouseover="this.className=~'tabrow2~'" onmouseout="this.className=~'tabrow1~'">'.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 

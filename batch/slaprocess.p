@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        batch/slaprocess.p
@@ -18,20 +15,17 @@
 {lib/common.i}
 {iss/issue.i}
 
-def buffer Issue        for Issue.
-def buffer ro-Issue     for Issue.
-def buffer IssAlert     for IssAlert.
-def buffer Company      for Company.
-def buffer SLAhead      for slahead.
-def buffer WebUser      for WebUser.
+DEFINE BUFFER Issue        FOR Issue.
+DEFINE BUFFER ro-Issue     FOR Issue.
+DEFINE BUFFER IssAlert     FOR IssAlert.
+DEFINE BUFFER Company      FOR Company.
+DEFINE BUFFER SLAhead      FOR slahead.
+DEFINE BUFFER WebUser      FOR WebUser.
 
-def stream s-log.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE STREAM s-log.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -40,116 +34,101 @@ def stream s-log.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-fnLog) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnLog Procedure 
 FUNCTION fnLog RETURNS LOGICAL
-  ( pc-data as char )  FORWARD.
+  ( pc-data AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
-def var ld-date             as date         no-undo.
-def var li-time             as int          no-undo.
-def var li-level            as int          no-undo.
-def var li-loop             as int          no-undo.
+DEFINE VARIABLE ld-date             AS DATE         NO-UNDO.
+DEFINE VARIABLE li-time             AS INTEGER          NO-UNDO.
+DEFINE VARIABLE li-level            AS INTEGER          NO-UNDO.
+DEFINE VARIABLE li-loop             AS INTEGER          NO-UNDO.
 
-def var lc-Description      as char         no-undo.
-def var ld-Alert            as date         no-undo.
-def var lc-Time             as char         no-undo.
-def var lc-details          as char         no-undo.
-def var lc-NoteCode         as char         no-undo.
-def var ll-SLAMissed        as log          no-undo.
-def var lc-System           as char         no-undo.
-def var ll-email            as log          no-undo.
-def var lc-mail             as char         no-undo.
-def var ll-sms              as log          no-undo.
-def var lc-subject          as char         no-undo.
-def var lc-Dest             as char         no-undo.
+DEFINE VARIABLE lc-Description      AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE ld-Alert            AS DATE         NO-UNDO.
+DEFINE VARIABLE lc-Time             AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE lc-details          AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE lc-NoteCode         AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE ll-SLAMissed        AS LOG          NO-UNDO.
+DEFINE VARIABLE lc-System           AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE ll-email            AS LOG          NO-UNDO.
+DEFINE VARIABLE lc-mail             AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE ll-sms              AS LOG          NO-UNDO.
+DEFINE VARIABLE lc-subject          AS CHARACTER         NO-UNDO.
+DEFINE VARIABLE lc-Dest             AS CHARACTER         NO-UNDO.
 
-DEF VAR ldt-Level2      AS DATETIME NO-UNDO.
-DEF VAR ldt-Amber2      AS DATETIME NO-UNDO.
-DEF VAR li-Mill         AS INT      NO-UNDO.
-DEF VAR lc-dt           AS CHAR     NO-UNDO.
+DEFINE VARIABLE ldt-Level2      AS DATETIME NO-UNDO.
+DEFINE VARIABLE ldt-Amber2      AS DATETIME NO-UNDO.
+DEFINE VARIABLE li-Mill         AS INTEGER      NO-UNDO.
+DEFINE VARIABLE lc-dt           AS CHARACTER     NO-UNDO.
 
+OUTPUT stream s-log to value(SESSION:TEMP-DIR + "/sla-batch.log") UNBUFFERED.
 
-output stream s-log to value(session:temp-dir + "/sla-batch.log") UNBUFFERED Append.
 
 fnLog("SLA Batch Begins").
 
-assign
+ASSIGN
     lc-System = "SLA.ALERT".
 
-for each ro-Issue no-lock
-    where ro-Issue.SLAStatus = "ON" transaction:
+FOR EACH ro-Issue NO-LOCK
+    WHERE ro-Issue.SLAStatus = "ON" TRANSACTION:
     
-    find Issue
-        where rowid(Issue) = rowid(ro-Issue) exclusive-lock no-wait no-error.
-    if locked Issue then next.
+    FIND Issue
+        WHERE ROWID(Issue) = rowid(ro-Issue) EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+    IF LOCKED Issue THEN NEXT.
 
     /*
     fnlog ( "check " + Issue.companycode + " " + STRING(Issue.issuenumber)).
     */
 
-    if DYNAMIC-FUNCTION('islib-IssueIsOpen':U,rowid(Issue)) = false
-    or Issue.link-SLAID = ?
-    or Issue.link-SLAID = 0 
-    or not can-find(slahead where slahead.SLAID = Issue.link-SLAID ) 
-    or Issue.SLADate[1] = ? then
-    do:
-        dynamic-function("islib-RemoveAlerts",rowid(Issue)).
-        assign
+    IF DYNAMIC-FUNCTION('islib-IssueIsOpen':U,ROWID(Issue)) = FALSE
+    OR Issue.link-SLAID = ?
+    OR Issue.link-SLAID = 0 
+    OR NOT CAN-FIND(slahead WHERE slahead.SLAID = Issue.link-SLAID ) 
+    OR Issue.SLADate[1] = ? THEN
+    DO:
+        DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
+        ASSIGN
             Issue.SLAStatus = "OFF"
             issue.tlight = li-global-sla-na.
             .
-        release Issue.
-        next.
-    end.
+        RELEASE Issue.
+        NEXT.
+    END.
 
     FIND slahead WHERE slahead.SLAID = Issue.link-SLAID NO-LOCK NO-ERROR.
 
-    assign
-        ld-date = today
+    fnLog ( "Issue " + string(Issue.IssueNumber) + " SLA = " + slahead.Description).
+    ASSIGN
+        ld-date = TODAY
         li-time = TIME
         issue.tlight = li-global-sla-ok.
 
@@ -168,6 +147,10 @@ for each ro-Issue no-lock
             li-mill = (  slahead.amberWarning * 60 ) * 1000.
             ldt-Amber2 = ldt-Level2 - li-Mill.
             issue.slaamber = ldt-Amber2.
+            fnLog ( "Amber ( Level2 " + STRING(ldt-level2) + " - " +
+                string(slahead.amberWarning) + "mins ) = " +
+                string(issue.slaamber)
+                ).
             
 
         END.
@@ -180,12 +163,12 @@ for each ro-Issue no-lock
     *** Has the SLA Started? 
     ***
     */
-    if Issue.SLADate[1] > ld-date then next.
+    IF Issue.SLADate[1] > ld-date THEN NEXT.
 
-    if Issue.SLADate[1] = ld-date
-    and Issue.SLATime[1] > li-time then 
+    IF Issue.SLADate[1] = ld-date
+    AND Issue.SLATime[1] > li-time THEN 
     DO:
-       next.
+       NEXT.
     END.
 
     /*
@@ -226,94 +209,94 @@ for each ro-Issue no-lock
     *** Alerts done to final level?
     ***
     */
-    if Issue.SLALevel = 10
-    or Issue.SLADate[Issue.SLALevel + 1] = ? then
-    do:
-       next.
-    end.
+    IF Issue.SLALevel = 10
+    OR Issue.SLADate[Issue.SLALevel + 1] = ? THEN
+    DO:
+       NEXT.
+    END.
         
     /*
     ***
     *** Now find out the level I'm at 
     ***
     */
-    assign
+    ASSIGN
         li-Level = 0.
 
-    do li-loop = 1 to 10:
-        if Issue.SLADate[li-loop] = ? 
-        or Issue.SLADate[li-loop] > ld-date then leave.
-        if Issue.SLADate[li-loop] = ld-date
-        and Issue.SLATime[li-loop] > li-time then leave.
-        assign
+    DO li-loop = 1 TO 10:
+        IF Issue.SLADate[li-loop] = ? 
+        OR Issue.SLADate[li-loop] > ld-date THEN LEAVE.
+        IF Issue.SLADate[li-loop] = ld-date
+        AND Issue.SLATime[li-loop] > li-time THEN LEAVE.
+        ASSIGN
             li-level = li-loop.
 
-    end.
+    END.
     /*
     ***
     *** If calculated level is <= current level then nothing to do
     ***
     */
-    if li-level <= Issue.SLALevel then next.
+    IF li-level <= Issue.SLALevel THEN NEXT.
 
     /*
     ***
     *** Need to create an alert
     ***
     */
-    find sla where sla.SLAID = Issue.link-SLAID no-lock no-error.
+    FIND sla WHERE sla.SLAID = Issue.link-SLAID NO-LOCK NO-ERROR.
     /*
     *** 
     *** SLA has been changed so do something
     ***
     */
-    if sla.RespDesc[li-level] = "" then
-    do:
-        next.
-    end.
+    IF sla.RespDesc[li-level] = "" THEN
+    DO:
+        NEXT.
+    END.
 
-    if li-level = 10
-    or Issue.SLADate[li-level + 1] = ? 
-    then assign ll-SLAMissed = true.
-    else assign ll-SLAMissed = false.
+    IF li-level = 10
+    OR Issue.SLADate[li-level + 1] = ? 
+    THEN ASSIGN ll-SLAMissed = TRUE.
+    ELSE ASSIGN ll-SLAMissed = FALSE.
 
-    assign
+    ASSIGN
         lc-details = "SLA Details " + 
                      sla.RespDesc[li-level] + " Due " + 
                      string(Issue.SLADate[li-level],'99/99/9999') +
                      ' ' + 
                      string(Issue.SLATime[li-level],'hh:mm am').
-    if not ll-SLAMissed then
-    do:
-        if sla.RespDesc[li-level + 1] <> "" then
-        do:
-            assign
+    IF NOT ll-SLAMissed THEN
+    DO:
+        IF sla.RespDesc[li-level + 1] <> "" THEN
+        DO:
+            ASSIGN
                 lc-details = lc-details + "~n" +
                          "Next alert will be " +
                          sla.RespDesc[li-level + 1] + " at " +
                          string(Issue.SLADate[li-level + 1],'99/99/9999') +
                          ' ' + 
                          string(Issue.SLATime[li-level + 1],'hh:mm am').
-        end.
-    end.
-    run islib-CreateNote( Issue.CompanyCode,
+        END.
+    END.
+    RUN islib-CreateNote( Issue.CompanyCode,
                           Issue.IssueNumber,
                           lc-system,
-                          if ll-SLAMissed
-                          then 'SYS.SLAMISSED' else 'SYS.SLAWARN',
+                          IF ll-SLAMissed
+                          THEN 'SYS.SLAMISSED' ELSE 'SYS.SLAWARN',
                           lc-details).    
-    assign
-        ll-Email = sla.RespAction[li-level] begins "email"
-        ll-sms   = can-do("EmailPage,Page",sla.RespAction[li-level]).
+    ASSIGN
+        ll-Email = sla.RespAction[li-level] BEGINS "email"
+        ll-sms   = CAN-DO("EmailPage,Page",sla.RespAction[li-level]).
                    
-    find customer of Issue no-lock no-error.
+    FIND customer OF Issue NO-LOCK NO-ERROR.
 
     /*
     ***
     *** Kill any existing alerts for the issue
     ***
     */
-    dynamic-function("islib-RemoveAlerts",rowid(Issue)).
+    DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
     /*
     ***
     *** Need to send alerts to the users on SLA plus the
@@ -321,30 +304,30 @@ for each ro-Issue no-lock
     ***
     ***
     */
-    assign
+    ASSIGN
         lc-dest = sla.RespDest[li-level].
-    if Issue.AssignTo <> ""
-    and can-do(lc-dest,Issue.AssignTo) = false then 
-    do:
-        if lc-dest = ""
-        then assign lc-dest = Issue.AssignTo.
-        else assign lc-dest = lc-dest + "," + Issue.AssignTo.
-    end.
-    if lc-dest <> "" then
-    do li-loop = 1 to num-entries(lc-dest) with frame f-dest:
+    IF Issue.AssignTo <> ""
+    AND CAN-DO(lc-dest,Issue.AssignTo) = FALSE THEN 
+    DO:
+        IF lc-dest = ""
+        THEN ASSIGN lc-dest = Issue.AssignTo.
+        ELSE ASSIGN lc-dest = lc-dest + "," + Issue.AssignTo.
+    END.
+    IF lc-dest <> "" THEN
+    DO li-loop = 1 TO NUM-ENTRIES(lc-dest) WITH FRAME f-dest:
 
-        find webuser
-                where webuser.LoginID = entry(li-loop,lc-dest)
-                      no-lock no-error.
-        if not avail WebUser then next.
+        FIND webuser
+                WHERE webuser.LoginID = entry(li-loop,lc-dest)
+                      NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE WebUser THEN NEXT.
 
         /*
         ***
         *** Always create a webpage alert 
         ***
         */
-        create IssAlert.
-        assign 
+        CREATE IssAlert.
+        ASSIGN 
             IssAlert.CompanyCode    = Issue.CompanyCode
             IssAlert.IssueNumber    = Issue.IssueNumber
             IssAlert.LoginID        = webuser.LoginID
@@ -358,16 +341,16 @@ for each ro-Issue no-lock
         *** SMS Alerts
         ***
         */
-        if ll-sms and webuser.Mobile <> "" 
-        and webUser.allowSMS then
-        do:
-            assign lc-mail = "Issue: " + string(Issue.IssueNumber) 
+        IF ll-sms AND webuser.Mobile <> "" 
+        AND webUser.allowSMS THEN
+        DO:
+            ASSIGN lc-mail = "Issue: " + string(Issue.IssueNumber) 
                                 + ' ' + Issue.BriefDescription + " " + 
                                 "Customer: " + customer.name.
-            assign lc-mail = lc-mail + "~n" + lc-details.
+            ASSIGN lc-mail = lc-mail + "~n" + lc-details.
 
-            create SMSQueue.
-            assign
+            CREATE SMSQueue.
+            ASSIGN
                 SMSQueue.CompanyCode = Issue.CompanyCode
                 SMSQueue.IssueNumber = Issue.IssueNumber
                 SMSQueue.QStatus    = 0
@@ -380,84 +363,79 @@ for each ro-Issue no-lock
                 .
            
             
-        end.
+        END.
 
         /*
         ***
         *** Email Alerts
         ***
         */
-        if ll-email and webUser.Email <> "" then
-        do:
+        IF ll-email AND webUser.Email <> "" THEN
+        DO:
 
-            assign lc-mail = "Issue: " + string(Issue.IssueNumber) 
+            ASSIGN lc-mail = "Issue: " + string(Issue.IssueNumber) 
                                 + ' ' + Issue.BriefDescription + "~n" + 
                                 "Customer: " + customer.name.
-            if Issue.LongDescription <> "" 
-            then lc-mail = lc-mail + "~n" + Issue.LongDescription.
+            IF Issue.LongDescription <> "" 
+            THEN lc-mail = lc-mail + "~n" + Issue.LongDescription.
     
-            assign lc-mail = lc-mail + "~n~n~n" + lc-details.
+            ASSIGN lc-mail = lc-mail + "~n~n~n" + lc-details.
     
-            if Issue.AssignTo <> ""
-            then assign lc-mail = lc-mail + "~n~n~nAssigned to " + com-UserName(Issue.AssignTo) 
+            IF Issue.AssignTo <> ""
+            THEN ASSIGN lc-mail = lc-mail + "~n~n~nAssigned to " + com-UserName(Issue.AssignTo) 
                 + ' at ' 
                 + string(Issue.AssignDate,'99/99/9999') + 
                 ' ' + string(Issue.AssignTime,'hh:mm am')
                 .
-            assign lc-subject = "SLA Alert for " + "Issue " + string(Issue.IssueNumber) +
+            ASSIGN lc-subject = "SLA Alert for " + "Issue " + string(Issue.IssueNumber) +
                    ' - Customer ' + Customer.name.
 
-             dynamic-function("mlib-SendEmail",
+             DYNAMIC-FUNCTION("mlib-SendEmail",
                              Issue.Company,
                              "",
                              lc-Subject,
                              lc-mail,
                              WebUser.email).
-        end.
+        END.
         
-    end.
+    END.
 
     /*
     ***
     *** Everything done for this Issue/Alert so set the alert level
     ***
     */
-    assign
+    ASSIGN
         Issue.SLALevel = li-Level.
-end.
+END.
 
 fnLog("SLA Batch Ends").
 
-output stream s-log close.
+OUTPUT stream s-log close.
 
-quit.
+QUIT.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Implementations ***************** */
 
 &IF DEFINED(EXCLUDE-fnLog) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnLog Procedure 
 FUNCTION fnLog RETURNS LOGICAL
-  ( pc-data as char ) :
+  ( pc-data AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    put stream s-log unformatted
-        string(today,"99/99/9999") " " 
-        string(time,"hh:mm:ss") "  -  " pc-data skip.
+    PUT STREAM s-log UNFORMATTED
+        STRING(TODAY,"99/99/9999") " " 
+        STRING(TIME,"hh:mm:ss") "  -  " pc-data SKIP.
   
-    return true.
+    RETURN TRUE.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

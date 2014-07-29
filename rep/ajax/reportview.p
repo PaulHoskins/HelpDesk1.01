@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        rep/ajax/reportview.p
@@ -22,16 +19,13 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var li-total    as int      no-undo.
+DEFINE VARIABLE li-total    AS INTEGER      NO-UNDO.
 
-def temp-table tt  like BatchWork
-  field ttrowid     as rowid .
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE TEMP-TABLE tt  LIKE BatchWork
+  FIELD ttrowid     AS ROWID .
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -40,62 +34,43 @@ def temp-table tt  like BatchWork
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-fnCreate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnCreate Procedure 
 FUNCTION fnCreate RETURNS LOGICAL
-  ( pc-ID as char,
-    pc-ADescription as char )  FORWARD.
+  ( pc-ID AS CHARACTER,
+    pc-ADescription AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 37.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -103,15 +78,12 @@ FUNCTION fnCreate RETURNS LOGICAL
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-BuildAnalysis) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-BuildAnalysis Procedure 
 PROCEDURE ip-BuildAnalysis :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -119,35 +91,32 @@ PROCEDURE ip-BuildAnalysis :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def buffer Issue        for Issue.
-    def buffer WebStatus    for WebStatus.
-    def buffer Customer     for Customer.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER Customer     FOR Customer.
     
-    for each BatchWork no-lock
-      where  BatchWork.BatchUser      = lc-global-user
-      and    BatchWork.BatchParams[1] = lc-global-company
-      by BatchWork.batchID descending
+    FOR EACH BatchWork NO-LOCK
+      WHERE  BatchWork.BatchUser      = lc-global-user
+      AND    BatchWork.BatchParams[1] = lc-global-company
+      BY BatchWork.batchID DESCENDING
       :
 
-        if BatchWork.BatchRun then assign li-total = li-total + 1.
+        IF BatchWork.BatchRun THEN ASSIGN li-total = li-total + 1.
 
-        create tt.
-        buffer-copy BatchWork to tt.
-        assign ttrowid = rowid(BatchWork).
+        CREATE tt.
+        BUFFER-COPY BatchWork TO tt.
+        ASSIGN ttrowid = ROWID(BatchWork).
          
 
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-displaydocs) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-displaydocs Procedure 
 PROCEDURE ip-displaydocs :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -178,7 +147,7 @@ PROCEDURE ip-displaydocs :
            "Date|Time|By|Description"   /* 3674 */ 
            ) skip.
 
-    for each tt no-lock:
+    FOR EACH tt NO-LOCK:
 
         {&out}
             skip
@@ -223,7 +192,7 @@ PROCEDURE ip-displaydocs :
 
             '</tr>' skip.
 
-    end.
+    END.
 
     {&out} skip 
            htmlib-EndTable()
@@ -236,14 +205,11 @@ PROCEDURE ip-displaydocs :
     
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -296,14 +262,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -322,8 +285,8 @@ PROCEDURE process-web-request :
 
     {&out} '<p style="text-align: center; font-weight: 900;">' skip.
 
-if li-total = 0
-  then {&out} 'There are no reports to display.' skip.
+IF li-total = 0
+  THEN {&out} 'There are no reports to display.' skip.
   else {&out} 'There are currently ' li-Total ' reports available (' string(today,'99/99/9999') ' - ' string(time,'hh:mm am') ')' skip.
   
     {&out} '</p></div>'.
@@ -347,8 +310,6 @@ if li-total = 0
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -356,34 +317,31 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-fnCreate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnCreate Procedure 
 FUNCTION fnCreate RETURNS LOGICAL
-  ( pc-ID as char,
-    pc-ADescription as char ) :
+  ( pc-ID AS CHARACTER,
+    pc-ADescription AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    find tt where tt.Batchid    = integer(pc-ID)
-               exclusive-lock no-error.
-    if not avail tt then
-    do:
-        create tt.
-        assign tt.Batchid    = integer(pc-ID)
+    FIND tt WHERE tt.Batchid    = integer(pc-ID)
+               EXCLUSIVE-LOCK NO-ERROR.
+    IF NOT AVAILABLE tt THEN
+    DO:
+        CREATE tt.
+        ASSIGN tt.Batchid    = INTEGER(pc-ID)
                tt.Description = pc-ADescription.
-    end.
+    END.
 
 /*     assign                         */
 /*         tt.ACount = tt.Acount + 1. */
-    return true.
+    RETURN TRUE.
  
   
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

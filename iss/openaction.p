@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        mn/alertpage.p
@@ -24,25 +21,22 @@ CREATE WIDGET-POOL.
 
 {iss/issue.i}
 
-def buffer customer     for Customer.
-def buffer WebAction    for WebAction.
-def buffer Issue        for Issue.
+DEFINE BUFFER customer     FOR Customer.
+DEFINE BUFFER WebAction    FOR WebAction.
+DEFINE BUFFER Issue        FOR Issue.
 
-def var lc-info             as char no-undo.
-def var lc-object           as char no-undo.
-def var li-tag-end          as int no-undo.
-def var lc-dummy-return     as char initial "MYXXX111PPP2222"   no-undo.
+DEFINE VARIABLE lc-info             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-object           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-tag-end          AS INTEGER NO-UNDO.
+DEFINE VARIABLE lc-dummy-return     AS CHARACTER INITIAL "MYXXX111PPP2222"   NO-UNDO.
 
-def var lc-Action-TBAR      as char
-    initial "actiontb"      no-undo.
-def var lc-Alert-TBAR      as char
-    initial "alerttb"      no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-Action-TBAR      AS CHARACTER
+    INITIAL "actiontb"      NO-UNDO.
+DEFINE VARIABLE lc-Alert-TBAR      AS CHARACTER
+    INITIAL "alerttb"      NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -51,48 +45,32 @@ def var lc-Alert-TBAR      as char
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -102,15 +80,12 @@ def var lc-Alert-TBAR      as char
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-ActionTable) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ActionTable Procedure 
 PROCEDURE ip-ActionTable :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -118,9 +93,14 @@ PROCEDURE ip-ActionTable :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def buffer b-query      for IssAction.
+    DEFINE BUFFER b-query      FOR IssAction.
 
-    def var lc-assign-info      as char no-undo.
+    DEFINE VARIABLE lc-assign-info      AS CHARACTER NO-UNDO.
+    
+    DEFINE VARIABLE ll-Steam    AS LOG NO-UNDO.
+    
+    
+    ll-Steam = DYNAMIC-FUNCTION("com-isTeamMember", lc-global-company,lc-global-user,?).
     
 
     {&out} skip
@@ -131,7 +111,7 @@ PROCEDURE ip-ActionTable :
 
     {&out}
         tbar-BeginID(lc-Action-TBAR,"")
-           tbar-BeginOptionID(lc-Action-TBAR) skip(2)
+           tbar-BeginOptionID(lc-Action-TBAR) SKIP(2)
             tbar-Link("view",?,"off","")
             tbar-Link("update",?,"off","")
             tbar-EndOption()
@@ -142,50 +122,59 @@ PROCEDURE ip-ActionTable :
            htmlib-TableHeading(
                     "Customer|Issue^right|Details|Date^left|Action Details^left|Assigned To"
                     ) skip.
-    for each b-query no-lock
-        where b-query.ActionStatus = "OPEN"
-          and b-query.CompanyCode = lc-global-company,
-            each Issue no-lock
-                where Issue.CompanyCode = b-Query.CompanyCode
-                  and Issue.IssueNumber = b-Query.IssueNumber,
-                  each Customer no-lock
-                    where Customer.CompanyCode = Issue.CompanyCode
-                      and Customer.AccountNumber = Issue.AccountNumber
+    FOR EACH b-query NO-LOCK
+        WHERE b-query.ActionStatus = "OPEN"
+          AND b-query.CompanyCode = lc-global-company,
+            EACH Issue NO-LOCK
+                WHERE Issue.CompanyCode = b-Query.CompanyCode
+                  AND Issue.IssueNumber = b-Query.IssueNumber,
+                  EACH Customer NO-LOCK
+                    WHERE Customer.CompanyCode = Issue.CompanyCode
+                      AND Customer.AccountNumber = Issue.AccountNumber
 
-            break by b-query.ActionDate
+            BREAK BY b-query.ActionDate
             :
 
 
-        
-        find WebAction 
-            where WebAction.ActionID = b-query.ActionID
-            no-lock no-error.
+        IF ll-steam THEN
+        DO:
+            IF Customer.st-num = 0 THEN NEXT.
+           
+    
+            IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-global-user
+                                       AND webusteam.st-num = customer.st-num NO-LOCK) 
+            
+            THEN NEXT.
+        END.
+        FIND WebAction 
+            WHERE WebAction.ActionID = b-query.ActionID
+            NO-LOCK NO-ERROR.
 
        
         {&out}
-            skip(1)
-            tbar-trID(lc-Action-TBAR,rowid(b-query))
-            skip(1)
+            SKIP(1)
+            tbar-trID(lc-Action-TBAR,ROWID(b-query))
+            SKIP(1)
             htmlib-MntTableField(
                 html-encode(customer.AccountNumber + ' ' + customer.name),'left')
-            htmlib-MntTableField(string(b-query.IssueNumber),'right') 
+            htmlib-MntTableField(STRING(b-query.IssueNumber),'right') 
             htmlib-MntTableField(html-encode(Issue.BriefDescription),'left')
-            htmlib-MntTableField(string(b-query.ActionDate,"99/99/9999"),'left') skip
+            htmlib-MntTableField(STRING(b-query.ActionDate,"99/99/9999"),'left') skip
             .
 
-        if b-query.notes <> "" then
-        do:
+        IF b-query.notes <> "" THEN
+        DO:
         
-            assign 
+            ASSIGN 
                 lc-info = 
-                replace(htmlib-MntTableField(html-encode(WebAction.Description),'left'),'</td>','')
+                REPLACE(htmlib-MntTableField(html-encode(WebAction.Description),'left'),'</td>','')
                 lc-object = "hdobj" + string(b-query.issActionID).
         
-            assign li-tag-end = index(lc-info,">").
+            ASSIGN li-tag-end = INDEX(lc-info,">").
 
             {&out} substr(lc-info,1,li-tag-end).
 
-            assign substr(lc-info,1,li-tag-end) = "".
+            ASSIGN substr(lc-info,1,li-tag-end) = "".
             
             {&out} 
                 '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
@@ -195,11 +184,11 @@ PROCEDURE ip-ActionTable :
             {&out} htmlib-ExpandBox(lc-object,b-query.Notes).
 
             {&out} '</td>' skip.
-        end.
-        else {&out}
+        END.
+        ELSE {&out}
             htmlib-MntTableField(WebAction.Description,'left').
         
-        assign lc-assign-info = com-userName(b-query.AssignTo).
+        ASSIGN lc-assign-info = com-userName(b-query.AssignTo).
 
         {&out}
             htmlib-MntTableField(lc-Assign-Info,'left').
@@ -224,7 +213,7 @@ PROCEDURE ip-ActionTable :
 
        
 
-    end.
+    END.
 
 
     {&out} htmlib-EndTable() skip.
@@ -235,14 +224,11 @@ PROCEDURE ip-ActionTable :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -295,14 +281,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -340,8 +323,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

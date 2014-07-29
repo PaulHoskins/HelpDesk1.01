@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        mn/login.p
@@ -23,26 +20,23 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-mess  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-def var lc-user as char no-undo.
-def var lc-pass as char no-undo.
-def var lc-value as char no-undo.
-def var lc-reason as char no-undo.
+DEFINE VARIABLE lc-user AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pass AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-reason AS CHARACTER NO-UNDO.
 
-def var lc-url-company  as char no-undo.
+DEFINE VARIABLE lc-url-company  AS CHARACTER NO-UNDO.
 
-def buffer WebUser      for webuser.
-def buffer company      for company.
+DEFINE BUFFER WebUser      FOR webuser.
+DEFINE BUFFER company      FOR company.
 
-def var lc-AttrData     as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-AttrData     AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -51,48 +45,32 @@ def var lc-AttrData     as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 12.92
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -100,15 +78,12 @@ def var lc-AttrData     as char no-undo.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-CompanyInfo) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-CompanyInfo Procedure 
 PROCEDURE ip-CompanyInfo :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -117,18 +92,18 @@ PROCEDURE ip-CompanyInfo :
 ------------------------------------------------------------------------------*/
 
     {&out} '<br><br><div class="loglink" style="clear:both;">'.
-    if company.helpdeskEmail <> "" 
-    then {&out} '<p><img src="/images/contact/email.gif">&nbsp;' 
+    IF company.helpdeskEmail <> "" 
+    THEN {&out} '<p><img src="/images/contact/email.gif">&nbsp;' 
                 '<a href="mailto:' company.HelpDeskEmail '">'
         
                 html-encode(company.helpdeskemail) 
         '</a>'
         '</p>'.
-    if company.helpdeskPhone <> "" 
-    then {&out} '<p><img src="/images/contact/phone.gif">&nbsp;' 
+    IF company.helpdeskPhone <> "" 
+    THEN {&out} '<p><img src="/images/contact/phone.gif">&nbsp;' 
         html-encode(company.helpdeskphone) '</p>'.
-    if company.WebAddress <> "" 
-    then {&out} '<p><img  src="/images/contact/web.gif">&nbsp;'
+    IF company.WebAddress <> "" 
+    THEN {&out} '<p><img  src="/images/contact/web.gif">&nbsp;'
                 '<a href="' company.WebAddress '">'
                 html-encode(company.WebAddress) 
                 '</a>'
@@ -141,14 +116,11 @@ PROCEDURE ip-CompanyInfo :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -156,79 +128,76 @@ PROCEDURE ip-Validate :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def input param pc-user as char no-undo.
-    def input param pc-pass as char no-undo.
-    def output param pc-reason as char no-undo.
+    DEFINE INPUT PARAMETER pc-user AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-pass AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-reason AS CHARACTER NO-UNDO.
 
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    assign pc-reason = "".
+    ASSIGN pc-reason = "".
 
-    def buffer b-webuser for webuser.
+    DEFINE BUFFER b-webuser FOR webuser.
 
-    if pc-user = "" then
-    do:
-        run htmlib-AddErrorMessage('User', 'You must enter your user name',
-                                   input-output pc-error-field,
-                                   input-output pc-error-msg ).
-        return.
-    end.
+    IF pc-user = "" THEN
+    DO:
+        RUN htmlib-AddErrorMessage('User', 'You must enter your user name',
+                                   INPUT-OUTPUT pc-error-field,
+                                   INPUT-OUTPUT pc-error-msg ).
+        RETURN.
+    END.
     
     
-    find b-webuser where b-webuser.LoginID = pc-user no-lock no-error.
-    if not avail b-webuser 
-    or b-webuser.companycode <> lc-url-company then
-    do:
-        run htmlib-AddErrorMessage('User', 'This user name does not exist',
-                                   input-output pc-error-field,
-                                   input-output pc-error-msg ).
-        return.
-    end.
+    FIND b-webuser WHERE b-webuser.LoginID = pc-user NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE b-webuser 
+    OR b-webuser.companycode <> lc-url-company THEN
+    DO:
+        RUN htmlib-AddErrorMessage('User', 'This user name does not exist',
+                                   INPUT-OUTPUT pc-error-field,
+                                   INPUT-OUTPUT pc-error-msg ).
+        RETURN.
+    END.
 
-    if b-webuser.disabled then
-    do:
-        run htmlib-AddErrorMessage('User', 'Your user account has been disabled',
-                                   input-output pc-error-field,
-                                   input-output pc-error-msg ).
+    IF b-webuser.disabled THEN
+    DO:
+        RUN htmlib-AddErrorMessage('User', 'Your user account has been disabled',
+                                   INPUT-OUTPUT pc-error-field,
+                                   INPUT-OUTPUT pc-error-msg ).
 
-    end.
+    END.
 
-    if encode(lc-pass) <> b-webuser.Passwd then
-    do:
-        run htmlib-AddErrorMessage('User', 'The password is incorrect',
-                                   input-output pc-error-field,
-                                   input-output pc-error-msg ).
-        assign pc-reason = "password".
-        return.
-    end.
+    IF ENCODE(lc-pass) <> b-webuser.Passwd THEN
+    DO:
+        RUN htmlib-AddErrorMessage('User', 'The password is incorrect',
+                                   INPUT-OUTPUT pc-error-field,
+                                   INPUT-OUTPUT pc-error-msg ).
+        ASSIGN pc-reason = "password".
+        RETURN.
+    END.
 
-    case b-webuser.UserClass:
-        when "CONTRACT" then
-        do:
-            if not can-find(first ContAccess
-                            where ContAccess.Loginid = b-webuser.LoginID
-                            no-lock) then
-            do:
+    CASE b-webuser.UserClass:
+        WHEN "CONTRACT" THEN
+        DO:
+            IF NOT CAN-FIND(FIRST ContAccess
+                            WHERE ContAccess.Loginid = b-webuser.LoginID
+                            NO-LOCK) THEN
+            DO:
 
 
-            end.
-        end.
-    end case.
+            END.
+        END.
+    END CASE.
 
     
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -281,14 +250,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -297,74 +263,74 @@ PROCEDURE process-web-request :
 ------------------------------------------------------------------------------*/
   
 
-    assign
+    ASSIGN
         lc-url-company = get-value("company").
 
-    if lc-url-company = ""
-    or not can-find(company where company.companycode = lc-url-company)
-    then assign lc-url-company = "MICAR".
+    IF lc-url-company = ""
+    OR NOT CAN-FIND(company WHERE company.companycode = lc-url-company)
+    THEN ASSIGN lc-url-company = "MICAR".
 
-    assign
-        lc-url-company = lc(lc-url-company)
+    ASSIGN
+        lc-url-company = LC(lc-url-company)
         lc-global-company = lc-url-company.
 
-    find company where company.companycode = lc-url-company no-lock no-error.
+    FIND company WHERE company.companycode = lc-url-company NO-LOCK NO-ERROR.
     
-    if request_method = "GET" and get-value("logoff") = "yes" then
-    do:
+    IF request_method = "GET" AND get-value("logoff") = "yes" THEN
+    DO:
         delete-cookie("ExtranetUser",appurl,?).
-    end.
+    END.
 
-    if request_method = "POST" then
-    do:
-        assign lc-user = get-field("user")
+    IF request_method = "POST" THEN
+    DO:
+        ASSIGN lc-user = get-field("user")
                lc-pass = get-field("password").
 
         RUN ip-Validate ( 
-                            input lc-user,
-                            input lc-pass,
-                            output lc-reason,
-                            output lc-error-field,
-                            output lc-error-mess ).  
-        if lc-error-mess = "" then
-        do:
-            run attrlib-SetAttribute("USER",lc-user,input-output lc-AttrData).
-            run attrlib-SetAttribute("IP",remote_addr,input-output lc-AttrData).
+                            INPUT lc-user,
+                            INPUT lc-pass,
+                            OUTPUT lc-reason,
+                            OUTPUT lc-error-field,
+                            OUTPUT lc-error-mess ).  
+        IF lc-error-mess = "" THEN
+        DO:
+            RUN attrlib-SetAttribute("USER",lc-user,INPUT-OUTPUT lc-AttrData).
+            RUN attrlib-SetAttribute("IP",remote_addr,INPUT-OUTPUT lc-AttrData).
 
             com-SystemLog("Login",lc-user,lc-AttrData).
 
             set-user-field("IPADD",REMOTE_ADDR).
 
-            assign lc-value = htmlib-EncodeUser(lc-user). 
+            ASSIGN lc-value = htmlib-EncodeUser(lc-user). 
             
-            find webUser 
-                where webUser.LoginID = lc-user exclusive-lock no-wait no-error.
-            if avail WebUser
-            then assign WebUser.LastDate = today
-                        WebUser.LastTime = time.
+            FIND webUser 
+                WHERE webUser.LoginID = lc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+            IF AVAILABLE WebUser
+            THEN ASSIGN WebUser.LastDate = TODAY
+                        WebUser.LastTime = TIME.
 
             Set-Cookie("ExtranetUser",
                       lc-value,
-                      dynamic-function("com-CookieDate",lc-user),
-                      dynamic-function("com-CookieTime",lc-user),
+                      DYNAMIC-FUNCTION("com-CookieDate",lc-user),
+                      DYNAMIC-FUNCTION("com-CookieTime",lc-user),
                       APPurl,
                       ?,
-                      if hostURL begins "https" then "secure" else ?).
+                      IF hostURL BEGINS "https" THEN "secure" ELSE ?).
 
-            assign
+            ASSIGN
                 REQUEST_METHOD = "GET".
             set-user-field("ExtranetUser",lc-user).
-            if dynamic-function("com-RequirePasswordChange",lc-user) then 
-            do:
+            IF DYNAMIC-FUNCTION("com-RequirePasswordChange",lc-user) THEN 
+            DO:
                 set-user-field("expire","yes").
-                run run-web-object IN web-utilities-hdl ("mn/changepassword.p").
+                RUN run-web-object IN web-utilities-hdl ("mn/changepassword.p").
 
-            end.
-            else RUN run-web-object IN web-utilities-hdl ("mn/main.p").
-            return.
-        end.
+            END.
+            ELSE RUN run-web-object IN web-utilities-hdl ("mn/main.p").
+            RETURN.
+        END.
         
-    end.
+    END.
 
     
 
@@ -392,14 +358,14 @@ PROCEDURE process-web-request :
     RUN ip-CompanyInfo.
     
 
-    if lc-reason = "password" then 
-    do:
-        find WebUser where WebUser.Loginid = lc-user no-lock no-error.
-        find company where company.companycode = WebUser.companycode no-lock.
+    IF lc-reason = "password" THEN 
+    DO:
+        FIND WebUser WHERE WebUser.Loginid = lc-user NO-LOCK NO-ERROR.
+        FIND company WHERE company.companycode = WebUser.companycode NO-LOCK.
 
-        if WebUser.email <> "" 
-        and ( company.smtp <> "" and company.helpdeskemail <> "" ) then
-        do:
+        IF WebUser.email <> "" 
+        AND ( company.smtp <> "" AND company.helpdeskemail <> "" ) THEN
+        DO:
             {&out} '<br><br><div class="loglink">'
                     
                    '<p>Hi ' WebUser.forename ',<br>' skip
@@ -412,17 +378,17 @@ PROCEDURE process-web-request :
                 
                    '</p>' skip
                     '</div>'.
-        end.
-    end.
+        END.
+    END.
     {&out}
             '</td><td valign="top" align="right">' skip.
 
 
     {&out} '<table><tr><td>'.
 
-    {&out} ( if lookup("user",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("User Name")
-           else htmlib-SideLabel("User Name"))
+    {&out} ( IF LOOKUP("user",lc-error-field,'|') > 0 
+           THEN htmlib-SideLabelError("User Name")
+           ELSE htmlib-SideLabel("User Name"))
            skip
            '</td><td valign="top" align="left">'
            htmlib-InputField("user",20,lc-user)
@@ -457,8 +423,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

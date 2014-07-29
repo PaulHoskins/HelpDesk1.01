@@ -22,90 +22,93 @@
 &global-define CUSTOMER CUSTOMER
 &global-define CONTRACT CONTRACT
 
-DEFINE VARIABLE lc-global-selcode                   AS CHARACTER 
-    INITIAL "WALESFOREVER"                  NO-UNDO.
-DEFINE VARIABLE lc-global-seldesc                   AS CHARACTER
-    INITIAL "None"                     NO-UNDO.
+DEFINE VARIABLE lc-global-selcode             AS CHARACTER 
+    INITIAL "WALESFOREVER" NO-UNDO.
+DEFINE VARIABLE lc-global-seldesc             AS CHARACTER
+    INITIAL "None" NO-UNDO.
 
-DEFINE VARIABLE lc-global-company                   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-global-user                      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-global-internal                  AS CHARACTER 
-    INITIAL "INTERNAL,CONTRACT"             NO-UNDO.
+DEFINE VARIABLE lc-global-company             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-user                AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-internal            AS CHARACTER 
+    INITIAL "INTERNAL,CONTRACT" NO-UNDO.
 
-DEFINE VARIABLE lc-global-dtype                     AS CHARACTER
-    INITIAL "Text|Number|Date|Note|Yes/No"           NO-UNDO.
+DEFINE VARIABLE lc-global-dtype               AS CHARACTER
+    INITIAL "Text|Number|Date|Note|Yes/No" NO-UNDO.
 
-DEFINE VARIABLE lc-global-respaction-code           AS CHARACTER
+DEFINE VARIABLE lc-global-respaction-code     AS CHARACTER
     INITIAL "None|Email|EmailPage|Page|Web" NO-UNDO.
-DEFINE VARIABLE lc-global-respaction-display        AS CHARACTER
+DEFINE VARIABLE lc-global-respaction-display  AS CHARACTER
     INITIAL "None|Send Email|Send Email & SMS|Send SMS|Web Alert" NO-UNDO.
 
-DEFINE VARIABLE lc-global-tbase-code                AS CHARACTER
-    INITIAL "OFF|REAL"                      NO-UNDO.
-DEFINE VARIABLE lc-global-tbase-display             AS CHARACTER
-    INITIAL "Office Hours|24 Hours"         NO-UNDO.
+DEFINE VARIABLE lc-global-tbase-code          AS CHARACTER
+    INITIAL "OFF|REAL" NO-UNDO.
+DEFINE VARIABLE lc-global-tbase-display       AS CHARACTER
+    INITIAL "Office Hours|24 Hours" NO-UNDO.
 
-DEFINE VARIABLE lc-global-abase-code                AS CHARACTER
-    INITIAL "ISSUE|ALERT"                   NO-UNDO.
-DEFINE VARIABLE lc-global-abase-display             AS CHARACTER
+DEFINE VARIABLE lc-global-abase-code          AS CHARACTER
+    INITIAL "ISSUE|ALERT" NO-UNDO.
+DEFINE VARIABLE lc-global-abase-display       AS CHARACTER
     INITIAL "Issue Date/Time|Previous Alert Date/Time"         
-                                            NO-UNDO.
+    NO-UNDO.
 
-DEFINE VARIABLE lc-global-respunit-code             AS CHARACTER
-    INITIAL "None|Minute|Hour|Day|Week"     NO-UNDO.
-DEFINE VARIABLE lc-global-respunit-display          AS CHARACTER
-    INITIAL "None|Minute|Hour|Day|Week"     NO-UNDO.
+DEFINE VARIABLE lc-global-respunit-code       AS CHARACTER
+    INITIAL "None|Minute|Hour|Day|Week" NO-UNDO.
+DEFINE VARIABLE lc-global-respunit-display    AS CHARACTER
+    INITIAL "None|Minute|Hour|Day|Week" NO-UNDO.
 
-DEFINE VARIABLE lc-global-action-code                AS CHARACTER
-    INITIAL "OPEN|CLOSED"                    NO-UNDO.
-DEFINE VARIABLE lc-global-action-display             AS CHARACTER
-    INITIAL "Open|Closed"                    NO-UNDO.
+DEFINE VARIABLE lc-global-action-code         AS CHARACTER
+    INITIAL "OPEN|CLOSED" NO-UNDO.
+DEFINE VARIABLE lc-global-action-display      AS CHARACTER
+    INITIAL "Open|Closed" NO-UNDO.
 
-DEFINE VARIABLE lc-global-hour-code                 AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-global-hour-display              AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-global-min-code                 AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-global-min-display              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-hour-code           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-hour-display        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-min-code            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-min-display         AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-System-KB-Code                   AS CHARACTER
-    INITIAL "SYS.ISSUE"                     NO-UNDO.
-DEFINE VARIABLE lc-System-KB-Desc                   AS CHARACTER
-    INITIAL "Completed Issues"              NO-UNDO.
+DEFINE VARIABLE lc-System-KB-Code             AS CHARACTER
+    INITIAL "SYS.ISSUE" NO-UNDO.
+DEFINE VARIABLE lc-System-KB-Desc             AS CHARACTER
+    INITIAL "Completed Issues" NO-UNDO.
 
-DEFINE VARIABLE lc-System-Note-Code                 AS CHARACTER
-    INITIAL 'SYS.ACCOUNT,SYS.EMAILCUST,SYS.ASSIGN,SYS.SLA,SYS.MISC,SYS.SLAWARN,SYS.SLAMISSED'  NO-UNDO.
-DEFINE VARIABLE lc-System-Note-Desc                 AS CHARACTER
+DEFINE VARIABLE lc-System-Note-Code           AS CHARACTER
+    INITIAL 'SYS.ACCOUNT,SYS.EMAILCUST,SYS.ASSIGN,SYS.SLA,SYS.MISC,SYS.SLAWARN,SYS.SLAMISSED' NO-UNDO.
+DEFINE VARIABLE lc-System-Note-Desc           AS CHARACTER
     INITIAL 'System - Account Changed,System - Customer Emailed,System - Issue Assignment,System - SLA Assigned,System - Misc Note,System - SLA Warning,System - SLA Missed'
     NO-UNDO.
 
-DEFINE VARIABLE lc-global-GT-Code       AS CHARACTER INITIAL
-    'Asset.Type,Asset.Manu,Asset.Status'        NO-UNDO.
+DEFINE VARIABLE lc-global-GT-Code             AS CHARACTER INITIAL
+    'Asset.Type,Asset.Manu,Asset.Status' NO-UNDO.
 
 
-DEFINE VARIABLE lc-global-iclass-code   AS CHARACTER INITIAL
-    'Issue|Admin|Project'                       NO-UNDO.
+DEFINE VARIABLE lc-global-iclass-code         AS CHARACTER INITIAL
+    'Issue|Admin|Project' NO-UNDO.
 
 
 
-DEFINE VARIABLE lc-global-SupportTicket-Code               AS CHARACTER
-    INITIAL 'NONE|YES|BOTH'                 NO-UNDO.
-DEFINE VARIABLE lc-global-SupportTicket-Desc               AS CHARACTER
+DEFINE VARIABLE lc-global-SupportTicket-Code  AS CHARACTER
+    INITIAL 'NONE|YES|BOTH' NO-UNDO.
+DEFINE VARIABLE lc-global-SupportTicket-Desc  AS CHARACTER
     INITIAL 'Standard Support Only|Ticket Support Only|Standard And Ticket Support'
                                      
     NO-UNDO.
-DEFINE VARIABLE lc-global-Allow-TicketSupport       AS CHARACTER
-    INITIAL 'YES|BOTH'                 NO-UNDO.
-DEFINE VARIABLE lc-global-sms-username              AS CHARACTER
-    INITIAL 'tomcarroll'                        NO-UNDO.
-DEFINE VARIABLE lc-global-sms-password              AS CHARACTER
-    INITIAL 'cr34tion'                      NO-UNDO.
+DEFINE VARIABLE lc-global-Allow-TicketSupport AS CHARACTER
+    INITIAL 'YES|BOTH' NO-UNDO.
+DEFINE VARIABLE lc-global-sms-username        AS CHARACTER
+    INITIAL 'tomcarroll' NO-UNDO.
+DEFINE VARIABLE lc-global-sms-password        AS CHARACTER
+    INITIAL 'cr34tion' NO-UNDO.
 
-DEFINE VARIABLE lc-global-excludeType               AS CHARACTER
-    INITIAL "exe,vbs"                       NO-UNDO.
+DEFINE VARIABLE lc-global-excludeType         AS CHARACTER
+    INITIAL "exe,vbs" NO-UNDO.
+DEFINE VARIABLE lc-global-teamassign          AS CHARACTER 
+    INITIAL '[TeamAssign]' NO-UNDO.
+        
 
-DEFINE VARIABLE li-global-sla-fail      AS INTEGER INITIAL  10  NO-UNDO.
-DEFINE VARIABLE li-global-sla-amber     AS INTEGER INITIAL  20  NO-UNDO.
-DEFINE VARIABLE li-global-sla-ok        AS INTEGER INITIAL  30  NO-UNDO.
-DEFINE VARIABLE li-global-sla-na        AS INTEGER INITIAL  99  NO-UNDO.
+DEFINE VARIABLE li-global-sla-fail            AS INTEGER   INITIAL 10 NO-UNDO.
+DEFINE VARIABLE li-global-sla-amber           AS INTEGER   INITIAL 20 NO-UNDO.
+DEFINE VARIABLE li-global-sla-ok              AS INTEGER   INITIAL 30 NO-UNDO.
+DEFINE VARIABLE li-global-sla-na              AS INTEGER   INITIAL 99 NO-UNDO.
 
 
 
@@ -119,151 +122,154 @@ DEFINE VARIABLE li-global-sla-na        AS INTEGER INITIAL  99  NO-UNDO.
 /* ************************  Function Prototypes ********************** */
 
 FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AccountNumber AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-AllowTicketSupport RETURNS LOGICAL
-  ( pr-rowid AS ROWID )  FORWARD.
+    ( pr-rowid AS ROWID )  FORWARD.
 
 
 FUNCTION com-AreaName RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER ,
+    ( pc-CompanyCode AS CHARACTER ,
     pc-AreaCode    AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-AskTicket RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-AssignedToUser RETURNS INTEGER
- ( pc-CompanyCode AS CHARACTER,
-   pc-LoginID     AS CHARACTER )  FORWARD.
+    ( pc-CompanyCode AS CHARACTER,
+    pc-LoginID     AS CHARACTER )  FORWARD.
 
+
+FUNCTION com-BelongsToATeam RETURNS LOGICAL 
+	(  ) FORWARD.
 
 FUNCTION com-CanDelete RETURNS LOGICAL
-  ( pc-loginid  AS CHARACTER,
+    ( pc-loginid  AS CHARACTER,
     pc-table    AS CHARACTER,
     pr-rowid    AS ROWID )  FORWARD.
 
 
 FUNCTION com-CatName RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-Code AS CHARACTER
     )  FORWARD.
 
 
 FUNCTION com-CheckSystemSetup RETURNS LOGICAL
-  ( pc-CompanyCode AS CHARACTER )  FORWARD.
+    ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-CookieDate RETURNS DATE
-  ( pc-user AS CHARACTER )  FORWARD.
+    ( pc-user AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-CookieTime RETURNS INTEGER
-( pc-user AS CHARACTER )  FORWARD.
+    ( pc-user AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-AccountNumber AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-CustomerName RETURNS CHARACTER
-  ( pc-Company AS CHARACTER,
+    ( pc-Company AS CHARACTER,
     pc-Account  AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-CustomerOpenIssues RETURNS INTEGER
- ( pc-CompanyCode AS CHARACTER,
-   pc-accountNumber AS CHARACTER )  FORWARD.
+    ( pc-CompanyCode AS CHARACTER,
+    pc-accountNumber AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
-  ( pc-code AS CHARACTER,
+    ( pc-code AS CHARACTER,
     pc-code-list AS CHARACTER,
     pc-code-display AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-DescribeTicket RETURNS CHARACTER
-  ( pc-TxnType AS CHARACTER )  FORWARD.
+    ( pc-TxnType AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-GType AS CHARACTER,
     pc-Code AS CHARACTER
     )  FORWARD.
 
 
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER )  FORWARD.
+    ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-Initialise RETURNS LOGICAL
-  ( /* parameter-definitions */ )  FORWARD.
+    ( /* parameter-definitions */ )  FORWARD.
 
 
 FUNCTION com-InitialSetup RETURNS LOGICAL
-  ( pc-LoginID AS CHARACTER )  FORWARD.
+    ( pc-LoginID AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-InternalTime RETURNS INTEGER
-  ( pi-hours AS INTEGER,
+    ( pi-hours AS INTEGER,
     pi-mins  AS INTEGER )  FORWARD.
 
 
 FUNCTION com-IsContractor RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-IsCustomer RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-IssueActionsStatus RETURNS INTEGER
-  ( pc-companyCode AS CHARACTER,
+    ( pc-companyCode AS CHARACTER,
     pi-issue   AS INTEGER,
     pc-status  AS CHARACTER)  FORWARD.
 
 
 FUNCTION com-IssueStatusAlert RETURNS LOGICAL
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-CreateSource AS CHARACTER,
     pc-StatusCode   AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-IsSuperUser RETURNS LOGICAL
-  ( pc-LoginID      AS CHARACTER )  FORWARD.
+    ( pc-LoginID      AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-MonthBegin RETURNS DATE
-  ( pd-date AS DATE)  FORWARD.
+    ( pd-date AS DATE)  FORWARD.
 
 
 FUNCTION com-MonthEnd RETURNS DATE
-  ( pd-date AS DATE )  FORWARD.
+    ( pd-date AS DATE )  FORWARD.
 
 
 FUNCTION com-NearestTimeUnit RETURNS INTEGER
-  ( pi-time AS INTEGER )  FORWARD.
+    ( pi-time AS INTEGER )  FORWARD.
 
 
 FUNCTION com-NumberOfActions RETURNS INTEGER
-  ( pc-LoginID AS CHARACTER )  FORWARD.
+    ( pc-LoginID AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-NumberOfAlerts RETURNS INTEGER
- ( pc-LoginID AS CHARACTER )  FORWARD.
+    ( pc-LoginID AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-NumberOfEmails RETURNS INTEGER
-  ( pc-LoginID AS CHARACTER )  FORWARD.
+    ( pc-LoginID AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
@@ -271,19 +277,19 @@ FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
 
 
 FUNCTION com-NumberOfOpenActions RETURNS INTEGER
-  ( pc-LoginID AS CHARACTER )  FORWARD.
+    ( pc-LoginID AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-NumberUnAssigned RETURNS INTEGER
- ( pc-CompanyCode AS CHARACTER )  FORWARD.
+    ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-QuickView RETURNS LOGICAL
-  ( pc-LoginID  AS CHARACTER )  FORWARD.
+    ( pc-LoginID  AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
-  ( pc-user AS CHARACTER )  FORWARD.
+    ( pc-user AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-SLADescription RETURNS CHARACTER
@@ -291,49 +297,49 @@ FUNCTION com-SLADescription RETURNS CHARACTER
 
 
 FUNCTION com-StatusTrackIssue RETURNS LOGICAL
-  ( pc-companycode AS CHARACTER,
+    ( pc-companycode AS CHARACTER,
     pc-StatusCode  AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-StringReturn RETURNS CHARACTER
-  ( pc-orig AS CHARACTER,
+    ( pc-orig AS CHARACTER,
     pc-add AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-SystemLog RETURNS LOGICAL
-  ( pc-ActType AS CHARACTER,
+    ( pc-ActType AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AttrData AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-TicketOnly RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-TimeReturn RETURNS CHARACTER
-  ( pc-Type AS CHARACTER )  FORWARD.
+    ( pc-Type AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-TimeToString RETURNS CHARACTER
-  ( pi-time AS INTEGER )  FORWARD.
+    ( pi-time AS INTEGER )  FORWARD.
 
 
 FUNCTION com-UserName RETURNS CHARACTER
-  ( pc-LoginID AS CHARACTER )  FORWARD.
+    ( pc-LoginID AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-UsersCompany RETURNS CHARACTER
-  ( pc-LoginID  AS CHARACTER )  FORWARD.
+    ( pc-LoginID  AS CHARACTER )  FORWARD.
 
 
 FUNCTION com-UserTrackIssue RETURNS LOGICAL
     ( pc-LoginID AS CHARACTER
-     )  FORWARD.
+    )  FORWARD.
 
 
 FUNCTION com-WriteQueryInfo RETURNS LOGICAL
-  ( hQuery AS HANDLE )  FORWARD.
+    ( hQuery AS HANDLE )  FORWARD.
 
 
 
@@ -364,11 +370,11 @@ DYNAMIC-FUNCTION('com-Initialise':U).
 /* **********************  Internal Procedures  *********************** */
 
 PROCEDURE com-GenTabSelect :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pc-GType       AS CHARACTER NO-UNDO.
@@ -376,23 +382,23 @@ PROCEDURE com-GenTabSelect :
     DEFINE OUTPUT PARAMETER pc-code     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc     AS CHARACTER NO-UNDO.
 
-    DEFINE VARIABLE icount AS INTEGER       NO-UNDO.
+    DEFINE VARIABLE icount AS INTEGER NO-UNDO.
 
 
     DEFINE BUFFER b-GenTab FOR GenTab.
 
     FOR EACH b-GenTab NO-LOCK 
         WHERE b-GenTab.CompanyCode = pc-CompanyCode
-          AND b-GenTab.gType = pc-gType
-       :
+        AND b-GenTab.gType = pc-gType
+        :
 
         IF icount = 0 
-        THEN ASSIGN pc-code = b-GenTab.gCode
-                    pc-Desc    = b-GenTab.Descr.
+            THEN ASSIGN pc-code = b-GenTab.gCode
+                pc-Desc = b-GenTab.Descr.
 
         ELSE ASSIGN pc-code = pc-code + '|' + 
                b-GenTab.gCode
-               pc-Desc = pc-Desc + '|' + 
+                pc-Desc = pc-Desc + '|' + 
                b-GenTab.Descr.
 
         icount = icount + 1.
@@ -404,11 +410,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetAction :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -421,22 +427,22 @@ PROCEDURE com-GetAction :
         BY b-buffer.Description:
 
         IF pc-codes = ""
-        THEN ASSIGN pc-Codes = b-buffer.ActionCode
-                    pc-Desc = b-buffer.Description.
+            THEN ASSIGN pc-Codes = b-buffer.ActionCode
+                pc-Desc  = b-buffer.Description.
         ELSE ASSIGN pc-Codes = pc-Codes + '|' + 
                b-buffer.ActionCode
-               pc-Desc = pc-Desc + '|' + 
+                pc-Desc  = pc-Desc + '|' + 
                b-buffer.Description.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetActivityType :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
     DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
@@ -444,27 +450,29 @@ PROCEDURE com-GetActivityType :
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Time            AS CHARACTER NO-UNDO.
 
-/* def var acttype as char initial "Take Call|Travel for Job|Analyse Fault|Repair Fault|Order Goods".  */
-/* def var actcodes as char initial "1|2|3|4|5".                                                       */
+    /* def var acttype as char initial "Take Call|Travel for Job|Analyse Fault|Repair Fault|Order Goods".  */
+    /* def var actcodes as char initial "1|2|3|4|5".                                                       */
 
     DEFINE BUFFER b-WebActType FOR WebActType .
 
-    ASSIGN pc-Codes  = ""
-           pc-Active = ""
-           pc-Desc   = ""
-           pc-Time   = "".
+    ASSIGN 
+        pc-Codes  = ""
+        pc-Active = ""
+        pc-Desc   = ""
+        pc-Time   = "".
 
 
     FOR EACH b-WebActType NO-LOCK 
         WHERE b-WebActType.CompanyCode = pc-CompanyCode
         BREAK BY b-WebActType.TypeID 
-              :
+        :
 
-        ASSIGN pc-Codes  = pc-Codes  + '|' + string(b-WebActType.TypeID)
-               pc-Active = pc-Active + '|' + b-WebActType.ActivityType 
-               pc-Desc   = pc-Desc   + '|' + b-WebActType.Description  
-               pc-Time   = pc-Time   + '|' + string(b-WebActType.MinTime)
-          .
+        ASSIGN 
+            pc-Codes  = pc-Codes  + '|' + string(b-WebActType.TypeID)
+            pc-Active = pc-Active + '|' + b-WebActType.ActivityType 
+            pc-Desc   = pc-Desc   + '|' + b-WebActType.Description  
+            pc-Time   = pc-Time   + '|' + string(b-WebActType.MinTime)
+            .
     END.
 
     ASSIGN
@@ -483,11 +491,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetArea :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -495,28 +503,30 @@ PROCEDURE com-GetArea :
 
     DEFINE BUFFER b-IssArea FOR WebIssArea.
 
-    ASSIGN pc-Codes = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
-           pc-Desc = "All Areas|Not Assigned".
+    ASSIGN 
+        pc-Codes = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
+        pc-Desc  = "All Areas|Not Assigned".
 
 
     FOR EACH b-IssArea NO-LOCK 
         WHERE b-IssArea.CompanyCode = pc-CompanyCode
         /* by b-IssArea.Description: */
         :
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-IssArea.AreaCode
-               pc-Desc = pc-Desc + '|' + 
+            pc-Desc  = pc-Desc + '|' + 
                b-IssArea.Description.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetAreaIssue :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -524,16 +534,18 @@ PROCEDURE com-GetAreaIssue :
 
     DEFINE BUFFER b-IssArea FOR WebIssArea.
 
-    ASSIGN pc-Codes = ""
-           pc-Desc = "Not Applicable/Known".
+    ASSIGN 
+        pc-Codes = ""
+        pc-Desc  = "Not Applicable/Known".
 
 
     FOR EACH b-IssArea NO-LOCK 
         WHERE b-IssArea.CompanyCode = pc-CompanyCode
         BY b-IssArea.Description:
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-IssArea.AreaCode
-               pc-Desc = pc-Desc + '|' + 
+            pc-Desc  = pc-Desc + '|' + 
                b-IssArea.Description.
     END.
 
@@ -541,11 +553,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetAssign :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
@@ -553,28 +565,30 @@ PROCEDURE com-GetAssign :
 
     DEFINE BUFFER b-user FOR WebUser.
 
-    ASSIGN pc-LoginID = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
-           pc-name = "All People|Not Assigned".
+    ASSIGN 
+        pc-LoginID = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
+        pc-name    = "All People|Not Assigned".
 
 
     FOR EACH b-user NO-LOCK 
         WHERE CAN-DO(lc-global-internal,b-user.UserClass)
         AND b-user.CompanyCode = pc-CompanyCode
         BY b-user.name:
-        ASSIGN pc-LoginID = pc-LoginID + '|' + 
+        ASSIGN 
+            pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
-               pc-name = pc-name + '|' + 
+            pc-name    = pc-name + '|' + 
                b-user.Name.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetAssignIssue :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
@@ -582,28 +596,30 @@ PROCEDURE com-GetAssignIssue :
 
     DEFINE BUFFER b-user FOR WebUser.
 
-    ASSIGN pc-LoginID = ""
-           pc-name = "Not Assigned".
+    ASSIGN 
+        pc-LoginID = ""
+        pc-name    = "Not Assigned".
 
 
     FOR EACH b-user NO-LOCK 
         WHERE CAN-DO(lc-global-internal,b-user.UserClass)
         AND b-user.CompanyCode = pc-CompanyCode
         BY b-user.name:
-        ASSIGN pc-LoginID = pc-LoginID + '|' + 
+        ASSIGN 
+            pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
-               pc-name = pc-name + '|' + 
+            pc-name    = pc-name + '|' + 
                b-user.Name.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetAssignList :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
@@ -617,22 +633,22 @@ PROCEDURE com-GetAssignList :
         BY b-user.name:
 
         IF pc-loginID = ""
-        THEN ASSIGN pc-loginID = b-user.LoginID
-                    pc-name    = b-user.Name.
+            THEN ASSIGN pc-loginID = b-user.LoginID
+                pc-name    = b-user.Name.
 
         ELSE ASSIGN pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
-               pc-name = pc-name + '|' + 
+                pc-name    = pc-name + '|' + 
                b-user.Name.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetAssignRoot:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pc-userid      AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
@@ -640,40 +656,36 @@ PROCEDURE com-GetAssignRoot:
     
     DEFINE BUFFER webUStream FOR WebUSteam.
     DEFINE BUFFER webUx      FOR WebUSteam.
-    DEFINE BUFFER b-user FOR WebUser.
+    DEFINE BUFFER b-user     FOR WebUser.
     
-    DEF VAR ll-Steam    AS LOG NO-UNDO.
-    
-    
-    ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-userID NO-LOCK).
-    
-    IF ll-steam THEN
+    IF DYNAMIC-FUNCTION("com-isTeamMember", pc-companycode,pc-userid,?) THEN
     DO:
-        ASSIGN pc-LoginID = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
-               pc-name = "All People In Your Team(s)|Not Assigned".
+        ASSIGN 
+            pc-LoginID =  DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
+            pc-name    = "Your Team(s)|Not Assigned".
            
         FOR EACH WebUSteam NO-LOCK
             WHERE WebUSteam.LoginID = pc-UserID,
             EACH webux NO-LOCK
-                WHERE webux.st-num = WebUSteam.st-num,
-                EACH b-user NO-LOCK
-                    WHERE b-user.LoginID = webux.LoginID
-                    BREAK 
-                        BY b-user.name
-                        BY b-user.LoginID:
+            WHERE webux.st-num = WebUSteam.st-num,
+            EACH b-user NO-LOCK
+            WHERE b-user.LoginID = webux.LoginID
+            BREAK 
+            BY b-user.name
+            BY b-user.LoginID:
             IF FIRST-OF(b-user.loginid) 
-            THEN ASSIGN 
+                THEN ASSIGN 
                     pc-LoginID = pc-LoginID + '|' + b-user.LoginID
-                    pc-name = pc-name + '|' + b-user.Name.
+                    pc-name    = pc-name + '|' + b-user.Name.
                            
                     
         END.
              
     END.
     ELSE 
-    RUN com-GetAssign ( pc-companyCode, 
-        OUTPUT pc-loginID , 
-        OUTPUT pc-name ).
+        RUN com-GetAssign ( pc-companyCode, 
+            OUTPUT pc-loginID , 
+            OUTPUT pc-name ).
     
     
     
@@ -682,11 +694,11 @@ PROCEDURE com-GetAssignRoot:
 END PROCEDURE.
 
 PROCEDURE com-GetAutoAction :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE INPUT PARAMETER  pc-Exclude         AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
@@ -704,20 +716,21 @@ PROCEDURE com-GetAutoAction :
 
         IF b-buffer.ActionCode = pc-Exclude THEN NEXT.
 
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-buffer.ActionCode
-               pc-Desc = pc-Desc + '|' + 
+            pc-Desc  = pc-Desc + '|' + 
                b-buffer.Description.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetCategoryIssue :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-company             AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-CatCode             AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Description         AS CHARACTER NO-UNDO.
@@ -726,19 +739,20 @@ PROCEDURE com-GetCategoryIssue :
     DEFINE BUFFER b-Cat FOR WebIssCat.
 
    
-    ASSIGN pc-CatCode = ""
-           pc-Description = "".
+    ASSIGN 
+        pc-CatCode     = ""
+        pc-Description = "".
 
     FOR EACH b-Cat NO-LOCK
         WHERE b-Cat.CompanyCode = pc-company
-           BY b-Cat.description
-            :
+        BY b-Cat.description
+        :
 
         IF pc-CatCode = ""
-        THEN ASSIGN  pc-CatCode     = b-Cat.CatCode
-                     pc-Description = b-Cat.Description.
-        ELSE ASSIGN pc-CatCode      = pc-CatCode + '|' + b-Cat.CatCode
-                    pc-Description  = pc-Description + '|' + b-Cat.Description.
+            THEN ASSIGN  pc-CatCode     = b-Cat.CatCode
+                pc-Description = b-Cat.Description.
+        ELSE ASSIGN pc-CatCode     = pc-CatCode + '|' + b-Cat.CatCode
+                pc-Description = pc-Description + '|' + b-Cat.Description.
 
     END.
 
@@ -746,11 +760,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetCatSelect :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -758,28 +772,30 @@ PROCEDURE com-GetCatSelect :
 
     DEFINE BUFFER b-IssArea FOR WebIssCat.
 
-    ASSIGN pc-Codes = DYNAMIC-FUNCTION("htmlib-Null")
-           pc-Desc = "All Categories".
+    ASSIGN 
+        pc-Codes = DYNAMIC-FUNCTION("htmlib-Null")
+        pc-Desc  = "All Categories".
 
 
     FOR EACH b-IssArea NO-LOCK 
         WHERE b-IssArea.CompanyCode = pc-CompanyCode
         /* by b-IssArea.Description: */
         :
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-IssArea.CatCode
-               pc-Desc = pc-Desc + '|' + 
+            pc-Desc  = pc-Desc + '|' + 
                b-IssArea.Description.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetCustomer :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
     DEFINE INPUT PARAMETER pc-LoginID          AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-AccountNumber   AS CHARACTER NO-UNDO.
@@ -789,24 +805,26 @@ PROCEDURE com-GetCustomer :
     DEFINE BUFFER b-cust FOR customer.
     DEFINE BUFFER b-user FOR WebUser.
 
-    ASSIGN pc-AccountNumber = DYNAMIC-FUNCTION("htmlib-Null")
-           pc-name = "All Customers".
+    ASSIGN 
+        pc-AccountNumber = DYNAMIC-FUNCTION("htmlib-Null")
+        pc-name          = "All Customers".
 
     FIND b-user WHERE b-user.LoginID = pc-LoginID NO-LOCK NO-ERROR.
     
     FOR EACH b-cust NO-LOCK 
         WHERE b-cust.CompanyCode = pc-CompanyCode
-            BY b-cust.name:
+        BY b-cust.name:
         IF AVAILABLE b-user THEN
         DO:
             IF NOT DYNAMIC-FUNCTION('com-AllowCustomerAccess':U,
-                                    pc-companyCode,
-                                    pc-LoginID,
-                                    b-cust.AccountNumber) THEN NEXT.
+                pc-companyCode,
+                pc-LoginID,
+                b-cust.AccountNumber) THEN NEXT.
         END.
-        ASSIGN pc-AccountNumber = pc-AccountNumber + '|' + 
+        ASSIGN 
+            pc-AccountNumber = pc-AccountNumber + '|' + 
                b-cust.AccountNumber
-               pc-name = pc-name + '|' + 
+            pc-name          = pc-name + '|' + 
                b-cust.Name.
     END.
 
@@ -815,11 +833,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetCustomerAccount :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
     DEFINE INPUT PARAMETER pc-LoginID          AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-AccountNumber   AS CHARACTER NO-UNDO.
@@ -834,15 +852,15 @@ PROCEDURE com-GetCustomerAccount :
     
     FOR EACH b-cust NO-LOCK 
         WHERE b-cust.CompanyCode = pc-CompanyCode
-            BY b-cust.AccountNumber:
+        BY b-cust.AccountNumber:
         IF pc-AccountNumber = "" 
-        THEN ASSIGN 
+            THEN ASSIGN 
                 pc-AccountNumber = b-cust.AccountNumber
-                pc-name = b-cust.AccountNumber + " " + b-cust.NAME.
+                pc-name          = b-cust.AccountNumber + " " + b-cust.NAME.
         ELSE ASSIGN 
-               pc-AccountNumber = pc-AccountNumber + '|' + 
+                pc-AccountNumber = pc-AccountNumber + '|' + 
                b-cust.AccountNumber
-               pc-name = pc-name + '|' + 
+                pc-name          = pc-name + '|' + 
                b-cust.AccountNumber + " " + b-cust.Name.
     END.
 
@@ -851,11 +869,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetInternalUser :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
@@ -870,22 +888,22 @@ PROCEDURE com-GetInternalUser :
         BY b-user.name:
 
         IF pc-loginID = ""
-        THEN ASSIGN pc-LoginID = b-user.LoginID
-                    pc-name    = b-user.name.
+            THEN ASSIGN pc-LoginID = b-user.LoginID
+                pc-name    = b-user.name.
         ELSE ASSIGN pc-LoginID = pc-LoginID + '|' + 
                       b-user.LoginID
-                    pc-name = pc-name + '|' + 
+                pc-name    = pc-name + '|' + 
                         b-user.Name.
     END.
 END PROCEDURE.
 
 
 PROCEDURE com-GetKBSection :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -898,21 +916,21 @@ PROCEDURE com-GetKBSection :
         BY b-buffer.Description:
 
         IF pc-codes = ""
-        THEN ASSIGN pc-Codes = b-buffer.knbCode
-                    pc-Desc = b-buffer.Description.
+            THEN ASSIGN pc-Codes = b-buffer.knbCode
+                pc-Desc  = b-buffer.Description.
         ELSE ASSIGN pc-Codes = pc-Codes + '|' + b-buffer.knbCode
-                    pc-Desc = pc-Desc + '|' + b-buffer.Description.
+                pc-Desc  = pc-Desc + '|' + b-buffer.Description.
     END.
 
 END PROCEDURE.
 
 
 PROCEDURE com-GetStatus :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
@@ -920,27 +938,29 @@ PROCEDURE com-GetStatus :
 
     DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    ASSIGN pc-Codes = DYNAMIC-FUNCTION("htmlib-Null")
-           pc-name = "All Status Codes".
+    ASSIGN 
+        pc-Codes = DYNAMIC-FUNCTION("htmlib-Null")
+        pc-name  = "All Status Codes".
 
 
     FOR EACH b-WebStatus NO-LOCK 
         WHERE b-WebStatus.CompanyCode = pc-CompanyCode
         BREAK BY b-WebStatus.CompletedStatus 
-              BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
-              BY b-WebStatus.description:
+        BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
+        BY b-WebStatus.description:
         IF FIRST-OF(b-WebStatus.CompletedStatus) THEN
         DO:
             IF b-WebStatus.CompletedStatus = FALSE 
-            THEN ASSIGN pc-Codes = pc-Codes + "|AllOpen"
-                        pc-name = pc-name + '|* All Open'.
+                THEN ASSIGN pc-Codes = pc-Codes + "|AllOpen"
+                    pc-name  = pc-name + '|* All Open'.
             ELSE ASSIGN pc-Codes = pc-Codes + "|AllClosed"
-                        pc-name = pc-name + '|* All Closed'.
+                    pc-name  = pc-name + '|* All Closed'.
 
         END.
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
-               pc-name = pc-name + '|&nbsp;&nbsp;&nbsp;' + 
+            pc-name  = pc-name + '|&nbsp;&nbsp;&nbsp;' + 
                b-WebStatus.description.
     END.
 
@@ -948,11 +968,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetStatusIssue :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
     DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
@@ -961,18 +981,20 @@ PROCEDURE com-GetStatusIssue :
 
     DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    ASSIGN pc-Codes = ""
-           pc-name =  "".
+    ASSIGN 
+        pc-Codes = ""
+        pc-name  = "".
 
 
     FOR EACH b-WebStatus NO-LOCK 
         WHERE b-WebStatus.CompanyCode = pc-CompanyCode
         BREAK BY b-WebStatus.CompletedStatus 
-              BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
-              BY b-WebStatus.description:
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
+        BY b-WebStatus.description:
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
-               pc-name = pc-name + '|' + 
+            pc-name  = pc-name + '|' + 
                b-WebStatus.description + " (" + 
                 ( IF b-WebStatus.CompletedStatus THEN "Closed" ELSE "Open" ) + 
             ")".
@@ -986,11 +1008,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetStatusIssueOpen :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
@@ -999,18 +1021,20 @@ PROCEDURE com-GetStatusIssueOpen :
 
     DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    ASSIGN pc-Codes = ""
-           pc-name =  "".
+    ASSIGN 
+        pc-Codes = ""
+        pc-name  = "".
 
 
     FOR EACH b-WebStatus NO-LOCK 
         WHERE b-WebStatus.CompanyCode = pc-CompanyCode
-          AND b-WeBStatus.CompletedStatus = NO
+        AND b-WeBStatus.CompletedStatus = NO
         BREAK BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
-              BY b-WebStatus.description:
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        BY b-WebStatus.description:
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
-               pc-name = pc-name + '|' + 
+            pc-name  = pc-name + '|' + 
                b-WebStatus.description + " (" + 
                 ( IF b-WebStatus.CompletedStatus THEN "Closed" ELSE "Open" ) + 
             ")".
@@ -1025,11 +1049,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetStatusOpenOnly :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-companyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes   AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
@@ -1037,41 +1061,71 @@ PROCEDURE com-GetStatusOpenOnly :
 
     DEFINE BUFFER b-WebStatus FOR WebStatus.
 
-    ASSIGN pc-Codes = "AllOpen"
-           pc-name = "All Open".
+    ASSIGN 
+        pc-Codes = "AllOpen"
+        pc-name  = "All Open".
 
 
     FOR EACH b-WebStatus NO-LOCK 
         WHERE b-WebStatus.CompanyCode = pc-CompanyCode
-          AND b-webStatus.CompletedStatus = FALSE
+        AND b-webStatus.CompletedStatus = FALSE
         BREAK BY b-WebStatus.CompletedStatus 
-              BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
-              BY b-WebStatus.description:
-                                                                   /*
-                                                                   if first-of(b-WebStatus.CompletedStatus) then
-        do:
-            if b-WebStatus.CompletedStatus = false 
-            then assign pc-Codes = pc-Codes + "|AllOpen"
-                        pc-name = pc-name + '|* All Open'.
-            else assign pc-Codes = pc-Codes + "|AllClosed"
-                        pc-name = pc-name + '|* All Closed'.
-
-        end.
-        */
-        ASSIGN pc-Codes = pc-Codes + '|' + 
+        BY ( IF b-WebStatus.DisplayOrder = 0 THEN 99999 ELSE b-Webstatus.DisplayOrder )
+        BY b-WebStatus.description:
+                                                                  
+        ASSIGN 
+            pc-Codes = pc-Codes + '|' + 
                b-WebStatus.StatusCode
-               pc-name = pc-name + '|&nbsp;&nbsp;&nbsp;' + 
+            pc-name  = pc-name + '|&nbsp;&nbsp;&nbsp;' + 
                b-WebStatus.description.
     END.
 END PROCEDURE.
 
 
+PROCEDURE com-GetTeamMembers:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pc-userid      AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    
+    DEFINE BUFFER webUStream FOR WebUSteam.
+    DEFINE BUFFER webUx      FOR WebUSteam.
+    DEFINE BUFFER b-user     FOR WebUser.
+    
+         
+    FOR EACH WebUSteam NO-LOCK
+        WHERE WebUSteam.LoginID = pc-UserID,
+        EACH webux NO-LOCK
+        WHERE webux.st-num = WebUSteam.st-num,
+        EACH b-user NO-LOCK
+        WHERE b-user.LoginID = webux.LoginID
+        BREAK 
+        BY b-user.LoginID:
+        
+        IF FIRST-OF(b-user.loginid) 
+            THEN ASSIGN 
+                pc-LoginID = TRIM(pc-LoginID + ',' + b-user.LoginID).
+                
+               
+    END.
+             
+    ASSIGN 
+        pc-LoginID = substr(pc-LoginId,2) no-error.
+     
+    
+
+
+END PROCEDURE.
+
 PROCEDURE com-GetTeams :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -1084,11 +1138,11 @@ PROCEDURE com-GetTeams :
         :
 
         IF pc-codes = ""
-        THEN ASSIGN pc-Codes = STRING(b-buffer.st-num)
-                    pc-Desc = b-buffer.Descr.
+            THEN ASSIGN pc-Codes = STRING(b-buffer.st-num)
+                pc-Desc  = b-buffer.Descr.
         ELSE ASSIGN pc-Codes = pc-Codes + '|' + 
                string(b-buffer.st-num)
-               pc-Desc = pc-Desc + '|' + 
+                pc-Desc  = pc-Desc + '|' + 
                b-buffer.Descr.
     END.
 
@@ -1096,11 +1150,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-getTemplateSelect :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -1110,12 +1164,12 @@ PROCEDURE com-getTemplateSelect :
 
     FOR EACH b-buffer NO-LOCK 
         WHERE b-buffer.CompanyCode = pc-CompanyCode
-       :
+        :
         IF pc-codes = ""
-        THEN ASSIGN pc-Codes = b-buffer.tmpcode
-                    pc-Desc = b-buffer.Descr.
+            THEN ASSIGN pc-Codes = b-buffer.tmpcode
+                pc-Desc  = b-buffer.Descr.
         ELSE ASSIGN pc-Codes = pc-Codes + '|' + b-buffer.tmpCode
-                    pc-Desc = pc-Desc + '|' + b-buffer.Descr.
+                pc-Desc  = pc-Desc + '|' + b-buffer.Descr.
     END.
 
 
@@ -1123,18 +1177,18 @@ END PROCEDURE.
 
 
 PROCEDURE com-ResetDefaultStatus :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER     NO-UNDO.
 
-    DEFINE BUFFER b-WebStatus  FOR WebStatus.
+    DEFINE BUFFER b-WebStatus FOR WebStatus.
 
     FOR EACH b-WebStatus
         WHERE b-WebStatus.CompanyCode = pc-CompanyCode
-          AND b-WebStatus.DefaultCode EXCLUSIVE-LOCK:
+        AND b-WebStatus.DefaultCode EXCLUSIVE-LOCK:
 
         ASSIGN 
             b-WebStatus.DefaultCode = NO.
@@ -1143,21 +1197,21 @@ END PROCEDURE.
 
 
 PROCEDURE com-SplitTime :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pi-time     AS INTEGER      NO-UNDO.
     DEFINE OUTPUT PARAMETER pi-hours   AS INTEGER      NO-UNDO.
     DEFINE OUTPUT PARAMETER pi-mins    AS INTEGER      NO-UNDO.
 
-    DEFINE VARIABLE li-sec-hours        AS INTEGER      INITIAL 3600 NO-UNDO.
-    DEFINE VARIABLE li-seconds          AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-sec-hours AS INTEGER INITIAL 3600 NO-UNDO.
+    DEFINE VARIABLE li-seconds   AS INTEGER NO-UNDO.
    
     ASSIGN 
         li-seconds = pi-time MOD li-sec-hours
-        pi-mins = TRUNCATE(li-seconds / 60,0).
+        pi-mins    = TRUNCATE(li-seconds / 60,0).
         
     ASSIGN
         pi-time = pi-time - li-seconds.
@@ -1170,11 +1224,11 @@ END PROCEDURE.
 
 
 PROCEDURE com-StatusType :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER     pc-CompanyCode      AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER    pc-open-status      AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER    pc-closed-status    AS CHARACTER NO-UNDO.
@@ -1185,7 +1239,7 @@ PROCEDURE com-StatusType :
         WHERE b-status.CompanyCode = pc-companyCode
         BY ( IF b-status.DisplayOrder = 0 THEN 99999 ELSE b-status.DisplayOrder ):
         IF b-status.CompletedStatus = FALSE 
-        THEN ASSIGN pc-open-status = TRIM(pc-open-status + ',' + b-status.StatusCode).
+            THEN ASSIGN pc-open-status = TRIM(pc-open-status + ',' + b-status.StatusCode).
         ELSE ASSIGN pc-closed-status = TRIM(pc-closed-status + ',' + b-status.StatusCode).
         
     END.
@@ -1196,20 +1250,20 @@ END PROCEDURE.
 /* ************************  Function Implementations ***************** */
 
 FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AccountNumber AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER b-user       FOR WebUser.
     DEFINE BUFFER b-ContAccess FOR ContAccess.
     DEFINE BUFFER webusteam    FOR webusteam.
     DEFINE BUFFER customer     FOR customer.
-    DEFINE VARIABLE ll-Steam    AS LOG NO-UNDO.
-    DEFINE VARIABLE ll-Access   AS LOG NO-UNDO.
+    DEFINE VARIABLE ll-Steam  AS LOG NO-UNDO.
+    DEFINE VARIABLE ll-Access AS LOG NO-UNDO.
 
     
     ll-Steam = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid =  pc-LoginID NO-LOCK).
@@ -1228,10 +1282,10 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
     DO:
         IF NOT ll-Steam THEN RETURN TRUE.
         FIND customer WHERE customer.companyCode = pc-CompanyCode
-                        AND customer.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
+            AND customer.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
         IF customer.st-num = 0 THEN RETURN FALSE.
         ll-access = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-LoginID
-                                          AND webusteam.st-num = customer.st-num NO-LOCK).
+            AND webusteam.st-num = customer.st-num NO-LOCK).
         RETURN ll-access.
     END.
 
@@ -1241,7 +1295,7 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
     END.
 
     RETURN CAN-FIND(FIRST b-ContAccess WHERE b-ContAccess.LoginID = pc-LoginID 
-                      AND b-ContAccess.AccountNumber = pc-AccountNumber NO-LOCK ).
+        AND b-ContAccess.AccountNumber = pc-AccountNumber NO-LOCK ).
 
 
  
@@ -1250,11 +1304,11 @@ END FUNCTION.
 
 
 FUNCTION com-AllowTicketSupport RETURNS LOGICAL
-  ( pr-rowid AS ROWID ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pr-rowid AS ROWID ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER customer FOR customer.
 
@@ -1267,19 +1321,19 @@ END FUNCTION.
 
 
 FUNCTION com-AreaName RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER ,
+    ( pc-CompanyCode AS CHARACTER ,
     pc-AreaCode    AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER b1   FOR webissArea.
+    DEFINE BUFFER b1 FOR webissArea.
 
 
     FIND b1 WHERE b1.CompanyCode = pc-CompanyCode
-              AND b1.AreaCode    = pc-AreaCode
-                NO-LOCK NO-ERROR.
+        AND b1.AreaCode    = pc-AreaCode
+        NO-LOCK NO-ERROR.
 
 
     RETURN IF AVAILABLE b1 THEN b1.DESCRIPTION ELSE "".
@@ -1288,19 +1342,19 @@ END FUNCTION.
 
 
 FUNCTION com-AskTicket RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER Customer FOR Customer.
 
     FIND Customer
         WHERE Customer.CompanyCode      = pc-companyCode
-          AND Customer.AccountNumber    = pc-AccountNumber
-          NO-LOCK NO-ERROR.
+        AND Customer.AccountNumber    = pc-AccountNumber
+        NO-LOCK NO-ERROR.
     
     IF NOT AVAILABLE Customer THEN RETURN FALSE.
     
@@ -1310,30 +1364,31 @@ END FUNCTION.
 
 
 FUNCTION com-AssignedToUser RETURNS INTEGER
- ( pc-CompanyCode AS CHARACTER,
-   pc-LoginID     AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-CompanyCode AS CHARACTER,
+    pc-LoginID     AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
 
-    DEFINE BUFFER Issue        FOR Issue.
-    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER Issue     FOR Issue.
+    DEFINE BUFFER WebStatus FOR WebStatus.
 
 
     FOR EACH Issue NO-LOCK
         WHERE Issue.CompanyCode = pc-companyCode
-          AND Issue.AssignTo = pc-LoginID
-           ,
-          FIRST WebStatus NO-LOCK
-                WHERE WebStatus.companyCode = Issue.CompanyCode
-                  AND WebStatus.StatusCode  = Issue.StatusCode
-                  AND WebStatus.Completed   = FALSE
-          :
+        AND Issue.AssignTo = pc-LoginID
+        ,
+        FIRST WebStatus NO-LOCK
+        WHERE WebStatus.companyCode = Issue.CompanyCode
+        AND WebStatus.StatusCode  = Issue.StatusCode
+        AND WebStatus.Completed   = FALSE
+        :
 
-        ASSIGN li-return = li-return + 1.
+        ASSIGN 
+            li-return = li-return + 1.
 
     END.
 
@@ -1342,67 +1397,68 @@ FUNCTION com-AssignedToUser RETURNS INTEGER
 END FUNCTION.
 
 
+
 FUNCTION com-CanDelete RETURNS LOGICAL
-  ( pc-loginid  AS CHARACTER,
+    ( pc-loginid  AS CHARACTER,
     pc-table    AS CHARACTER,
     pr-rowid    AS ROWID ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER webuser      FOR webuser.
-    DEFINE BUFFER customer     FOR customer.
-    DEFINE BUFFER custiv       FOR custiv.
-    DEFINE BUFFER issue        FOR issue.
-    DEFINE BUFFER ivClass      FOR ivClass.
-    DEFINE BUFFER ivSub        FOR ivSub.
-    DEFINE BUFFER ivField      FOR IvField.
-    DEFINE BUFFER CustField    FOR CustField.
-    DEFINE BUFFER webIssCat    FOR WebIssCat.
-    DEFINE BUFFER issAction    FOR issAction.
-    DEFINE BUFFER issStatus    FOR issStatus.
-    DEFINE BUFFER issNote      FOR IssNote.
-    DEFINE BUFFER WebStatus    FOR WebStatus.
-    DEFINE BUFFER webNote      FOR WebNote.
-    DEFINE BUFFER webIssArea   FOR WebIssArea.
-    DEFINE BUFFER knbSection   FOR knbSection.
-    DEFINE BUFFER knbItem      FOR knbItem.
-    DEFINE BUFFER webissagrp   FOR webissagrp.
-    DEFINE BUFFER steam        FOR steam.
+    DEFINE BUFFER webuser    FOR webuser.
+    DEFINE BUFFER customer   FOR customer.
+    DEFINE BUFFER custiv     FOR custiv.
+    DEFINE BUFFER issue      FOR issue.
+    DEFINE BUFFER ivClass    FOR ivClass.
+    DEFINE BUFFER ivSub      FOR ivSub.
+    DEFINE BUFFER ivField    FOR IvField.
+    DEFINE BUFFER CustField  FOR CustField.
+    DEFINE BUFFER webIssCat  FOR WebIssCat.
+    DEFINE BUFFER issAction  FOR issAction.
+    DEFINE BUFFER issStatus  FOR issStatus.
+    DEFINE BUFFER issNote    FOR IssNote.
+    DEFINE BUFFER WebStatus  FOR WebStatus.
+    DEFINE BUFFER webNote    FOR WebNote.
+    DEFINE BUFFER webIssArea FOR WebIssArea.
+    DEFINE BUFFER knbSection FOR knbSection.
+    DEFINE BUFFER knbItem    FOR knbItem.
+    DEFINE BUFFER webissagrp FOR webissagrp.
+    DEFINE BUFFER steam      FOR steam.
 
     CASE pc-table:
         WHEN "webissagrp" THEN
-        DO:
-            FIND webissagrp WHERE ROWID(webissagrp) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE webissagrp THEN RETURN FALSE.
-            RETURN NOT 
+            DO:
+                FIND webissagrp WHERE ROWID(webissagrp) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE webissagrp THEN RETURN FALSE.
+                RETURN NOT 
                     CAN-FIND(FIRST WebIssArea 
-                             WHERE webIssArea.CompanyCode = webissagrp.CompanyCode
-                               AND webIssArea.GroupID = webissagrp.GroupId NO-LOCK).
+                    WHERE webIssArea.CompanyCode = webissagrp.CompanyCode
+                    AND webIssArea.GroupID = webissagrp.GroupId NO-LOCK).
             
-        END.
+            END.
         WHEN "webIssCat" THEN
-        DO:
-            FIND webIssCat WHERE ROWID(webIssCat) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE webIssCat THEN RETURN FALSE.
-            IF webIssCat.IsDefault THEN RETURN FALSE.
-            RETURN NOT 
+            DO:
+                FIND webIssCat WHERE ROWID(webIssCat) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE webIssCat THEN RETURN FALSE.
+                IF webIssCat.IsDefault THEN RETURN FALSE.
+                RETURN NOT 
                     CAN-FIND(FIRST issue OF webissCat NO-LOCK).
-        END.
+            END.
         WHEN "webEQClass" THEN
-        DO:
-            RETURN TRUE.
+            DO:
+                RETURN TRUE.
             /* PH - Allow delete regardless 
             find ivClass where rowid(ivClass) = pr-rowid no-lock no-error.
             if not avail ivClass then return false.
             return not
                 can-find(first ivSub of ivClass no-lock).
             */
-        END.
+            END.
         WHEN "webSubClass" THEN
-        DO:
-            RETURN TRUE.
+            DO:
+                RETURN TRUE.
             /*
             find ivSub where rowid(ivSub) = pr-rowid no-lock no-error.
             if not avail ivSub then return false.
@@ -1413,185 +1469,185 @@ FUNCTION com-CanDelete RETURNS LOGICAL
                                ivSub.ivSubID no-lock) then return false.
             return true.
             */    
-        END.
+            END.
         WHEN "webInvField" THEN
-        DO:
-            FIND ivfield WHERE ROWID(ivfield) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE ivfield THEN RETURN FALSE.
+            DO:
+                FIND ivfield WHERE ROWID(ivfield) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE ivfield THEN RETURN FALSE.
 
-            RETURN NOT 
-                CAN-FIND(FIRST Custfield 
-                         WHERE CustField.ivFieldID = ivField.ivFieldID
-                         NO-LOCK).
+                RETURN NOT 
+                    CAN-FIND(FIRST Custfield 
+                    WHERE CustField.ivFieldID = ivField.ivFieldID
+                    NO-LOCK).
 
 
-        END.
+            END.
         WHEN "CUSTOMER" THEN
-        DO:
-            FIND customer WHERE ROWID(customer) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE customer THEN RETURN FALSE.
-            IF CAN-FIND(FIRST issue
-                WHERE issue.CompanyCode     = customer.CompanyCode
-                  AND issue.AccountNumber   = customer.AccountNumber
-                  NO-LOCK) THEN RETURN FALSE.
-            IF CAN-FIND(FIRST WebUser
-                WHERE WebUser.CompanyCode     = customer.CompanyCode
-                  AND WebUser.AccountNumber   = customer.AccountNumber
-                  NO-LOCK) THEN RETURN FALSE.
-            RETURN TRUE.
-        END.
+            DO:
+                FIND customer WHERE ROWID(customer) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE customer THEN RETURN FALSE.
+                IF CAN-FIND(FIRST issue
+                    WHERE issue.CompanyCode     = customer.CompanyCode
+                    AND issue.AccountNumber   = customer.AccountNumber
+                    NO-LOCK) THEN RETURN FALSE.
+                IF CAN-FIND(FIRST WebUser
+                    WHERE WebUser.CompanyCode     = customer.CompanyCode
+                    AND WebUser.AccountNumber   = customer.AccountNumber
+                    NO-LOCK) THEN RETURN FALSE.
+                RETURN TRUE.
+            END.
         WHEN "customerequip" THEN
-        DO:
-            RETURN TRUE.
-        END.
+            DO:
+                RETURN TRUE.
+            END.
         WHEN "WEBUSER" THEN
-        DO:
-            FIND webuser WHERE ROWID(webuser) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE webuser THEN RETURN FALSE.
-            IF CAN-FIND(FIRST issue
-                WHERE issue.AssignTo = webuser.LoginID 
-                  AND issue.companyCode = webuser.companyCode NO-LOCK) 
-            THEN RETURN FALSE.
-            IF CAN-FIND(FIRST issue
-                WHERE issue.RaisedLoginID = webuser.LoginID 
-                  AND issue.companyCode = webuser.companyCode NO-LOCK) 
-            THEN RETURN FALSE.
-            IF CAN-FIND(FIRST issAction
-                        WHERE issAction.AssignTo = webuser.LoginID NO-LOCK)
-            THEN RETURN FALSE.
+            DO:
+                FIND webuser WHERE ROWID(webuser) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE webuser THEN RETURN FALSE.
+                IF CAN-FIND(FIRST issue
+                    WHERE issue.AssignTo = webuser.LoginID 
+                    AND issue.companyCode = webuser.companyCode NO-LOCK) 
+                    THEN RETURN FALSE.
+                IF CAN-FIND(FIRST issue
+                    WHERE issue.RaisedLoginID = webuser.LoginID 
+                    AND issue.companyCode = webuser.companyCode NO-LOCK) 
+                    THEN RETURN FALSE.
+                IF CAN-FIND(FIRST issAction
+                    WHERE issAction.AssignTo = webuser.LoginID NO-LOCK)
+                    THEN RETURN FALSE.
 
-            IF CAN-FIND(FIRST issAction
-                        WHERE issAction.AssignBy = webuser.LoginID NO-LOCK)
-            THEN RETURN FALSE.
-            IF CAN-FIND(FIRST issAction
-                        WHERE issAction.CreatedBy = webuser.LoginID NO-LOCK)
-            THEN RETURN FALSE.
-            RETURN TRUE.
-        END.
+                IF CAN-FIND(FIRST issAction
+                    WHERE issAction.AssignBy = webuser.LoginID NO-LOCK)
+                    THEN RETURN FALSE.
+                IF CAN-FIND(FIRST issAction
+                    WHERE issAction.CreatedBy = webuser.LoginID NO-LOCK)
+                    THEN RETURN FALSE.
+                RETURN TRUE.
+            END.
 
         
 
 
         WHEN "webactivetype" THEN
-        DO:
-            RETURN TRUE.
-        END.
+            DO:
+                RETURN TRUE.
+            END.
             
         WHEN "webeqcontract" THEN
-        DO:
-              RETURN TRUE.
-        END.
+            DO:
+                RETURN TRUE.
+            END.
 
         WHEN "webattr" THEN
-        DO:
-            RETURN FALSE.
-        END.
-        WHEN "webmenu" THEN
-        DO:
-            RETURN FALSE.
-        END.
-        WHEN "webobject" THEN
-        DO:
-            RETURN FALSE.
-        END.
-        WHEN "webstatus" THEN
-        DO:
-            FIND webStatus WHERE ROWID(webStatus) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE webStatus THEN RETURN FALSE.
-            IF webStatus.DefaultCode THEN RETURN FALSE.
-
-            IF CAN-FIND(FIRST IssStatus WHERE issStatus.CompanyCode = 
-                        webStatus.CompanyCode
-                        AND IssStatus.NewStatusCode = webStatus.StatusCode
-                        NO-LOCK)
-            OR CAN-FIND(FIRST IssStatus WHERE issStatus.CompanyCode = 
-                        webStatus.CompanyCode
-                        AND IssStatus.OldStatusCode = webStatus.StatusCode
-                        NO-LOCK) THEN RETURN FALSE.
-
-            RETURN TRUE.
-
-
-        END.
-        WHEN "webnote" THEN
-        DO:
-            FIND webNote WHERE ROWID(webNote) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE webNote THEN RETURN FALSE.
-            IF webNote.NoteCode BEGINS "sys." THEN RETURN FALSE.
-
-            IF CAN-FIND(FIRST issNote
-                        WHERE issNote.CompanyCode = webNote.CompanyCode
-                          AND issNote.NoteCode    = webNote.NoteCode NO-LOCK)
-            THEN RETURN FALSE.
-
-
-            RETURN TRUE.
-
-        END.
-        WHEN "webIssArea" THEN
-        DO:
-            FIND webIssArea WHERE ROWID(webIssArea) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE webIssArea THEN RETURN FALSE.
-            IF CAN-FIND(FIRST issue
-                        WHERE issue.CompanyCode = webIssArea.CompanyCode
-                          AND issue.AreaCode    = webIssArea.AreaCode NO-LOCK)
-            THEN RETURN FALSE.
-
-            RETURN TRUE.
-
-        END.
-        WHEN "webcomp" THEN
-        DO:
-            RETURN FALSE.
-        END.
-        WHEN "WEBACTION" THEN
-        DO:
-            FIND webAction WHERE ROWID(webAction) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE webAction THEN RETURN FALSE.
-            IF CAN-FIND(FIRST issAction
-                        WHERE issAction.ActionID = webAction.ActionID
-                          NO-LOCK)
-            THEN RETURN FALSE.
-
-            RETURN TRUE.
-        END.
-        WHEN "knbsection" THEN
-        DO:
-            FIND knbSection WHERE ROWID(knbSection) = pr-rowid NO-LOCK NO-ERROR.
-            IF NOT AVAILABLE knbSection THEN RETURN FALSE.
-            IF CAN-FIND(FIRST knbItem OF knbSection NO-LOCK)
-            THEN RETURN FALSE.
-
-            RETURN TRUE.
-        END.
-        WHEN "knbitem" THEN
-        DO:
-            RETURN TRUE.
-        END.
-        WHEN "gentab" THEN
-        DO:
-            RETURN TRUE.
-        END.
-        WHEN 'iemailtmp' THEN
-        DO:
-            RETURN TRUE.
-        END.
-        WHEN "Steam" THEN
-        DO:
-            FIND steam WHERE ROWID(steam) = pr-rowid NO-LOCK NO-ERROR.
-
-            RETURN NOT
-                CAN-FIND(FIRST customer 
-                         WHERE customer.companyCode = steam.companyCode
-                           AND customer.st-num = steam.st-num NO-LOCK).
-
-
-        END.
-        OTHERWISE
             DO:
-                MESSAGE "com-CanDelete invalid table for " pc-table.
                 RETURN FALSE.
             END.
+        WHEN "webmenu" THEN
+            DO:
+                RETURN FALSE.
+            END.
+        WHEN "webobject" THEN
+            DO:
+                RETURN FALSE.
+            END.
+        WHEN "webstatus" THEN
+            DO:
+                FIND webStatus WHERE ROWID(webStatus) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE webStatus THEN RETURN FALSE.
+                IF webStatus.DefaultCode THEN RETURN FALSE.
+
+                IF CAN-FIND(FIRST IssStatus WHERE issStatus.CompanyCode = 
+                    webStatus.CompanyCode
+                    AND IssStatus.NewStatusCode = webStatus.StatusCode
+                    NO-LOCK)
+                    OR CAN-FIND(FIRST IssStatus WHERE issStatus.CompanyCode = 
+                    webStatus.CompanyCode
+                    AND IssStatus.OldStatusCode = webStatus.StatusCode
+                    NO-LOCK) THEN RETURN FALSE.
+
+                RETURN TRUE.
+
+
+            END.
+        WHEN "webnote" THEN
+            DO:
+                FIND webNote WHERE ROWID(webNote) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE webNote THEN RETURN FALSE.
+                IF webNote.NoteCode BEGINS "sys." THEN RETURN FALSE.
+
+                IF CAN-FIND(FIRST issNote
+                    WHERE issNote.CompanyCode = webNote.CompanyCode
+                    AND issNote.NoteCode    = webNote.NoteCode NO-LOCK)
+                    THEN RETURN FALSE.
+
+
+                RETURN TRUE.
+
+            END.
+        WHEN "webIssArea" THEN
+            DO:
+                FIND webIssArea WHERE ROWID(webIssArea) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE webIssArea THEN RETURN FALSE.
+                IF CAN-FIND(FIRST issue
+                    WHERE issue.CompanyCode = webIssArea.CompanyCode
+                    AND issue.AreaCode    = webIssArea.AreaCode NO-LOCK)
+                    THEN RETURN FALSE.
+
+                RETURN TRUE.
+
+            END.
+        WHEN "webcomp" THEN
+            DO:
+                RETURN FALSE.
+            END.
+        WHEN "WEBACTION" THEN
+            DO:
+                FIND webAction WHERE ROWID(webAction) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE webAction THEN RETURN FALSE.
+                IF CAN-FIND(FIRST issAction
+                    WHERE issAction.ActionID = webAction.ActionID
+                    NO-LOCK)
+                    THEN RETURN FALSE.
+
+                RETURN TRUE.
+            END.
+        WHEN "knbsection" THEN
+            DO:
+                FIND knbSection WHERE ROWID(knbSection) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE knbSection THEN RETURN FALSE.
+                IF CAN-FIND(FIRST knbItem OF knbSection NO-LOCK)
+                    THEN RETURN FALSE.
+
+                RETURN TRUE.
+            END.
+        WHEN "knbitem" THEN
+            DO:
+                RETURN TRUE.
+            END.
+        WHEN "gentab" THEN
+            DO:
+                RETURN TRUE.
+            END.
+        WHEN 'iemailtmp' THEN
+            DO:
+                RETURN TRUE.
+            END.
+        WHEN "Steam" THEN
+            DO:
+                FIND steam WHERE ROWID(steam) = pr-rowid NO-LOCK NO-ERROR.
+
+                RETURN NOT
+                    CAN-FIND(FIRST customer 
+                    WHERE customer.companyCode = steam.companyCode
+                    AND customer.st-num = steam.st-num NO-LOCK).
+
+
+            END.
+        OTHERWISE
+        DO:
+            MESSAGE "com-CanDelete invalid table for " pc-table.
+            RETURN FALSE.
+        END.
     END CASE.
  
     RETURN TRUE.
@@ -1600,7 +1656,7 @@ END FUNCTION.
 
 
 FUNCTION com-CatName RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-Code AS CHARACTER
     ) :
 
@@ -1610,7 +1666,7 @@ FUNCTION com-CatName RETURNS CHARACTER
 
     FIND b-table NO-LOCK 
         WHERE b-table.CompanyCode = pc-CompanyCode
-          AND b-table.CatCode = pc-Code NO-ERROR.
+        AND b-table.CatCode = pc-Code NO-ERROR.
 
        
     RETURN IF AVAILABLE  b-table THEN b-table.DESCRIPTION ELSE pc-code.
@@ -1622,35 +1678,35 @@ END FUNCTION.
 
 
 FUNCTION com-CheckSystemSetup RETURNS LOGICAL
-  ( pc-CompanyCode AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
-                               /*
-                               def var lc-System-Note-Code                 as char
-    initial 'SYS.EMAILCUST,SYS.ASSIGN,SYS.SLA'  no-undo.
+    ( pc-CompanyCode AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    /*
+    def var lc-System-Note-Code                 as char
+initial 'SYS.EMAILCUST,SYS.ASSIGN,SYS.SLA'  no-undo.
 def var lc-System-Note-Desc                 as char
-    initial 'System - Customer Emailed,System - Issue Assignment,Sys - SLA Assigned'
-    no-undo.
+initial 'System - Customer Emailed,System - Issue Assignment,Sys - SLA Assigned'
+no-undo.
 */
-    DEFINE VARIABLE li-loop AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-loop AS INTEGER NO-UNDO.
   
-    DEFINE BUFFER WebNote      FOR WebNote.
-    DEFINE BUFFER KnbSection   FOR knbSection.
+    DEFINE BUFFER WebNote    FOR WebNote.
+    DEFINE BUFFER KnbSection FOR knbSection.
 
     IF pc-companyCode = "" THEN RETURN TRUE.
 
     DO TRANSACTION:
         DO li-loop = 1 TO NUM-ENTRIES(lc-System-Note-Code):
             IF CAN-FIND(WebNote WHERE WebNote.CompanyCode = pc-companyCode 
-                         AND WebNote.NoteCode = entry(li-loop,lc-System-Note-Code) NO-LOCK)
-                        THEN NEXT.
+                AND WebNote.NoteCode = entry(li-loop,lc-System-Note-Code) NO-LOCK)
+                THEN NEXT.
             CREATE WebNote.
             ASSIGN 
-                WebNote.CompanyCode = pc-companyCode
-                WebNote.NoteCode    = ENTRY(li-loop,lc-System-Note-Code)
-                WebNote.description = ENTRY(li-loop,lc-System-Note-Desc)
+                WebNote.CompanyCode     = pc-companyCode
+                WebNote.NoteCode        = ENTRY(li-loop,lc-System-Note-Code)
+                WebNote.description     = ENTRY(li-loop,lc-System-Note-Desc)
                 WebNote.CustomerCanView = FALSE.
             RELEASE WebNote.
         END.
@@ -1661,11 +1717,11 @@ END FUNCTION.
 
 
 FUNCTION com-CookieDate RETURNS DATE
-  ( pc-user AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-user AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER webuser FOR webuser.
     DEFINE BUFFER company FOR company.
@@ -1687,11 +1743,11 @@ END FUNCTION.
 
 
 FUNCTION com-CookieTime RETURNS INTEGER
-( pc-user AS CHARACTER ) :
-/*------------------------------------------------------------------------------
- Purpose:  
-   Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-user AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+     Purpose:  
+       Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER webuser FOR webuser.
     DEFINE BUFFER company FOR company.
@@ -1715,18 +1771,18 @@ END FUNCTION.
 
 
 FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-AccountNumber AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE lc-return   AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE lc-char     AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-loop   AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-char   AS CHARACTER NO-UNDO.
 
-    DEFINE BUFFER slahead  FOR slahead.
+    DEFINE BUFFER slahead FOR slahead.
 
 
     DO li-loop = 1 TO 2:
@@ -1736,11 +1792,11 @@ FUNCTION com-CustomerAvailableSLA RETURNS CHARACTER
 
         FOR EACH slahead NO-LOCK
             WHERE slahead.companycode = pc-CompanyCode
-              AND slahead.AccountNumber = lc-char
-              BY slahead.SLACode:
+            AND slahead.AccountNumber = lc-char
+            BY slahead.SLACode:
 
             IF lc-return = ""
-            THEN lc-return = STRING(ROWID(slahead)).
+                THEN lc-return = STRING(ROWID(slahead)).
             ELSE lc-return = lc-return + "|" + string(ROWID(slahead)).
         END.
 
@@ -1753,21 +1809,21 @@ END FUNCTION.
 
 
 FUNCTION com-CustomerName RETURNS CHARACTER
-  ( pc-Company AS CHARACTER,
+    ( pc-Company AS CHARACTER,
     pc-Account  AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
    
-    DEFINE BUFFER b-Customer   FOR Customer.
+    DEFINE BUFFER b-Customer FOR Customer.
 
     
     FIND b-Customer
         WHERE b-Customer.CompanyCode = pc-Company
-          AND b-Customer.AccountNumber = pc-Account
-          NO-LOCK NO-ERROR.
+        AND b-Customer.AccountNumber = pc-Account
+        NO-LOCK NO-ERROR.
 
     RETURN IF AVAILABLE b-Customer THEN b-Customer.name ELSE "".
 
@@ -1776,30 +1832,31 @@ END FUNCTION.
 
 
 FUNCTION com-CustomerOpenIssues RETURNS INTEGER
- ( pc-CompanyCode AS CHARACTER,
-   pc-accountNumber AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-CompanyCode AS CHARACTER,
+    pc-accountNumber AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
 
-    DEFINE BUFFER Issue        FOR Issue.
-    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER Issue     FOR Issue.
+    DEFINE BUFFER WebStatus FOR WebStatus.
 
 
     FOR EACH Issue NO-LOCK
         WHERE Issue.CompanyCode = pc-companyCode
-          AND Issue.AccountNumber = pc-AccountNumber
-          ,
-          FIRST WebStatus NO-LOCK
-                WHERE WebStatus.companyCode = Issue.CompanyCode
-                  AND WebStatus.StatusCode  = Issue.StatusCode
-                  AND WebStatus.Completed   = FALSE
-          :
+        AND Issue.AccountNumber = pc-AccountNumber
+        ,
+        FIRST WebStatus NO-LOCK
+        WHERE WebStatus.companyCode = Issue.CompanyCode
+        AND WebStatus.StatusCode  = Issue.StatusCode
+        AND WebStatus.Completed   = FALSE
+        :
 
-        ASSIGN li-return = li-return + 1.
+        ASSIGN 
+            li-return = li-return + 1.
 
     END.
 
@@ -1809,15 +1866,15 @@ END FUNCTION.
 
 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
-  ( pc-code AS CHARACTER,
+    ( pc-code AS CHARACTER,
     pc-code-list AS CHARACTER,
     pc-code-display AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-index        AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-index AS INTEGER NO-UNDO.
 
     ASSIGN
         li-index = LOOKUP(pc-code,pc-code-list,"|").
@@ -1830,16 +1887,19 @@ END FUNCTION.
 
 
 FUNCTION com-DescribeTicket RETURNS CHARACTER
-  ( pc-TxnType AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-TxnType AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     CASE pc-txntype:
-        WHEN "TCK" THEN RETURN "Ticket".
-        WHEN "ADJ" THEN RETURN "Adjustment".
-        WHEN "ACT" THEN RETURN "Activity".
+        WHEN "TCK" THEN 
+            RETURN "Ticket".
+        WHEN "ADJ" THEN 
+            RETURN "Adjustment".
+        WHEN "ACT" THEN 
+            RETURN "Activity".
     END CASE.
       
     RETURN pc-txntype.
@@ -1848,7 +1908,7 @@ END FUNCTION.
 
 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-GType AS CHARACTER,
     pc-Code AS CHARACTER
     ) :
@@ -1859,8 +1919,8 @@ FUNCTION com-GenTabDesc RETURNS CHARACTER
 
     FIND b-GenTab NO-LOCK 
         WHERE b-GenTab.CompanyCode = pc-CompanyCode
-          AND b-GenTab.gType = pc-gType
-          AND b-gentab.gCode = pc-Code NO-ERROR.
+        AND b-GenTab.gType = pc-gType
+        AND b-gentab.gCode = pc-Code NO-ERROR.
 
        
     RETURN IF AVAILABLE  b-gentab THEN b-GenTab.Descr ELSE "Missing".
@@ -1872,19 +1932,19 @@ END FUNCTION.
 
 
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
-  ( pc-CompanyCode AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-CompanyCode AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER b-table FOR WebIssCat.
 
 
     FIND FIRST b-table
         WHERE b-table.CompanyCode = pc-CompanyCode
-          AND b-table.isDefault   = TRUE
-          NO-LOCK NO-ERROR.
+        AND b-table.isDefault   = TRUE
+        NO-LOCK NO-ERROR.
 
     RETURN
         IF AVAILABLE b-table THEN b-table.CatCode ELSE "".
@@ -1894,13 +1954,13 @@ END FUNCTION.
 
 
 FUNCTION com-Initialise RETURNS LOGICAL
-  ( /* parameter-definitions */ ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( /* parameter-definitions */ ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-loop AS INTEGER NO-UNDO.
 
 
     DO li-loop = 0 TO 23:
@@ -1913,7 +1973,7 @@ FUNCTION com-Initialise RETURNS LOGICAL
             NEXT.
         END.
         ASSIGN 
-            lc-global-hour-code = lc-global-hour-code + "|" + 
+            lc-global-hour-code    = lc-global-hour-code + "|" + 
                                   string(li-loop)
             lc-global-hour-display = lc-global-hour-display + "|" + 
                                          string(li-loop).
@@ -1924,18 +1984,18 @@ FUNCTION com-Initialise RETURNS LOGICAL
 
     DO li-loop = 0 TO 55 BY 5:
         IF li-loop = 0
-        THEN ASSIGN lc-global-min-code = STRING(li-loop)
-                    lc-global-min-display = STRING(li-loop,"99").
-        ELSE ASSIGN lc-global-min-code = lc-global-min-code + "|" + string(li-loop)
-                    lc-global-min-display = lc-global-min-display + "|" + string(li-loop,"99").
+            THEN ASSIGN lc-global-min-code    = STRING(li-loop)
+                lc-global-min-display = STRING(li-loop,"99").
+        ELSE ASSIGN lc-global-min-code    = lc-global-min-code + "|" + string(li-loop)
+                lc-global-min-display = lc-global-min-display + "|" + string(li-loop,"99").
     END.
     
     DO li-loop = 0 TO 59 BY 1:
         IF li-loop = 0
-        THEN ASSIGN lc-global-min-code = STRING(li-loop)
-                    lc-global-min-display = STRING(li-loop,"99").
-        ELSE ASSIGN lc-global-min-code = lc-global-min-code + "|" + string(li-loop)
-                    lc-global-min-display = lc-global-min-display + "|" + string(li-loop,"99").
+            THEN ASSIGN lc-global-min-code    = STRING(li-loop)
+                lc-global-min-display = STRING(li-loop,"99").
+        ELSE ASSIGN lc-global-min-code    = lc-global-min-code + "|" + string(li-loop)
+                lc-global-min-display = lc-global-min-display + "|" + string(li-loop,"99").
     END.
 
 
@@ -1945,22 +2005,24 @@ END FUNCTION.
 
 
 FUNCTION com-InitialSetup RETURNS LOGICAL
-  ( pc-LoginID AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER webuser FOR webuser.
 
-    ASSIGN lc-global-user = pc-LoginID.
+    ASSIGN 
+        lc-global-user = pc-LoginID.
 
 
     FIND webuser WHERE webuser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
     IF AVAILABLE webuser THEN 
     DO:
-        ASSIGN lc-global-company = webuser.CompanyCode.
+        ASSIGN 
+            lc-global-company = webuser.CompanyCode.
         DYNAMIC-FUNCTION('com-CheckSystemSetup':U,lc-global-company).
     END.
 
@@ -1971,12 +2033,12 @@ END FUNCTION.
 
 
 FUNCTION com-InternalTime RETURNS INTEGER
-  ( pi-hours AS INTEGER,
+    ( pi-hours AS INTEGER,
     pi-mins  AS INTEGER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
 
     RETURN ( ( pi-hours * 60 ) * 60 ) + ( pi-mins * 60 ).
@@ -1985,18 +2047,18 @@ END FUNCTION.
 
 
 FUNCTION com-IsContractor RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER Webuser FOR WebUser.
 
     FIND WebUser
         WHERE WebUser.LoginID = pc-LoginID
-          NO-LOCK NO-ERROR.
+        NO-LOCK NO-ERROR.
     
     IF NOT AVAILABLE WebUser THEN RETURN FALSE.
     
@@ -2006,18 +2068,18 @@ END FUNCTION.
 
 
 FUNCTION com-IsCustomer RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-LoginID      AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER Webuser FOR WebUser.
 
     FIND WebUser
         WHERE WebUser.LoginID = pc-LoginID
-          NO-LOCK NO-ERROR.
+        NO-LOCK NO-ERROR.
     
     IF NOT AVAILABLE WebUser THEN RETURN FALSE.
     
@@ -2027,25 +2089,26 @@ END FUNCTION.
 
 
 FUNCTION com-IssueActionsStatus RETURNS INTEGER
-  ( pc-companyCode AS CHARACTER,
+    ( pc-companyCode AS CHARACTER,
     pi-issue   AS INTEGER,
     pc-status  AS CHARACTER) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
 
-    DEFINE BUFFER IssAction    FOR IssAction.
+    DEFINE BUFFER IssAction FOR IssAction.
 
 
     FOR EACH IssAction NO-LOCK
         WHERE IssAction.companycode = pc-companyCode
-          AND issAction.issuenumber = pi-issue 
-          AND IssAction.ActionStatus = pc-status:
+        AND issAction.issuenumber = pi-issue 
+        AND IssAction.ActionStatus = pc-status:
 
-        ASSIGN li-return = li-return + 1.
+        ASSIGN 
+            li-return = li-return + 1.
 
     END.
 
@@ -2057,21 +2120,21 @@ END FUNCTION.
 
 
 FUNCTION com-IssueStatusAlert RETURNS LOGICAL
-  ( pc-CompanyCode AS CHARACTER,
+    ( pc-CompanyCode AS CHARACTER,
     pc-CreateSource AS CHARACTER,
     pc-StatusCode   AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER WebStatus FOR WebStatus.
 
     IF pc-CreateSource <> "EMAIL" THEN RETURN TRUE.
 
     FIND WebStatus
         WHERE WebStatus.CompanyCode = pc-CompanyCode
-          AND WebStatus.StatusCode  = pc-StatusCode NO-LOCK NO-ERROR.
+        AND WebStatus.StatusCode  = pc-StatusCode NO-LOCK NO-ERROR.
     IF NOT AVAILABLE WebStatus THEN RETURN TRUE.
 
     RETURN NOT WebStatus.IgnoreEmail.
@@ -2081,17 +2144,17 @@ END FUNCTION.
 
 
 FUNCTION com-IsSuperUser RETURNS LOGICAL
-  ( pc-LoginID      AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID      AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER Webuser FOR WebUser.
 
     FIND WebUser
         WHERE WebUser.LoginID = pc-LoginID
-          NO-LOCK NO-ERROR.
+        NO-LOCK NO-ERROR.
     
     IF NOT AVAILABLE WebUser THEN RETURN FALSE.
     
@@ -2101,41 +2164,41 @@ END FUNCTION.
 
 
 FUNCTION com-MonthBegin RETURNS DATE
-  ( pd-date AS DATE) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pd-date AS DATE) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  RETURN pd-date - ( DAY(pd-date) ) + 1.
+    RETURN pd-date - ( DAY(pd-date) ) + 1.
 
 END FUNCTION.
 
 
 FUNCTION com-MonthEnd RETURNS DATE
-  ( pd-date AS DATE ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pd-date AS DATE ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  RETURN ((DATE(MONTH(pd-date),28,YEAR(pd-date)) + 4) - 
-          DAY(DATE(MONTH(pd-date),28,YEAR(pd-date)) + 4)).
+    RETURN ((DATE(MONTH(pd-date),28,YEAR(pd-date)) + 4) - 
+        DAY(DATE(MONTH(pd-date),28,YEAR(pd-date)) + 4)).
 
 END FUNCTION.
 
 
 FUNCTION com-NearestTimeUnit RETURNS INTEGER
-  ( pi-time AS INTEGER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pi-time AS INTEGER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
   
-    DEFINE VARIABLE lc-time     AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE li-mins     AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE li-rem      AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-time AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-mins AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE li-rem  AS INTEGER   NO-UNDO.
 
 
     ASSIGN
@@ -2157,22 +2220,23 @@ END FUNCTION.
 
 
 FUNCTION com-NumberOfActions RETURNS INTEGER
-  ( pc-LoginID AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
 
-    DEFINE BUFFER IssAction    FOR IssAction.
+    DEFINE BUFFER IssAction FOR IssAction.
 
 
     FOR EACH IssAction NO-LOCK
         WHERE IssAction.AssignTo = pc-LoginID
-          AND IssAction.ActionStatus = "OPEN":
+        AND IssAction.ActionStatus = "OPEN":
 
-        ASSIGN li-return = li-return + 1.
+        ASSIGN 
+            li-return = li-return + 1.
 
     END.
 
@@ -2183,22 +2247,23 @@ END FUNCTION.
 
 
 FUNCTION com-NumberOfAlerts RETURNS INTEGER
- ( pc-LoginID AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
 
-    DEFINE BUFFER IssAlert    FOR IssAlert.
+    DEFINE BUFFER IssAlert FOR IssAlert.
 
 
     FOR EACH IssAlert NO-LOCK
         WHERE IssAlert.LoginID = pc-LoginID
-          :
+        :
 
-        ASSIGN li-return = li-return + 1.
+        ASSIGN 
+            li-return = li-return + 1.
 
     END.
 
@@ -2208,22 +2273,45 @@ END FUNCTION.
 
 
 FUNCTION com-NumberOfEmails RETURNS INTEGER
-  ( pc-LoginID AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return       AS INTEGER      NO-UNDO.
-    DEFINE BUFFER webuser      FOR webuser.
-    DEFINE BUFFER e            FOR EmailH.
-
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
+    DEFINE BUFFER webuser FOR webuser.
+    DEFINE BUFFER e       FOR EmailH.
+    DEFINE BUFFER Customer FOR Customer.
+    DEFINE VARIABLE ll-steam AS LOGICAL NO-UNDO.
+    
     FIND webuser WHERE webuser.LoginID = pc-loginID NO-LOCK NO-ERROR.
 
+    ll-Steam =
+        DYNAMIC-FUNCTION("com-isTeamMember", webuser.CompanyCode,pc-loginID,?).
+        
     IF AVAILABLE webuser
-    AND webuser.userclass = "INTERNAL" AND webuser.SuperUser THEN
+        AND webuser.userclass = "INTERNAL" AND webuser.SuperUser THEN
     DO:
         FOR EACH e WHERE e.companyCode = webuser.CompanyCode NO-LOCK:
+            IF e.AccountNumber <> "" THEN
+            DO:
+                FIND Customer WHERE Customer.CompanyCode = webuser.CompanyCode
+                    AND Customer.AccountNumber = e.AccountNumber
+                    NO-LOCK NO-ERROR.
+                IF ll-steam THEN
+                DO:
+                    IF Customer.st-num = 0 
+                        THEN NEXT.
+                    ELSE
+                        IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginID
+                            AND webusteam.st-num = customer.st-num NO-LOCK) 
+                
+                            THEN NEXT.
+                
+                END.    
+            END.
+            
             ASSIGN
                 li-return = li-return + 1.
         END.
@@ -2238,60 +2326,60 @@ END FUNCTION.
 
 FUNCTION com-NumberOfInventoryWarnings RETURNS INTEGER
     ( pc-LoginID AS CHARACTER ) :
-/*------------------------------------------------------------------------------
- Purpose:  
-   Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+     Purpose:  
+       Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return       AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE ld-WarnFrom     AS DATE     NO-UNDO.
-    DEFINE VARIABLE ld-DueDate      AS DATE     NO-UNDO.
+    DEFINE VARIABLE li-return   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE ld-WarnFrom AS DATE    NO-UNDO.
+    DEFINE VARIABLE ld-DueDate  AS DATE    NO-UNDO.
     
-    DEFINE BUFFER webUser      FOR WebUser.
-    DEFINE BUFFER ivField      FOR ivField.
-    DEFINE BUFFER ivSub        FOR ivSub.
-    DEFINE BUFFER custField    FOR custField.
+    DEFINE BUFFER webUser   FOR WebUser.
+    DEFINE BUFFER ivField   FOR ivField.
+    DEFINE BUFFER ivSub     FOR ivSub.
+    DEFINE BUFFER custField FOR custField.
 
     FIND webuser WHERE webuser.LoginID = pc-loginID NO-LOCK NO-ERROR.
 
     IF DYNAMIC-FUNCTION('com-IsSuperUser':U,pc-loginid) THEN
-    FOR EACH ivField NO-LOCK
-        WHERE ivField.dType = "date"
-          AND ivField.dWarning > 0,
-          FIRST ivSub OF ivField NO-LOCK:
+        FOR EACH ivField NO-LOCK
+            WHERE ivField.dType = "date"
+            AND ivField.dWarning > 0,
+            FIRST ivSub OF ivField NO-LOCK:
 
-        IF ivSub.CompanyCode <> webuser.CompanyCode THEN NEXT.
-
-        ASSIGN
-            ld-WarnFrom = TODAY - ivField.dWarning.
-
-        FOR EACH CustField NO-LOCK
-            WHERE CustField.ivFieldID = ivField.ivFieldID:
-
-            
-            IF custField.FieldData = "" 
-            OR custField.FieldData = ? THEN NEXT.
+            IF ivSub.CompanyCode <> webuser.CompanyCode THEN NEXT.
 
             ASSIGN
-                ld-DueDate = DATE(custfield.FieldData) no-error.
-            IF ERROR-STATUS:ERROR 
-            OR ld-DueDate = ? THEN NEXT.
+                ld-WarnFrom = TODAY - ivField.dWarning.
 
-            /* 
-            *** Waring base on
-            *** Today in within range of Inventory Date - Warning Period AND
-            *** Inventory Date is today or in the future
-            *** If the inventory date has passed then no more warnings
-            ***
-            */
-            IF TODAY >= ld-DueDate - ivField.dWarning
-            AND ld-DueDate >= TODAY  
-            THEN ASSIGN li-return = li-return + 1.
-        END.
+            FOR EACH CustField NO-LOCK
+                WHERE CustField.ivFieldID = ivField.ivFieldID:
+
+            
+                IF custField.FieldData = "" 
+                    OR custField.FieldData = ? THEN NEXT.
+
+                ASSIGN
+                    ld-DueDate = DATE(custfield.FieldData) no-error.
+                IF ERROR-STATUS:ERROR 
+                    OR ld-DueDate = ? THEN NEXT.
+
+                /* 
+                *** Waring base on
+                *** Today in within range of Inventory Date - Warning Period AND
+                *** Inventory Date is today or in the future
+                *** If the inventory date has passed then no more warnings
+                ***
+                */
+                IF TODAY >= ld-DueDate - ivField.dWarning
+                    AND ld-DueDate >= TODAY  
+                    THEN ASSIGN li-return = li-return + 1.
+            END.
             
 
 
-    END.
+        END.
 
     RETURN li-return.
 
@@ -2299,29 +2387,49 @@ END FUNCTION.
 
 
 FUNCTION com-NumberOfOpenActions RETURNS INTEGER
-  ( pc-LoginID AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
 
-    DEFINE BUFFER IssAction    FOR IssAction.
-    DEFINE BUFFER WebUser      FOR WebUser.
+    DEFINE BUFFER IssAction FOR IssAction.
+    DEFINE BUFFER WebUser   FOR WebUser.
+    DEFINE BUFFER Issue     FOR Issue.
+    DEFINE BUFFER customer  FOR Customer.
+    DEFINE VARIABLE ll-steam AS LOGICAL NO-UNDO.
+        
 
 
     FIND webuser WHERE webuser.LoginID = pc-loginid NO-LOCK NO-ERROR.
 
     IF NOT AVAILABLE webuser THEN RETURN 0.
 
+    ll-Steam =
+        DYNAMIC-FUNCTION("com-isTeamMember", webuser.CompanyCode,pc-loginID,?).
+        
 
     IF webUser.SuperUser THEN
     FOR EACH IssAction NO-LOCK
         WHERE IssAction.CompanyCode = webuser.CompanyCode
-          AND IssAction.ActionStatus = "OPEN":
-
-        ASSIGN li-return = li-return + 1.
+        AND IssAction.ActionStatus = "OPEN":
+    
+        IF ll-steam THEN
+        DO:
+            FIND Issue OF issaction NO-LOCK NO-ERROR.
+            FIND Customer OF Issue NO-LOCK NO-ERROR.
+            IF Customer.st-num = 0 
+            THEN NEXT.
+            ELSE
+            IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginID
+                 AND webusteam.st-num = customer.st-num NO-LOCK) THEN NEXT.
+                            
+            
+        END.
+        ASSIGN 
+            li-return = li-return + 1.
 
     END.
 
@@ -2332,29 +2440,30 @@ END FUNCTION.
 
 
 FUNCTION com-NumberUnAssigned RETURNS INTEGER
- ( pc-CompanyCode AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-CompanyCode AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE li-return AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
 
-    DEFINE BUFFER Issue        FOR Issue.
-    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER Issue     FOR Issue.
+    DEFINE BUFFER WebStatus FOR WebStatus.
 
 
     FOR EACH Issue NO-LOCK
         WHERE Issue.CompanyCode = pc-companyCode
-          AND Issue.AssignTo = ""
-           ,
-          FIRST WebStatus NO-LOCK
-                WHERE WebStatus.companyCode = Issue.CompanyCode
-                  AND WebStatus.StatusCode  = Issue.StatusCode
-                  AND WebStatus.Completed   = FALSE
-          :
+        AND Issue.AssignTo = ""
+        ,
+        FIRST WebStatus NO-LOCK
+        WHERE WebStatus.companyCode = Issue.CompanyCode
+        AND WebStatus.StatusCode  = Issue.StatusCode
+        AND WebStatus.Completed   = FALSE
+        :
 
-        ASSIGN li-return = li-return + 1.
+        ASSIGN 
+            li-return = li-return + 1.
 
     END.
 
@@ -2364,20 +2473,20 @@ END FUNCTION.
 
 
 FUNCTION com-QuickView RETURNS LOGICAL
-  ( pc-LoginID  AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID  AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER b-WebUser    FOR webUser.
-    DEFINE BUFFER b-Customer   FOR Customer.
+    DEFINE BUFFER b-WebUser  FOR webUser.
+    DEFINE BUFFER b-Customer FOR Customer.
 
     FIND b-WebUser
         WHERE b-WebUser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
     IF NOT AVAILABLE b-webuser
-    OR b-webuser.UserClass = "{&CUSTOMER}" THEN RETURN FALSE.
+        OR b-webuser.UserClass = "{&CUSTOMER}" THEN RETURN FALSE.
 
     IF b-webuser.UserClass = "{&CONTRACT}" THEN RETURN TRUE.
     
@@ -2390,11 +2499,11 @@ END FUNCTION.
 
 
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
-  ( pc-user AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-user AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER webUser FOR WebUser.
     DEFINE BUFFER company FOR company.
@@ -2404,7 +2513,7 @@ FUNCTION com-RequirePasswordChange RETURNS LOGICAL
         WHERE webUser.loginid = pc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
 
     IF LOCKED webuser
-    OR NOT AVAILABLE webuser THEN RETURN FALSE.
+        OR NOT AVAILABLE webuser THEN RETURN FALSE.
 
     
     FIND company 
@@ -2419,7 +2528,7 @@ FUNCTION com-RequirePasswordChange RETURNS LOGICAL
 
 
     RETURN ( webuser.LastPasswordChange + company.PasswordExpire ) <=
-           TODAY.
+        TODAY.
     
 
 END FUNCTION.
@@ -2427,38 +2536,38 @@ END FUNCTION.
 
 FUNCTION com-SLADescription RETURNS CHARACTER
     ( pf-SLAID AS DECIMAL ) :
-/*------------------------------------------------------------------------------
- Purpose:  
-   Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+     Purpose:  
+       Notes:  
+    ------------------------------------------------------------------------------*/
 
-   DEFINE BUFFER slahead  FOR slahead.
+    DEFINE BUFFER slahead FOR slahead.
 
-   FIND slahead
-       WHERE slahead.SLAID = pf-SLAID
-       NO-LOCK NO-ERROR.
+    FIND slahead
+        WHERE slahead.SLAID = pf-SLAID
+        NO-LOCK NO-ERROR.
 
 
-   RETURN IF AVAILABLE slahead
-          THEN slahead.description ELSE "".
+    RETURN IF AVAILABLE slahead
+        THEN slahead.description ELSE "".
 
 END FUNCTION.
 
 
 FUNCTION com-StatusTrackIssue RETURNS LOGICAL
-  ( pc-companycode AS CHARACTER,
+    ( pc-companycode AS CHARACTER,
     pc-StatusCode  AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER  webStatus   FOR webStatus.
+    DEFINE BUFFER webStatus FOR webStatus.
 
     FIND webStatus
         WHERE webStatus.companycode = pc-companycode
-          AND webStatus.StatusCode  = pc-statuscode
-          NO-LOCK NO-ERROR.
+        AND webStatus.StatusCode  = pc-statuscode
+        NO-LOCK NO-ERROR.
 
     RETURN IF AVAILABLE webstatus THEN webstatus.CustomerTrack ELSE FALSE.
 
@@ -2466,15 +2575,15 @@ END FUNCTION.
 
 
 FUNCTION com-StringReturn RETURNS CHARACTER
-  ( pc-orig AS CHARACTER,
+    ( pc-orig AS CHARACTER,
     pc-add AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     IF pc-add = ""
-    OR pc-add = ? THEN RETURN pc-orig.
+        OR pc-add = ? THEN RETURN pc-orig.
 
     IF pc-orig = "" THEN RETURN pc-add.
 
@@ -2484,23 +2593,23 @@ END FUNCTION.
 
 
 FUNCTION com-SystemLog RETURNS LOGICAL
-  ( pc-ActType AS CHARACTER,
+    ( pc-ActType AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AttrData AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER SysAct FOR SysAct.
 
     DO TRANSACTION:
         CREATE SysAct.
         ASSIGN
-            SysAct.ActDate = TODAY
-            SysAct.ActTime = TIME
-            SysAct.LoginID = pc-LoginID
-            SysAct.ActType = pc-ActType
+            SysAct.ActDate  = TODAY
+            SysAct.ActTime  = TIME
+            SysAct.LoginID  = pc-LoginID
+            SysAct.ActType  = pc-ActType
             SysAct.AttrData = pc-AttrData.
 
         RELEASE SysAct.
@@ -2513,19 +2622,19 @@ END FUNCTION.
 
 
 FUNCTION com-TicketOnly RETURNS LOGICAL
-  ( pc-companyCode  AS CHARACTER,
+    ( pc-companyCode  AS CHARACTER,
     pc-AccountNumber      AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER Customer FOR Customer.
 
     FIND Customer
         WHERE Customer.CompanyCode      = pc-companyCode
-          AND Customer.AccountNumber    = pc-AccountNumber
-          NO-LOCK NO-ERROR.
+        AND Customer.AccountNumber    = pc-AccountNumber
+        NO-LOCK NO-ERROR.
     
     IF NOT AVAILABLE Customer THEN RETURN FALSE.
     
@@ -2535,38 +2644,40 @@ END FUNCTION.
 
 
 FUNCTION com-TimeReturn RETURNS CHARACTER
-  ( pc-Type AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-Type AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     CASE pc-Type:
         WHEN "HOUR" 
-        THEN      RETURN lc-global-hour-code + "^" + lc-global-hour-display.
-        OTHERWISE RETURN lc-global-min-code + "^" + lc-global-min-display.
+        THEN      
+            RETURN lc-global-hour-code + "^" + lc-global-hour-display.
+        OTHERWISE 
+        RETURN lc-global-min-code + "^" + lc-global-min-display.
     END CASE.
 END FUNCTION.
 
 
 FUNCTION com-TimeToString RETURNS CHARACTER
-  ( pi-time AS INTEGER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
-    DEFINE VARIABLE li-sec-hours        AS INTEGER      INITIAL 3600 NO-UNDO.
-    DEFINE VARIABLE li-seconds          AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE li-mins             AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE li-hours            AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE ll-neg              AS LOG      NO-UNDO.
+    ( pi-time AS INTEGER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE li-sec-hours AS INTEGER INITIAL 3600 NO-UNDO.
+    DEFINE VARIABLE li-seconds   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-mins      AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-hours     AS INTEGER NO-UNDO.
+    DEFINE VARIABLE ll-neg       AS LOG     NO-UNDO.
 
-    IF pi-time < 0 THEN ASSIGN ll-neg = TRUE
-                               pi-time = pi-time * -1.
+    IF pi-time < 0 THEN ASSIGN ll-neg  = TRUE
+            pi-time = pi-time * -1.
 
     ASSIGN 
         li-seconds = pi-time MOD li-sec-hours
-        li-mins = TRUNCATE(li-seconds / 60,0).
+        li-mins    = TRUNCATE(li-seconds / 60,0).
         
     ASSIGN
         pi-time = pi-time - li-seconds.
@@ -2580,16 +2691,17 @@ END FUNCTION.
 
 
 FUNCTION com-UserName RETURNS CHARACTER
-  ( pc-LoginID AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER webuser  FOR webuser.
+    DEFINE BUFFER webuser FOR webuser.
 
     CASE pc-loginID:
-        WHEN "SLA.ALERT" THEN RETURN "SLA Processing".
+        WHEN "SLA.ALERT" THEN 
+            RETURN "SLA Processing".
     END CASE.
 
     FIND webuser
@@ -2598,33 +2710,33 @@ FUNCTION com-UserName RETURNS CHARACTER
 
 
     RETURN IF AVAILABLE webuser
-           THEN TRIM(webuser.forename + " " + webuser.surname)
-           ELSE pc-LoginID.
+        THEN TRIM(webuser.forename + " " + webuser.surname)
+        ELSE pc-LoginID.
 
 
 END FUNCTION.
 
 
 FUNCTION com-UsersCompany RETURNS CHARACTER
-  ( pc-LoginID  AS CHARACTER ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-LoginID  AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER b-WebUser    FOR webUser.
-    DEFINE BUFFER b-Customer   FOR Customer.
+    DEFINE BUFFER b-WebUser  FOR webUser.
+    DEFINE BUFFER b-Customer FOR Customer.
 
     FIND b-WebUser
         WHERE b-WebUser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
     IF NOT AVAILABLE b-webuser
-    OR b-webuser.UserClass <> "{&CUSTOMER}" THEN RETURN "".
+        OR b-webuser.UserClass <> "{&CUSTOMER}" THEN RETURN "".
 
     FIND b-Customer
         WHERE b-Customer.CompanyCode = b-WebUser.CompanyCode
-          AND b-Customer.AccountNumber = b-WebUser.AccountNumber
-          NO-LOCK NO-ERROR.
+        AND b-Customer.AccountNumber = b-WebUser.AccountNumber
+        NO-LOCK NO-ERROR.
 
     RETURN IF AVAILABLE b-Customer THEN b-Customer.name ELSE "".
 
@@ -2634,44 +2746,61 @@ END FUNCTION.
 
 FUNCTION com-UserTrackIssue RETURNS LOGICAL
     ( pc-LoginID AS CHARACTER
-     ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER  webUser   FOR webUser.
+    DEFINE BUFFER webUser FOR webUser.
 
     FIND webUser
         WHERE webUser.LoginID = pc-LoginID
-          NO-LOCK NO-ERROR.
+        NO-LOCK NO-ERROR.
 
     RETURN IF AVAILABLE webUser AND webUser.email <> "" 
-           THEN webUser.CustomerTrack ELSE FALSE.
+        THEN webUser.CustomerTrack ELSE FALSE.
 
 END FUNCTION.
 
 
 FUNCTION com-WriteQueryInfo RETURNS LOGICAL
-  ( hQuery AS HANDLE ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
-  DEFINE VARIABLE ix     AS INTEGER NO-UNDO.
-  DEFINE VARIABLE jx     AS INTEGER NO-UNDO.
+    ( hQuery AS HANDLE ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE ix AS INTEGER NO-UNDO.
+    DEFINE VARIABLE jx AS INTEGER NO-UNDO.
 
-  REPEAT ix = 1 TO hQuery:NUM-BUFFERS:  
-      jx = LOOKUP("WHOLE-INDEX", hQuery:INDEX-INFORMATION(ix)).  
-      IF jx > 0 
-      THEN    MESSAGE "inefficient index" ENTRY(jx + 1, hQuery:INDEX-INFORMATION(ix)).  
-      ELSE     MESSAGE "bracketed index use of" hQuery:INDEX-INFORMATION(ix).
-   END.
+    REPEAT ix = 1 TO hQuery:NUM-BUFFERS:  
+        jx = LOOKUP("WHOLE-INDEX", hQuery:INDEX-INFORMATION(ix)).  
+        IF jx > 0 
+            THEN    MESSAGE "inefficient index" ENTRY(jx + 1, hQuery:INDEX-INFORMATION(ix)).  
+        ELSE     MESSAGE "bracketed index use of" hQuery:INDEX-INFORMATION(ix).
+    END.
 
 
-  RETURN TRUE.
+    RETURN TRUE.
 
 
 END FUNCTION.
+
+FUNCTION com-isTeamMember RETURNS LOGICAL
+    (pc-companyCode AS CHARACTER,
+     pc-loginid AS CHARACTER,
+     pi-st-num AS INTEGER  ):
+         
+     
+    DEFINE BUFFER webUStream FOR WebUSteam.
+    IF pi-st-num = ?
+    OR pi-st-num = 0
+    THEN RETURN CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginid NO-LOCK).
+    ELSE RETURN CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginid 
+                            AND WebUSteam.st-num = pi-st-num NO-LOCK).
+          
+     
+END FUNCTION.
+
 
 

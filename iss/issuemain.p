@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        iss/issuemain.p
@@ -27,96 +24,93 @@ CREATE WIDGET-POOL.
 
 
  
-def buffer b-table  for issue.
-def buffer b-cust   for Customer.
+DEFINE BUFFER b-table  FOR issue.
+DEFINE BUFFER b-cust   FOR Customer.
  
-def buffer b-issue  for issue.
-def buffer b-IStatus  for IssStatus.
-def buffer b-user   for WebUser.
-def buffer b-status for WebStatus.
+DEFINE BUFFER b-issue  FOR issue.
+DEFINE BUFFER b-IStatus  FOR IssStatus.
+DEFINE BUFFER b-user   FOR WebUser.
+DEFINE BUFFER b-status FOR WebStatus.
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg  AS CHARACTER NO-UNDO.
 
 
-def var lc-mode as char no-undo.
-def var lc-rowid as char no-undo.
-def var lc-title as char no-undo.
+DEFINE VARIABLE lc-mode AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title AS CHARACTER NO-UNDO.
 
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-area         as char no-undo.
-def var lc-account      as char no-undo.
-def var lc-status       as char no-undo.
-def var lc-assign       as char no-undo.
-def var lc-parameters   as char no-undo.
+DEFINE VARIABLE lc-search    AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-firstrow  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-lastrow   AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lc-navigation AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-area         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-account      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-status       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-assign       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters   AS CHARACTER NO-UNDO.
 
-def var lc-link-label   as char no-undo.
-def var lc-submit-label as char no-undo.
-def var lc-link-url     as char no-undo.
+DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
-def var lc-icustname        as char no-undo.
-def var lc-AreaCode         as char no-undo.
-def var lc-briefdescription as char no-undo.
-def var lc-longdescription  as char no-undo.
-def var lc-currentstatus    as char no-undo.
-def var lc-currentassign    as char no-undo.
-def var lc-statnote         as char no-undo.
-def var lc-planned          as char no-undo.
-def var lc-catcode          as char no-undo.
-def var lc-ticket           as char no-undo.
-def var lc-category         as char no-undo.
+DEFINE VARIABLE lc-icustname        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AreaCode         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-briefdescription AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-longdescription  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentstatus    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentassign    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-statnote         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-planned          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-catcode          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ticket           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-category         AS CHARACTER NO-UNDO.
 
-def var lc-sla-rows         as char no-undo.
-def var lc-sla-selected     as char no-undo.
-DEF VAR li-OpenActions      AS INT  NO-UNDO.
-DEF VAR ll-IsOpen           AS LOG  NO-UNDO.
+DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-OpenActions      AS INTEGER  NO-UNDO.
+DEFINE VARIABLE ll-IsOpen           AS LOG  NO-UNDO.
 
 /* Lists */
-def var lc-list-area        as char no-undo.
-def var lc-list-aname       as char no-undo.
+DEFINE VARIABLE lc-list-area        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-aname       AS CHARACTER NO-UNDO.
 
-def var lc-list-status      as char no-undo.
-def var lc-list-sname       as char no-undo.
+DEFINE VARIABLE lc-list-status      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-sname       AS CHARACTER NO-UNDO.
 
-def var lc-list-assign      as char no-undo.
-def var lc-list-assname     as char no-undo.
+DEFINE VARIABLE lc-list-assign      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assname     AS CHARACTER NO-UNDO.
 
-def var lc-list-catcode     as char no-undo.
-def var lc-list-cname       as char no-undo.
-DEF VAR lc-iclass           AS CHAR NO-UNDO.
+DEFINE VARIABLE lc-list-catcode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-cname       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-iclass           AS CHARACTER NO-UNDO.
 
 
-def var lc-pdf as char no-undo.
-def var lc-submitsource as char no-undo.
-def var lc-link-otherp  as char no-undo.
-def var ll-superuser    as log  no-undo.
+DEFINE VARIABLE lc-pdf AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submitsource AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-otherp  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-superuser    AS LOG  NO-UNDO.
 
-def var lc-name     as char no-undo.
+DEFINE VARIABLE lc-name     AS CHARACTER NO-UNDO.
 
-def var lc-Doc-TBAR         as char 
-    initial "doctb"         no-undo.
+DEFINE VARIABLE lc-Doc-TBAR         AS CHARACTER 
+    INITIAL "doctb"         NO-UNDO.
 
-def var lc-Action-TBAR      as char
-    initial "acttb"         no-undo.
+DEFINE VARIABLE lc-Action-TBAR      AS CHARACTER
+    INITIAL "acttb"         NO-UNDO.
 
 /* Contract stuff  */
 
-def var lc-list-ctype       as char no-undo.
-def var lc-list-cdesc       as char no-undo.
-def var lc-contract-type    as char no-undo.
-def var lc-ContractCode     as char no-undo.
-def var lc-billable-flag    as char no-undo.
-def var ll-billing          as log  no-undo.
-def var lc-ContractAccount   as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-list-ctype       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-cdesc       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-contract-type    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ContractCode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-billable-flag    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-billing          AS LOG  NO-UNDO.
+DEFINE VARIABLE lc-ContractAccount   AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -125,48 +119,32 @@ def var lc-ContractAccount   as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-fn-DescribeSLA) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fn-DescribeSLA Procedure 
 FUNCTION fn-DescribeSLA RETURNS CHARACTER
-  ( pr-rowid as rowid )  FORWARD.
+  ( pr-rowid AS ROWID )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
@@ -174,14 +152,11 @@ FUNCTION fn-DescribeSLA RETURNS CHARACTER
 {iss/issue.i}
 {lib/ticket.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -189,15 +164,12 @@ FUNCTION fn-DescribeSLA RETURNS CHARACTER
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-ActionPage) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ActionPage Procedure 
 PROCEDURE ip-ActionPage :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -217,8 +189,8 @@ PROCEDURE ip-ActionPage :
                       skip
             tbar-BeginOptionID(lc-Action-TBAR) skip.
 
-    if ll-SuperUser
-    then {&out} tbar-Link("delete",?,"off","").
+    IF ll-SuperUser
+    THEN {&out} tbar-Link("delete",?,"off","").
 
     {&out}  tbar-Link("update",?,"off","")
 /*             tbar-Link("addactivity",?,"off","")    */
@@ -233,14 +205,11 @@ PROCEDURE ip-ActionPage :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-AreaCode) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-AreaCode Procedure 
 PROCEDURE ip-AreaCode :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -250,64 +219,61 @@ PROCEDURE ip-AreaCode :
 {&out}  skip
             '<select name="areacode" class="inputfield">' skip.
     {&out}
-            '<option value="' dynamic-function("htmlib-Null") '" ' if lc-AreaCode = dynamic-function("htmlib-Null") 
-                then "selected" else "" '>Select Area</option>' skip
+            '<option value="' DYNAMIC-FUNCTION("htmlib-Null") '" ' IF lc-AreaCode = dynamic-function("htmlib-Null") 
+                THEN "selected" ELSE "" '>Select Area</option>' skip
             '<option value="" ' if lc-AreaCode = ""
                 then "selected" else "" '>Not Applicable/Unknown</option>' skip        
             .
-    for each webIssArea no-lock
-        where webIssArea.CompanyCode = lc-Global-Company 
-          break by webIssArea.GroupID
-                by webIssArea.AreaCode:
+    FOR EACH webIssArea NO-LOCK
+        WHERE webIssArea.CompanyCode = lc-Global-Company 
+          BREAK BY webIssArea.GroupID
+                BY webIssArea.AreaCode:
 
-        if first-of(webissArea.GroupID) then
-        do:
-            find webissagrp
-                where webissagrp.companycode = webissArea.CompanyCode
-                  and webissagrp.Groupid     = webissArea.GroupID no-lock no-error.
+        IF FIRST-OF(webissArea.GroupID) THEN
+        DO:
+            FIND webissagrp
+                WHERE webissagrp.companycode = webissArea.CompanyCode
+                  AND webissagrp.Groupid     = webissArea.GroupID NO-LOCK NO-ERROR.
             {&out}
-                '<optgroup label="' html-encode(if avail webissagrp then webissagrp.description else "Unknown") '">' skip.
-        end.
+                '<optgroup label="' html-encode(IF AVAILABLE webissagrp THEN webissagrp.description ELSE "Unknown") '">' skip.
+        END.
 
         {&out}
-            '<option value="' webIssArea.AreaCode '" ' if lc-AreaCode = webIssArea.AreaCode  
-                then "selected" else "" '>' html-encode(webIssArea.Description) '</option>' skip.
+            '<option value="' webIssArea.AreaCode '" ' IF lc-AreaCode = webIssArea.AreaCode  
+                THEN "selected" ELSE "" '>' html-encode(webIssArea.Description) '</option>' skip.
 
-        if last-of(WebIssArea.GroupID) then {&out} '</optgroup>' skip.
-    end.
+        IF LAST-OF(WebIssArea.GroupID) THEN {&out} '</optgroup>' skip.
+    END.
 
     {&out} '</select>'.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-BackToIssue) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-BackToIssue Procedure 
 PROCEDURE ip-BackToIssue :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def var lc-link-url     as char no-undo.
+    DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
     RUN outputHeader.
     {&out} htmlib-Header(lc-title) skip.
    
-    assign request_method = "get".
+    ASSIGN request_method = "get".
 
-    assign lc-link-url = '"' + 
+    ASSIGN lc-link-url = '"' + 
                          appurl + '/iss/issue.p' + 
                         '?search=' + lc-search + 
                         '&firstrow=' + lc-firstrow + 
                         '&lastrow=' + lc-lastrow + 
                         '&navigation=refresh' +
-                        '&time=' + string(time) + 
+                        '&time=' + string(TIME) + 
                         '&account=' + lc-account + 
                         '&status=' + lc-status +
                         '&assign=' + lc-assign + 
@@ -316,7 +282,7 @@ PROCEDURE ip-BackToIssue :
                         '&iclass=' + lc-iclass +
                         '"'.
     
-    if lc-submitsource = "print" then
+    IF lc-submitsource = "print" THEN
     {&out} '<script language="javascript">' skip
            'function PrintWindow(HelpPageURL) ~{' skip
            '    PrintWinHdl = window.open(HelpPageURL,"PrintWindow","width=600,height=400,scrollbars=yes,resizable")' skip
@@ -327,24 +293,24 @@ PROCEDURE ip-BackToIssue :
     {&out} '<script language="javascript">' skip.
 
            
-    if lc-submitsource = "print" 
-    then {&out} 
-           'PrintWindow("' appurl '/iss/issueview.p?autoprint=yes&rowid=' string(rowid(b-table)) '")' skip.
+    IF lc-submitsource = "print" 
+    THEN {&out} 
+           'PrintWindow("' appurl '/iss/issueview.p?autoprint=yes&rowid=' STRING(ROWID(b-table)) '")' skip.
 
 
-    if get-value("fromcview") = "yes" then
-    do:
-        find customer 
-            where customer.CompanyCode = b-table.CompanyCode
-              and customer.AccountNumber = b-table.AccountNumber 
-              no-lock no-error.
-        assign
+    IF get-value("fromcview") = "yes" THEN
+    DO:
+        FIND customer 
+            WHERE customer.CompanyCode = b-table.CompanyCode
+              AND customer.AccountNumber = b-table.AccountNumber 
+              NO-LOCK NO-ERROR.
+        ASSIGN
             lc-link-url = appurl + "/cust/custview.p?mode=view&source=menu&rowid=" + 
-            string(rowid(customer)).
+            string(ROWID(customer)).
 
         lc-link-url = '"' + lc-link-url + '"'.
         
-    end.
+    END.
     
     
     {&out} 'myParent = self.parent' skip
@@ -355,21 +321,18 @@ PROCEDURE ip-BackToIssue :
     {&OUT} htmlib-Footer() skip.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ContractSelect) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ContractSelect Procedure 
 PROCEDURE ip-ContractSelect PRIVATE :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
- def var lc-char as char  no-undo.
+ DEFINE VARIABLE lc-char AS CHARACTER  NO-UNDO.
 
     {&out}  skip
             '<select id="selectcontract" name="selectcontract" class="inputfield"  onchange=~"javascript:ChangeContract();~">' skip.
@@ -377,49 +340,49 @@ PROCEDURE ip-ContractSelect PRIVATE :
             '<option value="ADHOC|yes" >Ad Hoc</option>' skip
             .
 
-    if lc-ContractAccount <> ""  then
-    do:
+    IF lc-ContractAccount <> ""  THEN
+    DO:
 
-      if can-find (first WebIssCont                           
-               where WebIssCont.CompanyCode     = lc-global-company     
-                 and WebIssCont.Customer        = lc-ContractAccount     
-                 and WebIssCont.ConActive       = true ) 
-      then
-      do:
-        for each WebIssCont no-lock                             
-           where WebIssCont.CompanyCode     = lc-global-company     
-             and WebIssCont.Customer        = lc-ContractAccount     
-             and WebIssCont.ConActive       = true
+      IF CAN-FIND (FIRST WebIssCont                           
+               WHERE WebIssCont.CompanyCode     = lc-global-company     
+                 AND WebIssCont.Customer        = lc-ContractAccount     
+                 AND WebIssCont.ConActive       = TRUE ) 
+      THEN
+      DO:
+        FOR EACH WebIssCont NO-LOCK                             
+           WHERE WebIssCont.CompanyCode     = lc-global-company     
+             AND WebIssCont.Customer        = lc-ContractAccount     
+             AND WebIssCont.ConActive       = TRUE
              :                                        
 
-          find first ContractType  where ContractType.CompanyCode = WebIssCont.CompanyCode
-                                    and  ContractType.ContractNumber = WebissCont.ContractCode 
-                                    no-lock no-error. 
+          FIND FIRST ContractType  WHERE ContractType.CompanyCode = WebIssCont.CompanyCode
+                                    AND  ContractType.ContractNumber = WebissCont.ContractCode 
+                                    NO-LOCK NO-ERROR. 
 
-           if WebIssCont.DefCon and lc-contract-type = "" then
-              assign lc-contract-type = WebIssCont.ContractCode
+           IF WebIssCont.DefCon AND lc-contract-type = "" THEN
+              ASSIGN lc-contract-type = WebIssCont.ContractCode
                      ll-billing       = WebissCont.Billable
-                     lc-billable-flag = if ll-billing  then "yes" else "".
-           else
-              assign lc-contract-type = lc-contract-type
+                     lc-billable-flag = IF ll-billing  THEN "yes" ELSE "".
+           ELSE
+              ASSIGN lc-contract-type = lc-contract-type
                      ll-billing       = lc-billable-flag = "yes".
                    
 
       {&out}
-            '<option value="' WebIssCont.ContractCode "|" string(WebissCont.Billable) '" ' .
+            '<option value="' WebIssCont.ContractCode "|" STRING(WebissCont.Billable) '" ' .
 
-            if b-table.ContractType = WebIssCont.ContractCode then
-            do:   
+            IF b-table.ContractType = WebIssCont.ContractCode THEN
+            DO:   
             {&out}      " selected " .
-            end.
+            END.
 
-       {&out}  '>'  html-encode(if avail ContractType then ContractType.Description else "Unknown")
+       {&out}  '>'  html-encode(IF AVAILABLE ContractType THEN ContractType.Description ELSE "Unknown")
 
 
               '</option>' skip.
-        end.
-      end.
-    end.
+        END.
+      END.
+    END.
    {&out} '</select>'.
 
 
@@ -427,14 +390,11 @@ PROCEDURE ip-ContractSelect PRIVATE :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Documents) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Documents Procedure 
 PROCEDURE ip-Documents :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -458,14 +418,11 @@ PROCEDURE ip-Documents :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-HeaderInclude-Calendar) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-HeaderInclude-Calendar Procedure 
 PROCEDURE ip-HeaderInclude-Calendar :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -475,14 +432,11 @@ PROCEDURE ip-HeaderInclude-Calendar :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-IssueMain) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-IssueMain Procedure 
 PROCEDURE ip-IssueMain :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -490,29 +444,29 @@ PROCEDURE ip-IssueMain :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def buffer b-cust   for customer.
-    def buffer b-user   for WebUser.
-    DEF BUFFER WebAttr  FOR WebAttr.
+    DEFINE BUFFER b-cust   FOR customer.
+    DEFINE BUFFER b-user   FOR WebUser.
+    DEFINE BUFFER WebAttr  FOR WebAttr.
 
-    def var lc-SLA-Describe as char no-undo.
-    def var lc-icustname    as char no-undo.
-    def var lc-raised       as char no-undo.
+    DEFINE VARIABLE lc-SLA-Describe AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-icustname    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-raised       AS CHARACTER NO-UNDO.
 
 
-    find b-cust where b-cust.CompanyCode = b-table.CompanyCode
-                  and b-cust.AccountNumber = b-table.AccountNumber
-            no-lock no-error.
+    FIND b-cust WHERE b-cust.CompanyCode = b-table.CompanyCode
+                  AND b-cust.AccountNumber = b-table.AccountNumber
+            NO-LOCK NO-ERROR.
 
-    if avail b-cust
-    then assign lc-icustname = b-cust.AccountNumber + 
+    IF AVAILABLE b-cust
+    THEN ASSIGN lc-icustname = b-cust.AccountNumber + 
                                ' ' + b-cust.Name.
-    else assign lc-icustname = 'N/A'.
+    ELSE ASSIGN lc-icustname = 'N/A'.
 
-    assign lc-SLA-Describe = dynamic-function("fn-DescribeSLA",rowid(b-table)).
+    ASSIGN lc-SLA-Describe = DYNAMIC-FUNCTION("fn-DescribeSLA",ROWID(b-table)).
 
-    find b-user where b-user.LoginId = b-table.RaisedLogin 
-         no-lock no-error.
-    assign lc-raised = if avail b-user then b-user.name else "".
+    FIND b-user WHERE b-user.LoginId = b-table.RaisedLogin 
+         NO-LOCK NO-ERROR.
+    ASSIGN lc-raised = IF AVAILABLE b-user THEN b-user.name ELSE "".
     {&out} htmlib-StartInputTable() skip.
 
 
@@ -549,7 +503,7 @@ PROCEDURE ip-IssueMain :
     {&out} '<tr><td valign="top" align="right">' 
             htmlib-SideLabel("Billable?")
             '</td><td valign="top" align="left">'
-            replace(htmlib-CheckBox("billcheck", if ll-billing then true else false),
+            REPLACE(htmlib-CheckBox("billcheck", IF ll-billing THEN TRUE ELSE FALSE),
                     '>',' onClick="ChangeBilling(this);">')
             '</td></tr>' skip.
 
@@ -564,9 +518,9 @@ PROCEDURE ip-IssueMain :
            .
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           (if lookup("briefdescription",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Brief Description")
-           else htmlib-SideLabel("Brief Description"))
+           (IF LOOKUP("briefdescription",lc-error-field,'|') > 0 
+           THEN htmlib-SideLabelError("Brief Description")
+           ELSE htmlib-SideLabel("Brief Description"))
            '</TD>'
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-InputField("briefdescription",60,lc-briefdescription) 
@@ -574,9 +528,9 @@ PROCEDURE ip-IssueMain :
     {&out} '</TR>' skip.
     
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-          (if lookup("longdescription",lc-error-field,'|') > 0 
-          then htmlib-SideLabelError("Details")
-          else htmlib-SideLabel("Details"))
+          (IF LOOKUP("longdescription",lc-error-field,'|') > 0 
+          THEN htmlib-SideLabelError("Details")
+          ELSE htmlib-SideLabel("Details"))
           '</TD>' skip
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-TextArea("longdescription",lc-longdescription,5,60)
@@ -584,9 +538,9 @@ PROCEDURE ip-IssueMain :
            skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("areacode",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Area")
-            else htmlib-SideLabel("Area"))
+            (IF LOOKUP("areacode",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Area")
+            ELSE htmlib-SideLabel("Area"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">' skip.
 
@@ -603,10 +557,10 @@ PROCEDURE ip-IssueMain :
     ELSE
     IF ll-IsOpen THEN
     DO:
-        find WebAttr where WebAttr.SystemID = "SYSTEM"
-             and   WebAttr.AttrID   = "ISSCLOSEWARNING" NO-LOCK NO-ERROR.
+        FIND WebAttr WHERE WebAttr.SystemID = "SYSTEM"
+             AND   WebAttr.AttrID   = "ISSCLOSEWARNING" NO-LOCK NO-ERROR.
              
-        IF AVAIL webattr THEN
+        IF AVAILABLE webattr THEN
         {&out} '<tr><td>&nbsp;</td><td>' SKIP
             '<div class="infobox" style="font-size: 10px;">' webattr.attrValue 
             '</div></td></tr>'
@@ -614,9 +568,9 @@ PROCEDURE ip-IssueMain :
     END.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("currentstatus",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Status")
-            else htmlib-SideLabel("Status"))
+            (IF LOOKUP("currentstatus",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Status")
+            ELSE htmlib-SideLabel("Status"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("currentstatus",lc-list-status,lc-list-sname,
@@ -624,41 +578,41 @@ PROCEDURE ip-IssueMain :
             '</TD></TR>' skip. 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-          (if lookup("statnote",lc-error-field,'|') > 0 
-          then htmlib-SideLabelError("New Status Note")
-          else htmlib-SideLabel("New Status Note"))
+          (IF LOOKUP("statnote",lc-error-field,'|') > 0 
+          THEN htmlib-SideLabelError("New Status Note")
+          ELSE htmlib-SideLabel("New Status Note"))
           '</TD>' skip
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-TextArea("statnote",lc-statnote,3,60)
           '</TD>' skip
            skip.
 
-    if lc-list-catcode <> "" then
+    IF lc-list-catcode <> "" THEN
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (if lookup("catcode",lc-error-field,'|') > 0 
-        then htmlib-SideLabelError("Category")
-        else htmlib-SideLabel("Category"))
+        (IF LOOKUP("catcode",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Category")
+        ELSE htmlib-SideLabel("Category"))
         '</TD>' 
         '<TD VALIGN="TOP" ALIGN="left">'
         htmlib-Select("catcode",lc-list-catcode,lc-list-cname,
             lc-catcode)
         '</TD></TR>' skip. 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("iclass",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Class")
-            else htmlib-SideLabel("Class"))
+            (IF LOOKUP("iclass",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Class")
+            ELSE htmlib-SideLabel("Class"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("iclass",lc-global-iclass-code,lc-global-iclass-code,
                 lc-iclass)
             '</TD></TR>' skip. 
 
-    if lc-sla-rows <> "" then
-    do:
+    IF lc-sla-rows <> "" THEN
+    DO:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-               (if lookup("sla",lc-error-field,'|') > 0 
-               then htmlib-SideLabelError("SLA")
-               else htmlib-SideLabel("SLA"))
+               (IF LOOKUP("sla",lc-error-field,'|') > 0 
+               THEN htmlib-SideLabelError("SLA")
+               ELSE htmlib-SideLabel("SLA"))
                '</TD>'
                '<TD VALIGN="TOP" ALIGN="left">' skip.
         RUN ip-SLATable.
@@ -666,11 +620,11 @@ PROCEDURE ip-IssueMain :
                '</TD>' skip.
         {&out} '</TR>' skip.
 
-    end.
+    END.
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("currentassign",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Assigned To")
-            else htmlib-SideLabel("Assigned To"))
+            (IF LOOKUP("currentassign",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Assigned To")
+            ELSE htmlib-SideLabel("Assigned To"))
             '</TD>' 
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-Select("currentassign",lc-list-assign,lc-list-assname,
@@ -678,9 +632,9 @@ PROCEDURE ip-IssueMain :
             '</TD></TR>' skip. 
 
    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           (if lookup("planned",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Planned Completion")
-           else htmlib-SideLabel("Planned Completion"))
+           (IF LOOKUP("planned",lc-error-field,'|') > 0 
+           THEN htmlib-SideLabelError("Planned Completion")
+           ELSE htmlib-SideLabel("Planned Completion"))
            '</TD>'
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-InputField("planned",10,lc-planned) 
@@ -690,26 +644,26 @@ PROCEDURE ip-IssueMain :
 
     
 
-    if com-AskTicket(lc-global-company,b-cust.AccountNumber) then
-    do:
+    IF com-AskTicket(lc-global-company,b-cust.AccountNumber) THEN
+    DO:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("ticket",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Ticketed Issue?")
-            else htmlib-SideLabel("Ticketed Issue?"))
+            (IF LOOKUP("ticket",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Ticketed Issue?")
+            ELSE htmlib-SideLabel("Ticketed Issue?"))
             '</TD>'
             '<TD VALIGN="TOP" ALIGN="left">'
-                htmlib-CheckBox("ticket", if lc-ticket = 'on'
-                                        then true else false) 
+                htmlib-CheckBox("ticket", IF lc-ticket = 'on'
+                                        THEN TRUE ELSE FALSE) 
             '</TD></TR>' skip.
-    end.
+    END.
 
     {&out} htmlib-EndTable() skip.
 
-    if lc-error-msg <> "" then
-    do:
+    IF lc-error-msg <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
                 htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+    END.
 
     {&out} '<center>' htmlib-SubmitButton("submitform","Update Issue") 
                 '&nbsp;'
@@ -718,73 +672,67 @@ PROCEDURE ip-IssueMain :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-IssueStatusHistory) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-IssueStatusHistory Procedure 
 PROCEDURE ip-IssueStatusHistory :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pr-rowid        as rowid        no-undo.
+    DEFINE INPUT PARAMETER pr-rowid        AS ROWID        NO-UNDO.
 
-    def var lc-name     as char no-undo.
-    def var lc-status   as char no-undo.
+    DEFINE VARIABLE lc-name     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-status   AS CHARACTER NO-UNDO.
 
 
 
-    find b-issue where rowid(b-issue) = pr-rowid no-lock no-error.
+    FIND b-issue WHERE ROWID(b-issue) = pr-rowid NO-LOCK NO-ERROR.
 
-    if avail b-issue then
-    do:
+    IF AVAILABLE b-issue THEN
+    DO:
         {&out}
-            replace(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"')
+            REPLACE(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"')
             htmlib-tableHeading(
             "Date^right|Time^right|Status|By"
             ) skip.
 
-        for each b-IStatus no-lock
-            where b-IStatus.CompanyCode = b-issue.CompanyCode
-              and b-IStatus.IssueNumber = b-issue.IssueNumber:
+        FOR EACH b-IStatus NO-LOCK
+            WHERE b-IStatus.CompanyCode = b-issue.CompanyCode
+              AND b-IStatus.IssueNumber = b-issue.IssueNumber:
 
-            find b-status where b-status.CompanyCode = b-issue.CompanyCode
-                            and b-status.StatusCode = b-IStatus.NewStatusCode no-lock no-error.
+            FIND b-status WHERE b-status.CompanyCode = b-issue.CompanyCode
+                            AND b-status.StatusCode = b-IStatus.NewStatusCode NO-LOCK NO-ERROR.
             
-            assign lc-status = if avail b-status then b-status.description else "".
+            ASSIGN lc-status = IF AVAILABLE b-status THEN b-status.description ELSE "".
 
-            find b-user where b-user.LoginID = b-IStatus.LoginID no-lock no-error.
-            assign lc-name = if avail b-user then b-user.name else "".
+            FIND b-user WHERE b-user.LoginID = b-IStatus.LoginID NO-LOCK NO-ERROR.
+            ASSIGN lc-name = IF AVAILABLE b-user THEN b-user.name ELSE "".
 
             {&out} 
                 htmlib-trmouse()
-                htmlib-tableField(string(b-IStatus.ChangeDate,'99/99/9999'),'right')
-                htmlib-tableField(string(b-IStatus.ChangeTime,'hh:mm am'),'right')
+                htmlib-tableField(STRING(b-IStatus.ChangeDate,'99/99/9999'),'right')
+                htmlib-tableField(STRING(b-IStatus.ChangeTime,'hh:mm am'),'right')
                 htmlib-tableField(html-encode(lc-status),'left')
                 htmlib-tableField(html-encode(lc-name),'left')
                 '</tr>' skip.
-        end.
+        END.
         {&out} skip 
            htmlib-EndTable()
            skip.
 
 
-    end.
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-NotePage) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-NotePage Procedure 
 PROCEDURE ip-NotePage :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -792,7 +740,7 @@ PROCEDURE ip-NotePage :
   Notes:       
 ------------------------------------------------------------------------------*/
     {&out}
-           skip(5)
+           SKIP(5)
            tbar-Begin("")
            tbar-Link("addnote",?,'javascript:noteAdd();',"")
            tbar-End().
@@ -802,14 +750,11 @@ PROCEDURE ip-NotePage :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-SLATable) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-SLATable Procedure 
 PROCEDURE ip-SLATable :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -817,10 +762,10 @@ PROCEDURE ip-SLATable :
   Notes:       
 ------------------------------------------------------------------------------*/
 
-    def buffer slahead  for slahead.
-    def var li-loop     as int      no-undo.
-    def var lc-object   as char     no-undo.
-    def var lc-rowid    as char     no-undo.
+    DEFINE BUFFER slahead  FOR slahead.
+    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-object   AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-rowid    AS CHARACTER     NO-UNDO.
 
 
     {&out}
@@ -829,36 +774,36 @@ PROCEDURE ip-SLATable :
         "Select?^left|SLA"
         ) skip.
 
-    if lc-global-company = "MICAR" then
-    do:
+    IF lc-global-company = "MICAR" THEN
+    DO:
     {&out}
         htmlib-trmouse()
             '<td>'
-                htmlib-Radio("sla", "slanone" , if lc-sla-selected = "slanone" then true else false)
+                htmlib-Radio("sla", "slanone" , IF lc-sla-selected = "slanone" THEN TRUE ELSE FALSE)
             '</td>'
             htmlib-TableField(html-encode("None"),'left')
 
         '</tr>' skip.
-    end.
+    END.
 
-    do li-loop = 1 to num-entries(lc-sla-rows,"|"):
-        assign
-            lc-rowid = entry(li-loop,lc-sla-rows,"|").
+    DO li-loop = 1 TO NUM-ENTRIES(lc-sla-rows,"|"):
+        ASSIGN
+            lc-rowid = ENTRY(li-loop,lc-sla-rows,"|").
 
-        find slahead where rowid(slahead) = to-rowid(lc-rowid) no-lock no-error.
-        if not avail slahead then next.
-        assign
+        FIND slahead WHERE ROWID(slahead) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE slahead THEN NEXT.
+        ASSIGN
             lc-object = "sla" + lc-rowid.
         {&out}
             htmlib-trmouse()
                 '<td>'
-                    htmlib-Radio("sla" , lc-object, if lc-sla-selected = lc-object then true else false) 
+                    htmlib-Radio("sla" , lc-object, IF lc-sla-selected = lc-object THEN TRUE ELSE FALSE) 
                 '</td>'
                 htmlib-TableField(html-encode(slahead.description),'left')
                 
             '</tr>' skip.
 
-    end.
+    END.
     
         
     {&out} skip 
@@ -869,44 +814,41 @@ PROCEDURE ip-SLATable :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Update) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Update Procedure 
 PROCEDURE ip-Update :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pr-rowid        as rowid no-undo.
-    def input param pc-user         as char  no-undo.
+    DEFINE INPUT PARAMETER pr-rowid        AS ROWID NO-UNDO.
+    DEFINE INPUT PARAMETER pc-user         AS CHARACTER  NO-UNDO.
 
-    def var lc-old-status           as  char no-undo.
-    def var lc-old-assign           as  char no-undo.
-    def var ll-old-ticket           as  log  no-undo.
-    def var lc-old-AreaCode         as  char no-undo.
+    DEFINE VARIABLE lc-old-status           AS  CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-old-assign           AS  CHARACTER NO-UNDO.
+    DEFINE VARIABLE ll-old-ticket           AS  LOG  NO-UNDO.
+    DEFINE VARIABLE lc-old-AreaCode         AS  CHARACTER NO-UNDO.
 
-    def var lf-old-link-SLAID       like Issue.link-SLAID no-undo.
+    DEFINE VARIABLE lf-old-link-SLAID       LIKE Issue.link-SLAID NO-UNDO.
 
 
-    def buffer Issue        for Issue.
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
 
-    find Issue where rowid(Issue) = pr-rowid exclusive-lock.
+    FIND Issue WHERE ROWID(Issue) = pr-rowid EXCLUSIVE-LOCK.
 
-    assign 
+    ASSIGN 
         lc-old-Status       = Issue.StatusCode
         lc-old-assign       = Issue.AssignTo
         lf-old-link-SLAID   = Issue.link-SLAID
         ll-old-ticket       = Issue.Ticket
         lc-old-AreaCode     = Issue.AreaCode.
 
-    assign Issue.briefdescription = lc-briefdescription
+    ASSIGN Issue.briefdescription = lc-briefdescription
            Issue.longdescription  = lc-longdescription
            Issue.AreaCode         = lc-AreaCode
            Issue.CatCode          = lc-CatCode
@@ -919,105 +861,105 @@ PROCEDURE ip-Update :
            issue.iClass           = lc-iclass
            .
 
-    if lc-old-status <> lc-currentstatus then
-    do:
-        if lc-statnote <> "" then
-        do:
-            find WebStatus where WebStatus.companycode = Issue.CompanyCode
-                             and WebStatus.StatusCode = lc-currentstatus 
-                    no-lock no-error. 
-            if avail WebStatus
-            and WebStatus.NoteCode <> "" 
-            then run islib-CreateNote( Issue.CompanyCode,
+    IF lc-old-status <> lc-currentstatus THEN
+    DO:
+        IF lc-statnote <> "" THEN
+        DO:
+            FIND WebStatus WHERE WebStatus.companycode = Issue.CompanyCode
+                             AND WebStatus.StatusCode = lc-currentstatus 
+                    NO-LOCK NO-ERROR. 
+            IF AVAILABLE WebStatus
+            AND WebStatus.NoteCode <> "" 
+            THEN RUN islib-CreateNote( Issue.CompanyCode,
                                        Issue.IssueNumber,
                                        pc-user,
                                        WebStatus.NoteCode,
                                        lc-statnote).
-        end.
-    end.
+        END.
+    END.
 
-    if ll-old-ticket <> Issue.Ticket then
-    do:
-        run tlib-IssueChanged
-            ( rowid(Issue),
+    IF ll-old-ticket <> Issue.Ticket THEN
+    DO:
+        RUN tlib-IssueChanged
+            ( ROWID(Issue),
               pc-user,
               ll-old-ticket,
               Issue.Ticket ).
-    end.
-    if lc-currentassign <>  Issue.AssignTo then
-    do:
-        if lc-currentassign = "" 
-        then assign Issue.AssignDate = ?
+    END.
+    IF lc-currentassign <>  Issue.AssignTo THEN
+    DO:
+        IF lc-currentassign = "" 
+        THEN ASSIGN Issue.AssignDate = ?
                     Issue.AssignTime = 0.
-        else assign Issue.AssignDate = today
-                    Issue.AssignTime = time.
+        ELSE ASSIGN Issue.AssignDate = TODAY
+                    Issue.AssignTime = TIME.
 
-        islib-AssignChanged(rowid(issue),
+        islib-AssignChanged(ROWID(issue),
                             pc-user,
                             Issue.AssignTo,
                             lc-currentAssign).
-        assign Issue.AssignTo = lc-currentassign.
-    end.
+        ASSIGN Issue.AssignTo = lc-currentassign.
+    END.
 
 
-    if lc-sla-selected = "slanone" 
-    or lc-sla-rows = "" then 
-    do:
-        assign Issue.link-SLAID = 0
+    IF lc-sla-selected = "slanone" 
+    OR lc-sla-rows = "" THEN 
+    DO:
+        ASSIGN Issue.link-SLAID = 0
                Issue.SLAStatus = "OFF".
-    end.
-    else
-    do:
-        find slahead where rowid(slahead) = to-rowid(substr(lc-sla-selected,4)) no-lock no-error.
-        if avail slahead
-        then assign Issue.link-SLAID = slahead.SLAID.
-    end.
+    END.
+    ELSE
+    DO:
+        FIND slahead WHERE ROWID(slahead) = to-rowid(substr(lc-sla-selected,4)) NO-LOCK NO-ERROR.
+        IF AVAILABLE slahead
+        THEN ASSIGN Issue.link-SLAID = slahead.SLAID.
+    END.
     
-    if lc-planned = ""
-    then assign Issue.PlannedCompletion = ?.
-    else assign Issue.PlannedCompletion = date(lc-planned).
+    IF lc-planned = ""
+    THEN ASSIGN Issue.PlannedCompletion = ?.
+    ELSE ASSIGN Issue.PlannedCompletion = DATE(lc-planned).
 
 
-    if lc-old-status <> lc-currentstatus then
-    do:
-        release issue.
-        find Issue where rowid(Issue) = pr-rowid exclusive-lock.
-        run islib-StatusHistory(
+    IF lc-old-status <> lc-currentstatus THEN
+    DO:
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = pr-rowid EXCLUSIVE-LOCK.
+        RUN islib-StatusHistory(
                         Issue.CompanyCode,
                         Issue.IssueNumber,
                         pc-user,
                         lc-old-status,
                         lc-currentStatus ).
-        release issue.
-        find Issue where rowid(Issue) = pr-rowid exclusive-lock.
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = pr-rowid EXCLUSIVE-LOCK.
         
-    end.
+    END.
 
-    if lf-old-link-SLAID <> Issue.link-SLAID then
-    do:
-        release issue.
-        find Issue where rowid(Issue) = pr-rowid exclusive-lock.
-        dynamic-function("islib-RemoveAlerts",rowid(Issue)).
+    IF lf-old-link-SLAID <> Issue.link-SLAID THEN
+    DO:
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = pr-rowid EXCLUSIVE-LOCK.
+        DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
         islib-SLAChanged(
-                        rowid(Issue),
+                        ROWID(Issue),
                         pc-user,
                         lf-old-link-SLAID,
                         Issue.link-SLAID ).
-        release issue.
-        find Issue where rowid(Issue) = pr-rowid exclusive-lock.
-        if Issue.link-SLAID = 0 then
-        do:
-            assign Issue.link-SLAID = 0.
-        end.
-        else
-        do:
-            empty temp-table tt-sla-sched.
-            run lib/slacalc.p
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = pr-rowid EXCLUSIVE-LOCK.
+        IF Issue.link-SLAID = 0 THEN
+        DO:
+            ASSIGN Issue.link-SLAID = 0.
+        END.
+        ELSE
+        DO:
+            EMPTY TEMP-TABLE tt-sla-sched.
+            RUN lib/slacalc.p
                 ( Issue.IssueDate,
                   Issue.IssueTime,
                   Issue.link-SLAID,
-                  output table tt-sla-sched ).
-            assign
+                  OUTPUT table tt-sla-sched ).
+            ASSIGN
                 Issue.SLADate = ?
                 Issue.SLALevel = 0
                 Issue.SLAStatus = "OFF"
@@ -1025,35 +967,35 @@ PROCEDURE ip-Update :
                 issue.SLATrip = ?
                 issue.SLAAmber = ?.
 
-            for each tt-sla-sched no-lock
-                where tt-sla-sched.Level > 0:
+            FOR EACH tt-sla-sched NO-LOCK
+                WHERE tt-sla-sched.Level > 0:
 
-                assign
+                ASSIGN
                     Issue.SLADate[tt-sla-sched.Level] = tt-sla-sched.sDate
                     Issue.SLATime[tt-sla-sched.Level] = tt-sla-sched.sTime.
-                assign
+                ASSIGN
                     Issue.SLAStatus = "ON".
-            end.
+            END.
              IF issue.slaDate[2] <> ? 
              THEN ASSIGN issue.SLATrip = 
                  DATETIME(STRING(Issue.SLADate[2],"99/99/9999") + " " 
                 + STRING(Issue.SLATime[2],"HH:MM")).
 
 
-        end.
+        END.
 
-    end.
+    END.
 
-    release issue.
-    find Issue where rowid(Issue) = pr-rowid exclusive-lock.
-    if Issue.AreaCode <> lc-old-AreaCode 
-    and Issue.AreaCode <> "" 
-    then dynamic-function("islib-DefaultActions",Issue.CompanyCode,
+    RELEASE issue.
+    FIND Issue WHERE ROWID(Issue) = pr-rowid EXCLUSIVE-LOCK.
+    IF Issue.AreaCode <> lc-old-AreaCode 
+    AND Issue.AreaCode <> "" 
+    THEN DYNAMIC-FUNCTION("islib-DefaultActions",Issue.CompanyCode,
                                      Issue.IssueNumber).
-    if dynamic-function("islib-StatusIsClosed",
+    IF DYNAMIC-FUNCTION("islib-StatusIsClosed",
                         Issue.CompanyCode,
                         Issue.StatusCode)
-    then dynamic-function("islib-RemoveAlerts",rowid(Issue)).
+    THEN DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
 
 
     
@@ -1061,99 +1003,93 @@ PROCEDURE ip-Update :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    def var ld-date as date no-undo.
-    def var lf-dec  as dec no-undo.
+    DEFINE VARIABLE ld-date AS DATE NO-UNDO.
+    DEFINE VARIABLE lf-dec  AS DECIMAL NO-UNDO.
     
-    if lc-briefdescription = "" 
-    then run htmlib-AddErrorMessage(
+    IF lc-briefdescription = "" 
+    THEN RUN htmlib-AddErrorMessage(
                     'briefdescription', 
                     'You must enter the brief description',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-    if lc-longdescription = ""
-    then run htmlib-AddErrorMessage(
+    IF lc-longdescription = ""
+    THEN RUN htmlib-AddErrorMessage(
                     'longdescription', 
                     'You must enter the details',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-    if lc-currentstatus <> b-table.StatusCode then
-    do:
-        find b-status where b-status.CompanyCode = lc-global-company
-                        and b-status.StatusCode = lc-currentstatus
-             no-lock no-error.
-        if b-status.NoteCode <> "" 
-        and lc-statnote = "" then
-        run htmlib-AddErrorMessage(
+    IF lc-currentstatus <> b-table.StatusCode THEN
+    DO:
+        FIND b-status WHERE b-status.CompanyCode = lc-global-company
+                        AND b-status.StatusCode = lc-currentstatus
+             NO-LOCK NO-ERROR.
+        IF b-status.NoteCode <> "" 
+        AND lc-statnote = "" THEN
+        RUN htmlib-AddErrorMessage(
                     'statnote', 
                     'You must enter a status note when changing to this status',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
         
-        if b-status.NoteCode = "" 
-        and trim(lc-statnote) <> "" then
-        run htmlib-AddErrorMessage(
+        IF b-status.NoteCode = "" 
+        AND TRIM(lc-statnote) <> "" THEN
+        RUN htmlib-AddErrorMessage(
                     'statnote', 
                     'A status note is not required for this status',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
 
-    end.
-    else
-    do:
-        if trim(lc-statnote) <> "" then
-        run htmlib-AddErrorMessage(
+    END.
+    ELSE
+    DO:
+        IF TRIM(lc-statnote) <> "" THEN
+        RUN htmlib-AddErrorMessage(
                     'statnote', 
                     'A status note is not required unless you change the status',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).    
-    end.
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).    
+    END.
 
-    if lc-planned <> "" then
-    do:
-        assign ld-date = ?.
-        assign ld-date = date(lc-planned) no-error.
-        if error-status:error
-        or ld-date = ?
-        then run htmlib-AddErrorMessage(
+    IF lc-planned <> "" THEN
+    DO:
+        ASSIGN ld-date = ?.
+        ASSIGN ld-date = DATE(lc-planned) no-error.
+        IF ERROR-STATUS:ERROR
+        OR ld-date = ?
+        THEN RUN htmlib-AddErrorMessage(
                     'planned', 
                     'The planned completion date is invalid',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-    end.
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
+    END.
 
     
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -1206,14 +1142,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -1224,10 +1157,10 @@ PROCEDURE process-web-request :
     {lib/checkloggedin.i}
 
 
-    assign 
-        ll-superuser = dynamic-function("com-IsSuperUser",lc-global-user).
+    ASSIGN 
+        ll-superuser = DYNAMIC-FUNCTION("com-IsSuperUser",lc-global-user).
 
-    assign lc-mode = get-value("mode")
+    ASSIGN lc-mode = get-value("mode")
            lc-rowid = get-value("rowid")
            lc-search = get-value("search")
            lc-firstrow = get-value("firstrow")
@@ -1248,8 +1181,8 @@ PROCEDURE process-web-request :
     THEN lc-iclass = ENTRY(1,lc-global-iclass-code,"|").
 
 
-    if lc-mode = "" 
-    then assign lc-mode = get-field("savemode")
+    IF lc-mode = "" 
+    THEN ASSIGN lc-mode = get-field("savemode")
                     lc-rowid = get-field("saverowid")
                     lc-search = get-value("savesearch")
                     lc-firstrow = get-value("savefirstrow")
@@ -1264,62 +1197,62 @@ PROCEDURE process-web-request :
                     lc-billable-flag  = get-value("savebillable") 
       .
 
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN lc-parameters = "search=" + lc-search +
                                "&firstrow=" + lc-firstrow + 
                                "&lastrow=" + lc-lastrow.
 
 
-     case lc-mode:
-        when 'add'
-        then assign lc-title = 'Add'
+     CASE lc-mode:
+        WHEN 'add'
+        THEN ASSIGN lc-title = 'Add'
                     lc-link-label = "Cancel addition"
                     lc-submit-label = "Add Issue".
-        when 'view'
-        then assign lc-title = 'View'
+        WHEN 'view'
+        THEN ASSIGN lc-title = 'View'
                     lc-link-label = "Back"
                     lc-submit-label = "".
-        when 'delete'
-        then assign lc-title = 'Delete'
+        WHEN 'delete'
+        THEN ASSIGN lc-title = 'Delete'
                     lc-link-label = 'Cancel deletion'
                     lc-submit-label = 'Delete Issue'.
-        when 'Update'
-        then assign lc-title = 'Update'
+        WHEN 'Update'
+        THEN ASSIGN lc-title = 'Update'
                     lc-link-label = 'Cancel update'
                     lc-submit-label = 'Update Issue'.
-    end case.
-    find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock no-error.
-    find customer of b-table no-lock no-error.
+    END CASE.
+    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
+    FIND customer OF b-table NO-LOCK NO-ERROR.
     
     li-OpenActions = com-IssueActionsStatus(b-table.companyCode,b-table.issueNumbe,'Open').
 
     IF li-OpenActions = 0 
-    THEN RUN com-GetStatusIssue ( lc-global-company , output lc-list-status, output lc-list-sname ).
-    ELSE RUN com-GetStatusIssueOpen ( lc-global-company , output lc-list-status, output lc-list-sname ).
+    THEN RUN com-GetStatusIssue ( lc-global-company , OUTPUT lc-list-status, OUTPUT lc-list-sname ).
+    ELSE RUN com-GetStatusIssueOpen ( lc-global-company , OUTPUT lc-list-status, OUTPUT lc-list-sname ).
    
-    IF dynamic-function("islib-StatusIsClosed",
+    IF DYNAMIC-FUNCTION("islib-StatusIsClosed",
                         b-table.CompanyCode,
                         b-table.StatusCode) 
     THEN ll-IsOpen = FALSE.
     ELSE ll-isOpen = TRUE.
 
-    RUN com-GetAreaIssue ( lc-global-company , output lc-list-area , output lc-list-aname ).
-    RUN com-GetAssignIssue ( lc-global-company , output lc-list-assign , output lc-list-assname ).
-    run com-GetCategoryIssue( lc-global-company, output lc-list-catcode, output lc-list-cname ).
+    RUN com-GetAreaIssue ( lc-global-company , OUTPUT lc-list-area , OUTPUT lc-list-aname ).
+    RUN com-GetAssignIssue ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
+    RUN com-GetCategoryIssue( lc-global-company, OUTPUT lc-list-catcode, OUTPUT lc-list-cname ).
     
     
 
     
 
-    assign lc-title = lc-title + ' Issue ' + string(b-table.issuenumber) + ' - ' +
+    ASSIGN lc-title = lc-title + ' Issue ' + string(b-table.issuenumber) + ' - ' +
            html-encode(customer.accountNumber + " - " + customer.name)
            lc-ContractAccount = customer.accountNumber.
     
-    assign
+    ASSIGN
         lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,b-table.AccountNumber).
 
-    if request_method = "post" then
-    do:
-        assign lc-areacode         = get-value("areacode")
+    IF request_method = "post" THEN
+    DO:
+        ASSIGN lc-areacode         = get-value("areacode")
                lc-briefdescription = get-value("briefdescription")
                lc-longdescription  = get-value("longdescription")
                lc-currentstatus    = get-value("currentstatus")
@@ -1334,53 +1267,53 @@ PROCEDURE process-web-request :
                lc-iclass           = get-value("iclass").
           
           
-        if com-TicketOnly(lc-global-company,
+        IF com-TicketOnly(lc-global-company,
                           b-table.AccountNumber)
-        then assign lc-ticket = "on".
+        THEN ASSIGN lc-ticket = "on".
 
         
-        RUN ip-Validate( output lc-error-field,
-                             output lc-error-msg ).
-        if lc-error-field = "" then
-        do:
-            RUN ip-Update ( rowid(b-table), lc-user ).
+        RUN ip-Validate( OUTPUT lc-error-field,
+                             OUTPUT lc-error-msg ).
+        IF lc-error-field = "" THEN
+        DO:
+            RUN ip-Update ( ROWID(b-table), lc-user ).
             RUN ip-BackToIssue.
-            return.
+            RETURN.
 
-        end.
+        END.
 
 
-    end.
-    else
-    do:
-        assign lc-areacode          = b-table.AreaCode
+    END.
+    ELSE
+    DO:
+        ASSIGN lc-areacode          = b-table.AreaCode
                lc-briefdescription  = b-table.briefdescription
                lc-longdescription   = b-table.longdescription
                lc-currentstatus     = b-table.StatusCode
                lc-currentassign     = b-table.AssignTo
                lc-catcode           = b-table.CatCode
-               lc-ticket            = if b-table.Ticket then "on" else ""
+               lc-ticket            = IF b-table.Ticket THEN "on" ELSE ""
                lc-contract-type     = b-table.ContractType   
-               lc-billable-flag     = if b-table.Billable then "yes" else ""
+               lc-billable-flag     = IF b-table.Billable THEN "yes" ELSE ""
                lc-iclass            = b-table.iclass
                .
 
-        if b-Table.PlannedCompletion = ?
-        then lc-planned = "".
-        else lc-planned = string(b-table.plannedCompletion,'99/99/9999').
+        IF b-Table.PlannedCompletion = ?
+        THEN lc-planned = "".
+        ELSE lc-planned = STRING(b-table.plannedCompletion,'99/99/9999').
 
-        assign
+        ASSIGN
             lc-sla-selected = "slanone".
-        if b-table.link-SLAID <> 0 then
-        do:
-            find slahead 
-                where slahead.SLAID = b-table.link-SLAID no-lock no-error.
-            if avail slahead
-            then assign lc-sla-selected = "sla" + string(rowid(slahead)).
+        IF b-table.link-SLAID <> 0 THEN
+        DO:
+            FIND slahead 
+                WHERE slahead.SLAID = b-table.link-SLAID NO-LOCK NO-ERROR.
+            IF AVAILABLE slahead
+            THEN ASSIGN lc-sla-selected = "sla" + string(ROWID(slahead)).
 
-        end.
+        END.
               
-    end.
+    END.
    
     RUN outputHeader.
     
@@ -1398,7 +1331,7 @@ PROCEDURE process-web-request :
     
     {&out}  
        '<script>'
-           'var NoteAjax = "' appurl '/iss/ajax/note.p?rowid=' string(rowid(b-table)) '"' skip
+           'var NoteAjax = "' appurl '/iss/ajax/note.p?rowid=' STRING(ROWID(b-table)) '"' skip
            'var CustomerAjax = "' appurl '/cust/custequiplist.p?expand=yes&ajaxsubwindow=yes&customer=' string(rowid(customer)) '"' skip
            'var DocumentAjax = "' appurl '/iss/ajax/document.p?rowid=' string(rowid(b-table)) 
                     '&toolbarid=' lc-Doc-TBAR 
@@ -1581,7 +1514,7 @@ PROCEDURE process-web-request :
     */
     {&out} 
         '<div class="tabbertab" title="Status Changes">' skip.
-    RUN ip-IssueStatusHistory ( rowid(b-table)).
+    RUN ip-IssueStatusHistory ( ROWID(b-table)).
     {&out} 
         '</div>'.
     /*
@@ -1618,8 +1551,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -1627,59 +1558,58 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-fn-DescribeSLA) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fn-DescribeSLA Procedure 
 FUNCTION fn-DescribeSLA RETURNS CHARACTER
-  ( pr-rowid as rowid ) :
+  ( pr-rowid AS ROWID ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
 
-    def buffer issue        for issue.
-    def buffer slahead      for slahead.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER slahead      FOR slahead.
 
-    def var lc-return   as char no-undo.
-    def var li-loop     as int  no-undo.
-    def var lc-line     as char no-undo.
-    def var ll-table    as log  no-undo.
-
-
-    find issue
-        where rowid(issue) = pr-rowid no-lock no-error.
-
-    if not avail issue then return "".
+    DEFINE VARIABLE lc-return   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-loop     AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-line     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE ll-table    AS LOG  NO-UNDO.
 
 
-    if issue.link-SLAID = 0 
-    or issue.link-SLAID = ?
-    or not can-find(slahead where slahead.slaid = issue.link-slaid no-lock)
-    then return "No SLA".
+    FIND issue
+        WHERE ROWID(issue) = pr-rowid NO-LOCK NO-ERROR.
 
-    find slahead where slahead.slaid = issue.link-slaid no-lock no-error.
+    IF NOT AVAILABLE issue THEN RETURN "".
 
-    assign lc-return = slahead.description.
 
-    if DYNAMIC-FUNCTION('islib-IssueIsOpen':U,pr-rowid) then
-    do:
-        do li-loop = 1 to 10:
-            if Issue.SLADate[li-loop] = ?
-            or slahead.RespDesc[li-loop] = "" then next.
+    IF issue.link-SLAID = 0 
+    OR issue.link-SLAID = ?
+    OR NOT CAN-FIND(slahead WHERE slahead.slaid = issue.link-slaid NO-LOCK)
+    THEN RETURN "No SLA".
 
-            if ll-table = false then
-            do:
-                assign lc-return = lc-return + 
+    FIND slahead WHERE slahead.slaid = issue.link-slaid NO-LOCK NO-ERROR.
+
+    ASSIGN lc-return = slahead.description.
+
+    IF DYNAMIC-FUNCTION('islib-IssueIsOpen':U,pr-rowid) THEN
+    DO:
+        DO li-loop = 1 TO 10:
+            IF Issue.SLADate[li-loop] = ?
+            OR slahead.RespDesc[li-loop] = "" THEN NEXT.
+
+            IF ll-table = FALSE THEN
+            DO:
+                ASSIGN lc-return = lc-return + 
                     htmlib-StartMntTable() +
                     htmlib-TableHeading(
                     "Level^right|Description|Date").
-                assign ll-table = true.
-            end.
-            assign lc-line = '<tr class="tabrow1">'.
+                ASSIGN ll-table = TRUE.
+            END.
+            ASSIGN lc-line = '<tr class="tabrow1">'.
             
-            assign
+            ASSIGN
                 lc-line = lc-line + 
-                          htmlib-TableField(string(li-loop) + 
-                                            if li-loop = Issue.SLALevel then "*" else "",'right') +
+                          htmlib-TableField(STRING(li-loop) + 
+                                            IF li-loop = Issue.SLALevel THEN "*" ELSE "",'right') +
                           htmlib-TableField(html-encode(
                               slahead.RespDesc[li-loop] + ' (' + 
                                slahead.RespUnit[li-loop] + ' ' + string(slahead.RespTime[li-loop])
@@ -1688,7 +1618,7 @@ FUNCTION fn-DescribeSLA RETURNS CHARACTER
                               ),'left')
                          + 
                          htmlib-TableField(html-encode(
-                              string(issue.SLADate[li-loop],"99/99/9999") + " " + 
+                              STRING(issue.SLADate[li-loop],"99/99/9999") + " " + 
                               string(issue.SLATime[li-loop],"hh:mm am")
                               
                               ),'left')
@@ -1703,22 +1633,20 @@ FUNCTION fn-DescribeSLA RETURNS CHARACTER
                         string(issue.SLATime[li-loop],"hh:mm am").
             */
 
-            assign lc-return = lc-return + lc-line.
+            ASSIGN lc-return = lc-return + lc-line.
 
             
-        end.
-        if ll-table
-        then assign lc-return = lc-return + htmlib-EndTable().
+        END.
+        IF ll-table
+        THEN ASSIGN lc-return = lc-return + htmlib-EndTable().
         
-    end.
+    END.
     
-    return lc-return.
+    RETURN lc-return.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

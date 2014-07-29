@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        iss/issue.p
@@ -24,6 +21,7 @@
     02/08/2012  DJS         3933 Modified to use object buffers  
     20/04/2014  phoski      fixed 3933 and customer page     
     24/04/2014  phoski      Various from specifications & fixes
+    24/07/2014  phoski      Team Stuff
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -134,11 +132,8 @@ CREATE QUERY vhLQuery  ASSIGN CACHE = 100 .
 vhLBuffer = BUFFER b-query:handle.
 vhLQuery:SET-BUFFERS(vhLBuffer).
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -147,61 +142,42 @@ vhLQuery:SET-BUFFERS(vhLBuffer).
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Account Procedure 
 FUNCTION Format-Select-Account RETURNS CHARACTER
    ( pc-htm AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -211,15 +187,12 @@ FUNCTION Format-Select-Account RETURNS CHARACTER
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
 PROCEDURE ip-ExportJScript :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -250,14 +223,11 @@ PROCEDURE ip-ExportJScript :
            '</script>' skip.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-InitialProcess) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-InitialProcess Procedure 
 PROCEDURE ip-InitialProcess :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -397,14 +367,11 @@ PROCEDURE ip-InitialProcess :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-navigate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-navigate Procedure 
 PROCEDURE ip-navigate :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -459,14 +426,11 @@ PROCEDURE ip-navigate :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Selection) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Selection Procedure 
 PROCEDURE ip-Selection :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -620,14 +584,11 @@ PROCEDURE ip-Selection :
     {&out} '</tr></table>' skip.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -675,14 +636,11 @@ PROCEDURE ip-Validate :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -735,14 +693,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -858,7 +813,14 @@ PROCEDURE process-web-request :
     IF lc-sel-status = "AllClosed"
     THEN ASSIGN lc-srch-status = lc-closed-status.
     ELSE ASSIGN lc-srch-status = lc-sel-status.
-
+         
+    IF lc-sel-assign = htmlib-null() 
+    AND DYNAMIC-FUNCTION("com-isTeamMember", lc-global-company,lc-global-user,?) THEN
+    DO:
+        RUN com-GetTeamMembers ( lc-global-company, lc-global-user,OUTPUT lc-ass-lo).
+    
+    END.
+    ELSE
     IF lc-sel-assign = htmlib-null() 
     THEN ASSIGN lc-ass-lo = ""
                 lc-ass-hi = "ZZZZZZZZZZZZZZZZ".
@@ -889,8 +851,23 @@ PROCEDURE process-web-request :
     lc-QPhrase = 
       "for each b-query NO-LOCK where b-query.CompanyCode = '" + string(lc-Global-Company) + "'".
 
-    IF lc-sel-account <> htmlib-Null() 
-    THEN ASSIGN lc-QPhrase =  lc-QPhrase + " and b-query.AccountNumber = '" + lc-acc-lo + "'".
+    IF lc-sel-account <> htmlib-Null() THEN 
+    DO:
+        ASSIGN lc-QPhrase =  lc-QPhrase + " and b-query.AccountNumber = '" + lc-acc-lo + "'".
+    END.  
+    ELSE
+    IF DYNAMIC-FUNCTION("com-isTeamMember", lc-global-company,lc-global-user,?) THEN
+    DO:
+        lc-QPhrase =  lc-QPhrase + " and can-do('" + replace(lc-list-acc,"|",",") + "',b-query.AccountNumber)".
+    END.
+    
+    
+    IF lc-sel-assign = htmlib-null() 
+    AND DYNAMIC-FUNCTION("com-isTeamMember", lc-global-company,lc-global-user,?) THEN
+    DO:
+        lc-QPhrase =  lc-QPhrase + " and can-do('" + lc-ass-lo + "',b-query.AssignTo)".
+    END.
+    ELSE
     IF lc-sel-assign <> htmlib-null() 
     THEN ASSIGN lc-QPhrase =  lc-QPhrase + " and b-query.AssignTo = '" + lc-ass-lo + "'".
 
@@ -936,15 +913,13 @@ PROCEDURE process-web-request :
 
     
     lc-QPhrase = lc-QPhrase + ' INDEXED-REPOSITION'.
-    
-
-
+ 
     vhLQuery:SET-BUFFERS(vhLBuffer).
     vhLQuery:QUERY-PREPARE(lc-QPhrase).
     vhLQuery:QUERY-OPEN().
-/*
+
     DYNAMIC-FUNCTION("com-WriteQueryInfo",vhlQuery).
-  */
+  
 
     vhLQuery:GET-FIRST(NO-LOCK).
 
@@ -1010,15 +985,25 @@ PROCEDURE process-web-request :
         DO:
             {&out} '<td valign="top" align="right">' SKIP.
 
+/*            IF b-query.tlight = li-global-sla-fail              */
+/*            THEN {&out} '<img src="/images/sla/fail.gif">' SKIP.*/
+/*            ELSE                                                */
+/*            IF b-query.tlight = li-global-sla-amber             */
+/*            THEN {&out} '<img src="/images/sla/warn.gif">' SKIP.*/
+/*                                                                */
+/*            ELSE                                                */
+/*            IF b-query.tlight = li-global-sla-ok                */
+/*            THEN {&out} '<img src="/images/sla/ok.gif">' SKIP.  */
             IF b-query.tlight = li-global-sla-fail
-            THEN {&out} '<img src="/images/sla/fail.gif">' SKIP.
+            THEN {&out} '<img src="/images/sla/fail.jpg" height="20" width="20" alt="SLA Fail">Fail' SKIP.
             ELSE
             IF b-query.tlight = li-global-sla-amber
-            THEN {&out} '<img src="/images/sla/warn.gif">' SKIP.
+            THEN {&out} '<img src="/images/sla/warn.jpg" height="20" width="20" alt="SLA Amber">Amber' SKIP.
             
             ELSE
             IF b-query.tlight = li-global-sla-ok
-            THEN {&out} '<img src="/images/sla/ok.gif">' SKIP.
+            THEN {&out} '<img src="/images/sla/ok.jpg" height="20" width="20" alt="SLA OK">OK' SKIP.
+            
             ELSE {&out} '&nbsp;' SKIP.
             
             {&out} '</td>' skip.
@@ -1182,8 +1167,6 @@ PROCEDURE process-web-request :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -1191,7 +1174,6 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Account Procedure 
 FUNCTION Format-Select-Account RETURNS CHARACTER
    ( pc-htm AS CHARACTER ) :
 /*------------------------------------------------------------------------------
@@ -1211,8 +1193,6 @@ FUNCTION Format-Select-Account RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

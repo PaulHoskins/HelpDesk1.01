@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        mail/mail.p
@@ -12,6 +9,7 @@
     
     When        Who         What
     16/07/2006  phoski      Initial 
+    24/07/2014  phoski      Team
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -22,35 +20,32 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-mess  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-def var lc-rowid as char no-undo.
-def var lc-link-print as char no-undo.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-print  AS CHARACTER NO-UNDO.
 
-def var li-max-lines as int initial 12 no-undo.
+DEFINE VARIABLE li-max-lines   AS INTEGER   INITIAL 12 NO-UNDO.
 
 
-def buffer b-query  for EmailH.
-def buffer b-search for EmailH.
-def buffer doch     for Doch.
+DEFINE BUFFER b-query  FOR EmailH.
+DEFINE BUFFER b-search FOR EmailH.
+DEFINE BUFFER doch     FOR Doch.
 
 
   
-def query q for b-query scrolling.
+DEFINE QUERY q FOR b-query SCROLLING.
 
 
-def var lc-info         as char no-undo.
-def var lc-object       as char no-undo.
-def var li-tag-end      as int no-undo.
-def var lc-dummy-return as char initial "MYXXX111PPP2222"   no-undo.
-def var lc-Customer     as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-info         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-object       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-tag-end      AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-dummy-return AS CHARACTER INITIAL "MYXXX111PPP2222" NO-UNDO.
+DEFINE VARIABLE lc-Customer     AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -59,48 +54,32 @@ def var lc-Customer     as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -110,27 +89,24 @@ def var lc-Customer     as char no-undo.
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
 PROCEDURE ip-ExportJScript :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     {&out} skip
             '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' skip.
 
     {&out}
-        '<script>' skip
+    '<script>' skip
         'function DeleteEmail(row) ~{' skip
             'if (!confirm("Delete this email?"))' skip 
             'return' skip
@@ -145,105 +121,103 @@ PROCEDURE ip-ExportJScript :
     
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    def buffer Customer for Customer.
+    DEFINE BUFFER Customer FOR Customer.
 
-    def var lc-message  as char     no-undo.
-    def var li-Attach   as int      no-undo.
+    DEFINE VARIABLE lc-message  AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE li-Attach   AS INTEGER      NO-UNDO.
 
+    DEFINE VARIABLE ll-steam AS LOGICAL     NO-UNDO.
+    DEFINE VARIABLE ll-show AS LOGICAL      NO-UNDO.
+    
+    
     {lib/checkloggedin.i}
 
-    if get-value("submitsource") = "DeleteEmail" then
-    do:
-        find emailh where rowid(emailh) = to-rowid(get-value("deleterow")) exclusive-lock no-error.
-        if avail emailh then
-        do:
-            for each doch exclusive-lock
-                where doch.CompanyCode = lc-global-company
-                  and doch.RelType     = "EMAIL"
-                  and doch.RelKey      = string(emailh.EmailID):
-                for each docl of doch exclusive-lock:
-                    delete docl.
-                end.
-                delete doch.
-            end.
-            delete emailh.
-        end.
-    end.
+    IF get-value("submitsource") = "DeleteEmail" THEN
+    DO:
+        FIND emailh WHERE ROWID(emailh) = to-rowid(get-value("deleterow")) EXCLUSIVE-LOCK NO-ERROR.
+        IF AVAILABLE emailh THEN
+        DO:
+            FOR EACH doch EXCLUSIVE-LOCK
+                WHERE doch.CompanyCode = lc-global-company
+                AND doch.RelType     = "EMAIL"
+                AND doch.RelKey      = string(emailh.EmailID):
+                FOR EACH docl OF doch EXCLUSIVE-LOCK:
+                    DELETE docl.
+                END.
+                DELETE doch.
+            END.
+            DELETE emailh.
+        END.
+    END.
     RUN outputHeader.
     
     
@@ -256,20 +230,20 @@ PROCEDURE process-web-request :
     {&out} htmlib-StartForm("mainform","post", appurl + '/mail/mail.p' ) skip.
 
     {&out} htmlib-ProgramTitle("HelpDesk Emails") 
-           htmlib-hidden("submitsource","") skip
+    htmlib-hidden("submitsource","") skip
            htmlib-hidden("deleterow","") skip.
   
     {&out}
-            tbar-Begin(
-               ""
-                )
-            tbar-BeginOption()
-            tbar-Link("emailissue",?,"off","")
-            tbar-Link("emailsave",?,"off","")
-            tbar-Link("emaildelete",?,"off","")
+    tbar-Begin(
+        ""
+        )
+    tbar-BeginOption()
+    tbar-Link("emailissue",?,"off","")
+    tbar-Link("emailsave",?,"off","")
+    tbar-Link("emaildelete",?,"off","")
  
-            tbar-EndOption()
-            tbar-End().
+    tbar-EndOption()
+    tbar-End().
 
     {&out} skip
            replace(htmlib-StartMntTable(),'width="100%"','width="97%"') skip
@@ -277,31 +251,52 @@ PROCEDURE process-web-request :
             "Customer^left|Date^left|Subject|Attachments"
             ) skip.
  
-    open query q for each b-query no-lock
-        where b-query.CompanyCode = lc-global-company
-          and b-query.Email > ""
-          .
+    ll-Steam =
+        DYNAMIC-FUNCTION("com-isTeamMember", lc-global-company,lc-global-user,?).
+     
+    OPEN QUERY q FOR EACH b-query NO-LOCK
+        WHERE b-query.CompanyCode = lc-global-company
+        AND b-query.Email > ""
+        .
           
 
-    get first q no-lock.
+    GET FIRST q NO-LOCK.
     
-    repeat while avail b-query:
-        assign lc-rowid = string(rowid(b-query)).
-        assign
+    REPEAT WHILE AVAILABLE b-query:
+        ASSIGN 
+            lc-rowid = STRING(ROWID(b-query)).
+        ASSIGN
             lc-message = b-query.Mtext.
 
-        assign lc-customer = "".
+        ASSIGN 
+            lc-customer = ""
+            ll-show = TRUE.
 
-        if b-query.AccountNumber <> "" then
-        do:
-            find Customer where Customer.CompanyCode = lc-global-company
-                            and Customer.AccountNumber = b-query.AccountNumber
-                            no-lock no-error.
-            if avail Customer
-            then assign lc-customer = customer.AccountNumber + " " +
+        IF b-query.AccountNumber <> "" THEN
+        DO:
+            FIND Customer WHERE Customer.CompanyCode = lc-global-company
+                AND Customer.AccountNumber = b-query.AccountNumber
+                NO-LOCK NO-ERROR.
+            IF ll-steam THEN
+            DO:
+                IF Customer.st-num = 0 
+                    THEN ASSIGN ll-show = FALSE.
+                ELSE
+                    IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-global-user
+                        AND webusteam.st-num = customer.st-num NO-LOCK) 
+            
+                        THEN ll-show = FALSE.
+            
+            END.    
+            IF AVAILABLE Customer
+                THEN ASSIGN lc-customer = customer.AccountNumber + " " +
                                       customer.name.
-        end.
-        {&out}
+        END.
+        
+        IF ll-show THEN
+        DO:
+            
+            {&out}
             skip
             tbar-tr(rowid(b-query))
             skip
@@ -310,125 +305,129 @@ PROCEDURE process-web-request :
                                 ,'left').
 
         
-        if lc-message <> ""
-        and lc-message <> b-query.subject then
-        do:
+            IF lc-message <> ""
+                AND lc-message <> b-query.subject THEN
+            DO:
         
-            assign lc-info = 
-                replace(htmlib-MntTableField(html-encode(b-query.subject),'left'),'</td>','')
-                lc-object = "hdobj" + string(b-query.emailid).
+                ASSIGN 
+                    lc-info = 
+                REPLACE(htmlib-MntTableField(html-encode(b-query.subject),'left'),'</td>','')
+                    lc-object = "hdobj" + string(b-query.emailid).
     
            
-            assign li-tag-end = index(lc-info,">").
+                ASSIGN 
+                    li-tag-end = INDEX(lc-info,">").
 
-            {&out} substr(lc-info,1,li-tag-end).
+                {&out} substr(lc-info,1,li-tag-end).
 
-            assign substr(lc-info,1,li-tag-end) = "".
+                ASSIGN 
+                    substr(lc-info,1,li-tag-end) = "".
             
-            {&out} 
+                {&out} 
                 '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
-                        lc-object '~')">':U skip.
-            {&out} lc-info.
+                lc-object '~')">':U skip.
+                {&out} lc-info.
     
-             def var lc-work as char no-undo.
+                DEFINE VARIABLE lc-work AS CHARACTER NO-UNDO.
 
             
-             lc-work = htmlib-ExpandBox(lc-object,lc-message).
+                lc-work = htmlib-ExpandBox(lc-object,lc-message).
 
-             lc-work = replace(lc-work,"Status : Error",
-                                "<span style='color: red; font-size: 12px;'>" + 
-                                  "STATUS : ERROR</span>").
-             {&out} lc-work.
+                lc-work = REPLACE(lc-work,"Status : Error",
+                    "<span style='color: red; font-size: 12px;'>" + 
+                    "STATUS : ERROR</span>").
+                {&out} lc-work.
 
-            {&out} '</td>' skip.
-        end.
-        else {&out} htmlib-MntTableField(html-encode(b-query.subject),"left").
+                {&out} '</td>' skip.
+            END.
+            ELSE {&out} htmlib-MntTableField(html-encode(b-query.subject),"left").
  
         
-        assign li-Attach = 0.
+            ASSIGN 
+                li-Attach = 0.
 
-        find first doch 
-            where doch.CompanyCode = b-query.CompanyCode
-              and doch.RelType     = "EMAIL"
-              and doch.RelKey      = string(b-query.EmailID)
-              no-lock no-error.
-        if not avail doch 
-        then {&out} htmlib-MntTableField("&nbsp;","left").
-        else
-        do:
-            {&out} skip(4)
-                   '<td nowrap>'.
-
-            for each doch 
-                    where doch.CompanyCode = b-query.CompanyCode
-                      and doch.RelType     = "EMAIL"
-                      and doch.RelKey      = string(b-query.EmailID)
-                      no-lock:
-
-                assign li-Attach = li-Attach + 1.
-
-                {&out}
+            FIND FIRST doch 
+                WHERE doch.CompanyCode = b-query.CompanyCode
+                AND doch.RelType     = "EMAIL"
+                AND doch.RelKey      = string(b-query.EmailID)
+                NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE doch 
+                THEN {&out} htmlib-MntTableField("&nbsp;","left").
+            else
+            do:
+                {&out} SKIP(4)
+                '<td nowrap>'.
+        
+                FOR EACH doch 
+                    WHERE doch.CompanyCode = b-query.CompanyCode
+                    AND doch.RelType     = "EMAIL"
+                    AND doch.RelKey      = string(b-query.EmailID)
+                    NO-LOCK:
+        
+                    ASSIGN 
+                        li-Attach = li-Attach + 1.
+        
+                    {&out}
                     '<a class="tlink" style="border:none; width: 100%;" href="'
                         'javascript:OpenNewWindow('
-                          + '~'' + appurl 
-                          + '/sys/docview.p?docid=' + string(doch.docid)
-                          + '~'' 
-                          + ');'
-                      '">'
-                        doch.descr 
+                        + '~'' + appurl 
+                        + '/sys/docview.p?docid=' + string(doch.docid)
+                        + '~'' 
+                        + ');'
+                    '">'
+                    doch.descr 
                     '</a><br>'.
-            end.
-
-            {&out} '</td>' skip(4).
-
-        end.
-        {&out} skip
-                tbar-BeginHidden(rowid(b-query))
-                tbar-Link("emailissue",rowid(b-query),
-                          appurl + '/' + "iss/addissue.p",
-                          "emailid=" + string(b-query.EmailID) + "&issuesource=email"
-                          )
-                tbar-Link("emailsave",rowid(b-query),
-                          if li-Attach > 0 then
-                          appurl + '/' + "mail/mailsave.p" else "off",
-                          ""
-                          )
-                tbar-Link("emaildelete",rowid(b-query),
-                          'javascript:DeleteEmail('
-                          + '~'' + string(rowid(b-query))
-                          + '~'' 
-                          + ');'
-                          ,"")
-                .
-
+                END.
         
-        {&out}
-                
-            tbar-EndHidden()
-            skip
-           '</tr>' skip.
-
+                {&out} '</td>' SKIP(4).
+    
+            END.
+            {&out} skip
+                    tbar-BeginHidden(rowid(b-query))
+                    tbar-Link("emailissue",rowid(b-query),
+                              appurl + '/' + "iss/addissue.p",
+                              "emailid=" + string(b-query.EmailID) + "&issuesource=email"
+                              )
+                    tbar-Link("emailsave",rowid(b-query),
+                              if li-Attach > 0 then
+                              appurl + '/' + "mail/mailsave.p" else "off",
+                              ""
+                              )
+                    tbar-Link("emaildelete",rowid(b-query),
+                              'javascript:DeleteEmail('
+                              + '~'' + string(rowid(b-query))
+                              + '~'' 
+                              + ');'
+                              ,"")
+        .
+    
+            
+            {&out}
+                    
+                tbar-EndHidden()
+                skip
+               '</tr>' skip.
+    
+        END.
        
 
-        get next q no-lock.
-            
-    end.
-
-    {&out} skip 
-           htmlib-EndTable()
-           skip.
-
-   
-    {&out} htmlib-EndForm().
-
+        GET NEXT q NO-LOCK.
+                
+    END.
     
+    {&out} skip 
+               htmlib-EndTable()
+               skip.
+    
+       
+    {&out} htmlib-EndForm().
+    
+        
     {&OUT} htmlib-Footer() skip.
     
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
