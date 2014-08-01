@@ -1,4 +1,4 @@
-@program FILE(name="custom.p", module="Test").
+
 
 /*------------------------------------------------------------------------
     File        : custom.p
@@ -22,8 +22,22 @@ DEF VAR xx AS INT NO-UNDO.
 
 
 /* ***************************  Main Block  *************************** */
-@program(name="custom.p").
-PROCEDURE fuck:
-    
-END PROCEDURE.
+
+DEFINE VARIABLE ld-basedate AS DATETIME NO-UNDO.
+DEFINE VARIABLE ld-amber    AS DATETIME NO-UNDO.
+DEFINE VARIABLE li-min      AS INT      NO-UNDO.
+
+
+FIND Company WHERE Company.CompanyCode = "ouritdept" NO-LOCK NO-ERROR.
+ASSIGN
+    ld-basedate = DATETIME("04/08/2014 8:45")
+    li-min = 16.
+RUN lib/calcamber.p ( "ouritdept",
+                    ld-basedate, li-min, OUTPUT ld-amber).
+                    
+DISPLAY  ld-basedate li-min ld-amber STRING(Company.SLABeginHour,'99') + ":" +
+              string(Company.SLABeginMin,'99') 
+              STRING(Company.SLAEndHour,'99') + ":" +
+              string(Company.SLAEndMin,'99').
+                   
     

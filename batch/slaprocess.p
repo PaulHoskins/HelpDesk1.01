@@ -144,9 +144,15 @@ FOR EACH ro-Issue NO-LOCK
 
         IF slahead.amberWarning > 0 THEN
         DO:
+            RUN lib/calcamber.p ( Issue.CompanyCode,
+                    ldt-Level2, slahead.amberWarning, OUTPUT issue.slaamber).
+                    
+            /*        
             li-mill = (  slahead.amberWarning * 60 ) * 1000.
             ldt-Amber2 = ldt-Level2 - li-Mill.
             issue.slaamber = ldt-Amber2.
+            */
+            
             fnLog ( "Amber ( Level2 " + STRING(ldt-level2) + " - " +
                 string(slahead.amberWarning) + "mins ) = " +
                 string(issue.slaamber)
@@ -191,8 +197,6 @@ FOR EACH ro-Issue NO-LOCK
          
             IF NOW >= issue.slaamber
             THEN ASSIGN issue.tlight = li-global-sla-amber.
-
-
         END.
 
 

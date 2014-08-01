@@ -28,69 +28,69 @@
 
 PROCEDURE attrlib-SetAttribute:
 
-    def input param pc-AttrName         as char             no-undo.
-    def input param pc-AttrValue        as char             no-undo.
-    def input-output param pc-Attribute as char             no-undo.
+    DEFINE INPUT PARAMETER pc-AttrName         AS CHARACTER             NO-UNDO.
+    DEFINE INPUT PARAMETER pc-AttrValue        AS CHARACTER             NO-UNDO.
+    DEFINE INPUT-OUTPUT PARAMETER pc-Attribute AS CHARACTER             NO-UNDO.
     
-    def var lc-AttrName                 as char             no-undo.
-    def var lc-AttrValue                as char             no-undo.
-    def var lc-string                   as char             no-undo.
-    def var li-Attribute                as int              no-undo.
+    DEFINE VARIABLE lc-AttrName                 AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE lc-AttrValue                AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE lc-string                   AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE li-Attribute                AS INTEGER              NO-UNDO.
      
-    if pc-AttrValue = ?
-    then assign pc-AttrValue = "{&attrlibNull}".
+    IF pc-AttrValue = ?
+    THEN ASSIGN pc-AttrValue = "{&attrlibNull}".
     
-    if pc-Attribute <> ?
-    and pc-Attribute <> "" then
-    do li-Attribute = 1 to num-entries(pc-Attribute,{&attrlibDelim}):
-        assign lc-String = entry(li-Attribute,pc-Attribute,{&attrlibDelim}).
-        if num-entries(lc-string,{&attrlibBreak}) <> 2
-        then next.
-        assign lc-AttrName = entry(1,lc-string,{&attrlibBreak})
-               lc-AttrValue = entry(2,lc-string,{&attrlibBreak}).
-        if lc-AttrName <> pc-AttrName then next. 
+    IF pc-Attribute <> ?
+    AND pc-Attribute <> "" THEN
+    DO li-Attribute = 1 TO NUM-ENTRIES(pc-Attribute,{&attrlibDelim}):
+        ASSIGN lc-String = ENTRY(li-Attribute,pc-Attribute,{&attrlibDelim}).
+        IF NUM-ENTRIES(lc-string,{&attrlibBreak}) <> 2
+        THEN NEXT.
+        ASSIGN lc-AttrName = ENTRY(1,lc-string,{&attrlibBreak})
+               lc-AttrValue = ENTRY(2,lc-string,{&attrlibBreak}).
+        IF lc-AttrName <> pc-AttrName THEN NEXT. 
                  
-        assign lc-string = lc-AttrName + {&attrlibBreak} + pc-AttrValue.
+        ASSIGN lc-string = lc-AttrName + {&attrlibBreak} + pc-AttrValue.
                      
                        
-        assign entry(li-Attribute,pc-Attribute,{&attrlibDelim}) = lc-String.
-        return.
+        ASSIGN ENTRY(li-Attribute,pc-Attribute,{&attrlibDelim}) = lc-String.
+        RETURN.
 
-    end.
-    if pc-Attribute = ""
-    or pc-Attribute = ?
-    then pc-Attribute = pc-AttrName + {&attrlibBreak} + pc-AttrValue.
-    else pc-attribute = pc-attribute + {&attrlibDelim} + 
+    END.
+    IF pc-Attribute = ""
+    OR pc-Attribute = ?
+    THEN pc-Attribute = pc-AttrName + {&attrlibBreak} + pc-AttrValue.
+    ELSE pc-attribute = pc-attribute + {&attrlibDelim} + 
                         pc-AttrName + {&attrlibBreak} + pc-AttrValue.
                         
 END PROCEDURE.
 
 PROCEDURE attrlib-GetAttribute:
-    def input param pc-AttrName         as char             no-undo.
-    def input param pc-Attribute        as char             no-undo.
-    def output param pc-AttrValue       as char             no-undo.
+    DEFINE INPUT PARAMETER pc-AttrName         AS CHARACTER             NO-UNDO.
+    DEFINE INPUT PARAMETER pc-Attribute        AS CHARACTER             NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-AttrValue       AS CHARACTER             NO-UNDO.
     
-    def var lc-AttrName                 as char             no-undo.
-    def var lc-AttrValue                as char             no-undo.
-    def var lc-string                   as char             no-undo.
-    def var li-Attribute                as int              no-undo.
+    DEFINE VARIABLE lc-AttrName                 AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE lc-AttrValue                AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE lc-string                   AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE li-Attribute                AS INTEGER              NO-UNDO.
      
-    if pc-Attribute <> ?
-    and pc-Attribute <> "" then
-    do li-Attribute = 1 to num-entries(pc-Attribute,{&attrlibDelim}):
-        assign lc-String = entry(li-Attribute,pc-Attribute,{&attrlibDelim}).
-        if num-entries(lc-string,{&attrlibBreak}) <> 2
-        then next.
-        assign lc-AttrName = entry(1,lc-string,{&attrlibBreak})
-               lc-AttrValue = entry(2,lc-string,{&attrlibBreak}).
-        if lc-AttrName <> pc-AttrName then next. 
+    IF pc-Attribute <> ?
+    AND pc-Attribute <> "" THEN
+    DO li-Attribute = 1 TO NUM-ENTRIES(pc-Attribute,{&attrlibDelim}):
+        ASSIGN lc-String = ENTRY(li-Attribute,pc-Attribute,{&attrlibDelim}).
+        IF NUM-ENTRIES(lc-string,{&attrlibBreak}) <> 2
+        THEN NEXT.
+        ASSIGN lc-AttrName = ENTRY(1,lc-string,{&attrlibBreak})
+               lc-AttrValue = ENTRY(2,lc-string,{&attrlibBreak}).
+        IF lc-AttrName <> pc-AttrName THEN NEXT. 
         
-        if lc-AttrValue = "{&attrlibNull}"
-        then lc-attrValue = ?.
+        IF lc-AttrValue = "{&attrlibNull}"
+        THEN lc-attrValue = ?.
 
-        assign pc-AttrValue = trim(lc-AttrValue).
+        ASSIGN pc-AttrValue = TRIM(lc-AttrValue).
         
-    end.
+    END.
 
 
 END PROCEDURE.
