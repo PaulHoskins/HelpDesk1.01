@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        iss/issueemail.p
@@ -22,65 +19,62 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-mess  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-def var lc-rowid as char no-undo.
-def var lc-link-print as char no-undo.
+DEFINE VARIABLE lc-rowid AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-print AS CHARACTER NO-UNDO.
 
-def var li-max-lines as int initial 12 no-undo.
-def var lr-first-row as rowid no-undo.
-def var lr-last-row  as rowid no-undo.
-def var li-count     as int   no-undo.
+DEFINE VARIABLE li-max-lines AS INTEGER INITIAL 12 NO-UNDO.
+DEFINE VARIABLE lr-first-row AS ROWID NO-UNDO.
+DEFINE VARIABLE lr-last-row  AS ROWID NO-UNDO.
+DEFINE VARIABLE li-count     AS INTEGER   NO-UNDO.
 
-def var lc-status       as char no-undo.
-def var lc-customer     as char no-undo.
-def var lc-issdate      as char no-undo.
-def var lc-raised       as char no-undo.
-def var lc-assigned     as char no-undo.
-DEF VAR lc-submitsource AS CHAR NO-UNDO.
+DEFINE VARIABLE lc-status       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-customer     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-issdate      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-raised       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-assigned     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submitsource AS CHARACTER NO-UNDO.
 
-DEF buffer issue        for issue.
-def buffer customer     for customer.
-def buffer WebStatus    for WebStatus.
-def buffer WebUser      for WebUser.
-def buffer WebIssArea   for WebIssArea.
-def buffer this-user    for WebUser.
-DEF BUFFER b-tmp        FOR iemailtmp.
-DEF BUFFER iemailtmp    FOR iemailtmp.
+DEFINE BUFFER issue        FOR issue.
+DEFINE BUFFER customer     FOR customer.
+DEFINE BUFFER WebStatus    FOR WebStatus.
+DEFINE BUFFER WebUser      FOR WebUser.
+DEFINE BUFFER WebIssArea   FOR WebIssArea.
+DEFINE BUFFER this-user    FOR WebUser.
+DEFINE BUFFER b-tmp        FOR iemailtmp.
+DEFINE BUFFER iemailtmp    FOR iemailtmp.
 
   
 
-DEF VAR lc-IPref        AS CHAR     NO-UNDO.
-DEF VAR lc-iField       AS CHAR     NO-UNDO.
+DEFINE VARIABLE lc-IPref        AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-iField       AS CHARACTER     NO-UNDO.
 
 
-DEF VAR li-col          AS INT      NO-UNDO.
-def var lc-area         as char no-undo.
-def var lc-info         as char no-undo.
-def var lc-object       as char no-undo.
-def var li-tag-end      as int no-undo.
-def var lc-dummy-return as char initial "MYXXX111PPP2222"   no-undo.
+DEFINE VARIABLE li-col          AS INTEGER      NO-UNDO.
+DEFINE VARIABLE lc-area         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-info         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-object       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-tag-end      AS INTEGER NO-UNDO.
+DEFINE VARIABLE lc-dummy-return AS CHARACTER INITIAL "MYXXX111PPP2222"   NO-UNDO.
 
 
-DEF VAR lc-seltmpcode   AS CHAR    NO-UNDO.
-DEF VAR lc-seltmpdesc   AS CHAR    NO-UNDO.
+DEFINE VARIABLE lc-seltmpcode   AS CHARACTER    NO-UNDO.
+DEFINE VARIABLE lc-seltmpdesc   AS CHARACTER    NO-UNDO.
 
-DEF VAR lc-selActcode   AS CHAR    NO-UNDO.
-DEF VAR lc-selActdesc   AS CHAR    NO-UNDO.
+DEFINE VARIABLE lc-selActcode   AS CHARACTER    NO-UNDO.
+DEFINE VARIABLE lc-selActdesc   AS CHARACTER    NO-UNDO.
 
-def var lc-QPhrase      as char    no-undo.
-def var vhLBuffer       as handle  no-undo.
-def var vhLQuery        as handle  no-undo.
+DEFINE VARIABLE lc-QPhrase      AS CHARACTER    NO-UNDO.
+DEFINE VARIABLE vhLBuffer       AS HANDLE  NO-UNDO.
+DEFINE VARIABLE vhLQuery        AS HANDLE  NO-UNDO.
 
 
 {iss/issue.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -89,61 +83,42 @@ def var vhLQuery        as handle  no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Account Procedure 
 FUNCTION Format-Select-Account RETURNS CHARACTER
-   ( pc-htm as char )  FORWARD.
+   ( pc-htm AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -153,15 +128,12 @@ FUNCTION Format-Select-Account RETURNS CHARACTER
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-EmailHTML) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-EmailHTML Procedure 
 PROCEDURE ip-EmailHTML :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -169,11 +141,11 @@ PROCEDURE ip-EmailHTML :
   Notes:       
 ------------------------------------------------------------------------------*/
   
-   def var lc-descr        as char no-undo.
-   def var lc-tmpcode      AS CHAR NO-UNDO.
-   DEF VAR lc-tmptxt       AS CHAR NO-UNDO.
-   DEF VAR lc-convtxt      AS CHAR NO-UNDO.
-   def var lc-action       AS CHAR NO-UNDO.
+   DEFINE VARIABLE lc-descr        AS CHARACTER NO-UNDO.
+   DEFINE VARIABLE lc-tmpcode      AS CHARACTER NO-UNDO.
+   DEFINE VARIABLE lc-tmptxt       AS CHARACTER NO-UNDO.
+   DEFINE VARIABLE lc-convtxt      AS CHARACTER NO-UNDO.
+   DEFINE VARIABLE lc-action       AS CHARACTER NO-UNDO.
 
 
     {&out}
@@ -214,7 +186,7 @@ PROCEDURE ip-EmailHTML :
            
             '</TD>' skip. 
 
-    assign
+    ASSIGN
        lc-IField = lc-iPref + 'act'.
        lc-action = get-value(lc-iField).
 
@@ -232,7 +204,7 @@ PROCEDURE ip-EmailHTML :
 
 
 
-    assign
+    ASSIGN
         lc-IField = lc-iPref + 'tmped'.
         lc-convtxt = get-value(lc-iField).
 
@@ -251,14 +223,11 @@ PROCEDURE ip-EmailHTML :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
 PROCEDURE ip-ExportJScript :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -297,14 +266,11 @@ PROCEDURE ip-ExportJScript :
            '</script>' skip.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-InitialProcess) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-InitialProcess Procedure 
 PROCEDURE ip-InitialProcess :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -325,14 +291,11 @@ PROCEDURE ip-InitialProcess :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ipGetMethodProcess) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipGetMethodProcess Procedure 
 PROCEDURE ipGetMethodProcess :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -340,20 +303,20 @@ PROCEDURE ipGetMethodProcess :
   Notes:       
 ------------------------------------------------------------------------------*/
    
-    DEF buffer  iemailtmp   FOR iemailtmp.
-    DEF BUFFER  issue       FOR issue.
-    DEF BUFFER  WebStatus   FOR WebStatus.
+    DEFINE BUFFER  iemailtmp   FOR iemailtmp.
+    DEFINE BUFFER  issue       FOR issue.
+    DEFINE BUFFER  WebStatus   FOR WebStatus.
 
-    def var lc-descr        as char no-undo.
-    def var lc-tmpcode      AS CHAR NO-UNDO.
-    DEF VAR lc-tmptxt       AS CHAR NO-UNDO.
-    DEF VAR lc-convtxt      AS CHAR NO-UNDO.
+    DEFINE VARIABLE lc-descr        AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-tmpcode      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-tmptxt       AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-convtxt      AS CHARACTER NO-UNDO.
 
-    for each issue NO-LOCK where issue.CompanyCode = lc-global-company
+    FOR EACH issue NO-LOCK WHERE issue.CompanyCode = lc-global-company
                              AND issue.assignto = lc-global-user,
-        FIRST WebStatus of issue where WebStatus.CompletedStatus = no no-lock:
+        FIRST WebStatus OF issue WHERE WebStatus.CompletedStatus = NO NO-LOCK:
 
-        assign
+        ASSIGN
             lc-ipref = "I" + STRING(issue.IssueNumber)
             lc-IField = lc-iPref + 'tmpsel'
             lc-TmpCode = issue.LastTmpCode.
@@ -366,7 +329,7 @@ PROCEDURE ipGetMethodProcess :
                 WHERE iemailtmp.companyCode = lc-global-company
                   AND iemailtmp.tmpCode = lc-tmpCode
                   NO-LOCK NO-ERROR.
-        IF NOT AVAIL iemailtmp THEN NEXT.
+        IF NOT AVAILABLE iemailtmp THEN NEXT.
         
         RUN lib/translatetemplate.p 
                (
@@ -392,14 +355,11 @@ PROCEDURE ipGetMethodProcess :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ipProcessEmail) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipProcessEmail Procedure 
 PROCEDURE ipProcessEmail :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -408,43 +368,43 @@ PROCEDURE ipProcessEmail :
 ------------------------------------------------------------------------------*/
 
 
-    DEF buffer  iemailtmp   FOR iemailtmp.
-    DEF BUFFER  issue       FOR issue.
-    DEF BUFFER  WebStatus   FOR WebStatus.
-    def buffer b-table      for IssAction.
-    DEF BUFFER  u           FOR webuser.
+    DEFINE BUFFER  iemailtmp   FOR iemailtmp.
+    DEFINE BUFFER  issue       FOR issue.
+    DEFINE BUFFER  WebStatus   FOR WebStatus.
+    DEFINE BUFFER b-table      FOR IssAction.
+    DEFINE BUFFER  u           FOR webuser.
 
-    def var lc-descr        as char no-undo.
-    def var lc-tmpcode      AS CHAR NO-UNDO.
-    DEF VAR lc-convtxt      AS CHAR NO-UNDO.
-    DEF VAR lc-Action       AS CHAR NO-UNDO.
-
-
-    def var lf-Audit            as dec  no-undo.
-    def var lc-temp             as char no-undo.
-
-    def var lr-temp             as rowid no-undo.
-    DEF VAR lc-emailTo          AS CHAR  NO-UNDO.
+    DEFINE VARIABLE lc-descr        AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-tmpcode      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-convtxt      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-Action       AS CHARACTER NO-UNDO.
 
 
-    for each issue exclusive-lock where issue.CompanyCode = lc-global-company
+    DEFINE VARIABLE lf-Audit            AS DECIMAL  NO-UNDO.
+    DEFINE VARIABLE lc-temp             AS CHARACTER NO-UNDO.
+
+    DEFINE VARIABLE lr-temp             AS ROWID NO-UNDO.
+    DEFINE VARIABLE lc-emailTo          AS CHARACTER  NO-UNDO.
+
+
+    FOR EACH issue EXCLUSIVE-LOCK WHERE issue.CompanyCode = lc-global-company
                              AND issue.assignto = lc-global-user,
-        FIRST WebStatus of issue where WebStatus.CompletedStatus = no no-lock:
+        FIRST WebStatus OF issue WHERE WebStatus.CompletedStatus = NO NO-LOCK:
 
 
-        assign
+        ASSIGN
             lc-ipref = "I" + STRING(issue.IssueNumber).
             
         ASSIGN 
             lc-IField = lc-iPref + 'tmpsel'
             lc-TmpCode = get-value(lc-IField).
 
-        assign
+        ASSIGN
             lc-IField = lc-iPref + 'act'.
             lc-action = get-value(lc-iField).
 
 
-        assign
+        ASSIGN
             lc-IField = lc-iPref + 'tmped'.
             lc-convtxt = get-value(lc-iField).
 
@@ -454,74 +414,74 @@ PROCEDURE ipProcessEmail :
         issue.LastTmpCode = lc-tmpCode.
 
 
-        find WebAction
-            where WebAction.CompanyCode = lc-global-company
-              and WebAction.ActionCode  = lc-Action
-              no-lock no-error.
+        FIND WebAction
+            WHERE WebAction.CompanyCode = lc-global-company
+              AND WebAction.ActionCode  = lc-Action
+              NO-LOCK NO-ERROR.
         
-        create b-table.
-        assign b-table.actionID    = WebAction.ActionID
+        CREATE b-table.
+        ASSIGN b-table.actionID    = WebAction.ActionID
                b-table.CompanyCode = lc-global-company
                b-table.IssueNumber = issue.IssueNumber
-               b-table.CreateDate  = today
-               b-table.CreateTime  = time
+               b-table.CreateDate  = TODAY
+               b-table.CreateTime  = TIME
                b-table.CreatedBy   = lc-global-user
-               b-table.customerview = Yes
+               b-table.customerview = YES
                .
 
-        do while true:
-            run lib/makeaudit.p (
+        DO WHILE TRUE:
+            RUN lib/makeaudit.p (
                 "",
-                output lf-audit
+                OUTPUT lf-audit
                 ).
-            if can-find(first IssAction
-                        where IssAction.IssActionID = lf-audit no-lock)
-                        then next.
-            assign
+            IF CAN-FIND(FIRST IssAction
+                        WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                        THEN NEXT.
+            ASSIGN
                 b-table.IssActionID = lf-audit.
-            leave.
-        end.
+            LEAVE.
+        END.
 
         ASSIGN b-table.notes         = lc-convtxt
               b-table.ActionStatus  = "CLOSED"
-              b-table.ActionDate    =  today
+              b-table.ActionDate    =  TODAY
             .
 
-        assign b-table.AssignDate = today
-               b-table.AssignTime = time
+        ASSIGN b-table.AssignDate = TODAY
+               b-table.AssignTime = TIME
                b-table.AssignBy   = lc-global-user
                b-table.assignto  = lc-global-user.
 
-        assign lr-temp = rowid(b-table).
-        release b-table.
+        ASSIGN lr-temp = ROWID(b-table).
+        RELEASE b-table.
 
-        find b-table where rowid(b-table) = lr-temp exclusive-lock.
+        FIND b-table WHERE ROWID(b-table) = lr-temp EXCLUSIVE-LOCK.
     
-        dynamic-function("islib-CreateAutoAction",
+        DYNAMIC-FUNCTION("islib-CreateAutoAction",
                          b-table.IssActionID).
 
         lc-emailTo = "Support@ouritdept.co.uk".
 
         FIND u WHERE u.loginid = issue.RaisedLogin NO-LOCK NO-ERROR.
-        IF AVAIL u THEN lc-emailto = lc-emailto + "," + u.email.
+        IF AVAILABLE u THEN lc-emailto = lc-emailto + "," + u.email.
 
 
         FIND FIRST u WHERE u.accountNumber = issue.accountNumber
                        AND u.defaultuser = TRUE
                        AND u.loginid <> issue.RaisedLogin
                        NO-LOCK NO-ERROR.
-        IF AVAIL u THEN lc-emailto = lc-emailto + "," + u.email.
+        IF AVAILABLE u THEN lc-emailto = lc-emailto + "," + u.email.
 
        
 
-        assign
+        ASSIGN
             
             lc-IField = lc-iPref + 'Send'.
             
        
         set-user-field(lc-iField,lc-emailto).
 
-        dynamic-function("mlib-SendEmail",
+        DYNAMIC-FUNCTION("mlib-SendEmail",
                          lc-global-company,
                          "",
                          "Issue " + 
@@ -539,14 +499,11 @@ PROCEDURE ipProcessEmail :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -599,14 +556,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -616,15 +570,15 @@ PROCEDURE process-web-request :
   
     {lib/checkloggedin.i}
 
-    DEF VAR iloop       AS INT      NO-UNDO.
-    DEF VAR cPart       AS CHAR     NO-UNDO.
-    DEF VAR cCode       AS CHAR     NO-UNDO.
-    DEF VAR cDesc       AS CHAR     NO-UNDO.
-    DEF VAR lc-LastAct  AS CHAR     NO-UNDO.
+    DEFINE VARIABLE iloop       AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE cPart       AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE cCode       AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE cDesc       AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-LastAct  AS CHARACTER     NO-UNDO.
    
     
-    find this-user
-        where this-user.LoginID = lc-global-user no-lock no-error.
+    FIND this-user
+        WHERE this-user.LoginID = lc-global-user NO-LOCK NO-ERROR.
     
 
     RUN ip-InitialProcess.
@@ -670,53 +624,53 @@ PROCEDURE process-web-request :
     ASSIGN li-col = 11.
 
 
-    assign li-count = 0
+    ASSIGN li-count = 0
            lr-first-row = ?
            lr-last-row  = ?.
 
-    for each issue NO-LOCK where issue.CompanyCode = lc-global-company
+    FOR EACH issue NO-LOCK WHERE issue.CompanyCode = lc-global-company
                              AND issue.assignto = lc-global-user,
-        FIRST WebStatus of issue where WebStatus.CompletedStatus = no no-lock
-        BY issue.issuenumber DESC:
+        FIRST WebStatus OF issue WHERE WebStatus.CompletedStatus = NO NO-LOCK
+        BY issue.issuenumber DESCENDING:
 
  
-        assign lc-rowid = string(rowid(issue))
+        ASSIGN lc-rowid = STRING(ROWID(issue))
                lc-ipref = "I" + STRING(issue.IssueNumber)
-               lc-issdate = if issue.issuedate = ? then "" else string(issue.issuedate,'99/99/9999').
-        assign li-count = li-count + 1.
-        if lr-first-row = ?
-        then assign lr-first-row = rowid(issue).
-        assign lr-last-row = rowid(issue).
+               lc-issdate = IF issue.issuedate = ? THEN "" ELSE STRING(issue.issuedate,'99/99/9999').
+        ASSIGN li-count = li-count + 1.
+        IF lr-first-row = ?
+        THEN ASSIGN lr-first-row = ROWID(issue).
+        ASSIGN lr-last-row = ROWID(issue).
        
-        find customer of issue no-lock no-error.
-        assign lc-customer = if avail customer then customer.name else "".
+        FIND customer OF issue NO-LOCK NO-ERROR.
+        ASSIGN lc-customer = IF AVAILABLE customer THEN customer.name ELSE "".
 
-        assign lc-status = WebStatus.Description.
-        if WebStatus.CompletedStatus
+        ASSIGN lc-status = WebStatus.Description.
+        IF WebStatus.CompletedStatus
         THEN lc-status = lc-status + ' (closed)'.
-        else lc-status = lc-status + ' (open)'.
+        ELSE lc-status = lc-status + ' (open)'.
         
         
-        find WebUser where WebUser.LoginID = issue.AssignTo no-lock no-error.
-        assign lc-assigned = "".
-        if avail WebUser then
-        do:
-            assign lc-assigned = WebUser.name.
-            if issue.AssignDate <> ? then
-            assign
+        FIND WebUser WHERE WebUser.LoginID = issue.AssignTo NO-LOCK NO-ERROR.
+        ASSIGN lc-assigned = "".
+        IF AVAILABLE WebUser THEN
+        DO:
+            ASSIGN lc-assigned = WebUser.name.
+            IF issue.AssignDate <> ? THEN
+            ASSIGN
                 lc-assigned = lc-assigned + "~n" + string(issue.AssignDate,"99/99/9999") + " " +
                                                   string(issue.AssignTime,"hh:mm am").
-        end.
+        END.
 
-        find WebUser where WebUser.LoginID = issue.RaisedLogin no-lock no-error.
+        FIND WebUser WHERE WebUser.LoginID = issue.RaisedLogin NO-LOCK NO-ERROR.
         
-        assign lc-raised = if avail WebUser then WebUser.name else "".
+        ASSIGN lc-raised = IF AVAILABLE WebUser THEN WebUser.name ELSE "".
         
 
 
-        find WebIssArea of issue no-lock no-error.
+        FIND WebIssArea OF issue NO-LOCK NO-ERROR.
         
-        assign lc-area = if avail WebIssArea then WebIssArea.description else "".
+        ASSIGN lc-area = IF AVAILABLE WebIssArea THEN WebIssArea.description ELSE "".
         {&out}
             skip
             tbar-tr(rowid(issue))
@@ -727,14 +681,15 @@ PROCEDURE process-web-request :
         {&out} '<td valign="top" align="right">' SKIP.
 
         IF issue.tlight = li-global-sla-fail
-        THEN {&out} '<img src="/images/sla/fail.gif">' SKIP.
+        THEN {&out} '<img src="/images/sla/fail.jpg" height="20" width="20" alt="SLA Fail">' SKIP.
         ELSE
         IF issue.tlight = li-global-sla-amber
-        THEN {&out} '<img src="/images/sla/warn.gif">' SKIP.
+        THEN {&out} '<img src="/images/sla/warn.jpg" height="20" width="20" alt="SLA Amber">' SKIP.
         
         ELSE
         IF issue.tlight = li-global-sla-ok
-        THEN {&out} '<img src="/images/sla/ok.gif">' SKIP.
+        THEN {&out} '<img src="/images/sla/ok.jpg" height="20" width="20" alt="SLA OK">' SKIP.
+        
         ELSE {&out} '&nbsp;' SKIP.
         
         {&out} '</td>' skip.
@@ -754,25 +709,25 @@ PROCEDURE process-web-request :
         ELSE {&out} '<td>&nbsp;</td>' SKIP.
 
         {&out}
-            htmlib-MntTableField(html-encode(string(issue.issuenumber)),'right')
+            htmlib-MntTableField(html-encode(STRING(issue.issuenumber)),'right')
             htmlib-MntTableField(html-encode(lc-issdate),'right').
-        if issue.LongDescription <> ""
-        and issue.LongDescription <> issue.briefdescription then
-        do:
-            assign lc-info = 
-                replace(htmlib-MntTableField(html-encode(issue.briefdescription),'left'),'</td>','')
+        IF issue.LongDescription <> ""
+        AND issue.LongDescription <> issue.briefdescription THEN
+        DO:
+            ASSIGN lc-info = 
+                REPLACE(htmlib-MntTableField(html-encode(issue.briefdescription),'left'),'</td>','')
                 lc-object = "hdobj" + string(issue.issuenumber).
-            assign li-tag-end = index(lc-info,">").
+            ASSIGN li-tag-end = INDEX(lc-info,">").
             {&out} substr(lc-info,1,li-tag-end).
-            assign substr(lc-info,1,li-tag-end) = "".
+            ASSIGN substr(lc-info,1,li-tag-end) = "".
             {&out} 
                 '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
                         lc-object '~')">':U skip.
             {&out} lc-info.
             {&out} htmlib-ExpandBox(lc-object,issue.LongDescription).
             {&out} '</td>' skip.
-        end.
-        else {&out} htmlib-MntTableField(html-encode(issue.briefdescription),"left").
+        END.
+        ELSE {&out} htmlib-MntTableField(html-encode(issue.briefdescription),"left").
         {&out}
             htmlib-MntTableField(html-encode(lc-status),'left')
             htmlib-MntTableField(html-encode(lc-area),'left')
@@ -783,37 +738,37 @@ PROCEDURE process-web-request :
         ELSE lc-lastAct = STRING(issue.lastActivity,"99/99/9999 HH:MM").
         
         {&out}
-            htmlib-MntTableField(replace(html-encode(lc-assigned),"~n","<br>"),'left')
-            htmlib-MntTableField(replace(html-encode(lc-LastAct),"~n","<br>"),'left').
+            htmlib-MntTableField(REPLACE(html-encode(lc-assigned),"~n","<br>"),'left')
+            htmlib-MntTableField(REPLACE(html-encode(lc-LastAct),"~n","<br>"),'left').
 
         
-        if lc-raised = ""
-        then {&out} htmlib-MntTableField(html-encode(lc-customer),'left').
+        IF lc-raised = ""
+        THEN {&out} htmlib-MntTableField(html-encode(lc-customer),'left').
         else
         do:
-            assign lc-info = 
-                replace(htmlib-MntTableField(html-encode(lc-customer),'left'),'</td>','')
+            ASSIGN lc-info = 
+                REPLACE(htmlib-MntTableField(html-encode(lc-customer),'left'),'</td>','')
                 lc-object = "hdobjcust" + string(issue.issuenumber).
-            assign li-tag-end = index(lc-info,">").
+            ASSIGN li-tag-end = INDEX(lc-info,">").
             {&out} substr(lc-info,1,li-tag-end).
-            assign substr(lc-info,1,li-tag-end) = "".
+            ASSIGN substr(lc-info,1,li-tag-end) = "".
             {&out} 
                 '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
                         lc-object '~')">':U skip.
             {&out} lc-info.
             {&out} htmlib-SimpleExpandBox(lc-object,lc-raised).
             {&out} '</td>' skip.
-        end.
+        END.
     
         
         {&out} skip
                 tbar-BeginHidden(rowid(issue)).
         
         {&out}
-                tbar-Link("view",rowid(issue),
+                tbar-Link("view",ROWID(issue),
                           'javascript:HelpWindow('
                           + '~'' + appurl 
-                          + '/iss/issueview.p?rowid=' + string(rowid(issue))
+                          + '/iss/issueview.p?rowid=' + string(ROWID(issue))
                           + '~'' 
                           + ');'
                           ,"").
@@ -828,7 +783,7 @@ PROCEDURE process-web-request :
         RUN ip-EmailHTML.
  
        
-    end.
+    END.
  
     
     {&out} skip 
@@ -848,8 +803,6 @@ PROCEDURE process-web-request :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -857,17 +810,16 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Account Procedure 
 FUNCTION Format-Select-Account RETURNS CHARACTER
-   ( pc-htm as char ) :
+   ( pc-htm AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+  DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<select',
+  lc-htm = REPLACE(pc-htm,'<select',
                    '<select onChange="ChangeAccount()"')
                    . 
 
@@ -877,8 +829,6 @@ FUNCTION Format-Select-Account RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

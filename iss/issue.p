@@ -995,14 +995,14 @@ PROCEDURE process-web-request :
 /*            IF b-query.tlight = li-global-sla-ok                */
 /*            THEN {&out} '<img src="/images/sla/ok.gif">' SKIP.  */
             IF b-query.tlight = li-global-sla-fail
-            THEN {&out} '<img src="/images/sla/fail.jpg" height="20" width="20" alt="SLA Fail">Fail' SKIP.
+            THEN {&out} '<img src="/images/sla/fail.jpg" height="20" width="20" alt="SLA Fail">' SKIP.
             ELSE
             IF b-query.tlight = li-global-sla-amber
-            THEN {&out} '<img src="/images/sla/warn.jpg" height="20" width="20" alt="SLA Amber">Amber' SKIP.
+            THEN {&out} '<img src="/images/sla/warn.jpg" height="20" width="20" alt="SLA Amber">' SKIP.
             
             ELSE
             IF b-query.tlight = li-global-sla-ok
-            THEN {&out} '<img src="/images/sla/ok.jpg" height="20" width="20" alt="SLA OK">OK' SKIP.
+            THEN {&out} '<img src="/images/sla/ok.jpg" height="20" width="20" alt="SLA OK">' SKIP.
             
             ELSE {&out} '&nbsp;' SKIP.
             
