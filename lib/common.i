@@ -670,11 +670,12 @@ PROCEDURE com-GetAssignRoot:
             WHERE webux.st-num = WebUSteam.st-num,
             EACH b-user NO-LOCK
             WHERE b-user.LoginID = webux.LoginID
-            BREAK 
+              AND b-user.companycode = pc-companyCode
             BY b-user.name
-            BY b-user.LoginID:
-            IF FIRST-OF(b-user.loginid) 
-                THEN ASSIGN 
+            :
+                
+            IF LOOKUP( b-user.LoginID,pc-loginid,"|") = 0 
+            THEN ASSIGN 
                     pc-LoginID = pc-LoginID + '|' + b-user.LoginID
                     pc-name    = pc-name + '|' + b-user.Name.
                            
