@@ -27,11 +27,11 @@ CREATE WIDGET-POOL.
 
 lc-global-company = TRIM(OS-GETENV("COMPANYCODE")).
 IF lc-global-company = ?
-  OR lc-global-company = "" THEN lc-global-company = "ouritdept".
+    OR lc-global-company = "" THEN lc-global-company = "ouritdept".
 
 lc-global-user = TRIM(OS-GETENV("BATCHID")).
 IF lc-global-user = ? 
-  OR lc-global-user = "" THEN lc-global-user = "BATCH".
+    OR lc-global-user = "" THEN lc-global-user = "BATCH".
 
 
 DEFINE VARIABLE lc-error-field      AS CHARACTER NO-UNDO.
@@ -42,7 +42,7 @@ DEFINE VARIABLE lc-briefdescription AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-longdescription  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-submitsource     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-raisedlogin      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE li-issue            AS INTEGER NO-UNDO.
+DEFINE VARIABLE li-issue            AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-date             AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-AreaCode         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Address          AS CHARACTER NO-UNDO.
@@ -62,7 +62,7 @@ DEFINE VARIABLE lc-gotomaint        AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE ll-customer         AS LOG  NO-UNDO.
+DEFINE VARIABLE ll-customer         AS LOG       NO-UNDO.
 
 DEFINE VARIABLE lc-default-catcode  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-catcode          AS CHARACTER NO-UNDO.
@@ -93,8 +93,8 @@ DEFINE VARIABLE lc-currentassign    AS CHARACTER NO-UNDO.
 /* Activity */
 DEFINE VARIABLE lc-hours            AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-mins             AS CHARACTER NO-UNDO.
-DEFINE VARIABLE li-hours            AS INTEGER  NO-UNDO.
-DEFINE VARIABLE li-mins             AS INTEGER  NO-UNDO.
+DEFINE VARIABLE li-hours            AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-mins             AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-StartDate        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-starthour        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-startmin         AS CHARACTER NO-UNDO.
@@ -111,16 +111,16 @@ DEFINE VARIABLE lc-currentstatus    AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-htmldesc         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE cdate               AS CHARACTER FORMAT "x(16)" NO-UNDO.
-DEFINE VARIABLE ddate               AS DATE FORMAT "99/99/9999" INITIAL 01/01/1999 NO-UNDO.
-DEFINE VARIABLE firstCustI          AS LOG INITIAL TRUE  NO-UNDO.
+DEFINE VARIABLE ddate               AS DATE      FORMAT "99/99/9999" INITIAL 01/01/1999 NO-UNDO.
+DEFINE VARIABLE firstCustI          AS LOG       INITIAL TRUE NO-UNDO.
 
 
 
-DEFINE BUFFER b-ivSub FOR ivSub.
-DEFINE BUFFER b-CustIv FOR CustIv.
+DEFINE BUFFER b-ivSub   FOR ivSub.
+DEFINE BUFFER b-CustIv  FOR CustIv.
 DEFINE BUFFER b-ivField FOR ivField.
 
-DEFINE VARIABLE lf-Audit            AS DECIMAL  NO-UNDO.
+DEFINE VARIABLE lf-Audit AS DECIMAL NO-UNDO.
 
 DEFINE STREAM repOutStream .
 
@@ -141,7 +141,7 @@ DEFINE STREAM repOutStream .
 &IF DEFINED(EXCLUDE-checkdate) = 0 &THEN
 
 FUNCTION checkdate RETURNS DATE
- (chkdate AS CHARACTER, lang AS CHARACTER) FORWARD.
+    (chkdate AS CHARACTER, lang AS CHARACTER) FORWARD.
 
 
 &ENDIF
@@ -149,7 +149,7 @@ FUNCTION checkdate RETURNS DATE
 &IF DEFINED(EXCLUDE-getIssue) = 0 &THEN
 
 FUNCTION getIssue RETURNS CHARACTER
-  (f-area AS CHARACTER, f-group AS CHARACTER) FORWARD.
+    (f-area AS CHARACTER, f-group AS CHARACTER) FORWARD.
 
 
 &ENDIF
@@ -183,76 +183,78 @@ OUTPUT stream repOutStream to value(SESSION:TEMP-DIR + "/renewals.html") unbuffe
 FOR EACH customer WHERE customer.IsActive
     AND customer.CompanyCode =  lc-global-company NO-LOCK
     BREAK BY customer.name :
-ASSIGN firstCustI = TRUE.
-/*   if customer.account <> "179" then next. /*   FOR TESTING ONLY          */ */
+    ASSIGN 
+        firstCustI = TRUE.
+    /*   if customer.account <> "179" then next. /*   FOR TESTING ONLY          */ */
 
-  FOR EACH CustIv   NO-LOCK OF customer,
-    FIRST ivSub   NO-LOCK OF CustIv,
-    FIRST ivClass NO-LOCK OF ivSub
-    BREAK 
-    BY ivClass.DisplayPriority DESCENDING
-    BY ivClass.name
-    BY ivSub.DisplayPriority DESCENDING
-    BY ivSub.name
-    BY CustIv.Ref:
+    FOR EACH CustIv   NO-LOCK OF customer,
+        FIRST ivSub   NO-LOCK OF CustIv,
+        FIRST ivClass NO-LOCK OF ivSub
+        BREAK 
+        BY ivClass.DisplayPriority DESCENDING
+        BY ivClass.name
+        BY ivSub.DisplayPriority DESCENDING
+        BY ivSub.name
+        BY CustIv.Ref:
     
     
-    FIND b-ivSub OF CustIv NO-LOCK NO-ERROR.
+        FIND b-ivSub OF CustIv NO-LOCK NO-ERROR.
     
-    FOR EACH ivField OF b-ivSub NO-LOCK
-        WHERE ivField.dtype = "date" 
-        AND   (ivField.dLabel MATCHES("*expir*") OR ivField.dLabel MATCHES("*renew*") )
-        AND   ivField.dwarning > 0
-        BY ivField.dOrder
-        BY ivField.dLabel:
+        FOR EACH ivField OF b-ivSub NO-LOCK
+            WHERE ivField.dtype = "date" 
+            AND   (ivField.dLabel MATCHES("*expir*") OR ivField.dLabel MATCHES("*renew*") )
+            AND   ivField.dwarning > 0
+            BY ivField.dOrder
+            BY ivField.dLabel:
       
-    FIND CustField
-      WHERE CustField.CustIvID = custIv.CustIvId
-      AND CustField.ivFieldId = ivField.ivFieldId
-      NO-LOCK NO-ERROR.
+            FIND CustField
+                WHERE CustField.CustIvID = custIv.CustIvId
+                AND CustField.ivFieldId = ivField.ivFieldId
+                NO-LOCK NO-ERROR.
     
     
-      IF AVAILABLE custField THEN 
-      DO:
-        ASSIGN  cdate = CustField.FieldData 
-                ddate = checkdate(cdate, 'uk') no-error .
-
-        IF (ddate  - int(ivField.dwarning)) < TODAY THEN
-        DO:
-          RUN ip-GenerateInventory(INPUT ROWID(CustIv), OUTPUT lc-htmldesc).
-          RUN ip-GenerateIssue( customer.account,
-                                ENTRY(1,getissue(TRIM(ivClass.name),""),"|"), /* eg "02",  software */
-                                CAPS(ENTRY(2,getissue(TRIM(ivClass.name),""),"|")),
-                                TRIM(CustIv.Ref) + " - " + trim(ivField.dLabel) + " " + string(ddate),
-                                lc-htmldesc,
-                                STRING(CustIv.CustIvID),
-                                STRING(CustIv.ivSubID)
-                                 ).
-        END.
-        ELSE
-        DO:
-          IF firstCustI THEN
+            IF AVAILABLE custField THEN 
             DO:
-              firstCustI = FALSE.
-              PUT STREAM repOutStream UNFORMATTED  
-                '<html><head></head><body><table padding="2px" >'  SKIP
-                '<tr><td colspan=3 ><hr></td></tr>'
-                '<tr><td colspan=3 >A/C # : '  customer.AccountNumber  ' - ' customer.name '</td></tr>'
-                '<tr><td colspan=3 ><hr></td></tr>'
-                '<tr><td colspan=3 ></td></tr>'.
+                ASSIGN  
+                    cdate = CustField.FieldData 
+                    ddate = checkdate(cdate, 'uk') no-error .
+
+                IF (ddate  - int(ivField.dwarning)) < TODAY THEN
+                DO:
+                    RUN ip-GenerateInventory(INPUT ROWID(CustIv), OUTPUT lc-htmldesc).
+                    RUN ip-GenerateIssue( customer.account,
+                        ENTRY(1,getissue(TRIM(ivClass.name),""),"|"), /* eg "02",  software */
+                        CAPS(ENTRY(2,getissue(TRIM(ivClass.name),""),"|")),
+                        TRIM(CustIv.Ref) + " - " + trim(ivField.dLabel) + " " + string(ddate),
+                        lc-htmldesc,
+                        STRING(CustIv.CustIvID),
+                        STRING(CustIv.ivSubID)
+                        ).
+                END.
+                ELSE
+                DO:
+                    IF firstCustI THEN
+                    DO:
+                        firstCustI = FALSE.
+                        PUT STREAM repOutStream UNFORMATTED  
+                            '<html><head></head><body><table padding="2px" >'  SKIP
+                            '<tr><td colspan=3 ><hr></td></tr>'
+                            '<tr><td colspan=3 >A/C # : '  customer.AccountNumber  ' - ' customer.name '</td></tr>'
+                            '<tr><td colspan=3 ><hr></td></tr>'
+                            '<tr><td colspan=3 ></td></tr>'.
        
+                    END.
+                    PUT STREAM repOutStream UNFORMATTED 
+                        '<tr><td>' CAPS(TRIM(ivClass.name))   '</td><td></td>'
+                        ' <td>' TRIM(ivSub.name)              '</td><td></td></tr>'
+                        '<tr><td>' TRIM(CustIv.Ref)           '</td><td></td>'
+                        ' <td>' TRIM(ivField.dLabel)          '</td><td></td></tr>'
+                        '<tr><td>' ddate                      '</td><td></td><td></td></tr>'
+                        '<tr><td><hr></td></tr>'.
+                END.
             END.
-            PUT STREAM repOutStream UNFORMATTED 
-                '<tr><td>' CAPS(TRIM(ivClass.name))   '</td><td></td>'
-                ' <td>' TRIM(ivSub.name)              '</td><td></td></tr>'
-                '<tr><td>' TRIM(CustIv.Ref)           '</td><td></td>'
-                ' <td>' TRIM(ivField.dLabel)          '</td><td></td></tr>'
-                '<tr><td>' ddate                      '</td><td></td><td></td></tr>'
-                '<tr><td><hr></td></tr>'.
         END.
-      END.
     END.
-  END.
 END.
 
 
@@ -266,16 +268,16 @@ QUIT.
 &IF DEFINED(EXCLUDE-ip-CreateIssue) = 0 &THEN
 
 PROCEDURE ip-CreateIssue :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
     
-    DEFINE VARIABLE lr-Action       AS ROWID        NO-UNDO.
-    DEFINE VARIABLE lr-Issue        AS ROWID        NO-UNDO.
-    DEFINE VARIABLE li-amount       AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lr-Action AS ROWID   NO-UNDO.
+    DEFINE VARIABLE lr-Issue  AS ROWID   NO-UNDO.
+    DEFINE VARIABLE li-amount AS INTEGER NO-UNDO.
 
     IF lc-actionCode <> lc-global-selcode THEN
     DO:
@@ -283,17 +285,18 @@ PROCEDURE ip-CreateIssue :
     
         FIND WebAction
             WHERE WebAction.CompanyCode = lc-global-company
-              AND WebAction.ActionCode  = lc-ActionCode
-              NO-LOCK NO-ERROR.
+            AND WebAction.ActionCode  = lc-ActionCode
+            NO-LOCK NO-ERROR.
         CREATE IssAction.
-        ASSIGN IssAction.actionID       = WebAction.ActionID
-               IssAction.CompanyCode    = lc-global-company
-               IssAction.IssueNumber    = issue.IssueNumber
-               IssAction.CreateDate     = TODAY
-               IssAction.CreateTime     = TIME
-               IssAction.CreatedBy      = lc-global-user
-               IssAction.customerview   = lc-customerview = "on"
-               .
+        ASSIGN 
+            IssAction.actionID     = WebAction.ActionID
+            IssAction.CompanyCode  = lc-global-company
+            IssAction.IssueNumber  = issue.IssueNumber
+            IssAction.CreateDate   = TODAY
+            IssAction.CreateTime   = TIME
+            IssAction.CreatedBy    = lc-global-user
+            IssAction.customerview = lc-customerview = "on"
+            .
     
         DO WHILE TRUE:
             RUN lib/makeaudit.p (
@@ -301,20 +304,21 @@ PROCEDURE ip-CreateIssue :
                 OUTPUT lf-audit
                 ).
             IF CAN-FIND(FIRST IssAction
-                        WHERE IssAction.IssActionID = lf-audit NO-LOCK)
-                        THEN NEXT.
+                WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                THEN NEXT.
             ASSIGN
-                IssAction.IssActionID   = lf-audit.
+                IssAction.IssActionID = lf-audit.
             LEAVE.
         END.
     
-        ASSIGN IssAction.notes          = lc-actionnote
-               IssAction.ActionStatus   = lc-ActionStatus
-               IssAction.ActionDate     = TODAY
-               IssAction.customerview   = lc-customerview = "on"
-               IssAction.AssignTo       = lc-currentassign
-               IssAction.AssignDate     = TODAY
-               IssAction.AssignTime     = TIME.
+        ASSIGN 
+            IssAction.notes        = lc-actionnote
+            IssAction.ActionStatus = lc-ActionStatus
+            IssAction.ActionDate   = TODAY
+            IssAction.customerview = lc-customerview = "on"
+            IssAction.AssignTo     = lc-currentassign
+            IssAction.AssignDate   = TODAY
+            IssAction.AssignTime   = TIME.
     
         ASSIGN
             lr-Action = ROWID(issAction).
@@ -329,14 +333,15 @@ PROCEDURE ip-CreateIssue :
     
             
             CREATE IssActivity.
-            ASSIGN IssActivity.IssActionID = IssAction.IssActionID
-                   IssActivity.CompanyCode = lc-global-company
-                   IssActivity.IssueNumber = issue.IssueNumber
-                   IssActivity.CreateDate  = TODAY
-                   IssActivity.CreateTime  = TIME
-                   IssActivity.CreatedBy   = lc-global-user
-                   IssActivity.ActivityBy  = lc-CurrentAssign
-                   .
+            ASSIGN 
+                IssActivity.IssActionID = IssAction.IssActionID
+                IssActivity.CompanyCode = lc-global-company
+                IssActivity.IssueNumber = issue.IssueNumber
+                IssActivity.CreateDate  = TODAY
+                IssActivity.CreateTime  = TIME
+                IssActivity.CreatedBy   = lc-global-user
+                IssActivity.ActivityBy  = lc-CurrentAssign
+                .
         
             DO WHILE TRUE:
                 RUN lib/makeaudit.p (
@@ -344,45 +349,50 @@ PROCEDURE ip-CreateIssue :
                     OUTPUT lf-audit
                     ).
                 IF CAN-FIND(FIRST IssActivity
-                            WHERE IssActivity.IssActivityID = lf-audit NO-LOCK)
-                            THEN NEXT.
+                    WHERE IssActivity.IssActivityID = lf-audit NO-LOCK)
+                    THEN NEXT.
                 ASSIGN
                     IssActivity.IssActivityID = lf-audit.
                 LEAVE.
             END.
         
-            ASSIGN IssActivity.description      = lc-actdescription
-                   IssActivity.ActDate          = TODAY
-                   IssActivity.customerview    = lc-customerview = "on".
+            ASSIGN 
+                IssActivity.description  = lc-actdescription
+                IssActivity.ActDate      = TODAY
+                IssActivity.customerview = lc-customerview = "on".
         
             IF lc-startdate <> "" THEN
             DO:
-                ASSIGN IssActivity.StartDate = DATE(lc-StartDate).
+                ASSIGN 
+                    IssActivity.StartDate = DATE(lc-StartDate).
         
-                ASSIGN IssActivity.StartTime = DYNAMIC-FUNCTION("com-InternalTime",
+                ASSIGN 
+                    IssActivity.StartTime = DYNAMIC-FUNCTION("com-InternalTime",
                                  int(lc-starthour),
                                  int(lc-startmin)
                                  ).
             END.
             ELSE ASSIGN IssActivity.StartDate = ?
-                        IssActivity.StartTime = 0.
+                    IssActivity.StartTime = 0.
         
             IF lc-enddate <> "" THEN
             DO:
-                ASSIGN IssActivity.EndDate = DATE(lc-endDate).
+                ASSIGN 
+                    IssActivity.EndDate = DATE(lc-endDate).
         
-                ASSIGN IssActivity.Endtime = DYNAMIC-FUNCTION("com-InternalTime",
+                ASSIGN 
+                    IssActivity.Endtime = DYNAMIC-FUNCTION("com-InternalTime",
                                 int(lc-endhour),
                                 int(lc-endmin)
                                 ).
                 
             END.
             ELSE ASSIGN IssActivity.EndDate = ?
-                        IssActivity.EndTime = 0.
+                    IssActivity.EndTime = 0.
         
         
-            ASSIGN IssActivity.Duration = 
-                ( ( int(lc-hours) * 60 ) * 60 ) + 
+            ASSIGN 
+                IssActivity.Duration = ( ( int(lc-hours) * 60 ) * 60 ) + 
                 ( int(lc-mins) * 60 ).
         
         
@@ -395,43 +405,43 @@ PROCEDURE ip-CreateIssue :
                     EMPTY TEMP-TABLE tt-ticket.
                     CREATE tt-ticket.
                     ASSIGN
-                        tt-ticket.CompanyCode       =   issue.CompanyCode
-                        tt-ticket.AccountNumber     =   issue.AccountNumber
-                        tt-ticket.Amount            =   li-Amount * -1
-                        tt-ticket.CreateBy          =   lc-global-user
-                        tt-ticket.CreateDate        =   TODAY
-                        tt-ticket.CreateTime        =   TIME
-                        tt-ticket.IssueNumber       =   Issue.IssueNumber
-                        tt-ticket.Reference         =   IssActivity.description
-                        tt-ticket.TickID            =   ?
-                        tt-ticket.TxnDate           =   IssActivity.ActDate
-                        tt-ticket.TxnTime           =   TIME
-                        tt-ticket.TxnType           =   "ACT"
-                        tt-ticket.IssActivityID     =   IssActivity.IssActivityID.
+                        tt-ticket.CompanyCode   = issue.CompanyCode
+                        tt-ticket.AccountNumber = issue.AccountNumber
+                        tt-ticket.Amount        = li-Amount * -1
+                        tt-ticket.CreateBy      = lc-global-user
+                        tt-ticket.CreateDate    = TODAY
+                        tt-ticket.CreateTime    = TIME
+                        tt-ticket.IssueNumber   = Issue.IssueNumber
+                        tt-ticket.Reference     = IssActivity.description
+                        tt-ticket.TickID        = ?
+                        tt-ticket.TxnDate       = IssActivity.ActDate
+                        tt-ticket.TxnTime       = TIME
+                        tt-ticket.TxnType       = "ACT"
+                        tt-ticket.IssActivityID = IssActivity.IssActivityID.
                     RUN tlib-PostTicket.
                 END.
             END.
         END.
     END.
- /* *** 
-    *** final update of the issue
-    ***                                   */
+    /* *** 
+       *** final update of the issue
+       ***                                   */
     ASSIGN
-        Issue.AssignTo  = lc-CurrentAssign
+        Issue.AssignTo   = lc-CurrentAssign
         Issue.AssignDate = TODAY
         Issue.AssignTime = TIME
-        lr-Issue       = ROWID(Issue).
+        lr-Issue         = ROWID(Issue).
 
     IF Issue.StatusCode <> lc-currentstatus THEN
     DO:
         RELEASE issue.
         FIND Issue WHERE ROWID(Issue) = lr-Issue EXCLUSIVE-LOCK.
         RUN islib-StatusHistory(
-                        Issue.CompanyCode,
-                        Issue.IssueNumber,
-                        lc-global-user,
-                        Issue.StatusCode,
-                        lc-currentStatus ).
+            Issue.CompanyCode,
+            Issue.IssueNumber,
+            lc-global-user,
+            Issue.StatusCode,
+            lc-currentStatus ).
         RELEASE issue.
         FIND Issue WHERE ROWID(Issue) = lr-Issue EXCLUSIVE-LOCK.
         ASSIGN
@@ -440,9 +450,9 @@ PROCEDURE ip-CreateIssue :
     END.
 
     IF DYNAMIC-FUNCTION("islib-StatusIsClosed",
-                        Issue.CompanyCode,
-                        Issue.StatusCode)
-    THEN DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
+        Issue.CompanyCode,
+        Issue.StatusCode)
+        THEN DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
 
 
 END PROCEDURE.
@@ -453,30 +463,31 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-GenerateInventory) = 0 &THEN
 
 PROCEDURE ip-GenerateInventory :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
 
- DEFINE INPUT PARAMETER lr-rowid AS ROWID  NO-UNDO.
- DEFINE OUTPUT PARAMETER lc-html AS CHARACTER   NO-UNDO.
- DEFINE VARIABLE lc-value         AS CHARACTER   NO-UNDO.
- DEFINE VARIABLE lc-temp          AS CHARACTER   NO-UNDO.
+    DEFINE INPUT PARAMETER lr-rowid AS ROWID  NO-UNDO.
+    DEFINE OUTPUT PARAMETER lc-html AS CHARACTER   NO-UNDO.
+    DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-temp  AS CHARACTER NO-UNDO.
 
- ASSIGN lc-html = "".
+    ASSIGN 
+        lc-html = "".
 
-/*  lc-html = '<code><div style="float:left; width:800px;">'. */
-/*                                                            */
-  FIND custIv WHERE ROWID(custIv) = lr-rowid NO-LOCK NO-ERROR.
+    /*  lc-html = '<code><div style="float:left; width:800px;">'. */
+    /*                                                            */
+    FIND custIv WHERE ROWID(custIv) = lr-rowid NO-LOCK NO-ERROR.
 
-/*     lc-html = "                Inventory Details For "  + custIv.Ref + "            ~n~n". */
-/*     assign lc-html = lc-html + '<span class="inform"><fieldset><legend>' + lc-temp + '</legend>'.  */
-/*                                                                                                    */
-/*     assign lc-html = lc-html + htmlib-StartMntTable().                                             */
-/*     lc-temp = "^right|Details^left|&nbsp^left".                                                    */
-/*     assign lc-html = lc-html + htmlib-TableHeading(lc-temp) .                                      */
+    /*     lc-html = "                Inventory Details For "  + custIv.Ref + "            ~n~n". */
+    /*     assign lc-html = lc-html + '<span class="inform"><fieldset><legend>' + lc-temp + '</legend>'.  */
+    /*                                                                                                    */
+    /*     assign lc-html = lc-html + htmlib-StartMntTable().                                             */
+    /*     lc-temp = "^right|Details^left|&nbsp^left".                                                    */
+    /*     assign lc-html = lc-html + htmlib-TableHeading(lc-temp) .                                      */
 
     FIND ivSub OF CustIv NO-LOCK NO-ERROR.
 
@@ -484,32 +495,35 @@ PROCEDURE ip-GenerateInventory :
         BY b-ivField.dOrder
         BY b-ivField.dLabel:
 
-/*         assign lc-html = lc-html + '<tr class="tabrow1">'.                                       */
-/*         assign lc-html = lc-html + '<th style="text-align: right; vertical-align: text-top;">'.  */
-        ASSIGN lc-html = lc-html + b-ivField.dLabel + ": ".
-/*         assign lc-html = lc-html +  '</th>'. */
-/*                                              */
+        /*         assign lc-html = lc-html + '<tr class="tabrow1">'.                                       */
+        /*         assign lc-html = lc-html + '<th style="text-align: right; vertical-align: text-top;">'.  */
+        ASSIGN 
+            lc-html = lc-html + b-ivField.dLabel + ": ".
+        /*         assign lc-html = lc-html +  '</th>'. */
+        /*                                              */
         
         FIND CustField
             WHERE CustField.CustIvID = custIv.CustIvId
-              AND CustField.ivFieldId = b-ivField.ivFieldId
-              NO-LOCK NO-ERROR.
+            AND CustField.ivFieldId = b-ivField.ivFieldId
+            NO-LOCK NO-ERROR.
         ASSIGN
             lc-value = IF AVAILABLE Custfield THEN CustField.FieldData
                        ELSE "".
         IF lc-value = ?
-        THEN ASSIGN lc-value = "".
-        ASSIGN lc-html = lc-html + lc-value + "~n".
+            THEN ASSIGN lc-value = "".
+        ASSIGN 
+            lc-html = lc-html + lc-value + "~n".
 
-/*         assign lc-html = lc-html + htmlib-MntTableField(replace(lc-value,"~n","<br>"),'left') . */
-/*         assign lc-html = lc-html + htmlib-MntTableField("&nbsp",'left') .                       */
-/*         assign lc-html = lc-html + '</tr>' .                                                    */
+    /*         assign lc-html = lc-html + htmlib-MntTableField(replace(lc-value,"~n","<br>"),'left') . */
+    /*         assign lc-html = lc-html + htmlib-MntTableField("&nbsp",'left') .                       */
+    /*         assign lc-html = lc-html + '</tr>' .                                                    */
     END.
 
-/*     assign lc-html = lc-html + htmlib-EndTable().     */
-/*     assign lc-html = lc-html + htmlib-EndFieldSet() . */
+    /*     assign lc-html = lc-html + htmlib-EndTable().     */
+    /*     assign lc-html = lc-html + htmlib-EndFieldSet() . */
   
-    ASSIGN lc-html = lc-html + "~n".
+    ASSIGN 
+        lc-html = lc-html + "~n".
 
 END PROCEDURE.
 
@@ -519,66 +533,67 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-GenerateIssue) = 0 &THEN
 
 PROCEDURE ip-GenerateIssue :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
    
 
-  DEFINE INPUT PARAMETER pc-accountnumber        AS CHARACTER NO-UNDO.
-  DEFINE INPUT PARAMETER pc-AreaCode             AS CHARACTER NO-UNDO.
-  DEFINE INPUT PARAMETER pc-briefdescription     AS CHARACTER NO-UNDO.
-  DEFINE INPUT PARAMETER pc-longdescription      AS CHARACTER NO-UNDO.
-  DEFINE INPUT PARAMETER pc-actionnote           AS CHARACTER NO-UNDO.
-  DEFINE INPUT PARAMETER pc-custivid             AS CHARACTER NO-UNDO.
-  DEFINE INPUT PARAMETER pc-subivid              AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-accountnumber        AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-AreaCode             AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-briefdescription     AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-longdescription      AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-actionnote           AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-custivid             AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-subivid              AS CHARACTER NO-UNDO.
 
 
 
-        ASSIGN lc-accountnumber    = pc-accountnumber
-               lc-briefdescription = pc-briefdescription
-               lc-longdescription  = pc-longdescription
-/*                lc-submitsource     = "submitsource" */
-               lc-raisedlogin      = "BATCH"
-               lc-date             = STRING(TODAY)
-               lc-AreaCode         = pc-AreaCode 
-               lc-gotomaint        = "true"
-/*                lc-sla-selected     = "sla" */
-               lc-catcode          = "QUOTES"
-               lc-ticket           = "on"
-               lc-quick            = "quick"
-               lc-currentassign    = "Renewals"
-               lc-actioncode       = "380"   /* Urgent request  */
-               lc-actionnote       = pc-actionnote
-               lc-customerview     = "false"
-               lc-actionstatus     = "OPEN"
-               lc-hours            = ""
-               lc-mins             = "15"
-               lc-startdate        = STRING(TODAY)
-               lc-starthour        = "12"
-               lc-startmin         = "30"
-               lc-enddate          = STRING(TODAY + 30)
-               lc-endhour          = "12"
-               lc-endmin           = "30"
-               lc-actdescription   = "Investigate"
-               lc-currentstatus    = "NEW"
-               lc-custivid         = pc-custivid   
-               lc-subivid          = pc-subivid  .
+    ASSIGN 
+        lc-accountnumber    = pc-accountnumber
+        lc-briefdescription = pc-briefdescription
+        lc-longdescription  = pc-longdescription
+        /*                lc-submitsource     = "submitsource" */
+        lc-raisedlogin      = "BATCH"
+        lc-date             = STRING(TODAY)
+        lc-AreaCode         = pc-AreaCode 
+        lc-gotomaint        = "true"
+        /*                lc-sla-selected     = "sla" */
+        lc-catcode          = "QUOTES"
+        lc-ticket           = "on"
+        lc-quick            = "quick"
+        lc-currentassign    = "Renewals"
+        lc-actioncode       = "380"   /* Urgent request  */
+        lc-actionnote       = pc-actionnote
+        lc-customerview     = "false"
+        lc-actionstatus     = "OPEN"
+        lc-hours            = ""
+        lc-mins             = "15"
+        lc-startdate        = STRING(TODAY)
+        lc-starthour        = "12"
+        lc-startmin         = "30"
+        lc-enddate          = STRING(TODAY + 30)
+        lc-endhour          = "12"
+        lc-endmin           = "30"
+        lc-actdescription   = "Investigate"
+        lc-currentstatus    = "NEW"
+        lc-custivid         = pc-custivid   
+        lc-subivid          = pc-subivid  .
         
 
     FIND FIRST issue WHERE issue.AccountNumber      = lc-accountnumber                  
-                     AND   issue.CompanyCode        = lc-global-company
-                     AND   issue.CreateBy           = lc-global-user   
-                     AND   issue.areacode           = lc-areacode                       
-                     AND   issue.CatCode            = lc-catcode                        
-                     AND   issue.Ticket             = TRUE             
-                     AND   issue.BatchID            = string(TRIM(lc-BriefDescription) + "|" +        
-                                                      trim(lc-global-company) + "|" +         
-                                                      trim(lc-areacode) + "|" +  
-                                                      trim(lc-custivid) + "|" +  
-                                                      trim(lc-subivid))
-                    NO-LOCK NO-ERROR.  
+        AND   issue.CompanyCode        = lc-global-company
+        AND   issue.CreateBy           = lc-global-user   
+        AND   issue.areacode           = lc-areacode                       
+        AND   issue.CatCode            = lc-catcode                        
+        AND   issue.Ticket             = TRUE             
+        AND   issue.BatchID            = string(TRIM(lc-BriefDescription) + "|" +        
+        trim(lc-global-company) + "|" +         
+        trim(lc-areacode) + "|" +  
+        trim(lc-custivid) + "|" +  
+        trim(lc-subivid))
+        NO-LOCK NO-ERROR.  
 
     IF AVAILABLE issue THEN RETURN.
 
@@ -592,51 +607,52 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-Initialise) = 0 &THEN
 
 PROCEDURE ip-Initialise :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
 
-  REPEAT:
+    REPEAT:
         FIND LAST issue 
             WHERE issue.companycode = lc-global-company
             NO-LOCK NO-ERROR.
         ASSIGN
-            li-issue = 
-                IF AVAILABLE issue THEN issue.issueNumber + 1
+            li-issue = IF AVAILABLE issue THEN issue.issueNumber + 1
                 ELSE 1.
         LEAVE.
     END.
     
-    ASSIGN lc-ticket = "on".
+    ASSIGN 
+        lc-ticket = "on".
 
     CREATE issue.
-    ASSIGN issue.IssueNumber        = li-issue
-           issue.BriefDescription   = lc-BriefDescription
-           issue.LongDescription    = lc-LongDescription
-           issue.AccountNumber      = lc-accountnumber
-           issue.CompanyCode        = lc-global-company
-           issue.CreateDate         = TODAY
-           issue.CreateTime         = TIME
-           issue.CreateBy           = lc-global-user
-           issue.IssueDate          = DATE(lc-date)
-           issue.IssueTime          = TIME
-           issue.areacode           = lc-areacode
-           issue.CatCode            = lc-catcode
-           issue.Ticket             = lc-ticket = "on"
-           issue.BatchID            = STRING(TRIM(lc-BriefDescription) + "|" +           
+    ASSIGN 
+        issue.IssueNumber      = li-issue
+        issue.BriefDescription = lc-BriefDescription
+        issue.LongDescription  = lc-LongDescription
+        issue.AccountNumber    = lc-accountnumber
+        issue.CompanyCode      = lc-global-company
+        issue.CreateDate       = TODAY
+        issue.CreateTime       = TIME
+        issue.CreateBy         = lc-global-user
+        issue.IssueDate        = DATE(lc-date)
+        issue.IssueTime        = TIME
+        issue.areacode         = lc-areacode
+        issue.CatCode          = lc-catcode
+        issue.Ticket           = lc-ticket = "on"
+        issue.BatchID          = STRING(TRIM(lc-BriefDescription) + "|" +           
                                              trim(lc-global-company) + "|" +         
                                              trim(lc-areacode) + "|" +  
                                              trim(lc-custivid) + "|" +  
                                              trim(lc-subivid))      
                                       
 
-            .
+        .
 
     IF lc-emailID <> ""
-    THEN ASSIGN issue.CreateSource = "EMAIL".
+        THEN ASSIGN issue.CreateSource = "EMAIL".
                                      
 
     IF ll-customer THEN
@@ -648,36 +664,38 @@ PROCEDURE ip-Initialise :
             FIND slahead WHERE slahead.SLAID = Customer.DefaultSLAID NO-LOCK NO-ERROR.
 
             IF AVAILABLE slahead
-            THEN ASSIGN lc-sla-selected = "sla" + string(ROWID(slahead)).
+                THEN ASSIGN lc-sla-selected = "sla" + string(ROWID(slahead)).
         END.
     END.
 
-/*     assign                                                                           */
-/*         lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,lc-AccountNumber).  */
+    /*     assign                                                                           */
+    /*         lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,lc-AccountNumber).  */
     IF lc-sla-selected = "slanone" 
-    OR lc-sla-rows = "" THEN 
+        OR lc-sla-rows = "" THEN 
     DO:
-        ASSIGN Issue.link-SLAID = 0
-               Issue.SLAStatus = "OFF".
+        ASSIGN 
+            Issue.link-SLAID = 0
+            Issue.SLAStatus  = "OFF".
     END.
     ELSE
     DO:
         FIND slahead WHERE ROWID(slahead) = to-rowid(substr(lc-sla-selected,4)) NO-LOCK NO-ERROR.
         IF AVAILABLE slahead THEN 
         DO:
-            ASSIGN Issue.link-SLAID = slahead.SLAID.
+            ASSIGN 
+                Issue.link-SLAID = slahead.SLAID.
 
             EMPTY TEMP-TABLE tt-sla-sched.
             RUN lib/slacalc.p
                 ( Issue.IssueDate,
-                  Issue.IssueTime,
-                  Issue.link-SLAID,
-                  OUTPUT table tt-sla-sched ).
+                Issue.IssueTime,
+                Issue.link-SLAID,
+                OUTPUT table tt-sla-sched ).
             ASSIGN
-                Issue.SLADate = ?
-                Issue.SLALevel = 0
+                Issue.SLADate   = ?
+                Issue.SLALevel  = 0
                 Issue.SLAStatus = "OFF"
-                Issue.SLATime  = 0.
+                Issue.SLATime   = 0.
             FOR EACH tt-sla-sched NO-LOCK
                 WHERE tt-sla-sched.Level > 0:
     
@@ -688,23 +706,25 @@ PROCEDURE ip-Initialise :
                     Issue.SLAStatus = "ON".
             END.
             IF issue.slaDate[2] <> ? 
-                            THEN ASSIGN issue.SLATrip = DATETIME(STRING(Issue.SLADate[2],"99/99/9999") + " " 
+                THEN ASSIGN issue.SLATrip = DATETIME(STRING(Issue.SLADate[2],"99/99/9999") + " " 
             + STRING(Issue.SLATime[2],"HH:MM")).
 
         END.
 
     END.
 
-    ASSIGN issue.RaisedLoginid = lc-raisedlogin.
+    ASSIGN 
+        issue.RaisedLoginid = lc-raisedlogin.
 
-    ASSIGN issue.StatusCode = "NEW".
+    ASSIGN 
+        issue.StatusCode = "NEW".
 
     RUN islib-StatusHistory(
-            issue.CompanyCode,
-            issue.IssueNumber,
-            lc-global-user,
-            "",
-            issue.StatusCode ).
+        issue.CompanyCode,
+        issue.IssueNumber,
+        lc-global-user,
+        "",
+        issue.StatusCode ).
 
     IF lc-emailid <> "" THEN
     DO:
@@ -713,11 +733,11 @@ PROCEDURE ip-Initialise :
         DO:
 
             FOR EACH doch WHERE doch.CompanyCode = lc-global-company
-                            AND doch.RelType     = "EMAIL"
-                            AND doch.RelKey      = string(emailh.EmailID) EXCLUSIVE-LOCK:
+                AND doch.RelType     = "EMAIL"
+                AND doch.RelKey      = string(emailh.EmailID) EXCLUSIVE-LOCK:
                 ASSIGN
-                    doch.RelType = "ISSUE"  
-                    doch.RelKey  = STRING(Issue.IssueNumber)
+                    doch.RelType  = "ISSUE"  
+                    doch.RelKey   = STRING(Issue.IssueNumber)
                     doch.CreateBy = lc-global-user.
             END.
             DELETE emailh.
@@ -726,9 +746,9 @@ PROCEDURE ip-Initialise :
     END.
 
     islib-DefaultActions(lc-global-company,
-                         Issue.IssueNumber).
+        Issue.IssueNumber).
     IF NOT ll-Customer 
-    THEN RUN ip-CreateIssue.
+        THEN RUN ip-CreateIssue.
     
     
   
@@ -742,32 +762,33 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-checkdate) = 0 &THEN
 
 FUNCTION checkdate RETURNS DATE
- (chkdate AS CHARACTER, lang AS CHARACTER):
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:    Original code from:
-              /* ------- checkDate function ------- */
-              /*       (C) DJS 1996 RiverSoft       */
-------------------------------------------------------------------------------*/
+    (chkdate AS CHARACTER, lang AS CHARACTER):
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:    Original code from:
+                  /* ------- checkDate function ------- */
+                  /*       (C) DJS 1996 RiverSoft       */
+    ------------------------------------------------------------------------------*/
 
-  DEFINE VARIABLE retdate AS DATE NO-UNDO.
-  DEFINE VARIABLE tmpdate AS CHARACTER NO-UNDO.
-  IF NUM-ENTRIES(chkdate,"/") <> 3 THEN 
-  DO:
-      IF lang = 'uk' AND SESSION:DATE-FORMAT = 'dmy' THEN
-      DO:
-      tmpdate = STRING(substr(chkdate,1,2) + '/' +
-                       substr(chkdate,3,2) + '/' +
-                       substr(chkdate,5) ). /* US */
-      retdate = DATE(tmpdate) NO-ERROR.
-      IF ERROR-STATUS:ERROR THEN retdate = ?.
-      END.
-  END.
-  ELSE DO:
-      retdate = DATE(chkdate) NO-ERROR.
-      IF ERROR-STATUS:ERROR THEN retdate = ?.
-  END.
-  RETURN retdate.
+    DEFINE VARIABLE retdate AS DATE      NO-UNDO.
+    DEFINE VARIABLE tmpdate AS CHARACTER NO-UNDO.
+    IF NUM-ENTRIES(chkdate,"/") <> 3 THEN 
+    DO:
+        IF lang = 'uk' AND SESSION:DATE-FORMAT = 'dmy' THEN
+        DO:
+            tmpdate = STRING(substr(chkdate,1,2) + '/' +
+                substr(chkdate,3,2) + '/' +
+                substr(chkdate,5) ). /* US */
+            retdate = DATE(tmpdate) NO-ERROR.
+            IF ERROR-STATUS:ERROR THEN retdate = ?.
+        END.
+    END.
+    ELSE 
+    DO:
+        retdate = DATE(chkdate) NO-ERROR.
+        IF ERROR-STATUS:ERROR THEN retdate = ?.
+    END.
+    RETURN retdate.
 
 END FUNCTION.
 
@@ -777,23 +798,23 @@ END FUNCTION.
 &IF DEFINED(EXCLUDE-getIssue) = 0 &THEN
 
 FUNCTION getIssue RETURNS CHARACTER
-  (f-area AS CHARACTER, f-group AS CHARACTER):
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    (f-area AS CHARACTER, f-group AS CHARACTER):
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  FOR EACH webIssArea WHERE webIssArea.Description MATCHES("*" + f-area + "*") NO-LOCK:
-  FIND webissagrp WHERE webissagrp.companycode = webissArea.CompanyCode
-                    AND webissagrp.Groupid     = webissArea.GroupID 
-                    AND webissagrp.description MATCHES("*" + f-group + "*") NO-LOCK NO-ERROR.
-   IF AVAILABLE webissagrp THEN 
-   DO:
- /*     message webIssArea.AreaCode skip  webIssArea.Description skip  webissArea.GroupID skip webissagrp.description  view-as alert-box.  */
-     RETURN STRING( webIssArea.AreaCode  + "|" +  webissagrp.description).
-   END.
-   ELSE RETURN STRING(webIssArea.AreaCode + "|").
-  END.
+    FOR EACH webIssArea WHERE webIssArea.Description MATCHES("*" + f-area + "*") NO-LOCK:
+        FIND webissagrp WHERE webissagrp.companycode = webissArea.CompanyCode
+            AND webissagrp.Groupid     = webissArea.GroupID 
+            AND webissagrp.description MATCHES("*" + f-group + "*") NO-LOCK NO-ERROR.
+        IF AVAILABLE webissagrp THEN 
+        DO:
+            /*     message webIssArea.AreaCode skip  webIssArea.Description skip  webissArea.GroupID skip webissagrp.description  view-as alert-box.  */
+            RETURN STRING( webIssArea.AreaCode  + "|" +  webissagrp.description).
+        END.
+        ELSE RETURN STRING(webIssArea.AreaCode + "|").
+    END.
 
 
 END FUNCTION.

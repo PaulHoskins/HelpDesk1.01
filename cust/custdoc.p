@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        cust/custdoc.p
@@ -25,41 +22,38 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 
 
-def var lc-mode as char no-undo.
-def var lc-rowid as char no-undo.
-def var lc-title as char no-undo.
+DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
 
 
-def buffer b-valid for customer.
-def buffer b-table for customer.
-def buffer b-query  for doch.
+DEFINE BUFFER b-valid FOR customer.
+DEFINE BUFFER b-table FOR customer.
+DEFINE BUFFER b-query FOR doch.
 
 
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-parameters   as char no-undo.
-def var lc-subaction    as char no-undo.
-def var lc-deleterow    as char no-undo.
+DEFINE VARIABLE lc-search       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-subaction    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-deleterow    AS CHARACTER NO-UNDO.
 
 
-def var lc-link-label   as char no-undo.
-def var lc-submit-label as char no-undo.
-def var lc-link-url     as char no-undo.
+DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
-def var lc-type         as char 
-    initial "CUSTOMER"  no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-type         AS CHARACTER 
+    INITIAL "CUSTOMER" NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -68,48 +62,32 @@ def var lc-type         as char
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -117,75 +95,69 @@ def var lc-type         as char
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  objtargets:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      objtargets:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -195,93 +167,96 @@ PROCEDURE process-web-request :
     
     {lib/checkloggedin.i} 
 
-    assign lc-mode = get-value("mode")
-           lc-rowid = get-value("rowid")
-           lc-search = get-value("search")
-           lc-firstrow = get-value("firstrow")
-           lc-lastrow  = get-value("lastrow")
-           lc-navigation = get-value("navigation").
+    ASSIGN 
+        lc-mode = get-value("mode")
+        lc-rowid = get-value("rowid")
+        lc-search = get-value("search")
+        lc-firstrow = get-value("firstrow")
+        lc-lastrow  = get-value("lastrow")
+        lc-navigation = get-value("navigation").
 
-    if lc-mode = "" 
-    then assign lc-mode = get-field("savemode")
-                lc-rowid = get-field("saverowid")
-                lc-search = get-value("savesearch")
-                lc-firstrow = get-value("savefirstrow")
-                lc-lastrow  = get-value("savelastrow")
-                lc-navigation = get-value("savenavigation").
+    IF lc-mode = "" 
+        THEN ASSIGN lc-mode = get-field("savemode")
+            lc-rowid = get-field("saverowid")
+            lc-search = get-value("savesearch")
+            lc-firstrow = get-value("savefirstrow")
+            lc-lastrow  = get-value("savelastrow")
+            lc-navigation = get-value("savenavigation").
 
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN 
+        lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
 
     
 
-    if request_method = "POST" and can-do("DELETE,TOGGLE,TOGGLEQ",get-value("subaction")) = false then  /* 3674 */
-    do:
+    IF request_method = "POST" AND CAN-DO("DELETE,TOGGLE,TOGGLEQ",get-value("subaction")) = FALSE THEN  /* 3674 */
+    DO:
         RUN outputHeader.
         set-user-field("navigation",'refresh').
         set-user-field("firstrow",lc-firstrow).
         set-user-field("search",lc-search).
         RUN run-web-object IN web-utilities-hdl ("cust/cust.p").
-        return.
+        RETURN.
  
-    end.
+    END.
   
 
     
-    if get-value("subaction") = "delete" and request_method = "POST" then
-    do:
-        find b-query where b-query.DocID = int(get-value("deleteid")) exclusive-lock no-error.
-        if avail b-query then
-        do:
-            message "Delete id = " b-query.DocID.
-            for each docl of b-query exclusive-lock:
-                delete docl.
-            end.
-            delete b-query.
-        end.
-    end.
-    else
-    if get-value("subaction") = "toggle" and request_method = "POST" then
-    do:
-        find b-query where b-query.DocID = int(get-value("toggleid")) exclusive-lock no-error.
-        if avail b-query 
-        then assign b-query.CustomerView = not b-query.CustomerView.
-    end.
-    if get-value("subaction") = "toggleQ" and request_method = "POST" then                      /* 3674 */
-    do:                                                                                         /* 3674 */
-        find b-query where b-query.DocID = int(get-value("toggleQid")) exclusive-lock no-error. /* 3674 */  
-        if avail b-query                                                                        /* 3674 */  
-        then assign b-query.QuickView = not b-query.QuickView.                                  /* 3674 */  
-    end.                                                                                        /* 3674 */  
+    IF get-value("subaction") = "delete" AND request_method = "POST" THEN
+    DO:
+        FIND b-query WHERE b-query.DocID = int(get-value("deleteid")) EXCLUSIVE-LOCK NO-ERROR.
+        IF AVAILABLE b-query THEN
+        DO:
+            MESSAGE "Delete id = " b-query.DocID.
+            FOR EACH docl OF b-query EXCLUSIVE-LOCK:
+                DELETE docl.
+            END.
+            DELETE b-query.
+        END.
+    END.
+    ELSE
+        IF get-value("subaction") = "toggle" AND request_method = "POST" THEN
+        DO:
+            FIND b-query WHERE b-query.DocID = int(get-value("toggleid")) EXCLUSIVE-LOCK NO-ERROR.
+            IF AVAILABLE b-query 
+                THEN ASSIGN b-query.CustomerView = NOT b-query.CustomerView.
+        END.
+    IF get-value("subaction") = "toggleQ" AND request_method = "POST" THEN                      /* 3674 */
+    DO:                                                                                         /* 3674 */
+        FIND b-query WHERE b-query.DocID = int(get-value("toggleQid")) EXCLUSIVE-LOCK NO-ERROR. /* 3674 */  
+        IF AVAILABLE b-query                                                                        /* 3674 */  
+            THEN ASSIGN b-query.QuickView = NOT b-query.QuickView.                                  /* 3674 */  
+    END.                                                                                        /* 3674 */  
 
-    find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
+    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
 
-    assign lc-title = 'Documents For ' +
+    ASSIGN 
+        lc-title = 'Documents For ' +
                        html-encode(b-table.AccountNumber + " " + 
                                    b-table.name).
                     
 
 
-    assign
+    ASSIGN
         lc-link-label = "Back"
         lc-link-url = appurl + '/cust/cust.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
                                   '&navigation=refresh' +
-                                  '&time=' + string(time)
-                           .
+                                  '&time=' + string(TIME)
+        .
     
     RUN outputHeader.
     
     {&out} htmlib-Header(lc-title) skip.
 
     
-     {&out} '<script language="javascript">' skip.
+    {&out} '<script language="javascript">' skip.
 
     {&OUT}
-        'function MntButtonPress(ButtonEvent,NewURL) ~{':U SKIP
+    'function MntButtonPress(ButtonEvent,NewURL) ~{':U SKIP
         'this.location = NewURL':U SKIP
         '~}':U SKIP
         'function ConfirmDelete(DocID) ~{' skip
@@ -306,8 +281,8 @@ PROCEDURE process-web-request :
 
 
     {&out}
-           htmlib-StartForm("mainform","post", appurl + "/cust/custdoc.p" )
-           htmlib-ProgramTitle(lc-title) skip.
+    htmlib-StartForm("mainform","post", appurl + "/cust/custdoc.p" )
+    htmlib-ProgramTitle(lc-title) skip.
 
     {&out} htmlib-Hidden ("savemode", lc-mode) skip
            htmlib-Hidden ("saverowid", lc-rowid) skip
@@ -319,35 +294,35 @@ PROCEDURE process-web-request :
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
   
-    if get-value("problem") <> "" then
-    do:
+    IF get-value("problem") <> "" THEN
+    DO:
         {&out} '<div class="infobox">' get-value("problem") '</div>' skip.
-    end.
+    END.
     {&out}
-            tbar-Begin(
-                ""
-                )
-            tbar-Link("add",?,appurl + '/sys/docup.p',"type=" +
-                      lc-type + "&ownerrowid=" + lc-rowid)
-            tbar-BeginOption()
-            tbar-Link("delete",?,"off","")
-            tbar-Link("customerview",?,"off","")
-            tbar-Link("quickview",?,"off","")   /* 3674 */ 
-            tbar-Link("documentview",?,"off","")
-            tbar-EndOption()
-            tbar-End().
+    tbar-Begin(
+        ""
+        )
+    tbar-Link("add",?,appurl + '/sys/docup.p',"type=" +
+        lc-type + "&ownerrowid=" + lc-rowid)
+    tbar-BeginOption()
+    tbar-Link("delete",?,"off","")
+    tbar-Link("customerview",?,"off","")
+    tbar-Link("quickview",?,"off","")   /* 3674 */ 
+    tbar-Link("documentview",?,"off","")
+    tbar-EndOption()
+    tbar-End().
 
     {&out} skip
           htmlib-StartMntTable().
     {&out}
-           htmlib-TableHeading(
-           "Date|Time|By|Description|Customer View|Quick View|Type|Size (KB)^right"   /* 3674 */ 
-           ) skip.
+    htmlib-TableHeading(
+        "Date|Time|By|Description|Customer View|Quick View|Type|Size (KB)^right"   /* 3674 */ 
+        ) skip.
 
-    for each b-query no-lock
-        where b-query.CompanyCode = lc-global-company
-          and b-query.RelType = "customer"
-          and b-query.RelKey  = b-table.AccountNumber:
+    FOR EACH b-query NO-LOCK
+        WHERE b-query.CompanyCode = lc-global-company
+        AND b-query.RelType = "customer"
+        AND b-query.RelKey  = b-table.AccountNumber:
 
         {&out}
             skip
@@ -383,17 +358,17 @@ PROCEDURE process-web-request :
             tbar-EndHidden()
             '</tr>' skip.
 
-    end.
+    END.
 
     {&out} skip 
            htmlib-EndTable()
            skip.
 
     {&out}
-            htmlib-Hidden("subaction","")
-            htmlib-Hidden("deleteid","")
-            htmlib-Hidden("toggleid","")
-            htmlib-Hidden("toggleQid","").   /* 3674 */ 
+    htmlib-Hidden("subaction","")
+    htmlib-Hidden("deleteid","")
+    htmlib-Hidden("toggleid","")
+    htmlib-Hidden("toggleQid","").   /* 3674 */ 
 
 
     {&out} htmlib-EndForm() skip
@@ -402,8 +377,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

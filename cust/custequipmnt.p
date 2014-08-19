@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        cust/custequipmnt.p
@@ -22,53 +19,50 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 
 
-def var lc-mode as char no-undo.
-def var lc-rowid as char no-undo.
-def var lc-title as char no-undo.
+DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
 
 
-def buffer customer     for customer.
-def buffer CustField    for CustField.
-def buffer b-valid      for CustIV.
-def buffer b-table      for CustIV.
+DEFINE BUFFER customer  FOR customer.
+DEFINE BUFFER CustField FOR CustField.
+DEFINE BUFFER b-valid   FOR CustIV.
+DEFINE BUFFER b-table   FOR CustIV.
 
 
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-parameters   as char no-undo.
-def var lc-customer     as char no-undo.
-def var lc-returnback   as char no-undo.
+DEFINE VARIABLE lc-search       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-customer     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-returnback   AS CHARACTER NO-UNDO.
 
-def var lc-link-label       as char no-undo.
-def var lc-submit-label     as char no-undo.
-def var lc-link-url         as char no-undo.
-def var lc-submitsource     as char no-undo.
+DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submitsource AS CHARACTER NO-UNDO.
 
-def var lc-list-class         as char no-undo.
-def var lc-list-Name          as char no-undo.
-
-
-def var lc-ref              as char no-undo.
-def var lc-ivClass          as char no-undo.
-
-def temp-table tt           no-undo
-    field ivFieldID         like ivField.ivFieldID
-    field FieldData         like custField.FieldData
-    index ivFieldID 
-            ivFieldId.
-def var lf-CustIVID         like custField.CustIVID no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-list-class   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-Name    AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+DEFINE VARIABLE lc-ref          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ivClass      AS CHARACTER NO-UNDO.
+
+DEFINE TEMP-TABLE tt NO-UNDO
+    FIELD ivFieldID LIKE ivField.ivFieldID
+    FIELD FieldData LIKE custField.FieldData
+    INDEX ivFieldID 
+    ivFieldId.
+DEFINE VARIABLE lf-CustIVID LIKE custField.CustIVID NO-UNDO.
+
+
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -77,61 +71,42 @@ def var lf-CustIVID         like custField.CustIVID no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-fnSelectClass) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnSelectClass Procedure 
 FUNCTION fnSelectClass RETURNS CHARACTER
-  ( pc-htm as char )  FORWARD.
+    ( pc-htm AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -139,114 +114,109 @@ FUNCTION fnSelectClass RETURNS CHARACTER
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-GetClass) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetClass Procedure 
 PROCEDURE ip-GetClass :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def output param pc-Code as char no-undo.
-    def output param pc-Name as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-Code AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name AS CHARACTER NO-UNDO.
 
     
-    def buffer ivClass  for IvClass.
-    def buffer ivSub    for ivSub.
+    DEFINE BUFFER ivClass  FOR IvClass.
+    DEFINE BUFFER ivSub    FOR ivSub.
 
 
-    assign pc-Code = htmlib-Null()
-           pc-Name          = "Select Inventory".
+    ASSIGN 
+        pc-Code = htmlib-Null()
+        pc-Name          = "Select Inventory".
 
 
-    for each ivClass no-lock
-             where ivClass.CompanyCode = lc-global-company
-             ,
-             each IvSub of ivClass no-lock
-             by ivClass.name:
+    FOR EACH ivClass NO-LOCK
+        WHERE ivClass.CompanyCode = lc-global-company
+        ,
+        EACH IvSub OF ivClass NO-LOCK
+        BY ivClass.name:
 
-        assign pc-Code = pc-Code + '|' + "C" + string(ivSub.ivSubid)
-               pc-Name          = pc-Name + '|' + 
+        ASSIGN 
+            pc-Code = pc-Code + '|' + "C" + string(ivSub.ivSubid)
+            pc-Name          = pc-Name + '|' + 
                                   ivClass.name + " - " + ivSub.name.
 
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GetCurrent) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetCurrent Procedure 
 PROCEDURE ip-GetCurrent :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-    def buffer ivField      for ivField.
-    def buffer CustField    for CustField.
-    def var lc-object       as char     no-undo.
-    def var lc-value        as char     no-undo.
-    def var lf-ivSubID      as dec      no-undo.
+    DEFINE BUFFER ivField      FOR ivField.
+    DEFINE BUFFER CustField    FOR CustField.
+    DEFINE VARIABLE lc-object       AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-value        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lf-ivSubID      AS DECIMAL      NO-UNDO.
 
     
-    for each ivField of ivSub no-lock
-        by ivField.dOrder
-        by ivField.dLabel:
+    FOR EACH ivField OF ivSub NO-LOCK
+        BY ivField.dOrder
+        BY ivField.dLabel:
     
         
-        assign lc-object = "FLD" + string(ivField.ivFieldID).
-        assign lc-value = "".
+        ASSIGN 
+            lc-object = "FLD" + string(ivField.ivFieldID).
+        ASSIGN 
+            lc-value = "".
 
-        find CustField
-            where CustField.CustIVID = b-table.CustIvID
-              and CustField.ivFieldId = ivField.ivFieldID
-              no-lock no-error.
+        FIND CustField
+            WHERE CustField.CustIVID = b-table.CustIvID
+            AND CustField.ivFieldId = ivField.ivFieldID
+            NO-LOCK NO-ERROR.
 
-        set-user-field(lc-object,if avail CustField then CustField.FieldData else "").
+        set-user-field(lc-object,IF AVAILABLE CustField THEN CustField.FieldData ELSE "").
   
     
-    end.
+    END.
               
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-InventoryTable) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-InventoryTable Procedure 
 PROCEDURE ip-InventoryTable :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-    def buffer ivClass      for ivClass.
-    def buffer ivSub        for ivSub.
-    def buffer ivField      for ivField.
-    def var lc-object       as char     no-undo.
-    def var lc-value        as char     no-undo.
-    def var lf-ivSubID      as dec      no-undo.
+    DEFINE BUFFER ivClass      FOR ivClass.
+    DEFINE BUFFER ivSub        FOR ivSub.
+    DEFINE BUFFER ivField      FOR ivField.
+    DEFINE VARIABLE lc-object       AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-value        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lf-ivSubID      AS DECIMAL      NO-UNDO.
 
     {&out}
-        '<tr><td colspan=2>'.
+    '<tr><td colspan=2>'.
 
 
     {&out} skip
@@ -254,75 +224,77 @@ PROCEDURE ip-InventoryTable :
            htmlib-StartMntTable().
 
     {&out}
-            htmlib-TableHeading(
-            "^right|Details^left|Notes^left"
-            ) skip.
+    htmlib-TableHeading(
+        "^right|Details^left|Notes^left"
+        ) skip.
 
-    if lc-ivClass begins "C" then
-    do:
-        assign
+    IF lc-ivClass BEGINS "C" THEN
+    DO:
+        ASSIGN
             lf-ivSubId = dec(substr(lc-ivClass,2)).
 
-        find ivSub where ivSub.ivSubID = lf-ivSubId no-lock no-error.
+        FIND ivSub WHERE ivSub.ivSubID = lf-ivSubId NO-LOCK NO-ERROR.
 
-        if avail ivSub and can-find(ivClass of ivSub no-lock) then
-        do:
-            find ivClass of ivSub no-lock no-error.
-            for each ivField of ivSub no-lock
-                by ivField.dOrder
-                by ivField.dLabel:
+        IF AVAILABLE ivSub AND CAN-FIND(ivClass OF ivSub NO-LOCK) THEN
+        DO:
+            FIND ivClass OF ivSub NO-LOCK NO-ERROR.
+            FOR EACH ivField OF ivSub NO-LOCK
+                BY ivField.dOrder
+                BY ivField.dLabel:
 
                 {&out} '<tr class="tabrow1">'.
 
                 {&out} '<th style="text-align: right; vertical-align: text-top;">'
-                        html-encode(ivField.dLabel + ":").
+                html-encode(ivField.dLabel + ":").
 
-                if ivField.dMandatory and can-do("add,update",lc-mode)
-                then {&out} '<br><span style="font-size: 8px;">Mandatory</span>'.
+                IF ivField.dMandatory AND can-do("add,update",lc-mode)
+                    THEN {&out} '<br><span style="font-size: 8px;">Mandatory</span>'.
                 {&out}
-                        '</th>'.
+                '</th>'.
 
-                assign lc-object = "FLD" + string(ivField.ivFieldID).
-                assign lc-value = get-value(lc-object).
+                ASSIGN 
+                    lc-object = "FLD" + string(ivField.ivFieldID).
+                ASSIGN 
+                    lc-value = get-value(lc-object).
 
-                if can-do("view,delete",lc-mode) then 
-                do:
-                    {&out} htmlib-MntTableField(replace(html-encode(lc-value),"~n","<br>"),'left') skip.
-                end.
-                else
-                do:
+                IF CAN-DO("view,delete",lc-mode) THEN 
+                DO:
+                    {&out} htmlib-MntTableField(REPLACE(html-encode(lc-value),"~n","<br>"),'left') skip.
+                END.
+                ELSE
+                DO:
                     {&out} '<td>' skip.
 
-                    case ivField.dType:
-                        when "TEXT" then
-                        do:
-                            {&out} htmlib-InputField(lc-object,40,lc-value).
-                        end.
-                        when "DATE" then
-                        do:
-                            {&out} htmlib-InputField(lc-object,10,lc-value).
-                        end.
-                        when "NUMBER" then
-                        do:
-                            {&out} htmlib-InputField(lc-object,10,lc-value).
-                        end.
-                        when "YES/NO" then
-                        do:
-                            {&out} htmlib-Select(lc-object,"Yes|No","Yes|No",if lc-value = "" then "Yes" else lc-value).
-                        end.
-                        when "NOTE" then
-                        do:
-                            {&out} htmlib-TextArea(lc-object,lc-value,5,40).
-                        end.
-                        otherwise
-                            do:
-                                {&out} html-encode('Error - type ' + ivField.dType + ' unknown').
-                            end.
+                    CASE ivField.dType:
+                        WHEN "TEXT" THEN
+                            DO:
+                                {&out} htmlib-InputField(lc-object,40,lc-value).
+                            END.
+                        WHEN "DATE" THEN
+                            DO:
+                                {&out} htmlib-InputField(lc-object,10,lc-value).
+                            END.
+                        WHEN "NUMBER" THEN
+                            DO:
+                                {&out} htmlib-InputField(lc-object,10,lc-value).
+                            END.
+                        WHEN "YES/NO" THEN
+                            DO:
+                                {&out} htmlib-Select(lc-object,"Yes|No","Yes|No",IF lc-value = "" THEN "Yes" ELSE lc-value).
+                            END.
+                        WHEN "NOTE" THEN
+                            DO:
+                                {&out} htmlib-TextArea(lc-object,lc-value,5,40).
+                            END.
+                        OTHERWISE
+                        DO:
+                            {&out} html-encode('Error - type ' + ivField.dType + ' unknown').
+                        END.
 
-                    end case.
+                    END CASE.
                     {&out} '</td>' skip.
 
-                end.
+                END.
                 {&out} htmlib-MntTableField(html-encode(ivField.dPrompt),'left') skip.
 
 
@@ -330,10 +302,10 @@ PROCEDURE ip-InventoryTable :
 
 
                 {&out} '</tr>' skip.
-            end.
-        end.
+            END.
+        END.
 
-    end.
+    END.
 
     {&out} skip 
            htmlib-EndTable()
@@ -344,20 +316,17 @@ PROCEDURE ip-InventoryTable :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-JavaScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-JavaScript Procedure 
 PROCEDURE ip-JavaScript :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     {&out} skip 
           '<script language="JavaScript">' skip.
 
@@ -372,185 +341,179 @@ PROCEDURE ip-JavaScript :
     {&out} htmlib-JScript-Maintenance() skip.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  objtargets:       
-------------------------------------------------------------------------------*/
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      objtargets:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
-    def buffer ivClass      for ivClass.
-    def buffer ivSub        for ivSub.
-    def buffer ivField      for ivField.
-    def var lc-object       as char     no-undo.
-    def var lc-value        as char     no-undo.
-    def var lf-ivSubID      as dec      no-undo.
-    def var ld-date         as date     no-undo.
-    def var lf-number       as dec      no-undo.
+    DEFINE BUFFER ivClass      FOR ivClass.
+    DEFINE BUFFER ivSub        FOR ivSub.
+    DEFINE BUFFER ivField      FOR ivField.
+    DEFINE VARIABLE lc-object       AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-value        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lf-ivSubID      AS DECIMAL      NO-UNDO.
+    DEFINE VARIABLE ld-date         AS DATE     NO-UNDO.
+    DEFINE VARIABLE lf-number       AS DECIMAL      NO-UNDO.
 
     
-    if lc-ivClass = htmlib-Null() 
-    then run htmlib-AddErrorMessage(
-                    'ivclass', 
-                    'You must select the inventory type',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF lc-ivClass = htmlib-Null() 
+        THEN RUN htmlib-AddErrorMessage(
+            'ivclass', 
+            'You must select the inventory type',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
     
-    if lc-ref = ""
-    or lc-ref = ?
-    then run htmlib-AddErrorMessage(
-                    'ref', 
-                    'You must enter the reference',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF lc-ref = ""
+        OR lc-ref = ?
+        THEN RUN htmlib-AddErrorMessage(
+            'ref', 
+            'You must enter the reference',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
  
-    empty temp-table tt.
+    EMPTY TEMP-TABLE tt.
 
-    if lc-ivClass <> htmlib-Null() then
-    do:
-        assign
+    IF lc-ivClass <> htmlib-Null() THEN
+    DO:
+        ASSIGN
             lf-ivSubId = dec(substr(lc-ivClass,2)).
 
-        find ivSub where ivSub.ivSubID = lf-ivSubId no-lock no-error.
+        FIND ivSub WHERE ivSub.ivSubID = lf-ivSubId NO-LOCK NO-ERROR.
 
-        if avail ivSub and can-find(ivClass of ivSub no-lock) then
-        do:
-            find ivClass of ivSub no-lock no-error.
-            for each ivField of ivSub no-lock
-                by ivField.dOrder
-                by ivField.dLabel:
+        IF AVAILABLE ivSub AND CAN-FIND(ivClass OF ivSub NO-LOCK) THEN
+        DO:
+            FIND ivClass OF ivSub NO-LOCK NO-ERROR.
+            FOR EACH ivField OF ivSub NO-LOCK
+                BY ivField.dOrder
+                BY ivField.dLabel:
 
                 
                 
-                assign lc-object = "FLD" + string(ivField.ivFieldID).
-                assign lc-value = get-value(lc-object).
+                ASSIGN 
+                    lc-object = "FLD" + string(ivField.ivFieldID).
+                ASSIGN 
+                    lc-value = get-value(lc-object).
 
-                create tt.
-                assign tt.ivFieldID = ivField.ivFieldID
-                       tt.FieldData = lc-value.
+                CREATE tt.
+                ASSIGN 
+                    tt.ivFieldID = ivField.ivFieldID
+                    tt.FieldData = lc-value.
 
-                if lc-value = "" and ivField.dMandatory 
-                then run htmlib-AddErrorMessage(
-                         lc-object, 
-                         'The inventory field ' + html-encode(ivField.dLabel) + ' is mandatory',
-                         input-output pc-error-field,
-                         input-output pc-error-msg ).
-                else
-                if lc-value <> "" then
-                case ivField.dType:
-                    when "DATE" then
-                    do:
-                        assign
-                            ld-date = date(lc-value) no-error.
-                        if error-status:error 
-                        then run htmlib-AddErrorMessage(
-                             lc-object, 
-                             'The inventory field ' + html-encode(ivField.dLabel) + ' is not a valid date',
-                             input-output pc-error-field,
-                             input-output pc-error-msg ).
-                        else assign tt.FieldData = string(ld-date,"99/99/9999").
+                IF lc-value = "" AND ivField.dMandatory 
+                    THEN RUN htmlib-AddErrorMessage(
+                        lc-object, 
+                        'The inventory field ' + html-encode(ivField.dLabel) + ' is mandatory',
+                        INPUT-OUTPUT pc-error-field,
+                        INPUT-OUTPUT pc-error-msg ).
+                ELSE
+                    IF lc-value <> "" THEN
+                        CASE ivField.dType:
+                            WHEN "DATE" THEN
+                                DO:
+                                    ASSIGN
+                                        ld-date = DATE(lc-value) no-error.
+                                    IF ERROR-STATUS:ERROR 
+                                        THEN RUN htmlib-AddErrorMessage(
+                                            lc-object, 
+                                            'The inventory field ' + html-encode(ivField.dLabel) + ' is not a valid date',
+                                            INPUT-OUTPUT pc-error-field,
+                                            INPUT-OUTPUT pc-error-msg ).
+                                    ELSE ASSIGN tt.FieldData = STRING(ld-date,"99/99/9999").
                         
-                    end.
-                    when "NUMBER" then
-                    do:
-                        assign
-                            lf-number = dec(lc-value) no-error.
-                        if error-status:error 
-                        then run htmlib-AddErrorMessage(
-                             lc-object, 
-                             'The inventory field ' + html-encode(ivField.dLabel) + ' is not a valid number',
-                             input-output pc-error-field,
-                             input-output pc-error-msg ).
-                        else assign tt.FieldData = string(lf-number).
+                                END.
+                            WHEN "NUMBER" THEN
+                                DO:
+                                    ASSIGN
+                                        lf-number = dec(lc-value) no-error.
+                                    IF ERROR-STATUS:ERROR 
+                                        THEN RUN htmlib-AddErrorMessage(
+                                            lc-object, 
+                                            'The inventory field ' + html-encode(ivField.dLabel) + ' is not a valid number',
+                                            INPUT-OUTPUT pc-error-field,
+                                            INPUT-OUTPUT pc-error-msg ).
+                                    ELSE ASSIGN tt.FieldData = STRING(lf-number).
                         
-                    end.
+                                END.
                     
 
-                end case.
-            end.
-        end.
+                        END CASE.
+            END.
+        END.
         
-    end.
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  objtargets:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      objtargets:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -560,54 +523,65 @@ PROCEDURE process-web-request :
     
     {lib/checkloggedin.i} 
 
-    assign lc-mode = get-value("mode")
-           lc-rowid = get-value("rowid")
-           lc-search = get-value("search")
-           lc-firstrow = get-value("firstrow")
-           lc-lastrow  = get-value("lastrow")
-           lc-navigation = get-value("navigation")
-           lc-customer   = get-value("customer")
-           lc-returnback = get-value("returnback").
+    ASSIGN 
+        lc-mode = get-value("mode")
+        lc-rowid = get-value("rowid")
+        lc-search = get-value("search")
+        lc-firstrow = get-value("firstrow")
+        lc-lastrow  = get-value("lastrow")
+        lc-navigation = get-value("navigation")
+        lc-customer   = get-value("customer")
+        lc-returnback = get-value("returnback").
 
-    if lc-mode = "" 
-    then assign lc-mode = get-field("savemode")
-                lc-rowid = get-field("saverowid")
-                lc-search = get-value("savesearch")
-                lc-firstrow = get-value("savefirstrow")
-                lc-lastrow  = get-value("savelastrow")
-                lc-navigation = get-value("savenavigation").
+    IF lc-mode = "" 
+        THEN ASSIGN lc-mode = get-field("savemode")
+            lc-rowid = get-field("saverowid")
+            lc-search = get-value("savesearch")
+            lc-firstrow = get-value("savefirstrow")
+            lc-lastrow  = get-value("savelastrow")
+            lc-navigation = get-value("savenavigation").
 
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN 
+        lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
 
-    case lc-mode:
-        when 'add'
-        then assign lc-title = 'Add'
-                    lc-link-label = "Cancel addition"
-                    lc-submit-label = "Add Inventory".
-        when 'view'
-        then assign lc-title = 'View'
-                    lc-link-label = "Back"
-                    lc-submit-label = "".
-        when 'delete'
-        then assign lc-title = 'Delete'
-                    lc-link-label = 'Cancel deletion'
-                    lc-submit-label = 'Delete Inventory'.
-        when 'Update'
-        then assign lc-title = 'Update'
-                    lc-link-label = 'Cancel update'
-                    lc-submit-label = 'Update Inventory'.
-    end case.
+    CASE lc-mode:
+        WHEN 'add'
+        THEN 
+            ASSIGN 
+                lc-title = 'Add'
+                lc-link-label = "Cancel addition"
+                lc-submit-label = "Add Inventory".
+        WHEN 'view'
+        THEN 
+            ASSIGN 
+                lc-title = 'View'
+                lc-link-label = "Back"
+                lc-submit-label = "".
+        WHEN 'delete'
+        THEN 
+            ASSIGN 
+                lc-title = 'Delete'
+                lc-link-label = 'Cancel deletion'
+                lc-submit-label = 'Delete Inventory'.
+        WHEN 'Update'
+        THEN 
+            ASSIGN 
+                lc-title = 'Update'
+                lc-link-label = 'Cancel update'
+                lc-submit-label = 'Update Inventory'.
+    END CASE.
 
 
-    find customer where rowid(customer) = to-rowid(lc-customer)
-            no-lock no-error.
+    FIND customer WHERE ROWID(customer) = to-rowid(lc-customer)
+        NO-LOCK NO-ERROR.
 
-    RUN ip-GetClass ( output lc-list-class, output lc-list-Name ).
+    RUN ip-GetClass ( OUTPUT lc-list-class, OUTPUT lc-list-Name ).
 
-    assign lc-title = lc-title + ' Customer Inventory'
-           lc-link-url = appurl + '/cust/custequip.p' + 
+    ASSIGN 
+        lc-title = lc-title + ' Customer Inventory'
+        lc-link-url = appurl + '/cust/custequip.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
@@ -615,176 +589,182 @@ PROCEDURE process-web-request :
                                   '&customer=' + lc-customer +
                                   '&returnback=' + lc-returnback +
                                   '&' + htmlib-RandomURL()
-                           .
+        .
 
-    if lc-returnback = "renewal"
-    then assign lc-link-url = appurl + "/cust/ivrenewal.p".
-    else 
-    if lc-returnback = "customerview" 
-    then assign lc-link-url = appurl + "/cust/custview.p?source=menu&rowid=" + 
+    IF lc-returnback = "renewal"
+        THEN ASSIGN lc-link-url = appurl + "/cust/ivrenewal.p".
+    ELSE 
+        IF lc-returnback = "customerview" 
+            THEN ASSIGN lc-link-url = appurl + "/cust/custview.p?source=menu&rowid=" + 
         get-value("customer").
 
-    if can-do("view,update,delete",lc-mode) then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid)
-             no-lock no-error.
-        if not avail b-table then
-        do:
+    IF CAN-DO("view,update,delete",lc-mode) THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+            NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE b-table THEN
+        DO:
             set-user-field("mode",lc-mode).
             set-user-field("title",lc-title).
             set-user-field("nexturl",appurl + "/cust/custequip.p").
             RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
-            return.
-        end.
+            RETURN.
+        END.
         
-        find ivSub of b-table no-lock no-error.
-        find ivClass of ivSub no-lock no-error.
+        FIND ivSub OF b-table NO-LOCK NO-ERROR.
+        FIND ivClass OF ivSub NO-LOCK NO-ERROR.
 
         set-user-field("inventory",
-                       ivClass.name + " - " + ivSub.name).
-        assign lc-ivClass = "C" + string(b-table.ivSubID).
+            ivClass.name + " - " + ivSub.name).
+        ASSIGN 
+            lc-ivClass = "C" + string(b-table.ivSubID).
 
         set-user-field("ivclass",lc-ivClass).
-        if request_method = "GET"
-        or lc-mode = "VIEW"
-        then RUN ip-GetCurrent.
-    end.
+        IF request_method = "GET"
+            OR lc-mode = "VIEW"
+            THEN RUN ip-GetCurrent.
+    END.
 
 
-    if request_method = "POST" then
-    do:
-        assign
+    IF request_method = "POST" THEN
+    DO:
+        ASSIGN
             lc-submitsource = get-value("submitsource").
-        if lc-submitsource <> "ClassChange" then
-        do:
+        IF lc-submitsource <> "ClassChange" THEN
+        DO:
         
-            if lc-mode <> "delete" then
-            do:
-                assign lc-ref          = get-value("ref")
-                       lc-ivclass      = get-value("ivclass")
-                       .
+            IF lc-mode <> "delete" THEN
+            DO:
+                ASSIGN 
+                    lc-ref          = get-value("ref")
+                    lc-ivclass      = get-value("ivclass")
+                    .
                 
-                RUN ip-Validate( output lc-error-field,
-                                 output lc-error-msg ).
+                RUN ip-Validate( OUTPUT lc-error-field,
+                    OUTPUT lc-error-msg ).
     
-                if lc-error-msg = "" then
-                do:
+                IF lc-error-msg = "" THEN
+                DO:
                     
-                    if lc-mode = 'update' then
-                    do:
-                        find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                            exclusive-lock no-wait no-error.
-                        if locked b-table 
-                        then  run htmlib-AddErrorMessage(
-                                       'none', 
-                                       'This record is locked by another user',
-                                       input-output lc-error-field,
-                                       input-output lc-error-msg ).
-                    end.
-                    else
-                    do:
-                        create b-table.
-                        assign b-table.accountnumber = customer.accountnumber
-                               b-table.CompanyCode   = customer.CompanyCode
-                               b-table.CustIvID      = ?
-                               b-table.ivSubID       = dec(substr(lc-ivclass,2))
-                               lc-firstrow           = string(rowid(b-table)).
-                        do while true:
-                            run lib/makeaudit.p (
+                    IF lc-mode = 'update' THEN
+                    DO:
+                        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                            EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                        IF LOCKED b-table 
+                            THEN  RUN htmlib-AddErrorMessage(
+                                'none', 
+                                'This record is locked by another user',
+                                INPUT-OUTPUT lc-error-field,
+                                INPUT-OUTPUT lc-error-msg ).
+                    END.
+                    ELSE
+                    DO:
+                        CREATE b-table.
+                        ASSIGN 
+                            b-table.accountnumber = customer.accountnumber
+                            b-table.CompanyCode   = customer.CompanyCode
+                            b-table.CustIvID      = ?
+                            b-table.ivSubID       = dec(substr(lc-ivclass,2))
+                            lc-firstrow           = STRING(ROWID(b-table)).
+                        DO WHILE TRUE:
+                            RUN lib/makeaudit.p (
                                 "",
-                                output lf-custIVID
+                                OUTPUT lf-custIVID
                                 ).
-                            if can-find(first CustIV
-                                        where CustIV.CustIvID = lf-custIVID no-lock)
-                                        then next.
-                            assign
+                            IF CAN-FIND(FIRST CustIV
+                                WHERE CustIV.CustIvID = lf-custIVID NO-LOCK)
+                                THEN NEXT.
+                            ASSIGN
                                 b-table.CustIvID = lf-CustIvID.
-                            leave.
-                        end.
+                            LEAVE.
+                        END.
                        
-                    end.
+                    END.
                     
-                    assign b-table.ref = lc-ref
-                               .
+                    ASSIGN 
+                        b-table.ref = lc-ref
+                        .
 
-                    for each CustField of b-table exclusive-lock:
-                        delete CustField.
-                    end.
-                    for each tt:
-                        create CustField.
-                        buffer-copy tt to CustField
-                            assign CustField.CustIvID = b-table.CustIvID.
-                    end.
+                    FOR EACH CustField OF b-table EXCLUSIVE-LOCK:
+                        DELETE CustField.
+                    END.
+                    FOR EACH tt:
+                        CREATE CustField.
+                        BUFFER-COPY tt TO CustField
+                            ASSIGN 
+                            CustField.CustIvID = b-table.CustIvID.
+                    END.
                         
     
                     
-                end.
-            end.
-            else
-            do:
-                find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                     exclusive-lock no-wait no-error.
-                if locked b-table 
-                then  run htmlib-AddErrorMessage(
-                                       'none', 
-                                       'This record is locked by another user',
-                                       input-output lc-error-field,
-                                       input-output lc-error-msg ).
-                else 
-                do:
-                    for each CustField of b-table exclusive-lock:
-                        delete CustField.
-                    end.
-                    delete b-table.
-                end.
-            end.
+                END.
+            END.
+            ELSE
+            DO:
+                FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                    EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                IF LOCKED b-table 
+                    THEN  RUN htmlib-AddErrorMessage(
+                        'none', 
+                        'This record is locked by another user',
+                        INPUT-OUTPUT lc-error-field,
+                        INPUT-OUTPUT lc-error-msg ).
+                ELSE 
+                DO:
+                    FOR EACH CustField OF b-table EXCLUSIVE-LOCK:
+                        DELETE CustField.
+                    END.
+                    DELETE b-table.
+                END.
+            END.
 
-            if lc-error-field = "" then
-            do:
-                if lc-returnback = "renewal" then
-                do:
+            IF lc-error-field = "" THEN
+            DO:
+                IF lc-returnback = "renewal" THEN
+                DO:
                     RUN run-web-object IN web-utilities-hdl ("cust/ivrenewal.p").
-                    return.
-                end.
-                else
-                if lc-returnback = "customerview" then
-                do:
-                    set-user-field("source","menu").
-                    set-user-field("rowid",get-value("customer")).
-                    RUN run-web-object IN web-utilities-hdl ("cust/custview.p").
-                    return.
-                end.
+                    RETURN.
+                END.
+                ELSE
+                    IF lc-returnback = "customerview" THEN
+                    DO:
+                        set-user-field("source","menu").
+                        set-user-field("rowid",get-value("customer")).
+                        RUN run-web-object IN web-utilities-hdl ("cust/custview.p").
+                        RETURN.
+                    END.
                 set-user-field("navigation",'refresh').
                 set-user-field("firstrow",lc-firstrow).
                 set-user-field("search",lc-search).
                 RUN run-web-object IN web-utilities-hdl ("cust/custequip.p").
-                return.
-            end.
+                RETURN.
+            END.
         
-        end.
+        END.
 
         
-    end.
+    END.
 
-    if lc-mode <> 'add' then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
+    IF lc-mode <> 'add' THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
         
-        if can-do("view,delete",lc-mode)
-        or request_method <> "post" then 
-        do:
-            assign lc-ref      = b-table.ref
-                   .
+        IF CAN-DO("view,delete",lc-mode)
+            OR request_method <> "post" THEN 
+        DO:
+            ASSIGN 
+                lc-ref      = b-table.ref
+                .
             
-        end.
-        else assign lc-ivClass = "C" + string(b-table.ivSubID).
+        END.
+        ELSE ASSIGN lc-ivClass = "C" + string(b-table.ivSubID).
        
-    end.
-    else
-    do:
-        if request_method = "POST" 
-        then assign lc-ivClass = get-value("ivclass").
-    end.
+    END.
+    ELSE
+    DO:
+        IF request_method = "POST" 
+            THEN ASSIGN lc-ivClass = get-value("ivclass").
+    END.
 
 
     RUN outputHeader.
@@ -794,8 +774,8 @@ PROCEDURE process-web-request :
 
 
     {&out}
-           htmlib-StartForm("mainform","post", selfurl )
-           htmlib-ProgramTitle(lc-title) skip.
+    htmlib-StartForm("mainform","post", selfurl )
+    htmlib-ProgramTitle(lc-title) skip.
 
     {&out} htmlib-Hidden ("savemode", lc-mode) skip
            htmlib-Hidden ("saverowid", lc-rowid) skip
@@ -810,30 +790,30 @@ PROCEDURE process-web-request :
 
     
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("ivclass",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Inventory Type")
-            else htmlib-SideLabel("Inventory Type"))
-            '</TD>' 
-            '<TD VALIGN="TOP" ALIGN="left">'.
+        (IF LOOKUP("ivclass",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Inventory Type")
+        ELSE htmlib-SideLabel("Inventory Type"))
+    '</TD>' 
+    '<TD VALIGN="TOP" ALIGN="left">'.
 
-    if lc-mode = "ADD" 
-    then {&out} fnSelectClass(htmlib-Select("ivclass",lc-list-class,lc-list-Name,
-                lc-ivclass)) skip.
+    IF lc-mode = "ADD" 
+        THEN {&out} fnSelectClass(htmlib-Select("ivclass",lc-list-class,lc-list-Name,
+        lc-ivclass)) skip.
     else {&out} html-encode(get-value("inventory")).
 
     {&out}
-            '</TD></TR>' skip. 
+    '</TD></TR>' skip. 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("ref",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Reference")
-            else htmlib-SideLabel("Reference"))
-            '</TD>'.
+        (IF LOOKUP("ref",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Reference")
+        ELSE htmlib-SideLabel("Reference"))
+    '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-InputField("ref",40,lc-ref) 
-            '</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("ref",40,lc-ref) 
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-ref),'left')
            skip.
@@ -844,17 +824,17 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-EndTable() skip.
 
-    if lc-error-msg <> "" then
-    do:
+    IF lc-error-msg <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
-                htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+        htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
+    END.
 
-    if lc-submit-label <> "" then
-    do:
+    IF lc-submit-label <> "" THEN
+    DO:
         {&out} '<center>' htmlib-SubmitButton("submitform",lc-submit-label) 
-               '</center>' skip.
-    end.
+        '</center>' skip.
+    END.
          
     {&out} skip
            htmlib-Hidden("customer",lc-customer) skip
@@ -867,8 +847,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -876,27 +854,24 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-fnSelectClass) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnSelectClass Procedure 
 FUNCTION fnSelectClass RETURNS CHARACTER
-  ( pc-htm as char ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-htm AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<select',
-                   '<select onChange="ChangeClass()"'). 
+    lc-htm = REPLACE(pc-htm,'<select',
+        '<select onChange="ChangeClass()"'). 
 
 
-  RETURN lc-htm.
+    RETURN lc-htm.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
