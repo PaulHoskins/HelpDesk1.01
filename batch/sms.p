@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        batch/sms.p
@@ -18,14 +15,11 @@
 {lib/common.i}
 {iss/issue.i}
 
-def buffer SMSQueue        for SMSQueue.
-def buffer ro-SMSQueue     for SMSQueue.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE BUFFER SMSQueue        FOR SMSQueue.
+DEFINE BUFFER ro-SMSQueue     FOR SMSQueue.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -34,56 +28,43 @@ def buffer ro-SMSQueue     for SMSQueue.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
-def var ld-date             as date         no-undo.
-def var li-time             as int          no-undo.
-def var chSMS               as com-handle.
-def var li-ok               as int      no-undo.
-def var lc-id               as char     no-undo.
+DEFINE VARIABLE ld-date             AS DATE         NO-UNDO.
+DEFINE VARIABLE li-time             AS INTEGER          NO-UNDO.
+DEFINE VARIABLE chSMS               AS COM-HANDLE.
+DEFINE VARIABLE li-ok               AS INTEGER      NO-UNDO.
+DEFINE VARIABLE lc-id               AS CHARACTER     NO-UNDO.
 
 
- create "IntelliSoftware.IntelliSMS.1" chSMS no-error.
+CREATE "IntelliSoftware.IntelliSMS.1" chSMS NO-ERROR.
 
-if error-status:error then
-do:
-    message "Its an error".
-    return.
-end.
+IF ERROR-STATUS:ERROR THEN
+DO:
+    MESSAGE "Its an error".
+    RETURN.
+END.
 
 
 chSMS:UserName = lc-global-sms-username.
@@ -91,37 +72,35 @@ chSMS:Password = lc-global-sms-password.
 
 
 
-for each ro-SMSQueue no-lock
-    where ro-SMSQueue.QStatus = 0 transaction
-    with frame f-log down stream-io:
+FOR EACH ro-SMSQueue NO-LOCK
+    WHERE ro-SMSQueue.QStatus = 0 TRANSACTION
+    WITH FRAME f-log DOWN STREAM-IO:
 
-    find SMSQueue where rowid(SMSQueue) = rowid(ro-SMSQueue) 
-        exclusive-lock no-wait no-error.
-    if locked SMSQueue
-    or not avail SMSQueue then next.
+    FIND SMSQueue WHERE ROWID(SMSQueue) = rowid(ro-SMSQueue) 
+        EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+    IF LOCKED SMSQueue
+    OR NOT AVAILABLE SMSQueue THEN NEXT.
 
 
     li-ok = chSMS:SendMessage( 
         	  SMSQueue.Mobile,
-        	  trim(substr(SMSQueue.Msg,1,140)),
+        	  TRIM(substr(SMSQueue.Msg,1,140)),
         	  "HelpDesk",
-        	  output lc-id by-variant-pointer ).
+        	  OUTPUT lc-id BY-VARIANT-POINTER ).
    
-    assign
+    ASSIGN
         SMSQueue.SMSResponse = li-ok
-        SMSQueue.SentDate    = today
-        SMSQueue.SentTime    = time
+        SMSQueue.SentDate    = TODAY
+        SMSQueue.SentTime    = TIME
         SMSQueue.QStatus     = 1.
 
-    if li-ok = 1
-    then assign
+    IF li-ok = 1
+    THEN ASSIGN
             SMSQueue.SMSID       = lc-id.
  
-end.
+END.
 
-release object chSMS.
+RELEASE OBJECT chSMS.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 

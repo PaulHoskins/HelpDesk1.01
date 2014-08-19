@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        batch/renewals.p
@@ -28,110 +25,107 @@ CREATE WIDGET-POOL.
 {lib/ticket.i}
 /* {lib/htmlib.i} */
 
-lc-global-company = trim(os-getenv("COMPANYCODE")).
-if lc-global-company = ?
-  or lc-global-company = "" then lc-global-company = "ouritdept".
+lc-global-company = TRIM(OS-GETENV("COMPANYCODE")).
+IF lc-global-company = ?
+  OR lc-global-company = "" THEN lc-global-company = "ouritdept".
 
-lc-global-user = trim(os-getenv("BATCHID")).
-if lc-global-user = ? 
-  or lc-global-user = "" then lc-global-user = "BATCH".
-
-
-def var lc-error-field      as char no-undo.
-def var lc-error-msg        as char no-undo.
-
-def var lc-accountnumber    as char no-undo.
-def var lc-briefdescription as char no-undo.
-def var lc-longdescription  as char no-undo.
-def var lc-submitsource     as char no-undo.
-def var lc-raisedlogin      as char no-undo.
-def var li-issue            as int no-undo.
-def var lc-date             as char no-undo.
-def var lc-AreaCode         as char no-undo.
-def var lc-Address          as char no-undo.
-def var lc-Ticket           as char no-undo.
-def var lc-title            as char no-undo.
+lc-global-user = TRIM(OS-GETENV("BATCHID")).
+IF lc-global-user = ? 
+  OR lc-global-user = "" THEN lc-global-user = "BATCH".
 
 
-def var lc-list-number      as char no-undo.
-def var lc-list-name        as char no-undo.
+DEFINE VARIABLE lc-error-field      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg        AS CHARACTER NO-UNDO.
 
-def var lc-list-login       as char no-undo.
-def var lc-list-lname       as char no-undo.
+DEFINE VARIABLE lc-accountnumber    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-briefdescription AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-longdescription  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submitsource     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-raisedlogin      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-issue            AS INTEGER NO-UNDO.
+DEFINE VARIABLE lc-date             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AreaCode         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Address          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Ticket           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title            AS CHARACTER NO-UNDO.
 
-def var lc-list-area        as char no-undo.
-def var lc-list-aname       as char no-undo.
-def var lc-gotomaint        as char no-undo.
 
-def var lc-sla-rows         as char no-undo.
-def var lc-sla-selected     as char no-undo.
-def var ll-customer         as log  no-undo.
+DEFINE VARIABLE lc-list-number      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-name        AS CHARACTER NO-UNDO.
 
-def var lc-default-catcode  as char no-undo.
-def var lc-catcode          as char no-undo.
-def var lc-list-catcode     as char no-undo.
-def var lc-list-cname       as char no-undo.
+DEFINE VARIABLE lc-list-login       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-lname       AS CHARACTER NO-UNDO.
 
-def var lc-issuesource      as char no-undo.
-def var lc-emailid          as char no-undo.
+DEFINE VARIABLE lc-list-area        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-aname       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-gotomaint        AS CHARACTER NO-UNDO.
 
-def var lc-list-actcode     as char no-undo.
-def var lc-list-actdesc     as char no-undo.
+DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-customer         AS LOG  NO-UNDO.
 
-def var lc-custivid         as char no-undo.
-def var lc-subivid          as char no-undo.
+DEFINE VARIABLE lc-default-catcode  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-catcode          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-catcode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-cname       AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-issuesource      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-emailid          AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-list-actcode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-actdesc     AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-custivid         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-subivid          AS CHARACTER NO-UNDO.
  
  
 /* Action Stuff */
 
-def var lc-Quick            as char no-undo.
-def var lc-actioncode       as char no-undo.
-def var lc-ActionNote       as char no-undo.
-def var lc-CustomerView     as char no-undo.
-def var lc-actionstatus     as char no-undo.
-def var lc-list-assign      as char no-undo.
-def var lc-list-assname     as char no-undo.
-def var lc-currentassign    as char no-undo.
+DEFINE VARIABLE lc-Quick            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-actioncode       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ActionNote       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-CustomerView     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-actionstatus     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assign      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assname     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentassign    AS CHARACTER NO-UNDO.
 
 /* Activity */
-def var lc-hours            as char no-undo.
-def var lc-mins             as char no-undo.
-def var li-hours            as int  no-undo.
-def var li-mins             as int  no-undo.
-def var lc-StartDate        as char no-undo.
-def var lc-starthour        as char no-undo.
-def var lc-startmin         as char no-undo.
-def var lc-endDate          as char no-undo.
-def var lc-endhour          as char no-undo.
-def var lc-endmin           as char no-undo.
-def var lc-ActDescription   as char no-undo.
+DEFINE VARIABLE lc-hours            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mins             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-hours            AS INTEGER  NO-UNDO.
+DEFINE VARIABLE li-mins             AS INTEGER  NO-UNDO.
+DEFINE VARIABLE lc-StartDate        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-starthour        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-startmin         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endDate          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endhour          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endmin           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ActDescription   AS CHARACTER NO-UNDO.
 
 /* Status */
-def var lc-list-status      as char no-undo.
-def var lc-list-sname       as char no-undo.
-def var lc-currentstatus    as char no-undo.
+DEFINE VARIABLE lc-list-status      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-sname       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentstatus    AS CHARACTER NO-UNDO.
 
 
-def var lc-htmldesc         as char no-undo.
-def var cdate               as char format "x(16)" no-undo.
-def var ddate               as date format "99/99/9999" initial 01/01/1999 no-undo.
-def var firstCustI          as log initial true  no-undo.
+DEFINE VARIABLE lc-htmldesc         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE cdate               AS CHARACTER FORMAT "x(16)" NO-UNDO.
+DEFINE VARIABLE ddate               AS DATE FORMAT "99/99/9999" INITIAL 01/01/1999 NO-UNDO.
+DEFINE VARIABLE firstCustI          AS LOG INITIAL TRUE  NO-UNDO.
 
 
 
-def buffer b-ivSub for ivSub.
-def buffer b-CustIv for CustIv.
-def buffer b-ivField for ivField.
+DEFINE BUFFER b-ivSub FOR ivSub.
+DEFINE BUFFER b-CustIv FOR CustIv.
+DEFINE BUFFER b-ivField FOR ivField.
 
-def var lf-Audit            as dec  no-undo.
+DEFINE VARIABLE lf-Audit            AS DECIMAL  NO-UNDO.
 
-def stream repOutStream .
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE STREAM repOutStream .
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -140,62 +134,43 @@ def stream repOutStream .
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-checkdate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD checkdate Procedure 
 FUNCTION checkdate RETURNS DATE
- (chkdate as char, lang as char) FORWARD.
+ (chkdate AS CHARACTER, lang AS CHARACTER) FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-getIssue) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD getIssue Procedure 
 FUNCTION getIssue RETURNS CHARACTER
-  (f-area as char, f-group as char) FORWARD.
+  (f-area AS CHARACTER, f-group AS CHARACTER) FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
@@ -203,96 +178,93 @@ FUNCTION getIssue RETURNS CHARACTER
 
 
 
-output stream repOutStream to value(session:temp-dir + "/renewals.html") unbuffered.
+OUTPUT stream repOutStream to value(SESSION:TEMP-DIR + "/renewals.html") unbuffered.
 
-for each customer where customer.IsActive
-    and customer.CompanyCode =  lc-global-company no-lock
-    break by customer.name :
-assign firstCustI = true.
+FOR EACH customer WHERE customer.IsActive
+    AND customer.CompanyCode =  lc-global-company NO-LOCK
+    BREAK BY customer.name :
+ASSIGN firstCustI = TRUE.
 /*   if customer.account <> "179" then next. /*   FOR TESTING ONLY          */ */
 
-  for each CustIv   no-lock of customer,
-    first ivSub   no-lock of CustIv,
-    first ivClass no-lock of ivSub
-    break 
-    by ivClass.DisplayPriority desc
-    by ivClass.name
-    by ivSub.DisplayPriority desc
-    by ivSub.name
-    by CustIv.Ref:
+  FOR EACH CustIv   NO-LOCK OF customer,
+    FIRST ivSub   NO-LOCK OF CustIv,
+    FIRST ivClass NO-LOCK OF ivSub
+    BREAK 
+    BY ivClass.DisplayPriority DESCENDING
+    BY ivClass.name
+    BY ivSub.DisplayPriority DESCENDING
+    BY ivSub.name
+    BY CustIv.Ref:
     
     
-    find b-ivSub of CustIv no-lock no-error.
+    FIND b-ivSub OF CustIv NO-LOCK NO-ERROR.
     
-    for each ivField of b-ivSub no-lock
-        where ivField.dtype = "date" 
-        and   (ivField.dLabel matches("*expir*") or ivField.dLabel matches("*renew*") )
-        and   ivField.dwarning > 0
-        by ivField.dOrder
-        by ivField.dLabel:
+    FOR EACH ivField OF b-ivSub NO-LOCK
+        WHERE ivField.dtype = "date" 
+        AND   (ivField.dLabel MATCHES("*expir*") OR ivField.dLabel MATCHES("*renew*") )
+        AND   ivField.dwarning > 0
+        BY ivField.dOrder
+        BY ivField.dLabel:
       
-    find CustField
-      where CustField.CustIvID = custIv.CustIvId
-      and CustField.ivFieldId = ivField.ivFieldId
-      no-lock no-error.
+    FIND CustField
+      WHERE CustField.CustIvID = custIv.CustIvId
+      AND CustField.ivFieldId = ivField.ivFieldId
+      NO-LOCK NO-ERROR.
     
     
-      if avail custField then 
-      do:
-        assign  cdate = CustField.FieldData 
+      IF AVAILABLE custField THEN 
+      DO:
+        ASSIGN  cdate = CustField.FieldData 
                 ddate = checkdate(cdate, 'uk') no-error .
 
-        if (ddate  - int(ivField.dwarning)) < today then
-        do:
-          run ip-GenerateInventory(input rowid(CustIv), output lc-htmldesc).
-          run ip-GenerateIssue( customer.account,
-                                entry(1,getissue(trim(ivClass.name),""),"|"), /* eg "02",  software */
-                                caps(entry(2,getissue(trim(ivClass.name),""),"|")),
-                                trim(CustIv.Ref) + " - " + trim(ivField.dLabel) + " " + string(ddate),
+        IF (ddate  - int(ivField.dwarning)) < TODAY THEN
+        DO:
+          RUN ip-GenerateInventory(INPUT ROWID(CustIv), OUTPUT lc-htmldesc).
+          RUN ip-GenerateIssue( customer.account,
+                                ENTRY(1,getissue(TRIM(ivClass.name),""),"|"), /* eg "02",  software */
+                                CAPS(ENTRY(2,getissue(TRIM(ivClass.name),""),"|")),
+                                TRIM(CustIv.Ref) + " - " + trim(ivField.dLabel) + " " + string(ddate),
                                 lc-htmldesc,
-                                string(CustIv.CustIvID),
-                                string(CustIv.ivSubID)
+                                STRING(CustIv.CustIvID),
+                                STRING(CustIv.ivSubID)
                                  ).
-        end.
-        else
-        do:
-          if firstCustI then
-            do:
-              firstCustI = false.
-              put stream repOutStream unformatted  
-                '<html><head></head><body><table padding="2px" >'  skip
+        END.
+        ELSE
+        DO:
+          IF firstCustI THEN
+            DO:
+              firstCustI = FALSE.
+              PUT STREAM repOutStream UNFORMATTED  
+                '<html><head></head><body><table padding="2px" >'  SKIP
                 '<tr><td colspan=3 ><hr></td></tr>'
                 '<tr><td colspan=3 >A/C # : '  customer.AccountNumber  ' - ' customer.name '</td></tr>'
                 '<tr><td colspan=3 ><hr></td></tr>'
                 '<tr><td colspan=3 ></td></tr>'.
        
-            end.
-            put stream repOutStream unformatted 
-                '<tr><td>' caps(trim(ivClass.name))   '</td><td></td>'
-                ' <td>' trim(ivSub.name)              '</td><td></td></tr>'
-                '<tr><td>' trim(CustIv.Ref)           '</td><td></td>'
-                ' <td>' trim(ivField.dLabel)          '</td><td></td></tr>'
+            END.
+            PUT STREAM repOutStream UNFORMATTED 
+                '<tr><td>' CAPS(TRIM(ivClass.name))   '</td><td></td>'
+                ' <td>' TRIM(ivSub.name)              '</td><td></td></tr>'
+                '<tr><td>' TRIM(CustIv.Ref)           '</td><td></td>'
+                ' <td>' TRIM(ivField.dLabel)          '</td><td></td></tr>'
                 '<tr><td>' ddate                      '</td><td></td><td></td></tr>'
                 '<tr><td><hr></td></tr>'.
-        end.
-      end.
-    end.
-  end.
-end.
+        END.
+      END.
+    END.
+  END.
+END.
 
 
-output stream repOutStream close.
-quit.
+OUTPUT stream repOutStream close.
+QUIT.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-CreateIssue) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-CreateIssue Procedure 
 PROCEDURE ip-CreateIssue :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -301,188 +273,185 @@ PROCEDURE ip-CreateIssue :
 ------------------------------------------------------------------------------*/
     
     
-    def var lr-Action       as rowid        no-undo.
-    def var lr-Issue        as rowid        no-undo.
-    def var li-amount       as int          no-undo.
+    DEFINE VARIABLE lr-Action       AS ROWID        NO-UNDO.
+    DEFINE VARIABLE lr-Issue        AS ROWID        NO-UNDO.
+    DEFINE VARIABLE li-amount       AS INTEGER          NO-UNDO.
 
-    if lc-actionCode <> lc-global-selcode then
-    do:
+    IF lc-actionCode <> lc-global-selcode THEN
+    DO:
 
     
-        find WebAction
-            where WebAction.CompanyCode = lc-global-company
-              and WebAction.ActionCode  = lc-ActionCode
-              no-lock no-error.
-        create IssAction.
-        assign IssAction.actionID       = WebAction.ActionID
+        FIND WebAction
+            WHERE WebAction.CompanyCode = lc-global-company
+              AND WebAction.ActionCode  = lc-ActionCode
+              NO-LOCK NO-ERROR.
+        CREATE IssAction.
+        ASSIGN IssAction.actionID       = WebAction.ActionID
                IssAction.CompanyCode    = lc-global-company
                IssAction.IssueNumber    = issue.IssueNumber
-               IssAction.CreateDate     = today
-               IssAction.CreateTime     = time
+               IssAction.CreateDate     = TODAY
+               IssAction.CreateTime     = TIME
                IssAction.CreatedBy      = lc-global-user
                IssAction.customerview   = lc-customerview = "on"
                .
     
-        do while true:
-            run lib/makeaudit.p (
+        DO WHILE TRUE:
+            RUN lib/makeaudit.p (
                 "",
-                output lf-audit
+                OUTPUT lf-audit
                 ).
-            if can-find(first IssAction
-                        where IssAction.IssActionID = lf-audit no-lock)
-                        then next.
-            assign
+            IF CAN-FIND(FIRST IssAction
+                        WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                        THEN NEXT.
+            ASSIGN
                 IssAction.IssActionID   = lf-audit.
-            leave.
-        end.
+            LEAVE.
+        END.
     
-        assign IssAction.notes          = lc-actionnote
+        ASSIGN IssAction.notes          = lc-actionnote
                IssAction.ActionStatus   = lc-ActionStatus
-               IssAction.ActionDate     = today
+               IssAction.ActionDate     = TODAY
                IssAction.customerview   = lc-customerview = "on"
                IssAction.AssignTo       = lc-currentassign
-               IssAction.AssignDate     = today
-               IssAction.AssignTime     = time.
+               IssAction.AssignDate     = TODAY
+               IssAction.AssignTime     = TIME.
     
-        assign
-            lr-Action = rowid(issAction).
-        release issAction.
+        ASSIGN
+            lr-Action = ROWID(issAction).
+        RELEASE issAction.
         
-        find issAction where rowid(issAction) = lr-Action exclusive-lock.
+        FIND issAction WHERE ROWID(issAction) = lr-Action EXCLUSIVE-LOCK.
     
-        dynamic-function("islib-CreateAutoAction",issAction.IssActionID).
+        DYNAMIC-FUNCTION("islib-CreateAutoAction",issAction.IssActionID).
     
-        if lc-ActDescription <> "" then
-        do:
+        IF lc-ActDescription <> "" THEN
+        DO:
     
             
-            create IssActivity.
-            assign IssActivity.IssActionID = IssAction.IssActionID
+            CREATE IssActivity.
+            ASSIGN IssActivity.IssActionID = IssAction.IssActionID
                    IssActivity.CompanyCode = lc-global-company
                    IssActivity.IssueNumber = issue.IssueNumber
-                   IssActivity.CreateDate  = today
-                   IssActivity.CreateTime  = time
+                   IssActivity.CreateDate  = TODAY
+                   IssActivity.CreateTime  = TIME
                    IssActivity.CreatedBy   = lc-global-user
                    IssActivity.ActivityBy  = lc-CurrentAssign
                    .
         
-            do while true:
-                run lib/makeaudit.p (
+            DO WHILE TRUE:
+                RUN lib/makeaudit.p (
                     "",
-                    output lf-audit
+                    OUTPUT lf-audit
                     ).
-                if can-find(first IssActivity
-                            where IssActivity.IssActivityID = lf-audit no-lock)
-                            then next.
-                assign
+                IF CAN-FIND(FIRST IssActivity
+                            WHERE IssActivity.IssActivityID = lf-audit NO-LOCK)
+                            THEN NEXT.
+                ASSIGN
                     IssActivity.IssActivityID = lf-audit.
-                leave.
-            end.
+                LEAVE.
+            END.
         
-            assign IssActivity.description      = lc-actdescription
-                   IssActivity.ActDate          = today
+            ASSIGN IssActivity.description      = lc-actdescription
+                   IssActivity.ActDate          = TODAY
                    IssActivity.customerview    = lc-customerview = "on".
         
-            if lc-startdate <> "" then
-            do:
-                assign IssActivity.StartDate = date(lc-StartDate).
+            IF lc-startdate <> "" THEN
+            DO:
+                ASSIGN IssActivity.StartDate = DATE(lc-StartDate).
         
-                assign IssActivity.StartTime = dynamic-function("com-InternalTime",
+                ASSIGN IssActivity.StartTime = DYNAMIC-FUNCTION("com-InternalTime",
                                  int(lc-starthour),
                                  int(lc-startmin)
                                  ).
-            end.
-            else assign IssActivity.StartDate = ?
+            END.
+            ELSE ASSIGN IssActivity.StartDate = ?
                         IssActivity.StartTime = 0.
         
-            if lc-enddate <> "" then
-            do:
-                assign IssActivity.EndDate = date(lc-endDate).
+            IF lc-enddate <> "" THEN
+            DO:
+                ASSIGN IssActivity.EndDate = DATE(lc-endDate).
         
-                assign IssActivity.Endtime = dynamic-function("com-InternalTime",
+                ASSIGN IssActivity.Endtime = DYNAMIC-FUNCTION("com-InternalTime",
                                 int(lc-endhour),
                                 int(lc-endmin)
                                 ).
                 
-            end.
-            else assign IssActivity.EndDate = ?
+            END.
+            ELSE ASSIGN IssActivity.EndDate = ?
                         IssActivity.EndTime = 0.
         
         
-            assign IssActivity.Duration = 
+            ASSIGN IssActivity.Duration = 
                 ( ( int(lc-hours) * 60 ) * 60 ) + 
                 ( int(lc-mins) * 60 ).
         
         
-            if Issue.Ticket then
-            do:
-                assign
+            IF Issue.Ticket THEN
+            DO:
+                ASSIGN
                     li-amount = IssActivity.Duration.
-                if li-amount <> 0 then
-                do:
-                    empty temp-table tt-ticket.
-                    create tt-ticket.
-                    assign
+                IF li-amount <> 0 THEN
+                DO:
+                    EMPTY TEMP-TABLE tt-ticket.
+                    CREATE tt-ticket.
+                    ASSIGN
                         tt-ticket.CompanyCode       =   issue.CompanyCode
                         tt-ticket.AccountNumber     =   issue.AccountNumber
                         tt-ticket.Amount            =   li-Amount * -1
                         tt-ticket.CreateBy          =   lc-global-user
-                        tt-ticket.CreateDate        =   today
-                        tt-ticket.CreateTime        =   time
+                        tt-ticket.CreateDate        =   TODAY
+                        tt-ticket.CreateTime        =   TIME
                         tt-ticket.IssueNumber       =   Issue.IssueNumber
                         tt-ticket.Reference         =   IssActivity.description
                         tt-ticket.TickID            =   ?
                         tt-ticket.TxnDate           =   IssActivity.ActDate
-                        tt-ticket.TxnTime           =   time
+                        tt-ticket.TxnTime           =   TIME
                         tt-ticket.TxnType           =   "ACT"
                         tt-ticket.IssActivityID     =   IssActivity.IssActivityID.
                     RUN tlib-PostTicket.
-                end.
-            end.
-        end.
-    end.
+                END.
+            END.
+        END.
+    END.
  /* *** 
     *** final update of the issue
     ***                                   */
-    assign
+    ASSIGN
         Issue.AssignTo  = lc-CurrentAssign
-        Issue.AssignDate = today
-        Issue.AssignTime = time
-        lr-Issue       = rowid(Issue).
+        Issue.AssignDate = TODAY
+        Issue.AssignTime = TIME
+        lr-Issue       = ROWID(Issue).
 
-    if Issue.StatusCode <> lc-currentstatus then
-    do:
-        release issue.
-        find Issue where rowid(Issue) = lr-Issue exclusive-lock.
-        run islib-StatusHistory(
+    IF Issue.StatusCode <> lc-currentstatus THEN
+    DO:
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = lr-Issue EXCLUSIVE-LOCK.
+        RUN islib-StatusHistory(
                         Issue.CompanyCode,
                         Issue.IssueNumber,
                         lc-global-user,
                         Issue.StatusCode,
                         lc-currentStatus ).
-        release issue.
-        find Issue where rowid(Issue) = lr-Issue exclusive-lock.
-        assign
+        RELEASE issue.
+        FIND Issue WHERE ROWID(Issue) = lr-Issue EXCLUSIVE-LOCK.
+        ASSIGN
             Issue.StatusCode = lc-CurrentStatus.
         
-    end.
+    END.
 
-    if dynamic-function("islib-StatusIsClosed",
+    IF DYNAMIC-FUNCTION("islib-StatusIsClosed",
                         Issue.CompanyCode,
                         Issue.StatusCode)
-    then dynamic-function("islib-RemoveAlerts",rowid(Issue)).
+    THEN DYNAMIC-FUNCTION("islib-RemoveAlerts",ROWID(Issue)).
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GenerateInventory) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GenerateInventory Procedure 
 PROCEDURE ip-GenerateInventory :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -491,16 +460,16 @@ PROCEDURE ip-GenerateInventory :
 ------------------------------------------------------------------------------*/
     
 
- def input param lr-rowid as rowid  no-undo.
- def output param lc-html as char   no-undo.
- def var lc-value         as char   no-undo.
- def var lc-temp          as char   no-undo.
+ DEFINE INPUT PARAMETER lr-rowid AS ROWID  NO-UNDO.
+ DEFINE OUTPUT PARAMETER lc-html AS CHARACTER   NO-UNDO.
+ DEFINE VARIABLE lc-value         AS CHARACTER   NO-UNDO.
+ DEFINE VARIABLE lc-temp          AS CHARACTER   NO-UNDO.
 
- assign lc-html = "".
+ ASSIGN lc-html = "".
 
 /*  lc-html = '<code><div style="float:left; width:800px;">'. */
 /*                                                            */
-  find custIv where rowid(custIv) = lr-rowid no-lock no-error.
+  FIND custIv WHERE ROWID(custIv) = lr-rowid NO-LOCK NO-ERROR.
 
 /*     lc-html = "                Inventory Details For "  + custIv.Ref + "            ~n~n". */
 /*     assign lc-html = lc-html + '<span class="inform"><fieldset><legend>' + lc-temp + '</legend>'.  */
@@ -509,49 +478,46 @@ PROCEDURE ip-GenerateInventory :
 /*     lc-temp = "^right|Details^left|&nbsp^left".                                                    */
 /*     assign lc-html = lc-html + htmlib-TableHeading(lc-temp) .                                      */
 
-    find ivSub of CustIv no-lock no-error.
+    FIND ivSub OF CustIv NO-LOCK NO-ERROR.
 
-    for each b-ivField of ivSub no-lock
-        by b-ivField.dOrder
-        by b-ivField.dLabel:
+    FOR EACH b-ivField OF ivSub NO-LOCK
+        BY b-ivField.dOrder
+        BY b-ivField.dLabel:
 
 /*         assign lc-html = lc-html + '<tr class="tabrow1">'.                                       */
 /*         assign lc-html = lc-html + '<th style="text-align: right; vertical-align: text-top;">'.  */
-        assign lc-html = lc-html + b-ivField.dLabel + ": ".
+        ASSIGN lc-html = lc-html + b-ivField.dLabel + ": ".
 /*         assign lc-html = lc-html +  '</th>'. */
 /*                                              */
         
-        find CustField
-            where CustField.CustIvID = custIv.CustIvId
-              and CustField.ivFieldId = b-ivField.ivFieldId
-              no-lock no-error.
-        assign
-            lc-value = if avail Custfield then CustField.FieldData
-                       else "".
-        if lc-value = ?
-        then assign lc-value = "".
-        assign lc-html = lc-html + lc-value + "~n".
+        FIND CustField
+            WHERE CustField.CustIvID = custIv.CustIvId
+              AND CustField.ivFieldId = b-ivField.ivFieldId
+              NO-LOCK NO-ERROR.
+        ASSIGN
+            lc-value = IF AVAILABLE Custfield THEN CustField.FieldData
+                       ELSE "".
+        IF lc-value = ?
+        THEN ASSIGN lc-value = "".
+        ASSIGN lc-html = lc-html + lc-value + "~n".
 
 /*         assign lc-html = lc-html + htmlib-MntTableField(replace(lc-value,"~n","<br>"),'left') . */
 /*         assign lc-html = lc-html + htmlib-MntTableField("&nbsp",'left') .                       */
 /*         assign lc-html = lc-html + '</tr>' .                                                    */
-    end.
+    END.
 
 /*     assign lc-html = lc-html + htmlib-EndTable().     */
 /*     assign lc-html = lc-html + htmlib-EndFieldSet() . */
   
-    assign lc-html = lc-html + "~n".
+    ASSIGN lc-html = lc-html + "~n".
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GenerateIssue) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GenerateIssue Procedure 
 PROCEDURE ip-GenerateIssue :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -560,22 +526,22 @@ PROCEDURE ip-GenerateIssue :
 ------------------------------------------------------------------------------*/
    
 
-  def input param pc-accountnumber        as char no-undo.
-  def input param pc-AreaCode             as char no-undo.
-  def input param pc-briefdescription     as char no-undo.
-  def input param pc-longdescription      as char no-undo.
-  def input param pc-actionnote           as char no-undo.
-  def input param pc-custivid             as char no-undo.
-  def input param pc-subivid              as char no-undo.
+  DEFINE INPUT PARAMETER pc-accountnumber        AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER pc-AreaCode             AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER pc-briefdescription     AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER pc-longdescription      AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER pc-actionnote           AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER pc-custivid             AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER pc-subivid              AS CHARACTER NO-UNDO.
 
 
 
-        assign lc-accountnumber    = pc-accountnumber
+        ASSIGN lc-accountnumber    = pc-accountnumber
                lc-briefdescription = pc-briefdescription
                lc-longdescription  = pc-longdescription
 /*                lc-submitsource     = "submitsource" */
                lc-raisedlogin      = "BATCH"
-               lc-date             = string(today)
+               lc-date             = STRING(TODAY)
                lc-AreaCode         = pc-AreaCode 
                lc-gotomaint        = "true"
 /*                lc-sla-selected     = "sla" */
@@ -589,10 +555,10 @@ PROCEDURE ip-GenerateIssue :
                lc-actionstatus     = "OPEN"
                lc-hours            = ""
                lc-mins             = "15"
-               lc-startdate        = string(today)
+               lc-startdate        = STRING(TODAY)
                lc-starthour        = "12"
                lc-startmin         = "30"
-               lc-enddate          = string(today + 30)
+               lc-enddate          = STRING(TODAY + 30)
                lc-endhour          = "12"
                lc-endmin           = "30"
                lc-actdescription   = "Investigate"
@@ -601,33 +567,30 @@ PROCEDURE ip-GenerateIssue :
                lc-subivid          = pc-subivid  .
         
 
-    find first issue where issue.AccountNumber      = lc-accountnumber                  
-                     and   issue.CompanyCode        = lc-global-company
-                     and   issue.CreateBy           = lc-global-user   
-                     and   issue.areacode           = lc-areacode                       
-                     and   issue.CatCode            = lc-catcode                        
-                     and   issue.Ticket             = true             
-                     and   issue.BatchID            = string(trim(lc-BriefDescription) + "|" +        
+    FIND FIRST issue WHERE issue.AccountNumber      = lc-accountnumber                  
+                     AND   issue.CompanyCode        = lc-global-company
+                     AND   issue.CreateBy           = lc-global-user   
+                     AND   issue.areacode           = lc-areacode                       
+                     AND   issue.CatCode            = lc-catcode                        
+                     AND   issue.Ticket             = TRUE             
+                     AND   issue.BatchID            = string(TRIM(lc-BriefDescription) + "|" +        
                                                       trim(lc-global-company) + "|" +         
                                                       trim(lc-areacode) + "|" +  
                                                       trim(lc-custivid) + "|" +  
                                                       trim(lc-subivid))
-                    no-lock no-error.  
+                    NO-LOCK NO-ERROR.  
 
-    if avail issue then return.
+    IF AVAILABLE issue THEN RETURN.
 
-    run ip-Initialise.
+    RUN ip-Initialise.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Initialise) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Initialise Procedure 
 PROCEDURE ip-Initialise :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -636,34 +599,34 @@ PROCEDURE ip-Initialise :
 ------------------------------------------------------------------------------*/
     
 
-  repeat:
-        find last issue 
-            where issue.companycode = lc-global-company
-            no-lock no-error.
-        assign
+  REPEAT:
+        FIND LAST issue 
+            WHERE issue.companycode = lc-global-company
+            NO-LOCK NO-ERROR.
+        ASSIGN
             li-issue = 
-                if avail issue then issue.issueNumber + 1
-                else 1.
-        leave.
-    end.
+                IF AVAILABLE issue THEN issue.issueNumber + 1
+                ELSE 1.
+        LEAVE.
+    END.
     
-    assign lc-ticket = "on".
+    ASSIGN lc-ticket = "on".
 
-    create issue.
-    assign issue.IssueNumber        = li-issue
+    CREATE issue.
+    ASSIGN issue.IssueNumber        = li-issue
            issue.BriefDescription   = lc-BriefDescription
            issue.LongDescription    = lc-LongDescription
            issue.AccountNumber      = lc-accountnumber
            issue.CompanyCode        = lc-global-company
-           issue.CreateDate         = today
-           issue.CreateTime         = time
+           issue.CreateDate         = TODAY
+           issue.CreateTime         = TIME
            issue.CreateBy           = lc-global-user
-           issue.IssueDate          = date(lc-date)
-           issue.IssueTime          = time
+           issue.IssueDate          = DATE(lc-date)
+           issue.IssueTime          = TIME
            issue.areacode           = lc-areacode
            issue.CatCode            = lc-catcode
            issue.Ticket             = lc-ticket = "on"
-           issue.BatchID            = string(trim(lc-BriefDescription) + "|" +           
+           issue.BatchID            = STRING(TRIM(lc-BriefDescription) + "|" +           
                                              trim(lc-global-company) + "|" +         
                                              trim(lc-areacode) + "|" +  
                                              trim(lc-custivid) + "|" +  
@@ -672,107 +635,105 @@ PROCEDURE ip-Initialise :
 
             .
 
-    if lc-emailID <> ""
-    then assign issue.CreateSource = "EMAIL".
+    IF lc-emailID <> ""
+    THEN ASSIGN issue.CreateSource = "EMAIL".
                                      
 
-    if ll-customer then
-    do:
-        assign 
+    IF ll-customer THEN
+    DO:
+        ASSIGN 
             lc-sla-selected = "slanone".
-        if customer.DefaultSLAID <> 0 then
-        do:
-            find slahead where slahead.SLAID = Customer.DefaultSLAID no-lock no-error.
+        IF customer.DefaultSLAID <> 0 THEN
+        DO:
+            FIND slahead WHERE slahead.SLAID = Customer.DefaultSLAID NO-LOCK NO-ERROR.
 
-            if avail slahead
-            then assign lc-sla-selected = "sla" + string(rowid(slahead)).
-        end.
-    end.
+            IF AVAILABLE slahead
+            THEN ASSIGN lc-sla-selected = "sla" + string(ROWID(slahead)).
+        END.
+    END.
 
 /*     assign                                                                           */
 /*         lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,lc-AccountNumber).  */
-    if lc-sla-selected = "slanone" 
-    or lc-sla-rows = "" then 
-    do:
-        assign Issue.link-SLAID = 0
+    IF lc-sla-selected = "slanone" 
+    OR lc-sla-rows = "" THEN 
+    DO:
+        ASSIGN Issue.link-SLAID = 0
                Issue.SLAStatus = "OFF".
-    end.
-    else
-    do:
-        find slahead where rowid(slahead) = to-rowid(substr(lc-sla-selected,4)) no-lock no-error.
-        if avail slahead then 
-        do:
-            assign Issue.link-SLAID = slahead.SLAID.
+    END.
+    ELSE
+    DO:
+        FIND slahead WHERE ROWID(slahead) = to-rowid(substr(lc-sla-selected,4)) NO-LOCK NO-ERROR.
+        IF AVAILABLE slahead THEN 
+        DO:
+            ASSIGN Issue.link-SLAID = slahead.SLAID.
 
-            empty temp-table tt-sla-sched.
-            run lib/slacalc.p
+            EMPTY TEMP-TABLE tt-sla-sched.
+            RUN lib/slacalc.p
                 ( Issue.IssueDate,
                   Issue.IssueTime,
                   Issue.link-SLAID,
-                  output table tt-sla-sched ).
-            assign
+                  OUTPUT table tt-sla-sched ).
+            ASSIGN
                 Issue.SLADate = ?
                 Issue.SLALevel = 0
                 Issue.SLAStatus = "OFF"
                 Issue.SLATime  = 0.
-            for each tt-sla-sched no-lock
-                where tt-sla-sched.Level > 0:
+            FOR EACH tt-sla-sched NO-LOCK
+                WHERE tt-sla-sched.Level > 0:
     
-                assign
+                ASSIGN
                     Issue.SLADate[tt-sla-sched.Level] = tt-sla-sched.sDate
                     Issue.SLATime[tt-sla-sched.Level] = tt-sla-sched.sTime.
-                assign
+                ASSIGN
                     Issue.SLAStatus = "ON".
-            end.
+            END.
             IF issue.slaDate[2] <> ? 
                             THEN ASSIGN issue.SLATrip = DATETIME(STRING(Issue.SLADate[2],"99/99/9999") + " " 
             + STRING(Issue.SLATime[2],"HH:MM")).
 
-        end.
+        END.
 
-    end.
+    END.
 
-    assign issue.RaisedLoginid = lc-raisedlogin.
+    ASSIGN issue.RaisedLoginid = lc-raisedlogin.
 
-    assign issue.StatusCode = "NEW".
+    ASSIGN issue.StatusCode = "NEW".
 
-    run islib-StatusHistory(
+    RUN islib-StatusHistory(
             issue.CompanyCode,
             issue.IssueNumber,
             lc-global-user,
             "",
             issue.StatusCode ).
 
-    if lc-emailid <> "" then
-    do:
-        find emailh where emailh.EmailID = dec(lc-EmailID) exclusive-lock no-error.
-        if avail emailh then
-        do:
+    IF lc-emailid <> "" THEN
+    DO:
+        FIND emailh WHERE emailh.EmailID = dec(lc-EmailID) EXCLUSIVE-LOCK NO-ERROR.
+        IF AVAILABLE emailh THEN
+        DO:
 
-            for each doch where doch.CompanyCode = lc-global-company
-                            and doch.RelType     = "EMAIL"
-                            and doch.RelKey      = string(emailh.EmailID) exclusive-lock:
-                assign
+            FOR EACH doch WHERE doch.CompanyCode = lc-global-company
+                            AND doch.RelType     = "EMAIL"
+                            AND doch.RelKey      = string(emailh.EmailID) EXCLUSIVE-LOCK:
+                ASSIGN
                     doch.RelType = "ISSUE"  
-                    doch.RelKey  = string(Issue.IssueNumber)
+                    doch.RelKey  = STRING(Issue.IssueNumber)
                     doch.CreateBy = lc-global-user.
-            end.
-            delete emailh.
-        end.
+            END.
+            DELETE emailh.
+        END.
 
-    end.
+    END.
 
     islib-DefaultActions(lc-global-company,
                          Issue.IssueNumber).
-    if not ll-Customer 
-    then RUN ip-CreateIssue.
+    IF NOT ll-Customer 
+    THEN RUN ip-CreateIssue.
     
     
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -780,9 +741,8 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-checkdate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION checkdate Procedure 
 FUNCTION checkdate RETURNS DATE
- (chkdate as char, lang as char):
+ (chkdate AS CHARACTER, lang AS CHARACTER):
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:    Original code from:
@@ -790,59 +750,54 @@ FUNCTION checkdate RETURNS DATE
               /*       (C) DJS 1996 RiverSoft       */
 ------------------------------------------------------------------------------*/
 
-  def var retdate as date no-undo.
-  def var tmpdate as char no-undo.
-  if num-entries(chkdate,"/") <> 3 then 
-  do:
-      if lang = 'uk' and session:date-format = 'dmy' then
-      do:
-      tmpdate = string(substr(chkdate,1,2) + '/' +
+  DEFINE VARIABLE retdate AS DATE NO-UNDO.
+  DEFINE VARIABLE tmpdate AS CHARACTER NO-UNDO.
+  IF NUM-ENTRIES(chkdate,"/") <> 3 THEN 
+  DO:
+      IF lang = 'uk' AND SESSION:DATE-FORMAT = 'dmy' THEN
+      DO:
+      tmpdate = STRING(substr(chkdate,1,2) + '/' +
                        substr(chkdate,3,2) + '/' +
                        substr(chkdate,5) ). /* US */
-      retdate = date(tmpdate) no-error.
-      if error-status:error then retdate = ?.
-      end.
-  end.
-  else do:
-      retdate = date(chkdate) no-error.
-      if error-status:error then retdate = ?.
-  end.
-  return retdate.
+      retdate = DATE(tmpdate) NO-ERROR.
+      IF ERROR-STATUS:ERROR THEN retdate = ?.
+      END.
+  END.
+  ELSE DO:
+      retdate = DATE(chkdate) NO-ERROR.
+      IF ERROR-STATUS:ERROR THEN retdate = ?.
+  END.
+  RETURN retdate.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-getIssue) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION getIssue Procedure 
 FUNCTION getIssue RETURNS CHARACTER
-  (f-area as char, f-group as char):
+  (f-area AS CHARACTER, f-group AS CHARACTER):
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-  for each webIssArea where webIssArea.Description matches("*" + f-area + "*") no-lock:
-  find webissagrp where webissagrp.companycode = webissArea.CompanyCode
-                    and webissagrp.Groupid     = webissArea.GroupID 
-                    and webissagrp.description matches("*" + f-group + "*") no-lock no-error.
-   if avail webissagrp then 
-   do:
+  FOR EACH webIssArea WHERE webIssArea.Description MATCHES("*" + f-area + "*") NO-LOCK:
+  FIND webissagrp WHERE webissagrp.companycode = webissArea.CompanyCode
+                    AND webissagrp.Groupid     = webissArea.GroupID 
+                    AND webissagrp.description MATCHES("*" + f-group + "*") NO-LOCK NO-ERROR.
+   IF AVAILABLE webissagrp THEN 
+   DO:
  /*     message webIssArea.AreaCode skip  webIssArea.Description skip  webissArea.GroupID skip webissagrp.description  view-as alert-box.  */
-     return string( webIssArea.AreaCode  + "|" +  webissagrp.description).
-   end.
-   else return string(webIssArea.AreaCode + "|").
-  end.
+     RETURN STRING( webIssArea.AreaCode  + "|" +  webissagrp.description).
+   END.
+   ELSE RETURN STRING(webIssArea.AreaCode + "|").
+  END.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

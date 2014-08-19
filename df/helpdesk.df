@@ -865,6 +865,14 @@ ADD FIELD "st-num" OF "Customer" AS integer
   MAX-WIDTH 4
   ORDER 200
 
+ADD FIELD "old-AccountNumber" OF "Customer" AS character 
+  FORMAT "X(20)"
+  INITIAL ""
+  LABEL "Old Account"
+  POSITION 22
+  MAX-WIDTH 40
+  ORDER 210
+
 ADD INDEX "AccountNumber" ON "Customer" 
   AREA "Schema Area"
   UNIQUE
@@ -4434,4 +4442,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000087204
+0000087364
