@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        sys/webuser.p
@@ -26,48 +23,45 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-mess  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-def var lc-rowid as char no-undo.
-
-
-def var li-max-lines as int initial 12 no-undo.
-def var lr-first-row as rowid no-undo.
-def var lr-last-row  as rowid no-undo.
-def var li-count     as int   no-undo.
-def var ll-prev      as log   no-undo.
-def var ll-next      as log   no-undo.
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-parameters   as char no-undo.
-def var lc-smessage     as char no-undo.
-def var lc-link-otherp  as char no-undo.
-def var lc-char         as char no-undo.
-def var lc-nopass       as char no-undo.
-DEF VAR lc-selacc       AS CHAR NO-UNDO.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 
 
+DEFINE VARIABLE li-max-lines   AS INTEGER   INITIAL 12 NO-UNDO.
+DEFINE VARIABLE lr-first-row   AS ROWID     NO-UNDO.
+DEFINE VARIABLE lr-last-row    AS ROWID     NO-UNDO.
+DEFINE VARIABLE li-count       AS INTEGER   NO-UNDO.
+DEFINE VARIABLE ll-prev        AS LOG       NO-UNDO.
+DEFINE VARIABLE ll-next        AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-search      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-smessage    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-otherp AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-nopass      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selacc      AS CHARACTER NO-UNDO.
 
 
-def buffer b-query for webuser.
-def buffer b-search for webuser.
+
+
+DEFINE BUFFER b-query  FOR webuser.
+DEFINE BUFFER b-search FOR webuser.
 
 /*
 def query q for b-query scrolling.
 */
 
-def var lc-QPhrase  as char    no-undo.
-def var vhLBuffer       as handle  no-undo.
-def var vhLQuery        as handle  no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-QPhrase AS CHARACTER NO-UNDO.
+DEFINE VARIABLE vhLBuffer  AS HANDLE    NO-UNDO.
+DEFINE VARIABLE vhLQuery   AS HANDLE    NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -76,61 +70,42 @@ def var vhLQuery        as handle  no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-fnToolbarAccountSelection) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnToolbarAccountSelection Procedure 
 FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
-  ( /* parameter-definitions */ )  FORWARD.
+    ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -140,27 +115,24 @@ FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
 PROCEDURE ip-ExportJScript :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-{&out}
-        '<script language="JavaScript" src="/scripts/js/menu.js"></script>' skip
+    {&out}
+    '<script language="JavaScript" src="/scripts/js/menu.js"></script>' skip
         '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
         '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip
-        .
+    .
 
     {&out} skip
             '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' skip.
@@ -179,152 +151,145 @@ PROCEDURE ip-ExportJScript :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-navigate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-navigate Procedure 
 PROCEDURE ip-navigate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    if lc-navigation = "nextpage" then
-    do:
-        vhLQuery:reposition-to-rowid(to-rowid(lc-lastrow)) .
-        if error-status:error = false then
-        do:
-          vhLQuery:get-next(no-lock).
-          vhLQuery:get-next(no-lock).
+    IF lc-navigation = "nextpage" THEN
+    DO:
+        vhLQuery:REPOSITION-TO-ROWID(TO-ROWID(lc-lastrow)) .
+        IF ERROR-STATUS:ERROR = FALSE THEN
+        DO:
+            vhLQuery:GET-NEXT(NO-LOCK).
+            vhLQuery:GET-NEXT(NO-LOCK).
     
-          if not avail b-query then vhLQuery:get-first(no-lock).
-      end.
-    end.
-    else
-    if lc-navigation = "prevpage" then
-    do:
-      vhLQuery:reposition-to-rowid(to-rowid(lc-firstrow)) no-error.
-      if error-status:error = false then
-      do:
-        vhLQuery:get-next(no-lock).
-         vhLQuery:reposition-backwards(li-max-lines + 1). 
-         vhLQuery:get-next(no-lock).
-        if not avail b-query then vhLQuery:get-first(no-lock).
-    end.
-    end.
-    else
-    if lc-navigation = "refresh" then
-    do:
-        vhLQuery:reposition-to-rowid(to-rowid(lc-firstrow)) no-error.
-        if error-status:error = false then
-        do:
-          vhLQuery:get-next(no-lock).
-           if not avail b-query then vhLQuery:get-first(no-lock).
-       end.  
-       else vhLQuery:get-first(no-lock).
-    end.
-    else 
-    if lc-navigation = "lastpage" then
-    do:
-      vhLQuery:get-last(no-lock).
-      vhLQuery:reposition-backwards(li-max-lines).
-      vhLQuery:get-next(no-lock).
-     if not avail b-query then vhLQuery:get-first(no-lock).
-    end.
+            IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+        END.
+    END.
+    ELSE
+        IF lc-navigation = "prevpage" THEN
+        DO:
+            vhLQuery:REPOSITION-TO-ROWID(TO-ROWID(lc-firstrow)) NO-ERROR.
+            IF ERROR-STATUS:ERROR = FALSE THEN
+            DO:
+                vhLQuery:GET-NEXT(NO-LOCK).
+                vhLQuery:reposition-backwards(li-max-lines + 1). 
+                vhLQuery:GET-NEXT(NO-LOCK).
+                IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+            END.
+        END.
+        ELSE
+            IF lc-navigation = "refresh" THEN
+            DO:
+                vhLQuery:REPOSITION-TO-ROWID(TO-ROWID(lc-firstrow)) NO-ERROR.
+                IF ERROR-STATUS:ERROR = FALSE THEN
+                DO:
+                    vhLQuery:GET-NEXT(NO-LOCK).
+                    IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+                END.  
+                ELSE vhLQuery:GET-FIRST(NO-LOCK).
+            END.
+            ELSE 
+                IF lc-navigation = "lastpage" THEN
+                DO:
+                    vhLQuery:GET-LAST(NO-LOCK).
+                    vhLQuery:reposition-backwards(li-max-lines).
+                    vhLQuery:GET-NEXT(NO-LOCK).
+                    IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+                END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
   
-    def var lc-CustomerInfo     as char         no-undo.
+    DEFINE VARIABLE lc-CustomerInfo     AS CHARACTER         NO-UNDO.
 
     {lib/checkloggedin.i}
 
-    assign lc-search = get-value("search")
-           lc-firstrow = get-value("firstrow")
-           lc-lastrow  = get-value("lastrow")
-           lc-navigation = get-value("navigation")
-           lc-selacc     = get-value("selacc").
+    ASSIGN 
+        lc-search = get-value("search")
+        lc-firstrow = get-value("firstrow")
+        lc-lastrow  = get-value("lastrow")
+        lc-navigation = get-value("navigation")
+        lc-selacc     = get-value("selacc").
     
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN 
+        lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow +
                            "&selacc=" + lc-selacc.
@@ -334,12 +299,14 @@ PROCEDURE process-web-request :
         lc-link-otherp = lc-parameters.
 
     
-    assign lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
+    ASSIGN 
+        lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
     
-    assign li-max-lines = int(lc-char) no-error.
-    if error-status:error
-    or li-max-lines < 1
-    or li-max-lines = ? then li-max-lines = 12.
+    ASSIGN 
+        li-max-lines = int(lc-char) no-error.
+    IF ERROR-STATUS:ERROR
+        OR li-max-lines < 1
+        OR li-max-lines = ? THEN li-max-lines = 12.
 
     RUN outputHeader.
     
@@ -354,29 +321,29 @@ PROCEDURE process-web-request :
            htmlib-hidden("submitsource","") skip.
     
     {&out}
-            tbar-Begin(
-                DYNAMIC-FUNCTION('fnToolbarAccountSelection':U) 
-                + 
-                tbar-FindLabel(appurl + "/sys/webuser.p","Find Name")
-                )
-            tbar-Link("add",?,appurl + '/' + "sys/webusermnt.p",lc-link-otherp)
-            tbar-BeginOption()
-            tbar-Link("view",?,"off",lc-link-otherp)
-            tbar-Link("update",?,"off",lc-link-otherp)
-            tbar-Link("delete",?,"off",lc-link-otherp)
-            tbar-Link("genpassword",?,"off",lc-link-otherp)
-            tbar-Link("contaccess",?,"off",lc-link-otherp)
-            tbar-Link("conttime",?,"off",lc-link-otherp)
-            tbar-EndOption()
-            tbar-End().
+    tbar-Begin(
+        DYNAMIC-FUNCTION('fnToolbarAccountSelection':U) 
+        + 
+        tbar-FindLabel(appurl + "/sys/webuser.p","Find Name")
+        )
+    tbar-Link("add",?,appurl + '/' + "sys/webusermnt.p",lc-link-otherp)
+    tbar-BeginOption()
+    tbar-Link("view",?,"off",lc-link-otherp)
+    tbar-Link("update",?,"off",lc-link-otherp)
+    tbar-Link("delete",?,"off",lc-link-otherp)
+    tbar-Link("genpassword",?,"off",lc-link-otherp)
+    tbar-Link("contaccess",?,"off",lc-link-otherp)
+    tbar-Link("conttime",?,"off",lc-link-otherp)
+    tbar-EndOption()
+    tbar-End().
 
     {&out} skip
            htmlib-StartMntTable().
 
     {&out}
-            htmlib-TableHeading(
-            "User Name^left|Name^left|Customer|Email^left|Disabled?"
-            ) skip.
+    htmlib-TableHeading(
+        "User Name^left|Name^left|Customer|Email^left|Disabled?"
+        ) skip.
 
     lc-QPhrase = 
         "for each b-query NO-LOCK where b-query.CompanyCode = '" + string(lc-Global-Company) + "'".
@@ -384,69 +351,75 @@ PROCEDURE process-web-request :
     IF lc-selacc <> "" THEN
     DO:
         IF lc-selacc = "INTERNAL"
-        THEN ASSIGN 
+            THEN ASSIGN 
                 lc-qPhrase = lc-qphrase + " and b-query.AccountNumber = ''".
         ELSE
-        IF lc-selacc = "ALLC"
-        THEN ASSIGN 
-                lc-qPhrase = lc-qphrase + " and b-query.AccountNumber > ''".
-        ELSE ASSIGN 
-                lc-qPhrase = lc-qphrase + " and b-query.AccountNumber = '" + lc-selacc + "'".
+            IF lc-selacc = "ALLC"
+                THEN ASSIGN 
+                    lc-qPhrase = lc-qphrase + " and b-query.AccountNumber > ''".
+            ELSE ASSIGN 
+                    lc-qPhrase = lc-qphrase + " and b-query.AccountNumber = '" + lc-selacc + "'".
     END.
 
 
      
     IF lc-search <> "" THEN
     DO:
-        assign
+        ASSIGN
             lc-qPhrase = lc-qphrase + " and b-query.name contains '" + lc-search + "'".
     END.
 
     lc-QPhrase = lc-QPhrase + ' INDEXED-REPOSITION'.
     
-    create query vhLQuery.
+    CREATE QUERY vhLQuery.
 
-    vhLBuffer = buffer b-query:handle.
+    vhLBuffer = BUFFER b-query:handle.
 
-    vhLQuery:set-buffers(vhLBuffer).
-    vhLQuery:query-prepare(lc-QPhrase).
+    vhLQuery:SET-BUFFERS(vhLBuffer).
+    vhLQuery:QUERY-PREPARE(lc-QPhrase).
     vhLQuery:QUERY-OPEN().
 
 
-    vhLQuery:GET-FIRST(no-lock).
+    vhLQuery:GET-FIRST(NO-LOCK).
 
-    run ip-navigate.
+    RUN ip-navigate.
 
 
-    assign li-count = 0
-           lr-first-row = ?
-           lr-last-row  = ?.
+    ASSIGN 
+        li-count = 0
+        lr-first-row = ?
+        lr-last-row  = ?.
 
-     repeat while vhLBuffer:available: 
+    REPEAT WHILE vhLBuffer:AVAILABLE: 
 
         
-        assign
-            lc-CustomerInfo = dynamic-function("com-UsersCompany",
+        ASSIGN
+            lc-CustomerInfo = DYNAMIC-FUNCTION("com-UsersCompany",
                                                b-query.LoginID).
         
-        if lc-CustomerInfo <> ""
-        then assign lc-customerInfo = b-query.AccountNumber + " " +
+        IF lc-CustomerInfo <> ""
+            THEN ASSIGN lc-customerInfo = b-query.AccountNumber + " " +
                                       lc-CustomerInfo.
 
-        assign lc-rowid = string(rowid(b-query)).
+        ASSIGN 
+            lc-rowid = STRING(ROWID(b-query)).
         
-        assign li-count = li-count + 1.
-        if lr-first-row = ?
-        then assign lr-first-row = rowid(b-query).
-        assign lr-last-row = rowid(b-query).
+        ASSIGN 
+            li-count = li-count + 1.
+        IF lr-first-row = ?
+            THEN ASSIGN lr-first-row = ROWID(b-query).
+        ASSIGN 
+            lr-last-row = ROWID(b-query).
         
-        assign lc-link-otherp = 'search=' + lc-search +
+        ASSIGN 
+            lc-link-otherp = 'search=' + lc-search +
                                 '&firstrow=' + string(lr-first-row).
 
-        assign lc-nopass = if b-query.passwd = ""
-                           or b-query.passwd = ?
-                           then " (No password)"
-                           else "".
+        ASSIGN 
+            lc-nopass = IF b-query.passwd = ""
+                           OR b-query.passwd = ?
+                           THEN " (No password)"
+                           ELSE "".
         {&out}
             skip
             tbar-tr(rowid(b-query))
@@ -481,19 +454,19 @@ PROCEDURE process-web-request :
 
        
 
-        if li-count = li-max-lines then leave.
+        IF li-count = li-max-lines THEN LEAVE.
 
 
        
-        vhLQuery:get-next(no-lock). /* 3933  */
+        vhLQuery:GET-NEXT(NO-LOCK). /* 3933  */
 
             
-    end.
+    END.
 
-    if li-count < li-max-lines then
-    do:
+    IF li-count < li-max-lines THEN
+    DO:
         {&out} skip htmlib-BlankTableLines(li-max-lines - li-count) skip.
-    end.
+    END.
 
     {&out} skip 
            htmlib-EndTable()
@@ -507,38 +480,38 @@ PROCEDURE process-web-request :
     {&out}  '<tr><td align="left">'.
 
 
-    if lr-first-row <> ? then
-    do:
-        vhLQuery:GET-FIRST(no-lock). 
+    IF lr-first-row <> ? THEN
+    DO:
+        vhLQuery:GET-FIRST(NO-LOCK). 
        
-        if rowid(b-query) = lr-first-row 
-        then assign ll-prev = false.
-        else assign ll-prev = true.
+        IF ROWID(b-query) = lr-first-row 
+            THEN ASSIGN ll-prev = FALSE.
+        ELSE ASSIGN ll-prev = TRUE.
 
         
-        vhLQuery:get-last(no-lock). 
+        vhLQuery:GET-LAST(NO-LOCK). 
 
-        if rowid(b-query) = lr-last-row
-        then assign ll-next = false.
-        else assign ll-next = true.
+        IF ROWID(b-query) = lr-last-row
+            THEN ASSIGN ll-next = FALSE.
+        ELSE ASSIGN ll-next = TRUE.
 
-        if ll-prev 
-        then {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","PrevPage","Prev Page").
-
-
-        if ll-next 
-        then {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","NextPage","Next Page").
-
-        if not ll-prev
-        and not ll-next 
-        then {&out} "&nbsp;".
+        IF ll-prev 
+            THEN {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","PrevPage","Prev Page").
 
 
-    end.
-    else {&out} "&nbsp;".
+        IF ll-next 
+            THEN {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","NextPage","Next Page").
+
+        IF NOT ll-prev
+            AND NOT ll-next 
+            THEN {&out} "&nbsp;".
+
+
+    END.
+    ELSE {&out} "&nbsp;".
 
     {&out} '</td><td align="right">' htmlib-ErrorMessage(lc-smessage)
-          '</td></tr>'.
+    '</td></tr>'.
 
     {&out} htmlib-EndPanel().
 
@@ -557,8 +530,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -566,22 +537,21 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-fnToolbarAccountSelection) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnToolbarAccountSelection Procedure 
 FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
-  ( /* parameter-definitions */ ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( /* parameter-definitions */ ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
     
-    DEF VAR lc-return       AS CHAR     NO-UNDO.
+    DEFINE VARIABLE lc-return       AS CHARACTER     NO-UNDO.
 
-    DEF VAR lc-codes        AS CHAR     NO-UNDO.
-    DEF VAR lc-names        AS CHAR     NO-UNDO.
-    DEF VAR lc-this         AS CHAR     NO-UNDO.
+    DEFINE VARIABLE lc-codes        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-names        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-this         AS CHARACTER     NO-UNDO.
 
-    DEF BUFFER customer FOR customer.
+    DEFINE BUFFER customer FOR customer.
 
     ASSIGN
         lc-codes = "|INTERNAL|ALLC"
@@ -589,20 +559,21 @@ FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
         lc-this  = get-value("selacc").
    
     FOR EACH customer NO-LOCK
-            WHERE customer.companyCode = lc-global-company
+        WHERE customer.companyCode = lc-global-company
         BY customer.NAME:
-        ASSIGN lc-codes = lc-codes + "|" + customer.AccountNumber
-               lc-names = lc-names + "|" + customer.NAME.
+        ASSIGN 
+            lc-codes = lc-codes + "|" + customer.AccountNumber
+            lc-names = lc-names + "|" + trim(substr(customer.NAME,1,40)).
 
     END.
 
     lc-return =  htmlib-SelectJS(
-            "selacc",
-            'OptionChange(this)',
-            lc-codes,
-            lc-names,
-            lc-this
-            ).
+        "selacc",
+        'OptionChange(this)',
+        lc-codes,
+        lc-names,
+        lc-this
+        ).
 
 
 
@@ -612,8 +583,6 @@ FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
