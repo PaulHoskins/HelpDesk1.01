@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Include 
 /***********************************************************************
 
     Program:        iss/issue.i
@@ -21,261 +18,206 @@
 {lib/maillib.i}
 {lib/princexml.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-AssignChanged Include 
 FUNCTION islib-AssignChanged RETURNS LOGICAL
-  ( pr-rowid    as rowid,
-    pc-loginID    as char,
-    pc-old-assign as char,
-    pc-new-assign as char )  FORWARD.
+  ( pr-rowid    AS ROWID,
+    pc-loginID    AS CHARACTER,
+    pc-old-assign AS CHARACTER,
+    pc-new-assign AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-CloseDate Include 
 FUNCTION islib-CloseDate RETURNS DATE
- ( pr-rowid    as rowid)  FORWARD.
+ ( pr-rowid    AS ROWID)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-CloseOfIssue Include 
 FUNCTION islib-CloseOfIssue RETURNS LOGICAL
-  ( pc-LoginId as char ,
-    pr-rowid as rowid )  FORWARD.
+  ( pc-LoginId AS CHARACTER ,
+    pr-rowid AS ROWID )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-CreateAutoAction Include 
 FUNCTION islib-CreateAutoAction RETURNS LOGICAL
-  ( pf-IssActionID as dec )  FORWARD.
+  ( pf-IssActionID AS DECIMAL )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-DefaultActions Include 
 FUNCTION islib-DefaultActions RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pi-Issue        as int )  FORWARD.
+  ( pc-companyCode  AS CHARACTER,
+    pi-Issue        AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-IssueIsOpen Include 
 FUNCTION islib-IssueIsOpen RETURNS LOGICAL
-  ( pr-rowid    as rowid)  FORWARD.
+  ( pr-rowid    AS ROWID)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-OutsideSLA Include 
 FUNCTION islib-OutsideSLA RETURNS LOGICAL
-  ( pr-rowid    as rowid
+  ( pr-rowid    AS ROWID
     )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-RemoveAlerts Include 
 FUNCTION islib-RemoveAlerts RETURNS LOGICAL
-  ( pr-rowid as rowid )  FORWARD.
+  ( pr-rowid AS ROWID )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-SLAChanged Include 
 FUNCTION islib-SLAChanged RETURNS LOGICAL
-  ( pr-rowid    as rowid,
-    pc-loginID    as char,
-    pf-old-SLAID as dec,
-    pf-new-SLAID as dec )  FORWARD.
+  ( pr-rowid    AS ROWID,
+    pc-loginID    AS CHARACTER,
+    pf-old-SLAID AS DECIMAL,
+    pf-new-SLAID AS DECIMAL )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-StatusIsClosed Include 
 FUNCTION islib-StatusIsClosed RETURNS LOGICAL
-  ( pc-CompanyCode as char,
-    pc-StatusCode as char )  FORWARD.
+  ( pc-CompanyCode AS CHARACTER,
+    pc-StatusCode AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD islib-WhoToAlert Include 
 FUNCTION islib-WhoToAlert RETURNS CHARACTER
-  ( pc-CompanyCode      as char,
-    pi-IssueNumber      as int )  FORWARD.
+  ( pc-CompanyCode      AS CHARACTER,
+    pi-IssueNumber      AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Include
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: INCLUDE-ONLY
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Include ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Include 
 
 
 /* ***************************  Main Block  *************************** */
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE islib-CreateNote Include 
 PROCEDURE islib-CreateNote :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-CompanyCode  as char no-undo.
-    def input param pi-IssueNumber  as int no-undo.
-    def input param pc-user as char no-undo.
-    def input param pc-code as char no-undo.
-    def input param pc-note as char no-undo.
+    DEFINE INPUT PARAMETER pc-CompanyCode  AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pi-IssueNumber  AS INTEGER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-user AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-code AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-note AS CHARACTER NO-UNDO.
 
-    def buffer b-status for IssNote.
+    DEFINE BUFFER b-status FOR IssNote.
     
-    create b-status.
-    assign b-status.CompanyCode = pc-CompanyCode
+    CREATE b-status.
+    ASSIGN b-status.CompanyCode = pc-CompanyCode
            b-status.IssueNumber = pi-IssueNumber
            b-status.LoginId     = pc-user
-           b-status.CreateDate  = today
-           b-status.CreateTime  = time
+           b-status.CreateDate  = TODAY
+           b-status.CreateTime  = TIME
            b-status.NoteCode = pc-Code
            b-status.Contents = pc-note
            .
        
-    return.
+    RETURN.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE islib-StatusHistory Include 
 PROCEDURE islib-StatusHistory :
 /*------------------------------------------------------------------------------
   Purpose:     
   Parameters:  <none>
   Notes:       
 ------------------------------------------------------------------------------*/
-    def input param pc-CompanyCode      as char no-undo.
-    def input param pi-IssueNumber      as int no-undo.
-    def input param pc-user             as char no-undo.
-    def input param pc-old-statuscode   as char no-undo.
-    def input param pc-new-statuscode   as char no-undo.
+    DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pi-IssueNumber      AS INTEGER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-user             AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-old-statuscode   AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-new-statuscode   AS CHARACTER NO-UNDO.
 
-    def buffer IssStatus    for IssStatus.
-    def buffer Issue        for Issue.
-    def buffer WebStatus    for WebStatus.
-    def buffer WebNote      for WebNote.
-    def buffer WebUser      for WebUser.
-    def buffer Company      for Company.
+    DEFINE BUFFER IssStatus    FOR IssStatus.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER WebNote      FOR WebNote.
+    DEFINE BUFFER WebUser      FOR WebUser.
+    DEFINE BUFFER Company      FOR Company.
 
-    def var lc-loginid      as char no-undo.
+    DEFINE VARIABLE lc-loginid      AS CHARACTER NO-UNDO.
         
-    def var lc-text         as char     no-undo.
-    def var lc-html         as char     no-undo.  /* Added for HTML emails */
-    def var lc-header       as char     no-undo.  /* Added for HTML emails */
+    DEFINE VARIABLE lc-text         AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-html         AS CHARACTER     NO-UNDO.  /* Added for HTML emails */
+    DEFINE VARIABLE lc-header       AS CHARACTER     NO-UNDO.  /* Added for HTML emails */
 
-    create IssStatus.
-    assign IssStatus.CompanyCode = pc-CompanyCode
+    CREATE IssStatus.
+    ASSIGN IssStatus.CompanyCode = pc-CompanyCode
            IssStatus.IssueNumber = pi-IssueNumber
            IssStatus.LoginId     = pc-user
-           IssStatus.ChangeDate  = today
-           IssStatus.ChangeTime  = time
+           IssStatus.ChangeDate  = TODAY
+           IssStatus.ChangeTime  = TIME
            IssStatus.OldStatusCode = pc-old-StatusCode
            IssStatus.NewStatusCode = pc-new-StatusCode
            .
 
-    find Issue
-        where Issue.companycode = pc-CompanyCode
-          and Issue.IssueNumber = pi-IssueNumber
-          no-lock no-error.
+    FIND Issue
+        WHERE Issue.companycode = pc-CompanyCode
+          AND Issue.IssueNumber = pi-IssueNumber
+          NO-LOCK NO-ERROR.
 
-    if avail issue then
-    do:
+    IF AVAILABLE issue THEN
+    DO:
         lc-loginid = DYNAMIC-FUNCTION('islib-WhoToAlert':U,Issue.CompanyCode,Issue.IssueNumber).
-    end.
+    END.
 
 
-    if avail Issue
-    and lc-loginid <> "" 
-    and dynamic-function("com-StatusTrackIssue",pc-companycode,pc-new-StatusCode)
-    and dynamic-function("com-UserTrackIssue",lc-loginID)
-    and dynamic-function("com-IssueStatusAlert",pc-companyCode,issue.CreateSource,pc-new-StatusCode) then
-    do:
-        if can-find(WebNote
-                    where WebNote.CompanyCode = pc-companyCode
-                      and WebNote.NoteCode = "SYS.EMAILCUST" no-lock) then
-        do:
-            find WebUser 
-                where webUser.LoginID = lc-loginID no-lock no-error.
-            find company where company.CompanyCode = pc-companycode no-lock no-error.
+    IF AVAILABLE Issue
+    AND lc-loginid <> "" 
+    AND dynamic-function("com-StatusTrackIssue",pc-companycode,pc-new-StatusCode)
+    AND dynamic-function("com-UserTrackIssue",lc-loginID)
+    AND dynamic-function("com-IssueStatusAlert",pc-companyCode,issue.CreateSource,pc-new-StatusCode) THEN
+    DO:
+        IF CAN-FIND(WebNote
+                    WHERE WebNote.CompanyCode = pc-companyCode
+                      AND WebNote.NoteCode = "SYS.EMAILCUST" NO-LOCK) THEN
+        DO:
+            FIND WebUser 
+                WHERE webUser.LoginID = lc-loginID NO-LOCK NO-ERROR.
+            FIND company WHERE company.CompanyCode = pc-companycode NO-LOCK NO-ERROR.
 
 
 
-            run prince/issstatusxml.p   /* Changed for HTML emails  - was  issstatus.p */
+            RUN prince/issstatusxml.p   /* Changed for HTML emails  - was  issstatus.p */
                 (
                     pc-companyCode,
                     pi-IssueNumber,
                     "CUSTOMER",
-                    output lc-text, /* Changed for HTML emails - was lc-pdf */
-                    output lc-html  /* Added for HTML emails */
+                    OUTPUT lc-text, /* Changed for HTML emails - was lc-pdf */
+                    OUTPUT lc-html  /* Added for HTML emails */
                     ).
 
 
-            lc-header =  dynamic-function("pxml-Email-Header", pc-companycode).  /* Added for HTML emails */
+            lc-header =  DYNAMIC-FUNCTION("pxml-Email-Header", pc-companycode).  /* Added for HTML emails */
 
 
-            dynamic-function("mlib-SendMultipartEmail",
+            DYNAMIC-FUNCTION("mlib-SendMultipartEmail",
                   pc-companycode,
                   "",
-                  if pc-old-StatusCode = ""
-                  then "New Issue Raised " + string(pi-IssueNumber)
-                  else "Status Change For Issue " + string(pi-IssueNumber)
+                  IF pc-old-StatusCode = ""
+                  THEN "New Issue Raised " + string(pi-IssueNumber)
+                  ELSE "Status Change For Issue " + string(pi-IssueNumber)
                   ,
                   'Dear ' 
                   + trim(WebUser.ForeName)   
@@ -329,49 +271,46 @@ PROCEDURE islib-StatusHistory :
                       " at " + webuser.Email
                       ).
 /*             end. */
-        end.
-    end.
+        END.
+    END.
 
-    if islib-StatusIsClosed(pc-companyCode,pc-new-StatusCode) = true 
-    and islib-StatusIsClosed(pc-companyCode,pc-old-statusCode) = false then
-    do:
-        DYNAMIC-FUNCTION('islib-CloseOfIssue':U,pc-user,rowid(Issue)).
-    end.
+    IF islib-StatusIsClosed(pc-companyCode,pc-new-StatusCode) = TRUE 
+    AND islib-StatusIsClosed(pc-companyCode,pc-old-statusCode) = FALSE THEN
+    DO:
+        DYNAMIC-FUNCTION('islib-CloseOfIssue':U,pc-user,ROWID(Issue)).
+    END.
     
-    return.
+    RETURN.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 /* ************************  Function Implementations ***************** */
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-AssignChanged Include 
 FUNCTION islib-AssignChanged RETURNS LOGICAL
-  ( pr-rowid    as rowid,
-    pc-loginID    as char,
-    pc-old-assign as char,
-    pc-new-assign as char ) :
+  ( pr-rowid    AS ROWID,
+    pc-loginID    AS CHARACTER,
+    pc-old-assign AS CHARACTER,
+    pc-new-assign AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Issue for Issue.
-    def var lc-message as char no-undo.
+    DEFINE BUFFER Issue FOR Issue.
+    DEFINE VARIABLE lc-message AS CHARACTER NO-UNDO.
 
-    if pc-old-assign = pc-new-assign then return true.
+    IF pc-old-assign = pc-new-assign THEN RETURN TRUE.
 
-    find issue
-        where rowid(issue) = pr-rowid no-lock no-error.
+    FIND issue
+        WHERE ROWID(issue) = pr-rowid NO-LOCK NO-ERROR.
 
-    if not avail issue then return false.
+    IF NOT AVAILABLE issue THEN RETURN FALSE.
 
 
-    if can-find(WebNote
-                    where WebNote.CompanyCode = Issue.CompanyCode
-                      and WebNote.NoteCode = "SYS.ASSIGN" no-lock) then
-    do:
+    IF CAN-FIND(WebNote
+                    WHERE WebNote.CompanyCode = Issue.CompanyCode
+                      AND WebNote.NoteCode = "SYS.ASSIGN" NO-LOCK) THEN
+    DO:
         
         RUN islib-CreateNote
                 ( Issue.CompanyCode,
@@ -382,74 +321,68 @@ FUNCTION islib-AssignChanged RETURNS LOGICAL
                   'To: ' + dynamic-function("com-UserName",pc-new-assign) + '~n'
                   ).
         
-    end.
+    END.
 
 
 
-    return true.
+    RETURN TRUE.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-CloseDate Include 
 FUNCTION islib-CloseDate RETURNS DATE
- ( pr-rowid    as rowid) :
+ ( pr-rowid    AS ROWID) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer issue        for issue.
-    def buffer WebStatus    for WebStatus.
-    def buffer IssStatus    for IssStatus.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
+    DEFINE BUFFER IssStatus    FOR IssStatus.
 
-    def var lc-return   as date no-undo.
+    DEFINE VARIABLE lc-return   AS DATE NO-UNDO.
 
 
-    find issue
-        where rowid(issue) = pr-rowid no-lock no-error.
+    FIND issue
+        WHERE ROWID(issue) = pr-rowid NO-LOCK NO-ERROR.
 
-    if not avail issue then return ?.
+    IF NOT AVAILABLE issue THEN RETURN ?.
 
-    find WebStatus of Issue no-lock no-error.
+    FIND WebStatus OF Issue NO-LOCK NO-ERROR.
 
-    if not avail WebStatus then return ?.
+    IF NOT AVAILABLE WebStatus THEN RETURN ?.
 
-    if not WebStatus.CompletedStatus then return ?.
+    IF NOT WebStatus.CompletedStatus THEN RETURN ?.
         
-    find first IssStatus of Issue no-lock no-error.
+    FIND FIRST IssStatus OF Issue NO-LOCK NO-ERROR.
 
-    if not avail IssStatus then return ?.
+    IF NOT AVAILABLE IssStatus THEN RETURN ?.
 
 
-    return IssStatus.ChangeDate.
+    RETURN IssStatus.ChangeDate.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-CloseOfIssue Include 
 FUNCTION islib-CloseOfIssue RETURNS LOGICAL
-  ( pc-LoginId as char ,
-    pr-rowid as rowid ) :
+  ( pc-LoginId AS CHARACTER ,
+    pr-rowid AS ROWID ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Issue        for Issue.
-    def buffer IssAction    for IssAction.
-    def buffer WebNote      for WebNote.
-    def buffer WebAction    for WebAction.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER IssAction    FOR IssAction.
+    DEFINE BUFFER WebNote      FOR WebNote.
+    DEFINE BUFFER WebAction    FOR WebAction.
 
 
-    find Issue where rowid(issue) = pr-rowid no-lock no-error.
-    if not avail Issue then return true.
+    FIND Issue WHERE ROWID(issue) = pr-rowid NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE Issue THEN RETURN TRUE.
 
     /*** PH REMOVED
     for each IssAction
@@ -481,69 +414,66 @@ FUNCTION islib-CloseOfIssue RETURNS LOGICAL
     ***/
 
 
-    return true.
+    RETURN TRUE.
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-CreateAutoAction Include 
 FUNCTION islib-CreateAutoAction RETURNS LOGICAL
-  ( pf-IssActionID as dec ) :
+  ( pf-IssActionID AS DECIMAL ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer IssAction    for IssAction.
-    def buffer b-table      for IssAction.
-    def buffer WebAction    for WebAction.
-    def buffer b-WebAction  for WebAction.
-    def var lf-Audit        like IssAction.IssActionId      no-undo.
+    DEFINE BUFFER IssAction    FOR IssAction.
+    DEFINE BUFFER b-table      FOR IssAction.
+    DEFINE BUFFER WebAction    FOR WebAction.
+    DEFINE BUFFER b-WebAction  FOR WebAction.
+    DEFINE VARIABLE lf-Audit        LIKE IssAction.IssActionId      NO-UNDO.
 
 
-    find IssAction
-        where IssAction.IssActionID = pf-IssActionID no-lock no-error.
-    if not avail IssAction then return false.
+    FIND IssAction
+        WHERE IssAction.IssActionID = pf-IssActionID NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE IssAction THEN RETURN FALSE.
 
 
-    find b-WebAction
-        where b-WebAction.ActionID = IssAction.ActionID no-lock no-error.
-    if not avail b-WebAction then return false.
-    if b-WebAction.autoActionCode = "" then return false.
+    FIND b-WebAction
+        WHERE b-WebAction.ActionID = IssAction.ActionID NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE b-WebAction THEN RETURN FALSE.
+    IF b-WebAction.autoActionCode = "" THEN RETURN FALSE.
     
-    find WebAction
-        where WebAction.CompanyCode = b-WebAction.CompanyCode
-          and WebAction.ActionCode  = b-WebAction.AutoActionCode
-          no-lock no-error.
-    if not avail WebAction then return false.
+    FIND WebAction
+        WHERE WebAction.CompanyCode = b-WebAction.CompanyCode
+          AND WebAction.ActionCode  = b-WebAction.AutoActionCode
+          NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE WebAction THEN RETURN FALSE.
 
-    find first b-table
-        where b-table.CompanyCode = WebAction.CompanyCode
-          and b-table.IssueNumber = issAction.IssueNumber
-          and b-table.ActionID    = WebAction.ActionID 
-          no-lock no-error.
-    if avail b-table then return false.
+    FIND FIRST b-table
+        WHERE b-table.CompanyCode = WebAction.CompanyCode
+          AND b-table.IssueNumber = issAction.IssueNumber
+          AND b-table.ActionID    = WebAction.ActionID 
+          NO-LOCK NO-ERROR.
+    IF AVAILABLE b-table THEN RETURN FALSE.
 
-    create b-table.
-    assign b-table.IssActionID = ?.
+    CREATE b-table.
+    ASSIGN b-table.IssActionID = ?.
 
-    do while true:
-        run lib/makeaudit.p (
+    DO WHILE TRUE:
+        RUN lib/makeaudit.p (
             "",
-            output lf-audit
+            OUTPUT lf-audit
             ).
-        if can-find(first IssAction
-                    where IssAction.IssActionID = lf-audit no-lock)
-                    then next.
-        assign
+        IF CAN-FIND(FIRST IssAction
+                    WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                    THEN NEXT.
+        ASSIGN
             b-table.IssActionID = lf-audit.
-        leave.
-    end.
+        LEAVE.
+    END.
 
-    message "Created Auto Action = " lf-Audit.
+    MESSAGE "Created Auto Action = " lf-Audit.
 
-    assign b-table.actionID    = WebAction.ActionID
+    ASSIGN b-table.actionID    = WebAction.ActionID
            b-table.CompanyCode = WebAction.CompanyCode
            b-table.IssueNumber = IssAction.IssueNumber
            b-table.CreateDate  = IssAction.CreateDate
@@ -553,230 +483,215 @@ FUNCTION islib-CreateAutoAction RETURNS LOGICAL
            b-table.ActionStatus = issAction.ActionStatus
            b-table.ActionDate   = issAction.ActionDate.
 
-    return true.
+    RETURN TRUE.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-DefaultActions Include 
 FUNCTION islib-DefaultActions RETURNS LOGICAL
-  ( pc-companyCode  as char,
-    pi-Issue        as int ) :
+  ( pc-companyCode  AS CHARACTER,
+    pi-Issue        AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Issue        for Issue.
-    def buffer WebIssArea   for WebIssArea.
-    def buffer IssAction    for IssAction.
-    def buffer b-table      for IssAction.
-    def buffer WebAction    for WebAction.
-    def var li-loop         as int no-undo.
-    def var lf-Audit        as dec no-undo.
-    def var lr-temp         as rowid no-undo.
+    DEFINE BUFFER Issue        FOR Issue.
+    DEFINE BUFFER WebIssArea   FOR WebIssArea.
+    DEFINE BUFFER IssAction    FOR IssAction.
+    DEFINE BUFFER b-table      FOR IssAction.
+    DEFINE BUFFER WebAction    FOR WebAction.
+    DEFINE VARIABLE li-loop         AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lf-Audit        AS DECIMAL NO-UNDO.
+    DEFINE VARIABLE lr-temp         AS ROWID NO-UNDO.
 
-    find Issue where Issue.CompanyCode = pc-companyCode
-                 and Issue.IssueNumber = pi-Issue no-lock no-error.
+    FIND Issue WHERE Issue.CompanyCode = pc-companyCode
+                 AND Issue.IssueNumber = pi-Issue NO-LOCK NO-ERROR.
 
-    if not avail Issue then return true.
+    IF NOT AVAILABLE Issue THEN RETURN TRUE.
 
-    find WebIssArea of Issue no-lock no-error.
-    if not avail WebIssArea then return true.
+    FIND WebIssArea OF Issue NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE WebIssArea THEN RETURN TRUE.
 
-    do li-loop = 1 to 10:
+    DO li-loop = 1 TO 10:
 
-        if WebIssArea.def-ActionCode[li-loop] = "" then next.
+        IF WebIssArea.def-ActionCode[li-loop] = "" THEN NEXT.
 
-        find WebAction
-            where WebAction.CompanyCode = pc-companyCode
-              and WebAction.ActionCode  = WebIssArea.def-ActionCode[li-loop]
-              no-lock no-error.
-        if not avail WebAction then next.
+        FIND WebAction
+            WHERE WebAction.CompanyCode = pc-companyCode
+              AND WebAction.ActionCode  = WebIssArea.def-ActionCode[li-loop]
+              NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE WebAction THEN NEXT.
 
-        find first IssAction
-            where IssAction.CompanyCode = pc-companyCode
-              and IssAction.IssueNumber = Issue.IssueNumber
-              and IssAction.ActionID    = WebAction.ActionID
-              no-lock no-error.
-        if avail IssAction then next.
+        FIND FIRST IssAction
+            WHERE IssAction.CompanyCode = pc-companyCode
+              AND IssAction.IssueNumber = Issue.IssueNumber
+              AND IssAction.ActionID    = WebAction.ActionID
+              NO-LOCK NO-ERROR.
+        IF AVAILABLE IssAction THEN NEXT.
 
-        create b-table.
-        assign b-table.actionID    = WebAction.ActionID
+        CREATE b-table.
+        ASSIGN b-table.actionID    = WebAction.ActionID
                b-table.CompanyCode = pc-companyCode
                b-table.IssueNumber = Issue.IssueNumber
-               b-table.CreateDate  = today
-               b-table.CreateTime  = time
+               b-table.CreateDate  = TODAY
+               b-table.CreateTime  = TIME
                b-table.CreatedBy   = "SYSTEM"
                .
 
-        do while true:
-            run lib/makeaudit.p (
+        DO WHILE TRUE:
+            RUN lib/makeaudit.p (
                 "",
-                output lf-audit
+                OUTPUT lf-audit
                 ).
-            if can-find(first IssAction
-                        where IssAction.IssActionID = lf-audit no-lock)
-                        then next.
-            assign
+            IF CAN-FIND(FIRST IssAction
+                        WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                        THEN NEXT.
+            ASSIGN
                 b-table.IssActionID = lf-audit.
 
-            leave.
-        end.
+            LEAVE.
+        END.
 
-        assign b-table.notes            = "Auto Generated - Default Action For " + WebIssArea.description
+        ASSIGN b-table.notes            = "Auto Generated - Default Action For " + WebIssArea.description
                b-table.ActionStatus     = "OPEN"
-               b-table.ActionDate       = today
+               b-table.ActionDate       = TODAY
                b-table.AssignDate       = ?
                b-table.AssignTime       = 0.
 
-        assign lr-temp = rowid(b-table).
-        release b-table.
+        ASSIGN lr-temp = ROWID(b-table).
+        RELEASE b-table.
 
-        find b-table where rowid(b-table) = lr-temp no-lock no-error.
+        FIND b-table WHERE ROWID(b-table) = lr-temp NO-LOCK NO-ERROR.
 
         DYNAMIC-FUNCTION('islib-CreateAutoAction':U,b-table.IssActionID).
-    end.
+    END.
   
 
 
 
-    return true.
+    RETURN TRUE.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-IssueIsOpen Include 
 FUNCTION islib-IssueIsOpen RETURNS LOGICAL
-  ( pr-rowid    as rowid) :
+  ( pr-rowid    AS ROWID) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer issue        for issue.
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
     
-    def var lc-return   as char no-undo.
+    DEFINE VARIABLE lc-return   AS CHARACTER NO-UNDO.
 
 
-    find issue
-        where rowid(issue) = pr-rowid no-lock no-error.
+    FIND issue
+        WHERE ROWID(issue) = pr-rowid NO-LOCK NO-ERROR.
 
-    if not avail issue then return false.
+    IF NOT AVAILABLE issue THEN RETURN FALSE.
 
-    find WebStatus of Issue no-lock no-error.
+    FIND WebStatus OF Issue NO-LOCK NO-ERROR.
 
-    if not avail WebStatus then return false.
+    IF NOT AVAILABLE WebStatus THEN RETURN FALSE.
 
 
-    return WebStatus.CompletedStatus = false.
+    RETURN WebStatus.CompletedStatus = FALSE.
 
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-OutsideSLA Include 
 FUNCTION islib-OutsideSLA RETURNS LOGICAL
-  ( pr-rowid    as rowid
+  ( pr-rowid    AS ROWID
     ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer issue        for issue.
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
     
-    def var lc-return   as char no-undo.
+    DEFINE VARIABLE lc-return   AS CHARACTER NO-UNDO.
 
 
-    find issue
-        where rowid(issue) = pr-rowid no-lock no-error.
+    FIND issue
+        WHERE ROWID(issue) = pr-rowid NO-LOCK NO-ERROR.
 
-    if not avail issue then return false.
-    if issue.SLAStatus = "OFF" then return false.
+    IF NOT AVAILABLE issue THEN RETURN FALSE.
+    IF issue.SLAStatus = "OFF" THEN RETURN FALSE.
 
-    if DYNAMIC-FUNCTION('islib-IssueIsOpen':U,rowid(Issue)) = false
-    or Issue.link-SLAID = ?
-    or Issue.link-SLAID = 0 
-    or not can-find(sla where sla.SLAID = Issue.link-SLAID ) 
-    or Issue.SLADate[1] = ? then return false.
+    IF DYNAMIC-FUNCTION('islib-IssueIsOpen':U,ROWID(Issue)) = FALSE
+    OR Issue.link-SLAID = ?
+    OR Issue.link-SLAID = 0 
+    OR NOT CAN-FIND(sla WHERE sla.SLAID = Issue.link-SLAID ) 
+    OR Issue.SLADate[1] = ? THEN RETURN FALSE.
 
-    if Issue.SLALevel = 0 then return false.
+    IF Issue.SLALevel = 0 THEN RETURN FALSE.
 
-    if Issue.SLALevel = 10
-    or Issue.SLADate[Issue.SLALevel + 1] = ? then return true.
-    else return false.
-
-
+    IF Issue.SLALevel = 10
+    OR Issue.SLADate[Issue.SLALevel + 1] = ? THEN RETURN TRUE.
+    ELSE RETURN FALSE.
 
 
-    return true.
+
+
+    RETURN TRUE.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-RemoveAlerts Include 
 FUNCTION islib-RemoveAlerts RETURNS LOGICAL
-  ( pr-rowid as rowid ) :
+  ( pr-rowid AS ROWID ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
-    def buffer issue        for issue.
-    def buffer IssAlert     for IssAlert.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER IssAlert     FOR IssAlert.
     
-    def var lc-return   as char no-undo.
+    DEFINE VARIABLE lc-return   AS CHARACTER NO-UNDO.
 
 
-    find issue
-        where rowid(issue) = pr-rowid no-lock no-error.
+    FIND issue
+        WHERE ROWID(issue) = pr-rowid NO-LOCK NO-ERROR.
     
-    for each IssAlert of Issue exclusive-lock:
-        delete IssAlert.
-    end.
+    FOR EACH IssAlert OF Issue EXCLUSIVE-LOCK:
+        DELETE IssAlert.
+    END.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-SLAChanged Include 
 FUNCTION islib-SLAChanged RETURNS LOGICAL
-  ( pr-rowid    as rowid,
-    pc-loginID    as char,
-    pf-old-SLAID as dec,
-    pf-new-SLAID as dec ) :
+  ( pr-rowid    AS ROWID,
+    pc-loginID    AS CHARACTER,
+    pf-old-SLAID AS DECIMAL,
+    pf-new-SLAID AS DECIMAL ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
 
-    def buffer Issue for Issue.
-    def var lc-message as char no-undo.
+    DEFINE BUFFER Issue FOR Issue.
+    DEFINE VARIABLE lc-message AS CHARACTER NO-UNDO.
 
-    if pf-old-SLAID = pf-new-SLAID then return true.
+    IF pf-old-SLAID = pf-new-SLAID THEN RETURN TRUE.
 
-    find issue
-        where rowid(issue) = pr-rowid exclusive-lock no-error.
+    FIND issue
+        WHERE ROWID(issue) = pr-rowid EXCLUSIVE-LOCK NO-ERROR.
 
-    if not avail issue then return false.
+    IF NOT AVAILABLE issue THEN RETURN FALSE.
 
 
-    if can-find(WebNote
-                    where WebNote.CompanyCode = Issue.CompanyCode
-                      and WebNote.NoteCode = "SYS.SLA" no-lock) then
-    do:
+    IF CAN-FIND(WebNote
+                    WHERE WebNote.CompanyCode = Issue.CompanyCode
+                      AND WebNote.NoteCode = "SYS.SLA" NO-LOCK) THEN
+    DO:
         
         RUN islib-CreateNote
                 ( Issue.CompanyCode,
@@ -787,74 +702,66 @@ FUNCTION islib-SLAChanged RETURNS LOGICAL
                   'To: ' + dynamic-function("com-SLADescription",pf-new-SLAID) + '~n'
                   ).
         
-    end.
+    END.
 
 
 
-    return true.
+    RETURN TRUE.
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-StatusIsClosed Include 
 FUNCTION islib-StatusIsClosed RETURNS LOGICAL
-  ( pc-CompanyCode as char,
-    pc-StatusCode as char ) :
+  ( pc-CompanyCode AS CHARACTER,
+    pc-StatusCode AS CHARACTER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
-    def buffer WebStatus    for WebStatus.
+    DEFINE BUFFER WebStatus    FOR WebStatus.
     
-    def var lc-return   as char no-undo.
+    DEFINE VARIABLE lc-return   AS CHARACTER NO-UNDO.
 
-    find WebStatus 
-        where WebStatus.CompanyCode = pc-CompanyCode
-          and WebStatus.StatusCode = pc-StatusCode
-          no-lock no-error.
+    FIND WebStatus 
+        WHERE WebStatus.CompanyCode = pc-CompanyCode
+          AND WebStatus.StatusCode = pc-StatusCode
+          NO-LOCK NO-ERROR.
 
-    if not avail WebStatus then return false.
+    IF NOT AVAILABLE WebStatus THEN RETURN FALSE.
 
-    return WebStatus.CompletedStatus.
+    RETURN WebStatus.CompletedStatus.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION islib-WhoToAlert Include 
 FUNCTION islib-WhoToAlert RETURNS CHARACTER
-  ( pc-CompanyCode      as char,
-    pi-IssueNumber      as int ) :
+  ( pc-CompanyCode      AS CHARACTER,
+    pi-IssueNumber      AS INTEGER ) :
 /*------------------------------------------------------------------------------
   Purpose:  
     Notes:  
 ------------------------------------------------------------------------------*/
-    def buffer Issue      for Issue.
-    def buffer WebUser    for WebUser.
+    DEFINE BUFFER Issue      FOR Issue.
+    DEFINE BUFFER WebUser    FOR WebUser.
 
-    find Issue
-        where Issue.CompanyCode = pc-CompanyCode
-          and Issue.IssueNumber = pi-IssueNumber no-lock no-error.
+    FIND Issue
+        WHERE Issue.CompanyCode = pc-CompanyCode
+          AND Issue.IssueNumber = pi-IssueNumber NO-LOCK NO-ERROR.
 
-    if not avail Issue then return "".
+    IF NOT AVAILABLE Issue THEN RETURN "".
 
-    if Issue.RaisedLoginID <> ""
-    then return Issue.RaisedLoginID.
+    IF Issue.RaisedLoginID <> ""
+    THEN RETURN Issue.RaisedLoginID.
 
-    find first WebUser
-        where WebUser.companyCode = pc-companyCode
-          and WebUser.AccountNumber = Issue.AccountNumber
-          and WebUser.DefaultUser  
-        no-lock no-error.
+    FIND FIRST WebUser
+        WHERE WebUser.companyCode = pc-companyCode
+          AND WebUser.AccountNumber = Issue.AccountNumber
+          AND WebUser.DefaultUser  
+        NO-LOCK NO-ERROR.
 
-    return if avail WebUser then webuser.loginid else "".
+    RETURN IF AVAILABLE WebUser THEN webuser.loginid ELSE "".
 
   
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 

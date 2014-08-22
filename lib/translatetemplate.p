@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        lib/translatetemplate.p
@@ -14,45 +11,42 @@
     02/06/2014  phoski      Initial      
 ***********************************************************************/
 
-DEF INPUT PARAM pc-companyCode  AS CHAR     NO-UNDO.
-DEF INPUT PARAM pc-tmpCode      AS CHAR     NO-UNDO.
-DEF INPUT PARAM pi-IssueNumber  AS INT      NO-UNDO.
+DEFINE INPUT PARAMETER pc-companyCode  AS CHARACTER     NO-UNDO.
+DEFINE INPUT PARAMETER pc-tmpCode      AS CHARACTER     NO-UNDO.
+DEFINE INPUT PARAMETER pi-IssueNumber  AS INTEGER      NO-UNDO.
 
-DEF INPUT PARAM pl-test         AS LOG      NO-UNDO.
-DEF INPUT PARAM pc-TxtIn        AS CHAR     NO-UNDO.
+DEFINE INPUT PARAMETER pl-test         AS LOG      NO-UNDO.
+DEFINE INPUT PARAMETER pc-TxtIn        AS CHARACTER     NO-UNDO.
 
-DEF OUTPUT PARAM pc-TxtOut      AS CHAR     NO-UNDO.
-DEF OUTPUT PARAM pc-Erc         AS CHAR     NO-UNDO.
-
-
-DEFINE BUFFER   issue       FOR issue.
-DEFINE BUFFER   assigned    FOR webuser.
-DEFINE BUFFER   raised      FOR webuser.
-DEFINE BUFFER   customer    FOR customer.
-DEFINE BUFFER   istatus     FOR webstatus.
-DEFINE BUFFER   iArea       FOR WebIssArea.
+DEFINE OUTPUT PARAMETER pc-TxtOut      AS CHARACTER     NO-UNDO.
+DEFINE OUTPUT PARAMETER pc-Erc         AS CHARACTER     NO-UNDO.
 
 
-DEFINE VAR lc-bList AS CHAR INITIAL 'issue,assigned,customer,raised,istatus,iArea'
-                                            NO-UNDO.
-DEFINE VAR li-b     AS INT                  NO-UNDO.
-DEFINE VAR hb       AS HANDLE   EXTENT 20   NO-UNDO.
-DEFINE VAR lc-TimeL AS CHAR INITIAL
+DEFINE BUFFER issue    FOR issue.
+DEFINE BUFFER assigned FOR webuser.
+DEFINE BUFFER raised   FOR webuser.
+DEFINE BUFFER customer FOR customer.
+DEFINE BUFFER istatus  FOR webstatus.
+DEFINE BUFFER iArea    FOR WebIssArea.
+
+
+DEFINE VARIABLE lc-bList AS CHARACTER INITIAL 'issue,assigned,customer,raised,istatus,iArea'
+    NO-UNDO.
+DEFINE VARIABLE li-b     AS INTEGER   NO-UNDO.
+DEFINE VARIABLE hb       AS HANDLE    EXTENT 20 NO-UNDO.
+DEFINE VARIABLE lc-TimeL AS CHARACTER INITIAL
     'AssignTime,CompTime,CreateTime,IssueTime'
-                                            NO-UNDO.
+    NO-UNDO.
 
 
-DEF TEMP-TABLE tt-mf    NO-UNDO
-    FIELD   mf          AS CHAR 
-    FIELD   val         AS CHAR
-    FIELD   isOk        AS LOG INITIAL FALSE
+DEFINE TEMP-TABLE tt-mf NO-UNDO
+    FIELD mf   AS CHARACTER 
+    FIELD val  AS CHARACTER
+    FIELD isOk AS LOG       INITIAL FALSE
     INDEX mf mf.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -61,45 +55,32 @@ DEF TEMP-TABLE tt-mf    NO-UNDO
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
 
 FIND issue WHERE issue.companyCode = pc-companyCode
-             AND issue.issuenumber = pi-IssueNumber NO-LOCK NO-ERROR.
+    AND issue.issuenumber = pi-IssueNumber NO-LOCK NO-ERROR.
 
 hb[1] = BUFFER issue:HANDLE.
 
@@ -127,8 +108,8 @@ RUN ipBuildMergeFields.
 RUN ipMergeFields ( pc-TxtIn, OUTPUT pc-TxtOut ).
 
 FIND FIRST tt-mf WHERE tt-mf.isOK = FALSE NO-ERROR.
-IF AVAIL tt-mf 
-THEN pc-erc = "Not all merge fields completed".
+IF AVAILABLE tt-mf 
+    THEN pc-erc = "Not all merge fields completed".
 
 
 
@@ -140,52 +121,49 @@ DO:
         BY tt-mf.isOK BY tt-mf.mf :
         pc-txtOut = pc-txtOut + '~n' + 
             ( IF NOT tt-mf.isOK
-              THEN '<span style="color:red;">' ELSE ''
-              )
-              +
+            THEN '<span style="color:red;">' ELSE ''
+            )
+            +
             tt-mf.mf + ' ' + tt-mf.val
             + 
             ( IF NOT tt-mf.isOK
-              THEN '</span>' ELSE ''
-              )
-              .
+            THEN '</span>' ELSE ''
+            )
+            .
 
     END.
 END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ipBuildMergeFields) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipBuildMergeFields Procedure 
 PROCEDURE ipBuildMergeFields :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    DEF VAR lc-part AS CHAR     NO-UNDO.
-    DEF VAR li-loop AS INT      NO-UNDO.
-    DEF VAR lc-this AS CHAR     NO-UNDO.
+    DEFINE VARIABLE lc-part AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-loop AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-this AS CHARACTER NO-UNDO.
 
-    DEF VAR lh      AS HANDLE   NO-UNDO.
-    DEF VAR lf      AS HANDLE   NO-UNDO.
-    DEF VAR lc-val  AS CHAR     NO-UNDO.
+    DEFINE VARIABLE lh      AS HANDLE    NO-UNDO.
+    DEFINE VARIABLE lf      AS HANDLE    NO-UNDO.
+    DEFINE VARIABLE lc-val  AS CHARACTER NO-UNDO.
 
     
     DO li-loop = 1 TO NUM-ENTRIES(pc-TxtIn,"<%") - 1:
         lc-part = ENTRY(li-Loop + 1,pc-TxtIn,"<%").
 
-        lc-this = replace(ENTRY(1,lc-part,">%"),"%",'').
+        lc-this = REPLACE(ENTRY(1,lc-part,">%"),"%",'').
 
         FIND tt-mf
-                WHERE tt-mf.mf = lc-this NO-LOCK NO-ERROR.
-        IF AVAIL tt-mf THEN NEXT.
+            WHERE tt-mf.mf = lc-this NO-LOCK NO-ERROR.
+        IF AVAILABLE tt-mf THEN NEXT.
 
 
         CREATE tt-mf.
@@ -195,8 +173,8 @@ PROCEDURE ipBuildMergeFields :
 
     END.
 
-    DEF VAR lc-bname    AS CHAR     NO-UNDO.
-    DEF VAR lc-bfield   AS CHAR     NO-UNDO.
+    DEFINE VARIABLE lc-bname  AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-bfield AS CHARACTER NO-UNDO.
 
     FOR EACH tt-mf EXCLUSIVE-LOCK:
         IF NUM-ENTRIES(tt-mf.mf,".") <> 2 THEN
@@ -205,7 +183,7 @@ PROCEDURE ipBuildMergeFields :
             NEXT.
         END.
         ASSIGN
-            lc-bname = ENTRY(1,tt-mf.mf,".")
+            lc-bname  = ENTRY(1,tt-mf.mf,".")
             lc-bfield = ENTRY(2,tt-mf.mf,".")
             .
 
@@ -217,14 +195,15 @@ PROCEDURE ipBuildMergeFields :
             NEXT.
         END.
             
-        assign
+        ASSIGN
             lh = hb[li-b]
             lf = ?.
 
         IF NOT lh:AVAILABLE THEN
         DO:
-            ASSIGN tt-mf.val = "NOT AVAILABLE"
-                   tt-mf.isOK = TRUE.
+            ASSIGN 
+                tt-mf.val  = "NOT AVAILABLE"
+                tt-mf.isOK = TRUE.
             NEXT.
         END.
         lf = lh:BUFFER-FIELD(lc-bfield) NO-ERROR.
@@ -234,29 +213,30 @@ PROCEDURE ipBuildMergeFields :
             NEXT.
         END.
 
-        assign
+        ASSIGN
             lc-val = lf:BUFFER-VALUE NO-ERROR.
         ASSIGN
             tt-mf.val = lc-val.
 
         CASE lf:DATA-TYPE:
             WHEN "DATE" THEN
-            DO:
-                tt-mf.val = STRING( DATE(lc-val),"99/99/9999") NO-ERROR.
+                DO:
+                    tt-mf.val = STRING( DATE(lc-val),"99/99/9999") NO-ERROR.
 
-            END.
+                END.
             WHEN "INTEGER" THEN
-            DO:         
-                IF LOOKUP(lc-bfield,lc-TimeL) > 0 
-                THEN ASSIGN tt-mf.val = STRING(INT(lc-val),"hh:mm") NO-ERROR.
-            END.
+                DO:         
+                    IF LOOKUP(lc-bfield,lc-TimeL) > 0 
+                        THEN ASSIGN tt-mf.val = STRING(INT(lc-val),"hh:mm") NO-ERROR.
+                END.
             OTHERWISE 
-                tt-mf.val = lc-val.
+            tt-mf.val = lc-val.
         END CASE.
         IF tt-mf.val = ?
-        THEN tt-mf.val = "".
+            THEN tt-mf.val = "".
 
-        ASSIGN tt-mf.ISOK = TRUE.
+        ASSIGN 
+            tt-mf.ISOK = TRUE.
 
 
     END.
@@ -264,22 +244,19 @@ PROCEDURE ipBuildMergeFields :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ipMergeFields) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipMergeFields Procedure 
 PROCEDURE ipMergeFields :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    DEF INPUT PARAM pcin        AS CHAR     NO-UNDO.
-    DEF OUTPUT PARAM pcout       AS CHAR     NO-UNDO.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pcin        AS CHARACTER     NO-UNDO.
+    DEFINE OUTPUT PARAMETER pcout       AS CHARACTER     NO-UNDO.
 
 
     pcout = pcin.
@@ -291,8 +268,6 @@ PROCEDURE ipMergeFields :
     END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

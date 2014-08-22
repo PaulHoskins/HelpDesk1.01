@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        iss/actionupdate.p
@@ -22,49 +19,46 @@ CREATE WIDGET-POOL.
 /* Local Variable Definitions ---                                       */
 
 
-def var lc-issue-rowid          as char no-undo.
-def var lc-rowid                as char no-undo.
-def var lc-title                as char no-undo.
-def var lc-mode                 as char no-undo.
+DEFINE VARIABLE lc-issue-rowid  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mode         AS CHARACTER NO-UNDO.
 
-def var lc-link-label   as char no-undo.
-def var lc-submit-label as char no-undo.
-def var lc-link-url     as char no-undo.
+DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg  as char no-undo.
+DEFINE VARIABLE lc-error-field  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg    AS CHARACTER NO-UNDO.
 
-def buffer b-table  for IssAction.
-def buffer issue    for Issue.
-def buffer b-user   for WebUser.
-def buffer customer for Customer.
+DEFINE BUFFER b-table  FOR IssAction.
+DEFINE BUFFER issue    FOR Issue.
+DEFINE BUFFER b-user   FOR WebUser.
+DEFINE BUFFER customer FOR Customer.
 
-def var lc-list-action      as char no-undo.
-def var lc-list-aname       as char no-undo.
-def var lc-list-assign      as char no-undo.
-def var lc-list-assname     as char no-undo.
+DEFINE VARIABLE lc-list-action  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-aname   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assign  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assname AS CHARACTER NO-UNDO.
 
-def var lc-actioncode       as char     no-undo.
-def var lc-notes            as char     no-undo.
-def var lc-assign           as char     no-undo.
-def var lc-status           as char     no-undo.
-def var lc-actiondate       as char     no-undo.
-def var lc-CustomerView     as char     no-undo.
+DEFINE VARIABLE lc-actioncode   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-notes        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-assign       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-status       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-actiondate   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-CustomerView AS CHARACTER NO-UNDO.
 
 
-def var lf-Audit            as dec  no-undo.
-def var lc-temp             as char no-undo.
+DEFINE VARIABLE lf-Audit        AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE lc-temp         AS CHARACTER NO-UNDO.
 
-def var lr-temp             as rowid no-undo.
+DEFINE VARIABLE lr-temp         AS ROWID     NO-UNDO.
 
 
 {iss/issue.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -73,49 +67,33 @@ def var lr-temp             as rowid no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 {lib/maillib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -123,15 +101,12 @@ def var lr-temp             as rowid no-undo.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-HeaderInclude-Calendar) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-HeaderInclude-Calendar Procedure 
 PROCEDURE ip-HeaderInclude-Calendar :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -141,60 +116,57 @@ PROCEDURE ip-HeaderInclude-Calendar :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Page) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Page Procedure 
 PROCEDURE ip-Page :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     {&out} htmlib-StartInputTable() skip.
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("actiondate",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Date")
-            else htmlib-SideLabel("Date"))
-            '</TD>'.
+        (IF LOOKUP("actiondate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Date")
+        ELSE htmlib-SideLabel("Date"))
+    '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-InputField("actiondate",10,lc-actiondate) 
-            htmlib-CalendarLink("actiondate")
-           '</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("actiondate",10,lc-actiondate) 
+    htmlib-CalendarLink("actiondate")
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-actiondate),'left')
            skip.
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           ( if lookup("actiontype",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Action Type")
-           else htmlib-SideLabel("Action Type"))
-           '</TD>' skip
-           .
+        ( IF LOOKUP("actiontype",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Action Type")
+        ELSE htmlib-SideLabel("Action Type"))
+    '</TD>' skip
+    .
 
-    if lc-mode = "ADD" then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-           htmlib-Select("actioncode",lc-list-action,lc-list-aname,
-                lc-actioncode)
-           '</TD>'.
+    IF lc-mode = "ADD" THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("actioncode",lc-list-action,lc-list-aname,
+        lc-actioncode)
+    '</TD>'.
     else
     {&out} htmlib-TableField(html-encode(lc-actioncode),'left')
            skip.
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            htmlib-SideLabel("Issue Details")
-          '</TD>' skip
+    htmlib-SideLabel("Issue Details")
+    '</TD>' skip
            '<TD VALIGN="TOP" ALIGN="left" class="tablefield">'
            replace(Issue.LongDescription,"~n","<br>")
           '<br><input type="button" class="submitbutton" onclick="copyinfo();" value="Copy To Note">' skip
@@ -202,36 +174,36 @@ PROCEDURE ip-Page :
            skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-          (if lookup("statnote",lc-error-field,'|') > 0 
-          then htmlib-SideLabelError("Note")
-          else htmlib-SideLabel("Note"))
-          '</TD>' skip
+        (IF LOOKUP("statnote",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Note")
+        ELSE htmlib-SideLabel("Note"))
+    '</TD>' skip
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-TextArea("notes",lc-notes,6,40)
           '</TD></tr>' skip
            skip.
 
-   {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           (if lookup("assign",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Assigned To")
-           else htmlib-SideLabel("Assigned To"))
-           '</TD>' 
-           '<TD VALIGN="TOP" ALIGN="left">'
-           htmlib-Select("assign",lc-list-assign,lc-list-assname,
-               lc-assign)
-           '</TD></TR>' skip. 
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("assign",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Assigned To")
+        ELSE htmlib-SideLabel("Assigned To"))
+    '</TD>' 
+    '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("assign",lc-list-assign,lc-list-assname,
+        lc-assign)
+    '</TD></TR>' skip. 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("customerview",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Customer View?")
-            else htmlib-SideLabel("Customer View?"))
-            '</TD>'.
+        (IF LOOKUP("customerview",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Customer View?")
+        ELSE htmlib-SideLabel("Customer View?"))
+    '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-CheckBox("customerview", if lc-customerview = 'on'
-                                        then true else false) 
-            '</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("customerview", IF lc-customerview = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-customerview = 'on'
                                          then 'yes' else 'no'),'left')
@@ -240,15 +212,15 @@ PROCEDURE ip-Page :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("status",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Action Status")
-            else htmlib-SideLabel("Action Status"))
-            '</TD>'.
+        (IF LOOKUP("status",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Action Status")
+        ELSE htmlib-SideLabel("Action Status"))
+    '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-Select("status",lc-global-action-code,lc-global-action-display,lc-status)
-            '</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("status",lc-global-action-code,lc-global-action-display,lc-status)
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(dynamic-function("com-DecodeLookup",lc-status,
                                      lc-global-action-code,
@@ -261,125 +233,116 @@ PROCEDURE ip-Page :
 
     {&out} htmlib-EndTable() skip.
 
-    if lc-error-msg <> "" then
-    do:
-       {&out} '<BR><BR><CENTER>' 
-               htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+    IF lc-error-msg <> "" THEN
+    DO:
+        {&out} '<BR><BR><CENTER>' 
+        htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
+    END.
     
-    if lc-submit-label <> "" then
-    do:
-       {&out} '<center>' htmlib-SubmitButton("submitform",lc-submit-label) 
-              '</center>' skip.
-    end.
+    IF lc-submit-label <> "" THEN
+    DO:
+        {&out} '<center>' htmlib-SubmitButton("submitform",lc-submit-label) 
+        '</center>' skip.
+    END.
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    def var ld-date     as date     no-undo.
-    def var li-int      as int      no-undo.
+    DEFINE VARIABLE ld-date     AS DATE     NO-UNDO.
+    DEFINE VARIABLE li-int      AS INTEGER      NO-UNDO.
 
-    assign
-        ld-date = date(lc-actiondate) no-error.
+    ASSIGN
+        ld-date = DATE(lc-actiondate) no-error.
 
-    if error-status:error
-    or ld-date = ? 
-    then run htmlib-AddErrorMessage(
-                    'actiondate', 
-                    'The date is invalid',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF ERROR-STATUS:ERROR
+        OR ld-date = ? 
+        THEN RUN htmlib-AddErrorMessage(
+            'actiondate', 
+            'The date is invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  emails:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      emails:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -389,135 +352,144 @@ PROCEDURE process-web-request :
 
     {lib/checkloggedin.i}
 
-    assign 
+    ASSIGN 
         lc-issue-rowid = get-value("issuerowid")
         lc-mode        = get-value("mode")
         lc-rowid       = get-value("rowid").
 
     
-    find issue
-        where rowid(issue) = to-rowid(lc-issue-rowid) no-lock.
-    find customer where Customer.CompanyCode = Issue.CompanyCode
-                    and Customer.AccountNumber = Issue.AccountNumber
-                    no-lock no-error.
+    FIND issue
+        WHERE ROWID(issue) = to-rowid(lc-issue-rowid) NO-LOCK.
+    FIND customer WHERE Customer.CompanyCode = Issue.CompanyCode
+        AND Customer.AccountNumber = Issue.AccountNumber
+        NO-LOCK NO-ERROR.
 
 
-    RUN com-GetAction ( lc-global-company , output lc-list-action, output lc-list-aname ).
-    RUN com-GetAssignIssue ( lc-global-company , output lc-list-assign , output lc-list-assname ).
+    RUN com-GetAction ( lc-global-company , OUTPUT lc-list-action, OUTPUT lc-list-aname ).
+    RUN com-GetAssignIssue ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
 
-    case lc-mode:
-        when 'add'
-        then assign lc-title = 'Add'
-                    lc-link-label = "Cancel addition"
-                    lc-submit-label = "Add Action".
-        when 'Update'
-        then assign lc-title = 'Update'
-                    lc-link-label = 'Cancel update'
-                    lc-submit-label = 'Update Action'.
-    end case.
+    CASE lc-mode:
+        WHEN 'add'
+        THEN 
+            ASSIGN 
+                lc-title = 'Add'
+                lc-link-label = "Cancel addition"
+                lc-submit-label = "Add Action".
+        WHEN 'Update'
+        THEN 
+            ASSIGN 
+                lc-title = 'Update'
+                lc-link-label = 'Cancel update'
+                lc-submit-label = 'Update Action'.
+    END CASE.
 
-    assign
+    ASSIGN
         lc-title = lc-title + " Action - Issue " + string(issue.IssueNumber).
 
 
-    if request_method = "POST" then
-    do:
-        if lc-mode <> "delete" then
-        do:
-            assign lc-actioncode   = get-value("actioncode")
-                   lc-notes        = get-value("notes")
-                   lc-assign       = get-value("assign")
-                   lc-status       = get-value("status")
-                   lc-actiondate   = get-value("actiondate")
-                   lc-customerview   = get-value("customerview")
-                   .
+    IF request_method = "POST" THEN
+    DO:
+        IF lc-mode <> "delete" THEN
+        DO:
+            ASSIGN 
+                lc-actioncode   = get-value("actioncode")
+                lc-notes        = get-value("notes")
+                lc-assign       = get-value("assign")
+                lc-status       = get-value("status")
+                lc-actiondate   = get-value("actiondate")
+                lc-customerview   = get-value("customerview")
+                .
             
                
-            RUN ip-Validate( output lc-error-field,
-                             output lc-error-msg ).
+            RUN ip-Validate( OUTPUT lc-error-field,
+                OUTPUT lc-error-msg ).
 
-            if lc-error-msg = "" then
-            do:
+            IF lc-error-msg = "" THEN
+            DO:
                 
-                if lc-mode = 'update' then
-                do:
-                    find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                        exclusive-lock no-wait no-error.
-                    if locked b-table 
-                    then  run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-                end.
-                else
-                do:
-                    find WebAction
-                        where WebAction.CompanyCode = lc-global-company
-                          and WebAction.ActionCode  = lc-ActionCode
-                          no-lock no-error.
-                    create b-table.
-                    assign b-table.actionID    = WebAction.ActionID
-                           b-table.CompanyCode = lc-global-company
-                           b-table.IssueNumber = issue.IssueNumber
-                           b-table.CreateDate  = today
-                           b-table.CreateTime  = time
-                           b-table.CreatedBy   = lc-global-user
-                           b-table.customerview    = lc-customerview = "on"
-                           .
+                IF lc-mode = 'update' THEN
+                DO:
+                    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                        EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                    IF LOCKED b-table 
+                        THEN  RUN htmlib-AddErrorMessage(
+                            'none', 
+                            'This record is locked by another user',
+                            INPUT-OUTPUT lc-error-field,
+                            INPUT-OUTPUT lc-error-msg ).
+                END.
+                ELSE
+                DO:
+                    FIND WebAction
+                        WHERE WebAction.CompanyCode = lc-global-company
+                        AND WebAction.ActionCode  = lc-ActionCode
+                        NO-LOCK NO-ERROR.
+                    CREATE b-table.
+                    ASSIGN 
+                        b-table.actionID    = WebAction.ActionID
+                        b-table.CompanyCode = lc-global-company
+                        b-table.IssueNumber = issue.IssueNumber
+                        b-table.CreateDate  = TODAY
+                        b-table.CreateTime  = TIME
+                        b-table.CreatedBy   = lc-global-user
+                        b-table.customerview    = lc-customerview = "on"
+                        .
 
-                    do while true:
-                        run lib/makeaudit.p (
+                    DO WHILE TRUE:
+                        RUN lib/makeaudit.p (
                             "",
-                            output lf-audit
+                            OUTPUT lf-audit
                             ).
-                        if can-find(first IssAction
-                                    where IssAction.IssActionID = lf-audit no-lock)
-                                    then next.
-                        assign
+                        IF CAN-FIND(FIRST IssAction
+                            WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                            THEN NEXT.
+                        ASSIGN
                             b-table.IssActionID = lf-audit.
-                        leave.
-                    end.
+                        LEAVE.
+                    END.
                    
-                end.
-                if lc-error-msg = "" then
-                do:
-                    assign b-table.notes            = lc-notes
-                           b-table.ActionStatus     = lc-Status
-                           b-table.ActionDate       = date(lc-ActionDate)
-                           b-table.customerview    = lc-customerview = "on".
+                END.
+                IF lc-error-msg = "" THEN
+                DO:
+                    ASSIGN 
+                        b-table.notes            = lc-notes
+                        b-table.ActionStatus     = lc-Status
+                        b-table.ActionDate       = DATE(lc-ActionDate)
+                        b-table.customerview    = lc-customerview = "on".
 
-                    if lc-mode = "ADD"
-                    or b-table.assignto <> lc-assign then 
-                    do:
-                        if lc-assign = ""
-                        then assign b-table.AssignDate = ?
-                                    b-table.AssignTime = 0.
-                        else
-                        do:
-                            assign b-table.AssignDate = today
-                                   b-table.AssignTime = time
-                                   b-table.AssignBy   = lc-global-user.
-                            find WebAction
-                                where WebAction.ActionID = b-table.ActionID
-                                  no-lock no-error.
-                            find b-user
-                                where b-user.LoginID = lc-assign
-                                no-lock no-error.
-                            if avail webaction
-                            and webaction.emailassign
-                            and avail b-user
-                            and b-user.email <> "" then
-                            do:
-                                assign
+                    IF lc-mode = "ADD"
+                        OR b-table.assignto <> lc-assign THEN 
+                    DO:
+                        IF lc-assign = ""
+                            THEN ASSIGN b-table.AssignDate = ?
+                                b-table.AssignTime = 0.
+                        ELSE
+                        DO:
+                            ASSIGN 
+                                b-table.AssignDate = TODAY
+                                b-table.AssignTime = TIME
+                                b-table.AssignBy   = lc-global-user.
+                            FIND WebAction
+                                WHERE WebAction.ActionID = b-table.ActionID
+                                NO-LOCK NO-ERROR.
+                            FIND b-user
+                                WHERE b-user.LoginID = lc-assign
+                                NO-LOCK NO-ERROR.
+                            IF AVAILABLE webaction
+                                AND webaction.emailassign
+                                AND AVAILABLE b-user
+                                AND b-user.email <> "" THEN
+                            DO:
+                                ASSIGN
                                     lc-temp = 
                                         "Customer: " + Customer.name + "~n" + 
                                         "Issue Number: " + string(Issue.IssueNumber) + '~n' + 
                                         "Issue Description: " + Issue.BriefDescription + '~n'.
-                                if Issue.LongDescription <> "" 
-                                then assign lc-temp = lc-temp + Issue.LongDescription + "~n".
+                                IF Issue.LongDescription <> "" 
+                                    THEN ASSIGN lc-temp = lc-temp + Issue.LongDescription + "~n".
 
-                                assign lc-temp = lc-temp + "~nAction Details~n" + 
+                                ASSIGN 
+                                    lc-temp = lc-temp + "~nAction Details~n" + 
                                                  webAction.description + "~n" + 
                                                  b-table.Notes + "~n~n" + 
                                                  "Assigned to you by " + 
@@ -525,90 +497,92 @@ PROCEDURE process-web-request :
                                                  " on " + string(b-table.AssignDate,'99/99/9999') + 
                                                  " " + string(b-table.AssignTime,"hh:mm am").
                                               
-                                dynamic-function("mlib-SendEmail",
-                                                 lc-global-company,
-                                                 "",
-                                                 "HelpDesk Action Assignment - Issue " + 
-                                                 string(Issue.IssueNumber),
-                                                 lc-temp,
-                                                 b-user.email).
-                            end.
+                                DYNAMIC-FUNCTION("mlib-SendEmail",
+                                    lc-global-company,
+                                    "",
+                                    "HelpDesk Action Assignment - Issue " + 
+                                    string(Issue.IssueNumber),
+                                    lc-temp,
+                                    b-user.email).
+                            END.
 
-                        end.
-                    end.
-                    assign
+                        END.
+                    END.
+                    ASSIGN
                         b-table.AssignTo = lc-assign.
 
-                    if lc-mode = "ADD" then
-                    do:
-                        assign lr-temp = rowid(b-table).
-                        release b-table.
-                        find b-table where rowid(b-table) = lr-temp exclusive-lock.
+                    IF lc-mode = "ADD" THEN
+                    DO:
+                        ASSIGN 
+                            lr-temp = ROWID(b-table).
+                        RELEASE b-table.
+                        FIND b-table WHERE ROWID(b-table) = lr-temp EXCLUSIVE-LOCK.
 
-                        dynamic-function("islib-CreateAutoAction",
-                                         b-table.IssActionID).
-                    end.
+                        DYNAMIC-FUNCTION("islib-CreateAutoAction",
+                            b-table.IssActionID).
+                    END.
 
 
-                end.
-            end.
-        end.
-        else
-        do:
-            find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                 exclusive-lock no-wait no-error.
-            if locked b-table 
-            then run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-            else delete b-table.
-        end.
+                END.
+            END.
+        END.
+        ELSE
+        DO:
+            FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+            IF LOCKED b-table 
+                THEN RUN htmlib-AddErrorMessage(
+                    'none', 
+                    'This record is locked by another user',
+                    INPUT-OUTPUT lc-error-field,
+                    INPUT-OUTPUT lc-error-msg ).
+            ELSE DELETE b-table.
+        END.
 
-        if lc-error-field = "" then
-        do:
+        IF lc-error-field = "" THEN
+        DO:
             
             RUN outputHeader.
             {&out} 
-                '<html>' skip
+            '<html>' skip
                 '<script language="javascript">' skip
                 'var ParentWindow = opener' skip
                 'ParentWindow.actionCreated()' skip
                 
                 '</script>' skip
                 '<body><h1>ActionUpdated</h1></body></html>'.
-            return.
-        end.
-    end.
+            RETURN.
+        END.
+    END.
 
-    if lc-mode <> 'add' then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
-        find WebAction
-            where WebAction.ActionID = b-table.ActionID no-lock no-error.
-        assign lc-actioncode = WebAction.description.
+    IF lc-mode <> 'add' THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
+        FIND WebAction
+            WHERE WebAction.ActionID = b-table.ActionID NO-LOCK NO-ERROR.
+        ASSIGN 
+            lc-actioncode = WebAction.description.
 
-        if can-do("view,delete",lc-mode)
-        or request_method <> "post"
-        then assign lc-notes        = b-table.notes
-                    lc-assign       = b-table.assignto
-                    lc-status       = b-table.ActionStatus
-                    lc-actiondate   = string(b-table.ActionDate,'99/99/9999')
-                    lc-customerview   = if b-table.CustomerView 
-                                        then "on" else ""
-                    .
+        IF CAN-DO("view,delete",lc-mode)
+            OR request_method <> "post"
+            THEN ASSIGN lc-notes        = b-table.notes
+                lc-assign       = b-table.assignto
+                lc-status       = b-table.ActionStatus
+                lc-actiondate   = STRING(b-table.ActionDate,'99/99/9999')
+                lc-customerview   = IF b-table.CustomerView 
+                                        THEN "on" ELSE ""
+                .
        
-    end.
+    END.
     
-    if request_method = "GET" and lc-mode = "ADD" then
-    do:
-        assign 
+    IF request_method = "GET" AND lc-mode = "ADD" THEN
+    DO:
+        ASSIGN 
             lc-assign = lc-global-user
-            lc-actiondate = string(today,'99/99/9999')
+            lc-actiondate = STRING(TODAY,'99/99/9999')
             lc-customerview = 
-                       if Customer.ViewAction then "on" else "".
-    end.
+                       IF Customer.ViewAction THEN "on" ELSE "".
+    END.
 
 
     /** **/
@@ -616,18 +590,18 @@ PROCEDURE process-web-request :
     RUN outputHeader.
     
     {&out} htmlib-Header(lc-title) skip
-           .
+    .
 
     {&out} 
-        '<script>' skip
+    '<script>' skip
         'function copyinfo() ~{' skip
         'document.mainform.elements["notes"].value = document.mainform.elements["longdescription"].value' skip
         '~}' skip
         '</script>' skip.
     
     {&out}
-       htmlib-StartForm("mainform","post", selfurl)
-       htmlib-ProgramTitle(lc-title) skip.
+    htmlib-StartForm("mainform","post", selfurl)
+    htmlib-ProgramTitle(lc-title) skip.
 
 
     RUN ip-Page.
@@ -640,19 +614,17 @@ PROCEDURE process-web-request :
     {&out} htmlib-EndForm() skip.
 
 
-    if not can-do("view,delete",lc-mode)  then
-    do:
+    IF NOT CAN-DO("view,delete",lc-mode)  THEN
+    DO:
         {&out}
-            htmlib-CalendarScript("actiondate") skip.
-    end.
+        htmlib-CalendarScript("actiondate") skip.
+    END.
     {&out}
-           htmlib-Footer() skip.
+    htmlib-Footer() skip.
     
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

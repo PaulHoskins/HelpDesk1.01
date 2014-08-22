@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        iss/activityupdate.p
@@ -23,84 +20,72 @@ CREATE WIDGET-POOL.
 /* Local Variable Definitions ---                                       */
 
 
-def var lc-issue-rowid          as char no-undo.
-def var lc-action-rowid         as char no-undo.
-def var lc-rowid                as char no-undo.
-def var lc-title                as char no-undo.
-def var lc-mode                 as char no-undo.
+DEFINE VARIABLE lc-issue-rowid  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-action-rowid AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mode         AS CHARACTER NO-UNDO.
 
-def var lc-link-label           as char no-undo.
-def var lc-submit-label         as char no-undo.
-def var lc-link-url             as char no-undo.
+DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
-def var lc-error-field          as char no-undo.
-def var lc-error-msg            as char no-undo.
+DEFINE VARIABLE lc-error-field  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg    AS CHARACTER NO-UNDO.
                                 
-def buffer b-table              for IssActivity.
-def buffer IssAction            for IssAction.
-def buffer issue                for Issue.
-def buffer WebAction            for WebAction.
+DEFINE BUFFER b-table   FOR IssActivity.
+DEFINE BUFFER IssAction FOR IssAction.
+DEFINE BUFFER issue     FOR Issue.
+DEFINE BUFFER WebAction FOR WebAction.
 
-def var lf-Audit                as dec  no-undo.
+DEFINE VARIABLE lf-Audit          AS DECIMAL   NO-UNDO.
                                 
 
 
 /* Action Stuff */
 
-def var lc-actioncode           as char no-undo.
-def var lc-ActionNote           as char no-undo.
-def var lc-CustomerView         as char no-undo.
-def var lc-billing-charge       as char no-undo.
-def var lc-actionstatus         as char no-undo.
-def var lc-list-assign          as char no-undo.
-def var lc-list-assname         as char no-undo.
-def var lc-currentassign        as char no-undo.
-                               
-
-def var lc-activityby           as char no-undo.
-def var lc-notes                as char no-undo.
-def var lc-description          as char no-undo.
-def var lc-actdate              as char no-undo.
+DEFINE VARIABLE lc-actioncode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ActionNote     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-CustomerView   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-billing-charge AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-actionstatus   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assign    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assname   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentassign  AS CHARACTER NO-UNDO.
+                          
+DEFINE VARIABLE lc-activityby     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-notes          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-description    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-actdate        AS CHARACTER NO-UNDO.
 
  
 /* Activity */
-def var lc-hours            as char no-undo.
-def var lc-mins             as char no-undo.
-def var lc-secs             as char no-undo.
-def var li-hours            as int  no-undo.
-def var li-mins             as int  no-undo.
-def var lc-StartDate        as char no-undo.
-def var lc-starthour        as char no-undo.
-def var lc-startmin         as char no-undo.
-def var lc-endDate          as char no-undo.
-def var lc-endhour          as char no-undo.
-def var lc-endmin           as char no-undo.
-def var lc-ActDescription   as char no-undo.
-def var lc-list-actid       as char no-undo.  
-def var lc-list-activtype   as char no-undo. 
-def var lc-list-activdesc   as char no-undo.  
-def var lc-list-activtime   as char no-undo. 
-
-
-def var lc-activitytype     as char no-undo.
-def var lc-saved-contract   as char no-undo.
-def var lc-saved-billable   as char no-undo.
-def var lc-saved-activity   as char no-undo.
-
-
-
+DEFINE VARIABLE lc-hours          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mins           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-secs           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-hours          AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-mins           AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-StartDate      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-starthour      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-startmin       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endDate        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endhour        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-endmin         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ActDescription AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-actid     AS CHARACTER NO-UNDO.  
+DEFINE VARIABLE lc-list-activtype AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-list-activdesc AS CHARACTER NO-UNDO.  
+DEFINE VARIABLE lc-list-activtime AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-activitytype   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-saved-contract AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-saved-billable AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-saved-activity AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-SiteVisit      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-timeSecondSet  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-manChecked     AS CHARACTER NO-UNDO.
 
 
 
-def var lc-SiteVisit            as char no-undo.
-def var lc-timeSecondSet        as char no-undo.
-def var lc-manChecked           as char  no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
-
-
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -109,108 +94,77 @@ def var lc-manChecked           as char  no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-Format-Select-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Activity Procedure 
 FUNCTION Format-Select-Activity RETURNS CHARACTER
-  ( pc-htm as char  )  FORWARD.
+    ( pc-htm AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Duration) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Duration Procedure 
 FUNCTION Format-Select-Duration RETURNS CHARACTER
-  ( pc-htm as char   )  FORWARD.
+    ( pc-htm AS CHARACTER   )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Time) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Time Procedure 
 FUNCTION Format-Select-Time RETURNS CHARACTER
-  ( pc-htm as char, pc-idx as int  )  FORWARD.
+    ( pc-htm AS CHARACTER, pc-idx AS INTEGER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Get-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Get-Activity Procedure 
 FUNCTION Get-Activity RETURNS INTEGER
-  ( pc-inp as char)  FORWARD.
+    ( pc-inp AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-htmlib-ThisInputField) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD htmlib-ThisInputField Procedure 
 FUNCTION htmlib-ThisInputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char )  FORWARD.
+    ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Return-Submit-Button) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Return-Submit-Button Procedure 
 FUNCTION Return-Submit-Button RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pc-post as char
+    ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-post AS CHARACTER
     )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 10.19
          WIDTH              = 33.29.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
@@ -218,14 +172,11 @@ FUNCTION Return-Submit-Button RETURNS CHARACTER
 {lib/maillib.i}
 {lib/ticket.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -233,32 +184,29 @@ FUNCTION Return-Submit-Button RETURNS CHARACTER
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
 PROCEDURE ip-ExportJScript :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
- if lc-timeSecondSet = "" then lc-timeSecondSet = "2".
+    IF lc-timeSecondSet = "" THEN lc-timeSecondSet = "2".
 
- def buffer webStatus    for webStatus.
+    DEFINE BUFFER webStatus    FOR webStatus.
 
- find first webStatus
-      where webStatus.CompanyCode = lc-global-company
-        and webStatus.CompletedStatus = true no-lock no-error.
+    FIND FIRST webStatus
+        WHERE webStatus.CompanyCode = lc-global-company
+        AND webStatus.CompletedStatus = TRUE NO-LOCK NO-ERROR.
 
-/*     {&out}                                                                                 */
-/*         '<script language="JavaScript" src="/scripts/js/tree.js"></script>' skip           */
+    /*     {&out}                                                                                 */
+    /*         '<script language="JavaScript" src="/scripts/js/tree.js"></script>' skip           */
  
     {&out} skip 
        '<script language="JavaScript">' skip
@@ -440,14 +388,11 @@ PROCEDURE ip-ExportJScript :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-HeaderInclude-Calendar) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-HeaderInclude-Calendar Procedure 
 PROCEDURE ip-HeaderInclude-Calendar :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -457,52 +402,49 @@ PROCEDURE ip-HeaderInclude-Calendar :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Page) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Page Procedure 
 PROCEDURE ip-Page :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     {&out} htmlib-StartInputTable() skip.
 
 
     {&out} '<tr><td valign="top" align="right"'
-           ( if lookup("activityby",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Activity By")
-           else htmlib-SideLabel("Activity By"))
-           '</td>' skip
-           .
+        ( IF LOOKUP("activityby",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Activity By")
+        ELSE htmlib-SideLabel("Activity By"))
+    '</td>' skip
+    .
 
-    if lc-mode = "ADD" then
-    {&out} '<td valign="top" align="left">'
-           htmlib-Select("activityby",lc-list-assign,lc-list-assname,
-                lc-activityby)
-           '</td>'.
+    IF lc-mode = "ADD" THEN
+        {&out} '<td valign="top" align="left">'
+    htmlib-Select("activityby",lc-list-assign,lc-list-assname,
+        lc-activityby)
+    '</td>'.
     else
     {&out} htmlib-TableField(html-encode(com-UserName(lc-activityby)),'left')
            skip.
     {&out} '</tr>' skip.
    
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("actdate",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Date")
-            else htmlib-SideLabel("Date"))
-            '</td>'.
+        (IF LOOKUP("actdate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Date")
+        ELSE htmlib-SideLabel("Date"))
+    '</td>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<td valign="top" align="left">'
-            htmlib-InputField("actdate",10,lc-actdate) 
-            htmlib-CalendarLink("actdate")
-            '</td>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<td valign="top" align="left">'
+    htmlib-InputField("actdate",10,lc-actdate) 
+    htmlib-CalendarLink("actdate")
+    '</td>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-actdate),'left')
            skip.
@@ -510,46 +452,46 @@ PROCEDURE ip-Page :
 
 
     {&out} '<tr><td valign="top" align="right">' 
-             (if lookup("activitytype",lc-error-field,'|') > 0 
-             then htmlib-SideLabelError("Activity Type")
-             else htmlib-SideLabel("Activity Type"))
-             '</td>' 
-             '<td valign="top" align="left">'
-             Format-Select-Activity(htmlib-Select("activitytype",lc-list-actid,lc-list-activtype,lc-saved-activity)) skip
+        (IF LOOKUP("activitytype",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Activity Type")
+        ELSE htmlib-SideLabel("Activity Type"))
+    '</td>' 
+    '<td valign="top" align="left">'
+    Format-Select-Activity(htmlib-Select("activitytype",lc-list-actid,lc-list-activtype,lc-saved-activity)) skip
              '</td></tr>' skip. 
 
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("startdate",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Start Date")
-            else htmlib-SideLabel("Start Date"))
-            '</td>'.
+        (IF LOOKUP("startdate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Start Date")
+        ELSE htmlib-SideLabel("Start Date"))
+    '</td>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<td valign="top" align="left">'
-            htmlib-InputField("startdate",10,lc-startdate) 
-            htmlib-CalendarLink("startdate")
-            "&nbsp;@&nbsp;"
-            htmlib-TimeSelect("starthour",lc-starthour,"startmin",lc-startmin)
-            '</td>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<td valign="top" align="left">'
+    htmlib-InputField("startdate",10,lc-startdate) 
+    htmlib-CalendarLink("startdate")
+    "&nbsp;@&nbsp;"
+    htmlib-TimeSelect("starthour",lc-starthour,"startmin",lc-startmin)
+    '</td>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-startdate),'left')
            skip.
     {&out} '</tr>' skip.
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("enddate",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("End Date")
-            else htmlib-SideLabel("End Date"))
-            '</td>'.
+        (IF LOOKUP("enddate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("End Date")
+        ELSE htmlib-SideLabel("End Date"))
+    '</td>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<td valign="top" align="left">'
-            htmlib-InputField("enddate",10,lc-enddate) 
-            htmlib-CalendarLink("enddate")
-            "&nbsp;@&nbsp;"
-            htmlib-TimeSelect-By-Id("endhour",lc-endhour,"endmin",lc-endmin)
-            '</td>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<td valign="top" align="left">'
+    htmlib-InputField("enddate",10,lc-enddate) 
+    htmlib-CalendarLink("enddate")
+    "&nbsp;@&nbsp;"
+    htmlib-TimeSelect-By-Id("endhour",lc-endhour,"endmin",lc-endmin)
+    '</td>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-enddate),'left')
            skip.
@@ -558,48 +500,48 @@ PROCEDURE ip-Page :
 
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("hours",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Duration (HH:MM)")
-            else htmlib-SideLabel("Duration (HH:MM)"))
-            '</td>'.
-   if not can-do("view,delete",lc-mode) then
-   {&out} '<td valign="top" align="left">'
-           Format-Select-Duration(htmlib-InputField("hours",4,lc-hours))
-           ':'
-           Format-Select-Duration(htmlib-InputField("mins",2,lc-mins))
-           '</td>' skip.
+        (IF LOOKUP("hours",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Duration (HH:MM)")
+        ELSE htmlib-SideLabel("Duration (HH:MM)"))
+    '</td>'.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<td valign="top" align="left">'
+    Format-Select-Duration(htmlib-InputField("hours",4,lc-hours))
+    ':'
+    Format-Select-Duration(htmlib-InputField("mins",2,lc-mins))
+    '</td>' skip.
    else 
    {&out} htmlib-TableField(html-encode(lc-hours),'left')
           skip.
-   {&out} '</tr>' skip.
+    {&out} '</tr>' skip.
     
 
 
-/*     if lc-mode = "add" then do:                                                                                                    */
-/*                                                                                                                                    */
-/*     {&out} '<tr><td valign="top" align="right">'                                                                                   */
-/*             (if lookup("manualTime",lc-error-field,'|') > 0                                                                        */
-/*             then htmlib-SideLabelError("Manual Time Entry?")                                                                       */
-/*             else htmlib-SideLabel("Manual Time Entry?"))                                                                           */
-/*             '</td>'.                                                                                                               */
-/*                                                                                                                                    */
-/*                                                                                                                                    */
-/*     {&out} '<td valign="top" align="left">'                                                                                        */
-/*             '<input class="inputfield" type="checkbox" onclick="javascript:manualTimeSet()" name="manualTime" ' lc-manChecked ' >' */
-/*             '</td>' skip.                                                                                                          */
-/*     end.                                                                                                                           */
+    /*     if lc-mode = "add" then do:                                                                                                    */
+    /*                                                                                                                                    */
+    /*     {&out} '<tr><td valign="top" align="right">'                                                                                   */
+    /*             (if lookup("manualTime",lc-error-field,'|') > 0                                                                        */
+    /*             then htmlib-SideLabelError("Manual Time Entry?")                                                                       */
+    /*             else htmlib-SideLabel("Manual Time Entry?"))                                                                           */
+    /*             '</td>'.                                                                                                               */
+    /*                                                                                                                                    */
+    /*                                                                                                                                    */
+    /*     {&out} '<td valign="top" align="left">'                                                                                        */
+    /*             '<input class="inputfield" type="checkbox" onclick="javascript:manualTimeSet()" name="manualTime" ' lc-manChecked ' >' */
+    /*             '</td>' skip.                                                                                                          */
+    /*     end.                                                                                                                           */
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("sitevisit",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Site Visit?")
-            else htmlib-SideLabel("Site Visit?"))
-            '</td>'.
+        (IF LOOKUP("sitevisit",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Site Visit?")
+        ELSE htmlib-SideLabel("Site Visit?"))
+    '</td>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<td valign="top" align="left">'
-            htmlib-CheckBox("sitevisit", if lc-sitevisit = 'on'
-                                        then true else false) 
-            '</td>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<td valign="top" align="left">'
+    htmlib-CheckBox("sitevisit", IF lc-sitevisit = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</td>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-sitevisit = 'on'
                                          then 'yes' else 'no'),'left')
@@ -609,16 +551,16 @@ PROCEDURE ip-Page :
     /**/
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("customerview",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Customer View?")
-            else htmlib-SideLabel("Customer View?"))
-            '</td>'.
+        (IF LOOKUP("customerview",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Customer View?")
+        ELSE htmlib-SideLabel("Customer View?"))
+    '</td>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<td valign="top" align="left">'
-            htmlib-CheckBox("customerview", if lc-customerview = 'on'
-                                        then true else false) 
-            '</td>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<td valign="top" align="left">'
+    htmlib-CheckBox("customerview", IF lc-customerview = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</td>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-customerview = 'on'
                                          then 'yes' else 'no'),'left')
@@ -628,32 +570,32 @@ PROCEDURE ip-Page :
 
 
     {&out} '<tr><td valign="top" align="right">' 
-               (if lookup("actdescription",lc-error-field,'|') > 0 
-               then htmlib-SideLabelError("Activity Description")
-               else htmlib-SideLabel("Activity Description"))
-               '</td><td valign="top" align="left">'
-               htmlib-ThisInputField("actdescription",40,lc-actdescription) 
-               '</td></tr>' skip.
-
-
-       {&out} '<tr><td valign="top" align="right">' 
-               htmlib-SideLabel("Charge for Activity?")
-               '</td><td valign="top" align="left">'
-               htmlib-CheckBox("billingcharge", if lc-billing-charge = 'on'
-                                           then true else false)
-               '</td></tr>' skip.
+        (IF LOOKUP("actdescription",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Activity Description")
+        ELSE htmlib-SideLabel("Activity Description"))
+    '</td><td valign="top" align="left">'
+    htmlib-ThisInputField("actdescription",40,lc-actdescription) 
+    '</td></tr>' skip.
 
 
     {&out} '<tr><td valign="top" align="right">' 
-            (if lookup("description",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Description")
-            else htmlib-SideLabel("Description"))
-            '</td>'.
+    htmlib-SideLabel("Charge for Activity?")
+    '</td><td valign="top" align="left">'
+    htmlib-CheckBox("billingcharge", IF lc-billing-charge = 'on'
+        THEN TRUE ELSE FALSE)
+    '</td></tr>' skip.
+
+
+    {&out} '<tr><td valign="top" align="right">' 
+        (IF LOOKUP("description",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Description")
+        ELSE htmlib-SideLabel("Description"))
+    '</td>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<td valign="top" align="left">'
-            htmlib-InputField("description",40,lc-description) 
-            '</td>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<td valign="top" align="left">'
+    htmlib-InputField("description",40,lc-description) 
+    '</td>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-description),'left')
            skip.
@@ -661,10 +603,10 @@ PROCEDURE ip-Page :
 
 
     {&out} '<tr><td valign="top" align="right">' 
-          (if lookup("notes",lc-error-field,'|') > 0 
-          then htmlib-SideLabelError("Note")
-          else htmlib-SideLabel("Note"))
-          '</td>' skip
+        (IF LOOKUP("notes",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Note")
+        ELSE htmlib-SideLabel("Note"))
+    '</td>' skip
            '<td valign="top" align="left">'
            htmlib-TextArea("notes",lc-notes,6,40)
           '</td></tr>' skip
@@ -672,320 +614,313 @@ PROCEDURE ip-Page :
 
     {&out} htmlib-EndTable() skip.
 
-    if lc-error-msg <> "" then
-    do:
-       {&out} '<br><br><center>' 
-               htmlib-MultiplyErrorMessage(lc-error-msg) '</center>' skip.
-    end.
+    IF lc-error-msg <> "" THEN
+    DO:
+        {&out} '<br><br><center>' 
+        htmlib-MultiplyErrorMessage(lc-error-msg) '</center>' skip.
+    END.
     {&out} '<center>' skip.
 
-    if lc-submit-label <> "" then
-    do:
-       {&out}
-            Return-Submit-Button("submitform",lc-submit-label,"PrePost()")  skip.
+    IF lc-submit-label <> "" THEN
+    DO:
+        {&out}
+        Return-Submit-Button("submitform",lc-submit-label,"PrePost()")  skip.
 
-    end.
-/*     if lc-mode = "updatesingle" then */
-/*     do:                              */
-      {&out} 
-        '<input class="submitbutton" type="button" onclick="window.close()"' skip
+    END.
+    /*     if lc-mode = "updatesingle" then */
+    /*     do:                              */
+    {&out} 
+    '<input class="submitbutton" type="button" onclick="window.close()"' skip
         ' value="Close" />' skip .
 
-/*     end. */
+    /*     end. */
     {&out} '</center>' skip
       '<div style="display:none;">' skip
       '<input class="inputfield" type="checkbox" name="manualTime" id="manualTime" ' lc-manChecked ' >' skip
       '</div>' skip       
-      .
+    .
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    def var ld-date     as date     no-undo.
-    def var li-int      as int      no-undo.
-    def var ld-startd   as date     no-undo.
-    def var ld-endd     as date     no-undo.
-    def var li-startt   as int      no-undo.
-    def var li-endt     as int      no-undo.
+    DEFINE VARIABLE ld-date     AS DATE     NO-UNDO.
+    DEFINE VARIABLE li-int      AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE ld-startd   AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-endd     AS DATE     NO-UNDO.
+    DEFINE VARIABLE li-startt   AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-endt     AS INTEGER      NO-UNDO.
     
-    assign
-        ld-date = date(lc-actdate) no-error.
+    ASSIGN
+        ld-date = DATE(lc-actdate) no-error.
 
-    if error-status:error
-    or ld-date = ? 
-    then run htmlib-AddErrorMessage(
-                    'actdate', 
-                    'The date is invalid',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF ERROR-STATUS:ERROR
+        OR ld-date = ? 
+        THEN RUN htmlib-AddErrorMessage(
+            'actdate', 
+            'The date is invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
-    if lc-startdate <> "" then
-    do:
-        assign ld-startd = date(lc-startdate) no-error.
-        if error-status:error
-        or ld-startd = ? then
-        do:
-            run htmlib-AddErrorMessage(
-                    'startdate', 
-                    'The start date is invalid',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF lc-startdate <> "" THEN
+    DO:
+        ASSIGN 
+            ld-startd = DATE(lc-startdate) no-error.
+        IF ERROR-STATUS:ERROR
+            OR ld-startd = ? THEN
+        DO:
+            RUN htmlib-AddErrorMessage(
+                'startdate', 
+                'The start date is invalid',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
 
-        end.
-    end.
-    else assign ld-startd = ?.
+        END.
+    END.
+    ELSE ASSIGN ld-startd = ?.
 
-    if lc-enddate <> "" then
-    do:
-        assign ld-endd = date(lc-enddate) no-error.
-        if error-status:error
-        or ld-endd = ? then
-        do:
-            run htmlib-AddErrorMessage(
-                    'enddate', 
-                    'The end date is invalid',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF lc-enddate <> "" THEN
+    DO:
+        ASSIGN 
+            ld-endd = DATE(lc-enddate) no-error.
+        IF ERROR-STATUS:ERROR
+            OR ld-endd = ? THEN
+        DO:
+            RUN htmlib-AddErrorMessage(
+                'enddate', 
+                'The end date is invalid',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
 
-        end.
-    end.
-    else assign ld-endd = ?.
+        END.
+    END.
+    ELSE ASSIGN ld-endd = ?.
 
-    if ld-endd <> ?
-    and ld-startd = ? then
-    do:
-        run htmlib-AddErrorMessage(
-                    'enddate', 
-                    'You must enter a start date if you enter an end date',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-    end.
+    IF ld-endd <> ?
+        AND ld-startd = ? THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
+            'enddate', 
+            'You must enter a start date if you enter an end date',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    END.
 
-    if ( ld-endd <> ? and ld-startd <> ? ) then
-    do:
-        if ( ld-startd > ld-endd ) 
-        then run htmlib-AddErrorMessage(
-                    'enddate', 
-                    'The end date can not be before the start date',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-        assign
-            li-startt = dynamic-function("com-InternalTime",
+    IF ( ld-endd <> ? AND ld-startd <> ? ) THEN
+    DO:
+        IF ( ld-startd > ld-endd ) 
+            THEN RUN htmlib-AddErrorMessage(
+                'enddate', 
+                'The end date can not be before the start date',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+        ASSIGN
+            li-startt = DYNAMIC-FUNCTION("com-InternalTime",
                                          int(lc-starthour),
                                          int(lc-startmin)
                                          ).
-            li-endt = dynamic-function("com-InternalTime",
-                                         int(lc-endhour),
-                                         int(lc-endmin)
-                                        ).
-        if ld-endd = ld-startd
-        and li-endt < li-startt then
-        do:
-            run htmlib-AddErrorMessage(
-                    'enddate', 
-                    'The end time can not be before the start time',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+        li-endt = DYNAMIC-FUNCTION("com-InternalTime",
+            int(lc-endhour),
+            int(lc-endmin)
+            ).
+        IF ld-endd = ld-startd
+            AND li-endt < li-startt THEN
+        DO:
+            RUN htmlib-AddErrorMessage(
+                'enddate', 
+                'The end time can not be before the start time',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
 
-        end.
-    end.
+        END.
+    END.
 
-    assign li-int = int(lc-hours) no-error.
-    if error-status:error or li-int < 0
-    then run htmlib-AddErrorMessage(
-                    'hours', 
-                    'The hours are invalid',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    ASSIGN 
+        li-int = int(lc-hours) no-error.
+    IF ERROR-STATUS:ERROR OR li-int < 0
+        THEN RUN htmlib-AddErrorMessage(
+            'hours', 
+            'The hours are invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
-    assign li-int = int(lc-mins) no-error.
-    if error-status:error or li-int < 0 or li-int > 59
-    then run htmlib-AddErrorMessage(
-                    'hours', 
-                    'The minutes are invalid',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    ASSIGN 
+        li-int = int(lc-mins) no-error.
+    IF ERROR-STATUS:ERROR OR li-int < 0 OR li-int > 59
+        THEN RUN htmlib-AddErrorMessage(
+            'hours', 
+            'The minutes are invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
     
-    assign li-int = int(lc-hours + lc-mins) no-error.
-    if not error-status:error
-    and li-int = 0 
-    then run htmlib-AddErrorMessage(
-                    'hours', 
-                    'You must enter the duration',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    ASSIGN 
+        li-int = int(lc-hours + lc-mins) no-error.
+    IF NOT ERROR-STATUS:ERROR
+        AND li-int = 0 
+        THEN RUN htmlib-AddErrorMessage(
+            'hours', 
+            'You must enter the duration',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
-    if lc-description = "" 
-    then run htmlib-AddErrorMessage(
-                    'description', 
-                    'You must enter the description',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF lc-description = "" 
+        THEN RUN htmlib-AddErrorMessage(
+            'description', 
+            'You must enter the description',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ipResetLastActivity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ipResetLastActivity Procedure 
 PROCEDURE ipResetLastActivity :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    DEF INPUT PARAM pr-issue      AS ROWID            NO-UNDO.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pr-issue      AS ROWID            NO-UNDO.
 
-    DEF BUFFER issue        FOR issue.
-    def buffer b-query      for issAction.
-    def buffer IssActivity  for IssActivity.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE BUFFER b-query      FOR issAction.
+    DEFINE BUFFER IssActivity  FOR IssActivity.
 
-    DEF VAR ldt LIKE issue.lastactivity NO-UNDO.
-    DEF VAR LC  AS CHAR FORMAT 'x(20)'.
+    DEFINE VARIABLE ldt LIKE issue.lastactivity NO-UNDO.
+    DEFINE VARIABLE LC  AS CHARACTER FORMAT 'x(20)'.
 
-    DO transaction:
+    DO TRANSACTION:
     
-       find issue WHERE rowid(issue) = pr-issue EXCLUSIVE-LOCK.
+        FIND issue WHERE ROWID(issue) = pr-issue EXCLUSIVE-LOCK.
 
 
-       ldt = ?.
-       LC = "".
+        ldt = ?.
+        LC = "".
 
-       for each b-query no-lock
-          where b-query.CompanyCode = issue.companyCode
-            and b-query.IssueNumber = issue.IssueNumber
-          , each IssActivity no-lock
-              where issActivity.CompanyCode = b-query.CompanyCode
-                and issActivity.IssueNumber = b-query.IssueNumber
-                and IssActivity.IssActionId = b-query.IssActionID
-                AND IssActivity.StartDate <> ?
+        FOR EACH b-query NO-LOCK
+            WHERE b-query.CompanyCode = issue.companyCode
+            AND b-query.IssueNumber = issue.IssueNumber
+            , EACH IssActivity NO-LOCK
+            WHERE issActivity.CompanyCode = b-query.CompanyCode
+            AND issActivity.IssueNumber = b-query.IssueNumber
+            AND IssActivity.IssActionId = b-query.IssActionID
+            AND IssActivity.StartDate <> ?
 
-                by IssActivity.StartDate DESC
-                by IssActivity.StartTime DESC
+            BY IssActivity.StartDate DESCENDING
+            BY IssActivity.StartTime DESCENDING
 
-          :
-           /*
-           ldt = DATETIME(IssActivity.StartDate,STRING(IssActivity.StartTime,"HH:MM").
-           */
+            :
+            /*
+            ldt = DATETIME(IssActivity.StartDate,STRING(IssActivity.StartTime,"HH:MM").
+            */
 
-           LC = STRING(IssActivity.StartDate,"99/99/9999") + " " + STRING(IssActivity.StartTime,"HH:MM").
-           ldt = DATETIME(LC).
+            LC = STRING(IssActivity.StartDate,"99/99/9999") + " " + STRING(IssActivity.StartTime,"HH:MM").
+            ldt = DATETIME(LC).
 
-           LEAVE.
-       END.
-       assign
-           issue.LastActivity = ldt.
+            LEAVE.
+        END.
+        ASSIGN
+            issue.LastActivity = ldt.
 
 
-   END.
+    END.
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  emails:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      emails:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  emails:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      emails:       
+    ------------------------------------------------------------------------------*/
 
-    def var li-old-duration     like IssActivity.Duration       no-undo.
-    def var li-amount           like IssActivity.Duration       no-undo.
+    DEFINE VARIABLE li-old-duration     LIKE IssActivity.Duration       NO-UNDO.
+    DEFINE VARIABLE li-amount           LIKE IssActivity.Duration       NO-UNDO.
 
     {lib/checkloggedin.i}
 
-    assign 
+    ASSIGN 
         lc-issue-rowid  = get-value("issuerowid")
         lc-rowid        = get-value("rowid")
         lc-mode         = get-value("mode")
@@ -995,209 +930,223 @@ PROCEDURE process-web-request :
 
  
 
-    find issue
-        where rowid(issue) = to-rowid(lc-issue-rowid) NO-LOCK.
+    FIND issue
+        WHERE ROWID(issue) = to-rowid(lc-issue-rowid) NO-LOCK.
     
-    find customer where Customer.CompanyCode = Issue.CompanyCode
-                    and Customer.AccountNumber = Issue.AccountNumber
-                    no-lock no-error.
-    find IssAction
-        where rowid(IssAction) = to-rowid(lc-action-rowid) no-lock.
-    find WebAction
-            where WebAction.ActionID = IssAction.ActionID no-lock no-error.
+    FIND customer WHERE Customer.CompanyCode = Issue.CompanyCode
+        AND Customer.AccountNumber = Issue.AccountNumber
+        NO-LOCK NO-ERROR.
+    FIND IssAction
+        WHERE ROWID(IssAction) = to-rowid(lc-action-rowid) NO-LOCK.
+    FIND WebAction
+        WHERE WebAction.ActionID = IssAction.ActionID NO-LOCK NO-ERROR.
 
     
 
-    RUN com-GetActivityType ( lc-global-company , output lc-list-actid, output lc-list-activtype, output lc-list-activdesc, output lc-list-activtime ).
-    RUN com-GetInternalUser ( lc-global-company , output lc-list-assign , output lc-list-assname ).
+    RUN com-GetActivityType ( lc-global-company , OUTPUT lc-list-actid, OUTPUT lc-list-activtype, OUTPUT lc-list-activdesc, OUTPUT lc-list-activtime ).
+    RUN com-GetInternalUser ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
 
-    case lc-mode:
-        when 'add'
-        then assign lc-title = 'Add'
-                    lc-link-label = "Cancel addition"
-                    lc-submit-label = "Add Activity"
-                    lc-manChecked = "" .
-        when 'Update' 
-        then assign lc-title = 'Update'
-                    lc-link-label = 'Cancel update'
-                    lc-submit-label = 'Update Activity'
-                    lc-manChecked = "checked".
-        when 'Updatesingle'
-        then assign lc-title = 'Update'
-                    lc-link-label = 'Cancel update'
-                    lc-submit-label = 'Update Activity'
-                    lc-manChecked = "checked".
+    CASE lc-mode:
+        WHEN 'add'
+        THEN 
+            ASSIGN 
+                lc-title = 'Add'
+                lc-link-label = "Cancel addition"
+                lc-submit-label = "Add Activity"
+                lc-manChecked = "" .
+        WHEN 'Update' 
+        THEN 
+            ASSIGN 
+                lc-title = 'Update'
+                lc-link-label = 'Cancel update'
+                lc-submit-label = 'Update Activity'
+                lc-manChecked = "checked".
+        WHEN 'Updatesingle'
+        THEN 
+            ASSIGN 
+                lc-title = 'Update'
+                lc-link-label = 'Cancel update'
+                lc-submit-label = 'Update Activity'
+                lc-manChecked = "checked".
 
 
-    end case.
+    END CASE.
 
-    assign
+    ASSIGN
         lc-title = lc-title + " Activity - Issue " + string(issue.IssueNumber) +
         ' - Action ' + html-encode(WebAction.Description).
 
 
     
 
-    if request_method = "POST" then
-    do:
+    IF request_method = "POST" THEN
+    DO:
 
-        if lc-mode <> "delete" then
-        do:                           
-            assign lc-activityby       = get-value("activityby")
-                   lc-actdate          = get-value("actdate")             
-                   lc-StartDate        = get-value("startdate")
-                   lc-starthour        = get-value("starthour")
-                   lc-startmin         = get-value("startmin")
-                   lc-endDate          = get-value("enddate")
-                   lc-endhour          = get-value("endhour")
-                   lc-endmin           = get-value("endmin")            
-                   lc-hours            = get-value("hours")
-                   lc-mins             = get-value("mins")
-                   lc-sitevisit        = get-value("sitevisit")
-                   lc-customerview     = get-value("customerview")
-                   lc-description      = get-value("description")         
-                   lc-notes            = get-value("notes")  
-                   lc-activitytype     = get-value("activitytype")
-                   lc-billing-charge   = get-value("billingcharge")
-                   lc-timeSecondSet    = get-value("timeSecondSet")
-                   .
+        IF lc-mode <> "delete" THEN
+        DO:                           
+            ASSIGN 
+                lc-activityby       = get-value("activityby")
+                lc-actdate          = get-value("actdate")             
+                lc-StartDate        = get-value("startdate")
+                lc-starthour        = get-value("starthour")
+                lc-startmin         = get-value("startmin")
+                lc-endDate          = get-value("enddate")
+                lc-endhour          = get-value("endhour")
+                lc-endmin           = get-value("endmin")            
+                lc-hours            = get-value("hours")
+                lc-mins             = get-value("mins")
+                lc-sitevisit        = get-value("sitevisit")
+                lc-customerview     = get-value("customerview")
+                lc-description      = get-value("description")         
+                lc-notes            = get-value("notes")  
+                lc-activitytype     = get-value("activitytype")
+                lc-billing-charge   = get-value("billingcharge")
+                lc-timeSecondSet    = get-value("timeSecondSet")
+                .
             
                
-            RUN ip-Validate( output lc-error-field,
-                             output lc-error-msg ).
+            RUN ip-Validate( OUTPUT lc-error-field,
+                OUTPUT lc-error-msg ).
 
-            if lc-error-msg = "" then
-            do:
+            IF lc-error-msg = "" THEN
+            DO:
                 
-                if lc-mode = 'update' or lc-mode = 'updatesingle' then
-                do:
-                    find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                        exclusive-lock no-wait no-error.
-                    if locked b-table 
-                    then  run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-                    else assign li-old-duration = b-table.Duration.
-                end.
-                else
-                do:
-                    create b-table.
-                    assign b-table.IssActionID = IssAction.IssActionID
-                           b-table.CompanyCode = lc-global-company
-                           b-table.IssueNumber = issue.IssueNumber
-                           b-table.CreateDate  = today
-                           b-table.CreateTime  = time
-                           b-table.CreatedBy   = lc-global-user
-                           b-table.ActivityBy  = lc-ActivityBy
-                           .
+                IF lc-mode = 'update' OR lc-mode = 'updatesingle' THEN
+                DO:
+                    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                        EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                    IF LOCKED b-table 
+                        THEN  RUN htmlib-AddErrorMessage(
+                            'none', 
+                            'This record is locked by another user',
+                            INPUT-OUTPUT lc-error-field,
+                            INPUT-OUTPUT lc-error-msg ).
+                    ELSE ASSIGN li-old-duration = b-table.Duration.
+                END.
+                ELSE
+                DO:
+                    CREATE b-table.
+                    ASSIGN 
+                        b-table.IssActionID = IssAction.IssActionID
+                        b-table.CompanyCode = lc-global-company
+                        b-table.IssueNumber = issue.IssueNumber
+                        b-table.CreateDate  = TODAY
+                        b-table.CreateTime  = TIME
+                        b-table.CreatedBy   = lc-global-user
+                        b-table.ActivityBy  = lc-ActivityBy
+                        .
 
-                    do while true:
-                        run lib/makeaudit.p (
+                    DO WHILE TRUE:
+                        RUN lib/makeaudit.p (
                             "",
-                            output lf-audit
+                            OUTPUT lf-audit
                             ).
-                        if can-find(first IssActivity
-                                    where IssActivity.IssActivityID = lf-audit no-lock)
-                                    then next.
-                        assign
+                        IF CAN-FIND(FIRST IssActivity
+                            WHERE IssActivity.IssActivityID = lf-audit NO-LOCK)
+                            THEN NEXT.
+                        ASSIGN
                             b-table.IssActivityID = lf-audit.
-                        leave.
-                    end.
+                        LEAVE.
+                    END.
                    
-                end.
-                if lc-error-msg = "" then
-                do:
-                    assign b-table.notes            = lc-notes
-                           b-table.description      = lc-description
+                END.
+                IF lc-error-msg = "" THEN
+                DO:
+                    ASSIGN 
+                        b-table.notes            = lc-notes
+                        b-table.description      = lc-description
                            
-                           b-table.ActDate          = date(lc-ActDate)
-                           b-table.customerview     = lc-customerview = "on"
-                           b-table.SiteVisit        = lc-SiteVisit = "on".
-                           b-table.Billable         = lc-billing-charge  = "on".
+                        b-table.ActDate          = DATE(lc-ActDate)
+                        b-table.customerview     = lc-customerview = "on"
+                        b-table.SiteVisit        = lc-SiteVisit = "on".
+                    b-table.Billable         = lc-billing-charge  = "on".
 
-                    if lc-startdate <> "" then
-                    do:
-                        assign b-table.StartDate = date(lc-StartDate).
+                    IF lc-startdate <> "" THEN
+                    DO:
+                        ASSIGN 
+                            b-table.StartDate = DATE(lc-StartDate).
 
-                        assign b-table.StartTime = dynamic-function("com-InternalTime",
+                        ASSIGN 
+                            b-table.StartTime = DYNAMIC-FUNCTION("com-InternalTime",
                                          int(lc-starthour),
                                          int(lc-startmin)
                                          ).
-                    end.
-                    else assign b-table.StartDate = ?
-                                b-table.StartTime = 0.
+                    END.
+                    ELSE ASSIGN b-table.StartDate = ?
+                            b-table.StartTime = 0.
 
-                    if lc-enddate <> "" then
-                    do:
-                        assign b-table.EndDate = date(lc-endDate).
+                    IF lc-enddate <> "" THEN
+                    DO:
+                        ASSIGN 
+                            b-table.EndDate = DATE(lc-endDate).
     
-                        assign b-table.Endtime = dynamic-function("com-InternalTime",
+                        ASSIGN 
+                            b-table.Endtime = DYNAMIC-FUNCTION("com-InternalTime",
                                         int(lc-endhour),
                                         int(lc-endmin)
                                         ).
                         
-                    end.
-                    else assign b-table.EndDate = ?
-                                b-table.EndTime = 0.
+                    END.
+                    ELSE ASSIGN b-table.EndDate = ?
+                            b-table.EndTime = 0.
 
 
-                    assign b-table.Duration = 
+                    ASSIGN 
+                        b-table.Duration = 
                         ( ( int(lc-hours) * 60 ) * 60 ) + 
                         ( int(lc-mins) * 60 ).
 
-                    if Issue.Ticket then
-                    do:
-                        assign
+                    IF Issue.Ticket THEN
+                    DO:
+                        ASSIGN
                             li-amount = 
                                 b-table.Duration - li-old-duration.
-                        if li-amount <> 0 then
-                        do:
-                            empty temp-table tt-ticket.
-                            create tt-ticket.
-                            assign
+                        IF li-amount <> 0 THEN
+                        DO:
+                            EMPTY TEMP-TABLE tt-ticket.
+                            CREATE tt-ticket.
+                            ASSIGN
                                 tt-ticket.CompanyCode       =   issue.CompanyCode
                                 tt-ticket.AccountNumber     =   issue.AccountNumber
                                 tt-ticket.Amount            =   li-Amount * -1
                                 tt-ticket.CreateBy          =   lc-global-user
-                                tt-ticket.CreateDate        =   today
-                                tt-ticket.CreateTime        =   time
+                                tt-ticket.CreateDate        =   TODAY
+                                tt-ticket.CreateTime        =   TIME
                                 tt-ticket.IssueNumber       =   Issue.IssueNumber
                                 tt-ticket.Reference         =   b-table.description
                                 tt-ticket.TickID            =   ?
                                 tt-ticket.TxnDate           =   b-table.ActDate
-                                tt-ticket.TxnTime           =   time
+                                tt-ticket.TxnTime           =   TIME
                                 tt-ticket.TxnType           =   "ACT"
                                 tt-ticket.IssActivityID     =   b-table.IssActivityID.
                             RUN tlib-PostTicket.
 
 
-                        end.
+                        END.
 
-                    end.
-                end.
-            end.
-        end.
-        else
-        do:
-            find b-table where rowid(b-table) = to-rowid(lc-action-rowid)
-                 exclusive-lock no-wait no-error.
-            if locked b-table 
-            then run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-            else delete b-table.
-        end.
+                    END.
+                END.
+            END.
+        END.
+        ELSE
+        DO:
+            FIND b-table WHERE ROWID(b-table) = to-rowid(lc-action-rowid)
+                EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+            IF LOCKED b-table 
+                THEN RUN htmlib-AddErrorMessage(
+                    'none', 
+                    'This record is locked by another user',
+                    INPUT-OUTPUT lc-error-field,
+                    INPUT-OUTPUT lc-error-msg ).
+            ELSE DELETE b-table.
+        END.
 
-        if lc-error-field = "" then
-        do:
+        IF lc-error-field = "" THEN
+        DO:
             RUN ipResetLastActivity ( ROWID(issue)).
             RUN outputHeader.
             {&out} 
-                '<html>' skip
+            '<html>' skip
                 '<script language="javascript">' skip
                 'function CloseOut() ~{ ' skip
                 ' var ParentWindow = opener' skip
@@ -1215,105 +1164,109 @@ PROCEDURE process-web-request :
 
                 '<center><input class="submitbutton" type="button" onclick="CloseOut()" value="Close" ></center></div>' skip 
                 '</body></html>' skip
-                .
-            return.
-        end.
-    end.
+            .
+            RETURN.
+        END.
+    END.
 
-    if lc-mode <> 'add' then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
+    IF lc-mode <> 'add' THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
         
-        if can-do("view,delete",lc-mode)
-        or request_method <> "post"
-        then 
-        do:
-            assign lc-notes           = b-table.notes
-                   lc-description     = b-table.description
-                   lc-activityby      = b-table.ActivityBy
-                   lc-actdate         = string(b-table.ActDate,"99/99/9999")
-                   lc-customerview    = if b-table.CustomerView then "on" else ""
-                   lc-sitevisit       = if b-table.SiteVisit then "on" else ""
-                   lc-billing-charge  = if b-table.Billable then "on" else ""
-                   lc-actdescription  = b-table.ActDescription 
-                   lc-saved-activity  = string(Get-Activity( b-table.ActDescription ))
+        IF CAN-DO("view,delete",lc-mode)
+            OR request_method <> "post"
+            THEN 
+        DO:
+            ASSIGN 
+                lc-notes           = b-table.notes
+                lc-description     = b-table.description
+                lc-activityby      = b-table.ActivityBy
+                lc-actdate         = STRING(b-table.ActDate,"99/99/9999")
+                lc-customerview    = IF b-table.CustomerView THEN "on" ELSE ""
+                lc-sitevisit       = IF b-table.SiteVisit THEN "on" ELSE ""
+                lc-billing-charge  = IF b-table.Billable THEN "on" ELSE ""
+                lc-actdescription  = b-table.ActDescription 
+                lc-saved-activity  = STRING(Get-Activity( b-table.ActDescription ))
        
-                   /*                                                      */
-                   /*                                                      */
-                   /*                                                      */
-                   /*                                                      */
-                   /*                                                      */
-                   /*                                                      */
-                   /*                                                      */
-                   /*                                                      */
-                   /*                                                      */
-                    .
-            if b-table.Duration > 0 then
-            do:
-                run com-SplitTime ( b-table.Duration, output li-hours, output li-mins ).
-                assign lc-hours = string(integer(li-hours),"zz99")
-                       lc-mins  = string(integer(li-mins),"99").
-/*                 if li-hours > 0                                         */
-/*                 then assign lc-hours = string(integer(li-hours),"zz9"). */
-/*                 if li-mins > 0                                          */
-/*                 then assign lc-mins = string(integer(li-mins),"99").    */
+                /*                                                      */
+                /*                                                      */
+                /*                                                      */
+                /*                                                      */
+                /*                                                      */
+                /*                                                      */
+                /*                                                      */
+                /*                                                      */
+                /*                                                      */
+                .
+            IF b-table.Duration > 0 THEN
+            DO:
+                RUN com-SplitTime ( b-table.Duration, OUTPUT li-hours, OUTPUT li-mins ).
+                ASSIGN 
+                    lc-hours = STRING(INTEGER(li-hours),"zz99")
+                    lc-mins  = STRING(INTEGER(li-mins),"99").
+            /*                 if li-hours > 0                                         */
+            /*                 then assign lc-hours = string(integer(li-hours),"zz9"). */
+            /*                 if li-mins > 0                                          */
+            /*                 then assign lc-mins = string(integer(li-mins),"99").    */
 
-            end.
+            END.
 
-            if b-table.StartDate <> ? then
-            do:
-                assign lc-startdate = string(b-table.StartDate,"99/99/9999").
-                if b-table.StartTime <> 0 then
-                do:
-                    assign 
-                        lc-StartHour = string(int(substr(string(b-table.StartTime,"hh:mm"),1,2)))
-                        lc-StartMin  = substr(string(b-table.StartTime,"hh:mm"),4,2).
-                end.
-            end.
+            IF b-table.StartDate <> ? THEN
+            DO:
+                ASSIGN 
+                    lc-startdate = STRING(b-table.StartDate,"99/99/9999").
+                IF b-table.StartTime <> 0 THEN
+                DO:
+                    ASSIGN 
+                        lc-StartHour = STRING(int(substr(STRING(b-table.StartTime,"hh:mm"),1,2)))
+                        lc-StartMin  = substr(STRING(b-table.StartTime,"hh:mm"),4,2).
+                END.
+            END.
 
-            if b-table.endDate <> ? then
-            do:
-                assign lc-enddate = string(b-table.endDate,"99/99/9999").
-                if b-table.endTime <> 0 then
-                do:
-                    assign 
-                        lc-endHour = string(int(substr(string(b-table.endTime,"hh:mm"),1,2)))
-                        lc-endMin  = substr(string(b-table.endTime,"hh:mm"),4,2).
-                end.
-            end.
-        end.
-    end.
+            IF b-table.endDate <> ? THEN
+            DO:
+                ASSIGN 
+                    lc-enddate = STRING(b-table.endDate,"99/99/9999").
+                IF b-table.endTime <> 0 THEN
+                DO:
+                    ASSIGN 
+                        lc-endHour = STRING(int(substr(STRING(b-table.endTime,"hh:mm"),1,2)))
+                        lc-endMin  = substr(STRING(b-table.endTime,"hh:mm"),4,2).
+                END.
+            END.
+        END.
+    END.
     
-    if request_method = "GET" and lc-mode = "ADD" then
-    do:
-        assign 
-            lc-customerview     = if Customer.ViewActivity then "on" else ""   
+    IF request_method = "GET" AND lc-mode = "ADD" THEN
+    DO:
+        ASSIGN 
+            lc-customerview     = IF Customer.ViewActivity THEN "on" ELSE ""   
             lc-activityby       = lc-global-user
-            lc-actdate          = string(today,"99/99/9999")
+            lc-actdate          = STRING(TODAY,"99/99/9999")
             lc-actdescription   = "ACTIVITYDESC"  
             lc-activitytype     = "ACTIVITYTYPE"  
-            lc-billing-charge   = if IssAction.Billable then "on" else "" 
+            lc-billing-charge   = IF IssAction.Billable THEN "on" ELSE "" 
             lc-timeSecondSet    = "2"
             lc-mins             = "2"
-            lc-startdate        = string(today,"99/99/9999")
-            lc-StartHour        = string(int(substr(string(time,"hh:mm"),1,2)))
-            lc-StartMin         = substr(string(time,"hh:mm"),4,2)
-            lc-enddate          = string(today,"99/99/9999")
-            lc-endHour          = string(int(substr(string(time,"hh:mm"),1,2)))
-            lc-endMin           = substr(string(time,"hh:mm"),4,2).
+            lc-startdate        = STRING(TODAY,"99/99/9999")
+            lc-StartHour        = STRING(int(substr(STRING(TIME,"hh:mm"),1,2)))
+            lc-StartMin         = substr(STRING(TIME,"hh:mm"),4,2)
+            lc-enddate          = STRING(TODAY,"99/99/9999")
+            lc-endHour          = STRING(int(substr(STRING(TIME,"hh:mm"),1,2)))
+            lc-endMin           = substr(STRING(TIME,"hh:mm"),4,2).
 
-             /*                                                      */
-             /*                                                      */
-             /*                                                      */
-             /*                                                      */
-             /*                                                      */
-             /*                                                      */
-             /*                                                      */
-             /*                                                      */
-             /*                                                      */
-            .
+        /*                                                      */
+        /*                                                      */
+        /*                                                      */
+        /*                                                      */
+        /*                                                      */
+        /*                                                      */
+        /*                                                      */
+        /*                                                      */
+        /*                                                      */
+        .
 
-    end.
+    END.
 
     RUN outputHeader.
     
@@ -1324,21 +1277,21 @@ PROCEDURE process-web-request :
     {&out} htmlib-CloseHeader("") skip.
 
     {&out}
-       htmlib-StartForm("mainform","post", selfurl)
-       htmlib-ProgramTitle(lc-title) skip.
+    htmlib-StartForm("mainform","post", selfurl)
+    htmlib-ProgramTitle(lc-title) skip.
 
 
   
-    if lc-mode <> "update" and lc-mode <> "updatesingle" then
-    do:
+    IF lc-mode <> "update" AND lc-mode <> "updatesingle" THEN
+    DO:
         {&out}
-          '<div align="right">' skip
+        '<div align="right">' skip
           '<span id="clockface" class="clockface">' skip
           '....Initializing....' skip
           '</span><img id="throbber" src="/images/ajax/ajax-loader-red.gif"></div>' skip
           '<tr><td valign="top"><fieldset><legend>Main Issue Entry</legend>' skip
-          .
-    end.
+        .
+    END.
     RUN ip-Page.
 
     {&out} htmlib-Hidden("issuerowid",lc-issue-rowid) skip
@@ -1357,29 +1310,27 @@ PROCEDURE process-web-request :
     {&out} htmlib-EndForm() skip.
 
 
-    if not can-do("view,delete",lc-mode)  then
-    do:
+    IF NOT CAN-DO("view,delete",lc-mode)  THEN
+    DO:
         {&out}
-            htmlib-CalendarScript("actdate") skip
+        htmlib-CalendarScript("actdate") skip
             htmlib-CalendarScript("startdate") skip
             htmlib-CalendarScript("enddate") skip.
-    end.
-    if lc-mode <> "update" and lc-mode <> "updatesingle" then
-    do:
-    {&out}
-      '<script type="text/javascript">' skip
+    END.
+    IF lc-mode <> "update" AND lc-mode <> "updatesingle" THEN
+    DO:
+        {&out}
+        '<script type="text/javascript">' skip
       'startclock();' skip
       '</script>' skip.
-    end.
+    END.
 
     {&out}
-           htmlib-Footer() skip.
+    htmlib-Footer() skip.
     
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -1387,92 +1338,82 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-Format-Select-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Activity Procedure 
 FUNCTION Format-Select-Activity RETURNS CHARACTER
-  ( pc-htm as char  ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-htm AS CHARACTER  ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<select',
-                   '<select onChange="ChangeActivityType()"'). 
+    lc-htm = REPLACE(pc-htm,'<select',
+        '<select onChange="ChangeActivityType()"'). 
 
 
-  RETURN lc-htm.
+    RETURN lc-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Duration) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Duration Procedure 
 FUNCTION Format-Select-Duration RETURNS CHARACTER
-  ( pc-htm as char   ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-htm AS CHARACTER   ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<input',
-                   '<input onChange="ChangeDuration()"'). 
+    lc-htm = REPLACE(pc-htm,'<input',
+        '<input onChange="ChangeDuration()"'). 
 
-  RETURN lc-htm.
+    RETURN lc-htm.
 
-  END FUNCTION.
+END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Time) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Time Procedure 
 FUNCTION Format-Select-Time RETURNS CHARACTER
-  ( pc-htm as char, pc-idx as int  ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-htm AS CHARACTER, pc-idx AS INTEGER  ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  if pc-idx = 1 then
-  lc-htm = replace(pc-htm,'<select',
-                   '<select onChange="ChangeDuration(' + string(pc-idx) + ')"'). 
-  else
-  lc-htm = replace(pc-htm,'<input',
-                   '<input onChange="ChangeDuration(' + string(pc-idx) + ')"'). 
+    IF pc-idx = 1 THEN
+        lc-htm = REPLACE(pc-htm,'<select',
+            '<select onChange="ChangeDuration(' + string(pc-idx) + ')"'). 
+    ELSE
+        lc-htm = REPLACE(pc-htm,'<input',
+            '<input onChange="ChangeDuration(' + string(pc-idx) + ')"'). 
 
-  RETURN lc-htm.
+    RETURN lc-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Get-Activity) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Get-Activity Procedure 
 FUNCTION Get-Activity RETURNS INTEGER
-  ( pc-inp as char) :
-/*------------------------------------------------------------------------------
-  Purpose:  Get-Activity
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-inp AS CHARACTER) :
+    /*------------------------------------------------------------------------------
+      Purpose:  Get-Activity
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  RETURN  integer( entry( lookup(  pc-inp , lc-list-activdesc , "|" ),lc-list-actid , "|" ) ).   /* Function return value. */
+    RETURN  INTEGER( ENTRY( LOOKUP(  pc-inp , lc-list-activdesc , "|" ),lc-list-actid , "|" ) ).   /* Function return value. */
 
 END FUNCTION.
 
@@ -1482,60 +1423,52 @@ END FUNCTION.
 /*   lc-list-activdesc = Logging Issue|Travelling to Client|Travelling from Client|Meeting with Client|Telephone Contact with Client|Network/Site Survey|Configuration and Installation|Diagnosis of Problem|Project Work|Research|Testing|Client Take-On|Administration|Other  */
 /*   lc-list-activtime = 5|1|1|1|1|1|1|1|1|1|1|1|1|1                                                                                                                                                                                                                            */
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-htmlib-ThisInputField) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION htmlib-ThisInputField Procedure 
 FUNCTION htmlib-ThisInputField RETURNS CHARACTER
-  ( pc-name as char,
-    pi-size as int,
-    pc-value as char ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-name AS CHARACTER,
+    pi-size AS INTEGER,
+    pc-value AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  RETURN 
-        substitute(
-            '<input class="inputfield" type="text" name="&1" id="&1" size="&2" value="&3">',
-            pc-name,
-            string(pi-size),
-            pc-value).
+    RETURN 
+        SUBSTITUTE(
+        '<input class="inputfield" type="text" name="&1" id="&1" size="&2" value="&3">',
+        pc-name,
+        STRING(pi-size),
+        pc-value).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Return-Submit-Button) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Return-Submit-Button Procedure 
 FUNCTION Return-Submit-Button RETURNS CHARACTER
-  ( pc-name as char,
-    pc-value as char,
-    pc-post as char
+    ( pc-name AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-post AS CHARACTER
     ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  RETURN substitute('<input class="submitbutton" type="button" name="&1" value="&2" onclick="&3"  >',
-                    pc-name,
-                    pc-value,
-                    pc-post
-                    ).
+    RETURN SUBSTITUTE('<input class="submitbutton" type="button" name="&1" value="&2" onclick="&3"  >',
+        pc-name,
+        pc-value,
+        pc-post
+        ).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

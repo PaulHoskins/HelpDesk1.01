@@ -1,8 +1,8 @@
 /***********************************************************************
 
-    Program:        mn/alertpage.p
+    Program:        iss/openaction.p
     
-    Purpose:        Alert Info    
+    Purpose:        Show open actions    
     
     Notes:
     
@@ -87,11 +87,11 @@ RUN process-web-request.
 &IF DEFINED(EXCLUDE-ip-ActionTable) = 0 &THEN
 
 PROCEDURE ip-ActionTable :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     DEFINE BUFFER b-query      FOR IssAction.
 
@@ -106,34 +106,34 @@ PROCEDURE ip-ActionTable :
     {&out} skip
            htmlib-StartFieldSet("Open Actions") 
            
-           .
+    .
 
 
     {&out}
-        tbar-BeginID(lc-Action-TBAR,"")
-           tbar-BeginOptionID(lc-Action-TBAR) SKIP(2)
-            tbar-Link("view",?,"off","")
-            tbar-Link("update",?,"off","")
-            tbar-EndOption()
+    tbar-BeginID(lc-Action-TBAR,"")
+    tbar-BeginOptionID(lc-Action-TBAR) SKIP(2)
+    tbar-Link("view",?,"off","")
+    tbar-Link("update",?,"off","")
+    tbar-EndOption()
             
-           tbar-End().
+    tbar-End().
 
     {&out} htmlib-StartMntTable()
-           htmlib-TableHeading(
-                    "Customer|Issue^right|Details|Date^left|Action Details^left|Assigned To"
-                    ) skip.
+    htmlib-TableHeading(
+        "Customer|Issue^right|Details|Date^left|Action Details^left|Assigned To"
+        ) skip.
     FOR EACH b-query NO-LOCK
         WHERE b-query.ActionStatus = "OPEN"
-          AND b-query.CompanyCode = lc-global-company,
-            EACH Issue NO-LOCK
-                WHERE Issue.CompanyCode = b-Query.CompanyCode
-                  AND Issue.IssueNumber = b-Query.IssueNumber,
-                  EACH Customer NO-LOCK
-                    WHERE Customer.CompanyCode = Issue.CompanyCode
-                      AND Customer.AccountNumber = Issue.AccountNumber
+        AND b-query.CompanyCode = lc-global-company,
+        EACH Issue NO-LOCK
+        WHERE Issue.CompanyCode = b-Query.CompanyCode
+        AND Issue.IssueNumber = b-Query.IssueNumber,
+        EACH Customer NO-LOCK
+        WHERE Customer.CompanyCode = Issue.CompanyCode
+        AND Customer.AccountNumber = Issue.AccountNumber
 
-            BREAK BY b-query.ActionDate
-            :
+        BREAK BY b-query.ActionDate
+        :
 
 
         IF ll-steam THEN
@@ -142,9 +142,9 @@ PROCEDURE ip-ActionTable :
            
     
             IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-global-user
-                                       AND webusteam.st-num = customer.st-num NO-LOCK) 
+                AND webusteam.st-num = customer.st-num NO-LOCK) 
             
-            THEN NEXT.
+                THEN NEXT.
         END.
         FIND WebAction 
             WHERE WebAction.ActionID = b-query.ActionID
@@ -152,15 +152,15 @@ PROCEDURE ip-ActionTable :
 
        
         {&out}
-            SKIP(1)
-            tbar-trID(lc-Action-TBAR,ROWID(b-query))
-            SKIP(1)
-            htmlib-MntTableField(
-                html-encode(customer.AccountNumber + ' ' + customer.name),'left')
-            htmlib-MntTableField(STRING(b-query.IssueNumber),'right') 
-            htmlib-MntTableField(html-encode(Issue.BriefDescription),'left')
-            htmlib-MntTableField(STRING(b-query.ActionDate,"99/99/9999"),'left') skip
-            .
+        SKIP(1)
+        tbar-trID(lc-Action-TBAR,ROWID(b-query))
+        SKIP(1)
+        htmlib-MntTableField(
+            html-encode(customer.AccountNumber + ' ' + customer.name),'left')
+        htmlib-MntTableField(STRING(b-query.IssueNumber),'right') 
+        htmlib-MntTableField(html-encode(Issue.BriefDescription),'left')
+        htmlib-MntTableField(STRING(b-query.ActionDate,"99/99/9999"),'left') skip
+        .
 
         IF b-query.notes <> "" THEN
         DO:
@@ -170,15 +170,17 @@ PROCEDURE ip-ActionTable :
                 REPLACE(htmlib-MntTableField(html-encode(WebAction.Description),'left'),'</td>','')
                 lc-object = "hdobj" + string(b-query.issActionID).
         
-            ASSIGN li-tag-end = INDEX(lc-info,">").
+            ASSIGN 
+                li-tag-end = INDEX(lc-info,">").
 
             {&out} substr(lc-info,1,li-tag-end).
 
-            ASSIGN substr(lc-info,1,li-tag-end) = "".
+            ASSIGN 
+                substr(lc-info,1,li-tag-end) = "".
             
             {&out} 
-                '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
-                        lc-object '~')">':U skip.
+            '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
+            lc-object '~')">':U skip.
             {&out} lc-info.
     
             {&out} htmlib-ExpandBox(lc-object,b-query.Notes).
@@ -186,14 +188,15 @@ PROCEDURE ip-ActionTable :
             {&out} '</td>' skip.
         END.
         ELSE {&out}
-            htmlib-MntTableField(WebAction.Description,'left').
+        htmlib-MntTableField(WebAction.Description,'left').
         
-        ASSIGN lc-assign-info = com-userName(b-query.AssignTo).
+        ASSIGN 
+            lc-assign-info = com-userName(b-query.AssignTo).
 
         {&out}
-            htmlib-MntTableField(lc-Assign-Info,'left').
+        htmlib-MntTableField(lc-Assign-Info,'left').
 
-         {&out} skip
+        {&out} skip
                 tbar-BeginHidden(rowid(b-query))
                 tbar-Link("view",rowid(b-query),
                           'javascript:HelpWindow('
@@ -209,7 +212,7 @@ PROCEDURE ip-ActionTable :
             skip.
 
         {&out}
-            '</tr>' skip.
+        '</tr>' skip.
 
        
 
@@ -230,54 +233,54 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
@@ -311,7 +314,7 @@ PROCEDURE process-web-request :
 
 
     {&out} tbar-JavaScript(lc-Action-TBAR) skip
-          .
+    .
 
     RUN ip-ActionTable.
    

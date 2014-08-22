@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        iss/adddocumentok.p
@@ -22,18 +19,15 @@ CREATE WIDGET-POOL.
 /* Local Variable Definitions ---                                       */
 
 
-def var lc-type as char no-undo.
-def var lc-rowid as char no-undo.
-def var lc-title as char no-undo.
+DEFINE VARIABLE lc-type    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title   AS CHARACTER NO-UNDO.
 
-def var lc-relkey   as char no-undo.
-def var lc-thefile  as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-relkey  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-thefile AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -42,48 +36,32 @@ def var lc-thefile  as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -91,75 +69,69 @@ def var lc-thefile  as char no-undo.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -169,27 +141,29 @@ PROCEDURE process-web-request :
   
     {lib/checkloggedin.i} 
 
-    def var li-docid    like doch.docid no-undo.
-    def var lr-raw      as raw          no-undo.
-    def var li-line     as int          no-undo.
-    def var lc-problem  as char         no-undo.
-    def var li-size     as int          no-undo.
-    def var lc-command  as char         no-undo.
-    def var lc-source   as char         no-undo.
-    def var lc-dest     as char         no-undo.
-    def var lc-cview    as char         no-undo.
+    DEFINE VARIABLE li-docid    LIKE doch.docid NO-UNDO.
+    DEFINE VARIABLE lr-raw      AS RAW          NO-UNDO.
+    DEFINE VARIABLE li-line     AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-problem  AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE li-size     AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-command  AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE lc-source   AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE lc-dest     AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE lc-cview    AS CHARACTER         NO-UNDO.
 
 
-    def var lc-ext   as char no-undo.
+    DEFINE VARIABLE lc-ext   AS CHARACTER NO-UNDO.
     
-    assign lc-type = get-value("type")
-           lc-rowid = get-value("rowid")
-           lc-thefile = get-value("thefile")
-           lc-cview   = get-value("custview").
+    ASSIGN 
+        lc-type = get-value("type")
+        lc-rowid = get-value("rowid")
+        lc-thefile = get-value("thefile")
+        lc-cview   = get-value("custview").
     
-    assign lc-thefile = replace(lc-thefile," ","").
+    ASSIGN 
+        lc-thefile = REPLACE(lc-thefile," ","").
     
-    assign
+    ASSIGN
         lc-dest   = "c:/helpdeskupload"
         /* lc-source = "https://" + server_name + "/hdupload/" + lc-thefile
         */
@@ -197,117 +171,131 @@ PROCEDURE process-web-request :
         .
 
 
-    os-create-dir value(lc-dest).
+    OS-CREATE-DIR value(lc-dest).
 
-    assign lc-command = "c:/wget/wget --directory-prefix=" + lc-dest +
+    ASSIGN 
+        lc-command = "c:/wget/wget --directory-prefix=" + lc-dest +
                         " " + lc-source + " --no-check-certificate".
 
     
-    os-command silent value(lc-command).
+    OS-COMMAND SILENT VALUE(lc-command).
     
     
-    assign lc-thefile = lc-dest + "/" + lc-thefile.
+    ASSIGN 
+        lc-thefile = lc-dest + "/" + lc-thefile.
        
-    case lc-type:
-        when "customer" then
-        do:
-            find customer where rowid(customer) = to-rowid(lc-rowid) no-lock
-                 no-error.
-            assign lc-relkey = customer.accountnumber.
+    CASE lc-type:
+        WHEN "customer" THEN
+            DO:
+                FIND customer WHERE ROWID(customer) = to-rowid(lc-rowid) NO-LOCK
+                    NO-ERROR.
+                ASSIGN 
+                    lc-relkey = customer.accountnumber.
 
-        end.
-        when "issue" then
-        do:
-            find issue where rowid(issue) = to-rowid(lc-rowid) no-lock no-error.
-            assign lc-relkey = string(issue.issuenumber).
+            END.
+        WHEN "issue" THEN
+            DO:
+                FIND issue WHERE ROWID(issue) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
+                ASSIGN 
+                    lc-relkey = STRING(issue.issuenumber).
 
 
-        end.
-    end case.
+            END.
+    END CASE.
 
     
-    if search(lc-thefile) = ? then
-    do:
-        assign lc-problem = "The document could not be transferred".
-    end.
+    IF SEARCH(lc-thefile) = ? THEN
+    DO:
+        ASSIGN 
+            lc-problem = "The document could not be transferred".
+    END.
     
-    assign lc-ext = substr(lc-thefile,index(lc-thefile,".") + 1) no-error.
+    ASSIGN 
+        lc-ext = substr(lc-thefile,INDEX(lc-thefile,".") + 1) no-error.
 
-    if error-status:error then
-    do:
-        assign lc-problem = "The document type is unknown, the document was not uploaded".
-    end.
-    else
-    if can-do(lc-global-excludeType,lc-ext) then 
-    do:
-        assign lc-problem = "This type of document can not be uploaded".    
-    end.
+    IF ERROR-STATUS:ERROR THEN
+    DO:
+        ASSIGN 
+            lc-problem = "The document type is unknown, the document was not uploaded".
+    END.
+    ELSE
+        IF CAN-DO(lc-global-excludeType,lc-ext) THEN 
+        DO:
+            ASSIGN 
+                lc-problem = "This type of document can not be uploaded".    
+        END.
 
-    if lc-problem = "" then
-    do:
-        file-info:file-name = lc-thefile.
-        li-size = file-info:file-size.
-        if li-size = 0 
-        then assign lc-problem = "The document is empty, the document was not uplaoded".
+    IF lc-problem = "" THEN
+    DO:
+        FILE-INFO:FILE-NAME = lc-thefile.
+        li-size = FILE-INFO:FILE-SIZE.
+        IF li-size = 0 
+            THEN ASSIGN lc-problem = "The document is empty, the document was not uplaoded".
 
-    end.
+    END.
     
-    if lc-problem = "" then
-    repeat:
-        li-docid = next-value(docid).
-        if can-find(doch where doch.docid = li-docid no-lock) then next.
-        create doch.
-        assign doch.docid = li-docid
-              doch.CreateBy = lc-user
-              doch.CreateDate = today
-              doch.CreateTime = time
-              doch.RelType = lc-type
-              doch.RelKey  = lc-relkey
-              doch.CompanyCode = lc-global-company
-              doch.DocType = caps(lc-ext)
-              doch.InBytes = li-size
-              doch.CustomerView = lc-cview = "on".
+    IF lc-problem = "" THEN
+    REPEAT:
+        li-docid = NEXT-VALUE(docid).
+        IF CAN-FIND(doch WHERE doch.docid = li-docid NO-LOCK) THEN NEXT.
+        CREATE doch.
+        ASSIGN 
+            doch.docid = li-docid
+            doch.CreateBy = lc-user
+            doch.CreateDate = TODAY
+            doch.CreateTime = TIME
+            doch.RelType = lc-type
+            doch.RelKey  = lc-relkey
+            doch.CompanyCode = lc-global-company
+            doch.DocType = CAPS(lc-ext)
+            doch.InBytes = li-size
+            doch.CustomerView = lc-cview = "on".
 
-        assign 
-              doch.descr = get-value("comment")
-              .
+        ASSIGN 
+            doch.descr = get-value("comment")
+            .
 
 
-        assign length(lr-raw) = 16384.
-        input from value(lc-thefile) binary no-map no-convert.
-        repeat:
-            import unformatted lr-raw.
-            assign li-line = li-line + 1.
-            create docl.
-            assign docl.DocID = li-DocID
-                   docl.Lineno  = li-line
-                   docl.rdata    = lr-raw.
+        ASSIGN 
+            LENGTH(lr-raw) = 16384.
+        INPUT from value(lc-thefile) binary no-map no-convert.
+        REPEAT:
+            IMPORT UNFORMATTED lr-raw.
+            ASSIGN 
+                li-line = li-line + 1.
+            CREATE docl.
+            ASSIGN 
+                docl.DocID = li-DocID
+                docl.Lineno  = li-line
+                docl.rdata    = lr-raw.
                
-        end.
-        input close.
-        assign length(lr-raw) = 0.
+        END.
+        INPUT close.
+        ASSIGN 
+            LENGTH(lr-raw) = 0.
 
-        os-delete value(lc-thefile). 
+        OS-DELETE value(lc-thefile). 
         
-        leave.
+        LEAVE.
 
-   end.
-   else set-user-field("problem",lc-problem).
+    END.
+    ELSE set-user-field("problem",lc-problem).
 
 
-   set-user-field("mode","refresh").
-   set-user-field("rowid",lc-rowid).
+    set-user-field("mode","refresh").
+    set-user-field("rowid",lc-rowid).
    
-   if lc-problem <> "" then
-   do:
-       assign request_method = "GET".
-       RUN run-web-object IN web-utilities-hdl ("iss/adddocument.p").
-       return.
-   end.
+    IF lc-problem <> "" THEN
+    DO:
+        ASSIGN 
+            request_method = "GET".
+        RUN run-web-object IN web-utilities-hdl ("iss/adddocument.p").
+        RETURN.
+    END.
 
-   RUN outputHeader.
+    RUN outputHeader.
      
-   {&out} '<html>' skip
+    {&out} '<html>' skip
         '<script language="javascript">' skip
                     'var ParentWindow = opener' skip
                     'ParentWindow.documentCreated()' skip
@@ -317,8 +305,6 @@ PROCEDURE process-web-request :
    
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

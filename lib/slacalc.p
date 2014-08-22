@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        lib/slacalc.p
@@ -17,50 +14,47 @@
 ***********************************************************************/
 {lib/slatt.i}
 
-def input param pd-Date     as date                 no-undo.
-def input param pi-Time     as int                  no-undo.
-def input param pf-SLAID    like slahead.SLAID      no-undo.
-def output param table for tt-sla-sched.
+DEFINE INPUT PARAMETER pd-Date     AS DATE                 NO-UNDO.
+DEFINE INPUT PARAMETER pi-Time     AS INTEGER              NO-UNDO.
+DEFINE INPUT PARAMETER pf-SLAID    LIKE slahead.SLAID      NO-UNDO.
+DEFINE OUTPUT PARAMETER table FOR tt-sla-sched.
 
 
-def buffer slahead  for slahead.
-def buffer company  for company.
+DEFINE BUFFER slahead FOR slahead.
+DEFINE BUFFER company FOR company.
 
 
-def var ll-work-day     as log      extent 7        no-undo.
-def var li-sla-begin    as int                      no-undo.
-def var li-sla-end      as int                      no-undo.
-def var ll-office       as log                      no-undo.
-def var li-minutes      as int                      no-undo.
+DEFINE VARIABLE ll-work-day       AS LOG       EXTENT 7 NO-UNDO.
+DEFINE VARIABLE li-sla-begin      AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-sla-end        AS INTEGER   NO-UNDO.
+DEFINE VARIABLE ll-office         AS LOG       NO-UNDO.
+DEFINE VARIABLE li-minutes        AS INTEGER   NO-UNDO.
 
-def var ld-start        as date                     no-undo.
-def var li-start        as int                      no-undo.
-def var li-level         as int                      no-undo.
-
-
-def var li-loop as int no-undo.
-def var li-mins-end-day     as int no-undo.
-def var li-mins-begin-day   as int no-undo.
-def var li-seconds as int no-undo.
-def var li-min-count    as int no-undo.
-def var ld-day-count    as date no-undo.
-def var li-counter      as int  no-undo.
-DEF VAR ldt-Level2      AS DATETIME NO-UNDO.
-DEF VAR ldt-Amber2      AS DATETIME NO-UNDO.
-DEF VAR li-Mill         AS INT  NO-UNDO.
-DEF VAR lc-dt           AS CHAR NO-UNDO.
+DEFINE VARIABLE ld-start          AS DATE      NO-UNDO.
+DEFINE VARIABLE li-start          AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-level          AS INTEGER   NO-UNDO.
 
 
+DEFINE VARIABLE li-loop           AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-mins-end-day   AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-mins-begin-day AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-seconds        AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-min-count      AS INTEGER   NO-UNDO.
+DEFINE VARIABLE ld-day-count      AS DATE      NO-UNDO.
+DEFINE VARIABLE li-counter        AS INTEGER   NO-UNDO.
+DEFINE VARIABLE ldt-Level2        AS DATETIME  NO-UNDO.
+DEFINE VARIABLE ldt-Amber2        AS DATETIME  NO-UNDO.
+DEFINE VARIABLE li-Mill           AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-dt             AS CHARACTER NO-UNDO.
 
 
-def buffer tt           for tt-sla-sched.
-def buffer tb           for tt-sla-sched.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+DEFINE BUFFER tt FOR tt-sla-sched.
+DEFINE BUFFER tb FOR tt-sla-sched.
+
+
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -69,90 +63,68 @@ def buffer tb           for tt-sla-sched.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-fnConvertHourMin) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnConvertHourMin Procedure 
 FUNCTION fnConvertHourMin RETURNS INTEGER
-  ( pi-Hours    as int,
-    pi-Mins     as int )  FORWARD.
+    ( pi-Hours    AS INTEGER,
+    pi-Mins     AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-fnInitialise) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnInitialise Procedure 
-FUNCTION fnInitialise RETURNS logical
-  ( /* parameter-definitions */ )  FORWARD.
+FUNCTION fnInitialise RETURNS LOGICAL
+    ( /* parameter-definitions */ )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-fnSeconds) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnSeconds Procedure 
 FUNCTION fnSeconds RETURNS INTEGER
-  ( pc-Unit as char,
-    pi-Unit as int )  FORWARD.
+    ( pc-Unit AS CHARACTER,
+    pi-Unit AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
 
-find slahead where slahead.SLAID = pf-SLAID no-lock no-error.
-if not avail slahead then return.
-if slahead.RespDesc[1] = "" then return.
-find company where company.CompanyCode = slahead.CompanyCode no-lock.
+FIND slahead WHERE slahead.SLAID = pf-SLAID NO-LOCK NO-ERROR.
+IF NOT AVAILABLE slahead THEN RETURN.
+IF slahead.RespDesc[1] = "" THEN RETURN.
+FIND company WHERE company.CompanyCode = slahead.CompanyCode NO-LOCK.
 
 DYNAMIC-FUNCTION('fnInitialise':U).
 
-assign
+ASSIGN
     ld-start = pd-date
-    li-start = truncate(pi-time / 60,0) * 60.
+    li-start = TRUNCATE(pi-time / 60,0) * 60.
 
 /*
 ***
@@ -160,67 +132,70 @@ assign
 *** then set the begin date/time to tomorrow at opening time
 ***
 */
-if ll-office then
-do:
-    if li-start > li-sla-end 
-    then assign
+IF ll-office THEN
+DO:
+    IF li-start > li-sla-end 
+        THEN ASSIGN
             ld-start = ld-start + 1
             li-start = li-sla-begin.  
-    if li-start < li-sla-begin 
-    then assign 
-        li-start = li-sla-begin.
-end.
+    IF li-start < li-sla-begin 
+        THEN ASSIGN 
+            li-start = li-sla-begin.
+END.
 
 
-do while true:
-    if ll-work-day[weekday(ld-start)] then leave.
+DO WHILE TRUE:
+    IF ll-work-day[WEEKDAY(ld-start)] THEN LEAVE.
     /*
     ***
     *** Not a working day so need to jump forward 
     ***
     */
-    assign ld-start = ld-start + 1.
-    if ll-office 
-    then li-start = li-sla-begin.
-    else li-start = 0.
-end.
+    ASSIGN 
+        ld-start = ld-start + 1.
+    IF ll-office 
+        THEN li-start = li-sla-begin.
+    ELSE li-start = 0.
+END.
 
 
-create tt.
-assign tt.level = 0
-       tt.note  = "begin"
-       tt.sDate = ld-start
-       tt.STime = li-start.
+CREATE tt.
+ASSIGN 
+    tt.level = 0
+    tt.note  = "begin"
+    tt.sDate = ld-start
+    tt.STime = li-start.
 
 /*
 ***
 *** End of day in minutes
 ***
 */
-assign
-    li-mins-end-day = fnSeconds("DAY",1) / 60
+ASSIGN
+    li-mins-end-day   = fnSeconds("DAY",1) / 60
     li-mins-begin-day = 0.
-if ll-office
-then assign
-        li-mins-end-day = li-sla-end / 60
+IF ll-office
+    THEN ASSIGN
+        li-mins-end-day   = li-sla-end / 60
         li-mins-begin-day = li-sla-begin / 60.
 
-do li-level = 1 to 10:
-    if slahead.RespDesc[li-level] = "" then leave.
+DO li-level = 1 TO 10:
+    IF slahead.RespDesc[li-level] = "" THEN LEAVE.
 
-    find tt
-        where tt.Level = 
-            ( if slahead.AlertBase = "ISSUE" then 0 else li-level - 1 ).
+    FIND tt
+        WHERE tt.Level = 
+        ( IF slahead.AlertBase = "ISSUE" THEN 0 ELSE li-level - 1 ).
 
-    create tb.
-    assign tb.Level = li-level
-           tb.note  = slahead.RespDesc[li-level] + ' ' + 
+    CREATE tb.
+    ASSIGN 
+        tb.Level = li-level
+        tb.note  = slahead.RespDesc[li-level] + ' ' + 
                       slahead.RespUnit[li-level] + ' ' + 
                       string(slahead.RespTime[li-level]) + ' prev = ' 
                       + string(tt.sdate)
                       + ' ' + string(tt.stime,'hh:mm:ss')
-           tb.Sdate = tt.Sdate
-           tb.STime = tt.Stime.
+        tb.Sdate = tt.Sdate
+        tb.STime = tt.Stime.
 
 
     /*
@@ -228,128 +203,128 @@ do li-level = 1 to 10:
     *** SLA based on 24 hour clock
     ***
     */
-    if not ll-office 
-    or ( ll-office and can-do("DAY,WEEK",slahead.RespUnit[li-level]) = false ) then
-    do:
+    IF NOT ll-office 
+        OR ( ll-office AND CAN-DO("DAY,WEEK",slahead.RespUnit[li-level]) = FALSE ) THEN
+    DO:
         li-minutes = ( fnSeconds(slahead.RespUnit[li-level],
-                               slahead.RespTime[li-level]) ) / 60.
+            slahead.RespTime[li-level]) ) / 60.
     
-        assign tb.note = tb.note + " mi=" + string(li-minutes).
+        ASSIGN 
+            tb.note = tb.note + " mi=" + string(li-minutes).
     
-        assign
+        ASSIGN
             li-min-count = tb.STime / 60
             ld-day-count = tb.SDate.
     
-        do li-loop = 1 to li-minutes:
-            assign li-min-count = li-min-count + 1.   
-            if li-min-count > li-mins-end-day then
-            do:
-                assign
+        DO li-loop = 1 TO li-minutes:
+            ASSIGN 
+                li-min-count = li-min-count + 1.   
+            IF li-min-count > li-mins-end-day THEN
+            DO:
+                ASSIGN
                     li-min-count = li-mins-begin-day.
-                do while true:
-                    assign ld-day-count = ld-day-count + 1.
-                    if ll-work-day[weekday(ld-day-count)] then leave.
-                end.
+                DO WHILE TRUE:
+                    ASSIGN 
+                        ld-day-count = ld-day-count + 1.
+                    IF ll-work-day[WEEKDAY(ld-day-count)] THEN LEAVE.
+                END.
     
-            end.
+            END.
     
-        end.
-        assign tb.note = tb.note + " Calc = " + 
+        END.
+        ASSIGN 
+            tb.note = tb.note + " Calc = " + 
             string(ld-day-count,'99/99/9999') + ' ' +  
             string(li-min-count * 60,'hh:mm:ss').
     
-        assign 
+        ASSIGN 
             tb.Sdate = ld-day-count
             tb.STime = li-min-count * 60.
     
-    end.
-    else
-    do:
-        assign
+    END.
+    ELSE
+    DO:
+        ASSIGN
             li-min-count = tb.STime / 60
             ld-day-count = tb.SDate.
 
-        if can-do("DAY,WEEK",slahead.RespUnit[li-level]) then
-        do:
-            assign li-counter = slahead.RespTime[li-level].
-            if slahead.RespUnit[li-level] = "WEEK"
-            then assign li-counter = li-counter * 7.
-            do li-loop = 1 to li-counter:
-                do while true:
-                    assign ld-day-count = ld-day-count + 1.
-                    if ll-work-day[weekday(ld-day-count)] then leave.
-                end.
-            end.
-        end.
-        else 
-        if slahead.RespUnit[li-level] = "HOUR" then
-        do:
+        IF CAN-DO("DAY,WEEK",slahead.RespUnit[li-level]) THEN
+        DO:
+            ASSIGN 
+                li-counter = slahead.RespTime[li-level].
+            IF slahead.RespUnit[li-level] = "WEEK"
+                THEN ASSIGN li-counter = li-counter * 7.
+            DO li-loop = 1 TO li-counter:
+                DO WHILE TRUE:
+                    ASSIGN 
+                        ld-day-count = ld-day-count + 1.
+                    IF ll-work-day[WEEKDAY(ld-day-count)] THEN LEAVE.
+                END.
+            END.
+        END.
+        ELSE 
+            IF slahead.RespUnit[li-level] = "HOUR" THEN
+            DO:
 
-        end.
-        else
-        if slahead.RespUnit[li-level] = "MINUTE" then
-        do:
+            END.
+            ELSE
+                IF slahead.RespUnit[li-level] = "MINUTE" THEN
+                DO:
 
-        end.
+                END.
 
-        assign 
+        ASSIGN 
             tb.Sdate = ld-day-count
             tb.STime = li-min-count * 60.
 
-    end.
+    END.
     
-end.
+END.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Implementations ***************** */
 
 &IF DEFINED(EXCLUDE-fnConvertHourMin) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnConvertHourMin Procedure 
 FUNCTION fnConvertHourMin RETURNS INTEGER
-  ( pi-Hours    as int,
-    pi-Mins     as int ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pi-Hours    AS INTEGER,
+    pi-Mins     AS INTEGER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    return ( ( pi-hours * 60 ) * 60 ) +
-           ( pi-mins * 60 ).
+    RETURN ( ( pi-hours * 60 ) * 60 ) +
+        ( pi-mins * 60 ).
   
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-fnInitialise) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnInitialise Procedure 
-FUNCTION fnInitialise RETURNS logical
-  ( /* parameter-definitions */ ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+FUNCTION fnInitialise RETURNS LOGICAL
+    ( /* parameter-definitions */ ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    empty temp-table tt-sla-sched.
+    EMPTY TEMP-TABLE tt-sla-sched.
 
-    assign
-        ll-work-day = true.
-
-    
-    if slahead.incSat = false
-    then assign ll-work-day[7] = false.
-    if slahead.incSun = false
-    then assign ll-work-day[1] = false.
+    ASSIGN
+        ll-work-day = TRUE.
 
     
-    assign 
+    IF slahead.incSat = FALSE
+        THEN ASSIGN ll-work-day[7] = FALSE.
+    IF slahead.incSun = FALSE
+        THEN ASSIGN ll-work-day[1] = FALSE.
+
+    
+    ASSIGN 
         li-sla-begin = DYNAMIC-FUNCTION('fnConvertHourMin':U,
                                         company.SLABeginHour,
                                         company.SLABeginMin)
@@ -360,43 +335,42 @@ FUNCTION fnInitialise RETURNS logical
 
 
 
-    return true.
+    RETURN TRUE.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-fnSeconds) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnSeconds Procedure 
 FUNCTION fnSeconds RETURNS INTEGER
-  ( pc-Unit as char,
-    pi-Unit as int ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-Unit AS CHARACTER,
+    pi-Unit AS INTEGER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    case pc-Unit:
-        when "MINUTE" then return pi-unit * 60.
-        when "HOUR"   then return pi-unit * ( fnSeconds("MINUTE",1) * 60 ).
-        when "DAY"    then return pi-unit * ( fnSeconds("HOUR",1) * 24).
-        when "WEEK"   then return pi-unit * ( fnSeconds("DAY",1) * 7 ).
-        otherwise
-            do:
-               return 1.
-            end.
+    CASE pc-Unit:
+        WHEN "MINUTE" THEN 
+            RETURN pi-unit * 60.
+        WHEN "HOUR"   THEN 
+            RETURN pi-unit * ( fnSeconds("MINUTE",1) * 60 ).
+        WHEN "DAY"    THEN 
+            RETURN pi-unit * ( fnSeconds("HOUR",1) * 24).
+        WHEN "WEEK"   THEN 
+            RETURN pi-unit * ( fnSeconds("DAY",1) * 7 ).
+        OTHERWISE
+        DO:
+            RETURN 1.
+        END.
            
-    end case.
+    END CASE.
   
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

@@ -16,13 +16,13 @@
 
 &glob slattdef-library-defined yes
 
-def temp-table tt-sla-sched                 no-undo
-    field Level         as int
-    field Note          as char
-    field sDate         as date
-    field sTime         as int
+DEFINE TEMP-TABLE tt-sla-sched                 NO-UNDO
+    FIELD Level         AS INTEGER
+    FIELD Note          AS CHARACTER
+    FIELD sDate         AS DATE
+    FIELD sTime         AS INTEGER
 
-    index Level 
+    INDEX Level 
             Level.
 
 &endif

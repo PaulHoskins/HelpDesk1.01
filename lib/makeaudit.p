@@ -12,27 +12,30 @@
         
 ***********************************************************************/
 
-def input   param pc-AuditType          as char no-undo.
-def output  param pf-AuditNumber        as dec  no-undo.
+DEFINE INPUT   PARAMETER pc-AuditType          AS CHARACTER NO-UNDO.
+DEFINE OUTPUT  PARAMETER pf-AuditNumber        AS DECIMAL  NO-UNDO.
   
 
-def var li-lo as int no-undo.
-def var li-hi as int no-undo.
+DEFINE VARIABLE li-lo AS INTEGER NO-UNDO.
+DEFINE VARIABLE li-hi AS INTEGER NO-UNDO.
 
-case pc-AuditType:
+CASE pc-AuditType:
 
-    when 'DUMMY' then assign pf-AuditNumber = ?.
+    WHEN 'DUMMY' THEN 
+        ASSIGN 
+            pf-AuditNumber = ?.
     
-    otherwise
-    do:
-        assign li-lo = next-value(LoAudit)
-               li-hi = current-value(HiAudit).
+    OTHERWISE
+    DO:
+        ASSIGN 
+            li-lo = NEXT-VALUE(LoAudit)
+            li-hi = CURRENT-VALUE(HiAudit).
                
-        if li-lo = 1
-        then assign li-hi = next-value(HiAudit).
+        IF li-lo = 1
+            THEN ASSIGN li-hi = NEXT-VALUE(HiAudit).
         
-        assign pf-AuditNumber = 
-                    dec(string(li-hi) + string(li-lo,"999999")).
+        ASSIGN 
+            pf-AuditNumber = dec(STRING(li-hi) + string(li-lo,"999999")).
                 
-    end.
-end case.
+    END.
+END CASE.

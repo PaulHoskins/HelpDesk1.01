@@ -147,7 +147,7 @@ FUNCTION com-AssignedToUser RETURNS INTEGER
 
 
 FUNCTION com-BelongsToATeam RETURNS LOGICAL 
-	(  ) FORWARD.
+    (  ) FORWARD.
 
 FUNCTION com-CanDelete RETURNS LOGICAL
     ( pc-loginid  AS CHARACTER,
@@ -661,7 +661,7 @@ PROCEDURE com-GetAssignRoot:
     IF DYNAMIC-FUNCTION("com-isTeamMember", pc-companycode,pc-userid,?) THEN
     DO:
         ASSIGN 
-            pc-LoginID =  DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
+            pc-LoginID = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
             pc-name    = "Your Team(s)|Not Assigned".
            
         FOR EACH WebUSteam NO-LOCK
@@ -670,12 +670,12 @@ PROCEDURE com-GetAssignRoot:
             WHERE webux.st-num = WebUSteam.st-num,
             EACH b-user NO-LOCK
             WHERE b-user.LoginID = webux.LoginID
-              AND b-user.companycode = pc-companyCode
+            AND b-user.companycode = pc-companyCode
             BY b-user.name
             :
                 
             IF LOOKUP( b-user.LoginID,pc-loginid,"|") = 0 
-            THEN ASSIGN 
+                THEN ASSIGN 
                     pc-LoginID = pc-LoginID + '|' + b-user.LoginID
                     pc-name    = pc-name + '|' + b-user.Name.
                            
@@ -2281,8 +2281,8 @@ FUNCTION com-NumberOfEmails RETURNS INTEGER
     ------------------------------------------------------------------------------*/
 
     DEFINE VARIABLE li-return AS INTEGER NO-UNDO.
-    DEFINE BUFFER webuser FOR webuser.
-    DEFINE BUFFER e       FOR EmailH.
+    DEFINE BUFFER webuser  FOR webuser.
+    DEFINE BUFFER e        FOR EmailH.
     DEFINE BUFFER Customer FOR Customer.
     DEFINE VARIABLE ll-steam AS LOGICAL NO-UNDO.
     
@@ -2413,26 +2413,26 @@ FUNCTION com-NumberOfOpenActions RETURNS INTEGER
         
 
     IF webUser.SuperUser THEN
-    FOR EACH IssAction NO-LOCK
-        WHERE IssAction.CompanyCode = webuser.CompanyCode
-        AND IssAction.ActionStatus = "OPEN":
+        FOR EACH IssAction NO-LOCK
+            WHERE IssAction.CompanyCode = webuser.CompanyCode
+            AND IssAction.ActionStatus = "OPEN":
     
-        IF ll-steam THEN
-        DO:
-            FIND Issue OF issaction NO-LOCK NO-ERROR.
-            FIND Customer OF Issue NO-LOCK NO-ERROR.
-            IF Customer.st-num = 0 
-            THEN NEXT.
-            ELSE
-            IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginID
-                 AND webusteam.st-num = customer.st-num NO-LOCK) THEN NEXT.
+            IF ll-steam THEN
+            DO:
+                FIND Issue OF issaction NO-LOCK NO-ERROR.
+                FIND Customer OF Issue NO-LOCK NO-ERROR.
+                IF Customer.st-num = 0 
+                    THEN NEXT.
+                ELSE
+                    IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginID
+                        AND webusteam.st-num = customer.st-num NO-LOCK) THEN NEXT.
                             
             
-        END.
-        ASSIGN 
-            li-return = li-return + 1.
+            END.
+            ASSIGN 
+                li-return = li-return + 1.
 
-    END.
+        END.
 
     RETURN li-return.
     
@@ -2789,16 +2789,16 @@ END FUNCTION.
 
 FUNCTION com-isTeamMember RETURNS LOGICAL
     (pc-companyCode AS CHARACTER,
-     pc-loginid AS CHARACTER,
-     pi-st-num AS INTEGER  ):
+    pc-loginid AS CHARACTER,
+    pi-st-num AS INTEGER  ):
          
      
     DEFINE BUFFER webUStream FOR WebUSteam.
     IF pi-st-num = ?
-    OR pi-st-num = 0
-    THEN RETURN CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginid NO-LOCK).
+        OR pi-st-num = 0
+        THEN RETURN CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginid NO-LOCK).
     ELSE RETURN CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-loginid 
-                            AND WebUSteam.st-num = pi-st-num NO-LOCK).
+            AND WebUSteam.st-num = pi-st-num NO-LOCK).
           
      
 END FUNCTION.

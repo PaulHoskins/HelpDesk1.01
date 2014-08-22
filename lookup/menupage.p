@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /*------------------------------------------------------------------------
 
   File: 
@@ -35,39 +32,36 @@ CREATE WIDGET-POOL.
 /* Local Variable Definitions ---                                       */
 
 
-def var lc-rowid as char no-undo.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 
-def var lc-field1 as char no-undo.
-def var lc-field2 as char no-undo.
+DEFINE VARIABLE lc-field1      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-field2      AS CHARACTER NO-UNDO.
 
-def var li-max-lines as int initial 12 no-undo.
-def var lr-first-row as rowid no-undo.
-def var lr-last-row  as rowid no-undo.
-def var li-count     as int   no-undo.
-def var ll-prev      as log   no-undo.
-def var ll-next      as log   no-undo.
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-parameters   as char no-undo.
-def var lc-smessage     as char no-undo.
-def var lc-link-otherp  as char no-undo.
-def var lc-char         as char no-undo.
-
-
-
-def buffer b-query for webmhead.
-def buffer b-search for webmhead.
+DEFINE VARIABLE li-max-lines   AS INTEGER   INITIAL 12 NO-UNDO.
+DEFINE VARIABLE lr-first-row   AS ROWID     NO-UNDO.
+DEFINE VARIABLE lr-last-row    AS ROWID     NO-UNDO.
+DEFINE VARIABLE li-count       AS INTEGER   NO-UNDO.
+DEFINE VARIABLE ll-prev        AS LOG       NO-UNDO.
+DEFINE VARIABLE ll-next        AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-search      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-smessage    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-otherp AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
 
 
-def query q for b-query scrolling.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE BUFFER b-query  FOR webmhead.
+DEFINE BUFFER b-search FOR webmhead.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+DEFINE QUERY q FOR b-query SCROLLING.
+
+
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -76,48 +70,32 @@ def query q for b-query scrolling.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -125,104 +103,103 @@ def query q for b-query scrolling.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def buffer b-attr for webattr.
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE BUFFER b-attr FOR webattr.
 
-    assign lc-field1 = get-field("fieldname")
-           lc-field2 = get-field("description").
+    ASSIGN 
+        lc-field1 = get-field("fieldname")
+        lc-field2 = get-field("description").
 
     
-    assign lc-search = get-value("search")
-           lc-firstrow = get-value("firstrow")
-           lc-lastrow  = get-value("lastrow")
-           lc-navigation = get-value("navigation").
+    ASSIGN 
+        lc-search = get-value("search")
+        lc-firstrow = get-value("firstrow")
+        lc-lastrow  = get-value("lastrow")
+        lc-navigation = get-value("navigation").
     
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN 
+        lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
 
     
     
-    assign lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
+    ASSIGN 
+        lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
     
-    assign li-max-lines = int(lc-char) no-error.
-    if error-status:error
-    or li-max-lines < 1
-    or li-max-lines = ? then li-max-lines = 12.
+    ASSIGN 
+        li-max-lines = int(lc-char) no-error.
+    IF ERROR-STATUS:ERROR
+        OR li-max-lines < 1
+        OR li-max-lines = ? THEN li-max-lines = 12.
     
     RUN outputHeader.
     
@@ -242,81 +219,86 @@ PROCEDURE process-web-request :
 
 
 
-   {&out}
-           htmlib-TableHeading(
-           "Page Name|Description"
-           ) skip.
+    {&out}
+    htmlib-TableHeading(
+        "Page Name|Description"
+        ) skip.
 
 
-   open query q for each b-query no-lock.
+    OPEN QUERY q FOR EACH b-query NO-LOCK.
 
-   get first q no-lock.
+    GET FIRST q NO-LOCK.
 
-   if lc-navigation = "nextpage" then
-   do:
-       reposition q to rowid to-rowid(lc-lastrow) no-error.
-       if error-status:error = false then
-       do:
-           get next q no-lock.
-           get next q no-lock.
-           if not avail b-query then get first q.
-       end.
-   end.
-   else
-   if lc-navigation = "prevpage" then
-   do:
-       reposition q to rowid to-rowid(lc-firstrow) no-error.
-       if error-status:error = false then
-       do:
-           get next q no-lock.
-           reposition q backwards li-max-lines + 1.
-           get next q no-lock.
-           if not avail b-query then get first q.
-       end.
-   end.
-   else
-   if lc-navigation = "search" then
-   do:
-       find first b-search 
-            where b-search.pagename >= lc-search no-lock no-error.
-       if avail b-search then
-       do:
-           reposition q to rowid rowid(b-search) no-error.
-           get next q no-lock.
-       end.
-       else assign lc-smessage = "Your search found no records, displaying all".
-   end.
-   else
-   if lc-navigation = "refresh" then
-   do:
-       reposition q to rowid to-rowid(lc-firstrow) no-error.
-       if error-status:error = false then
-       do:
-           get next q no-lock.
-           if not avail b-query then get first q.
-       end.  
-       else get first q.
-   end.
+    IF lc-navigation = "nextpage" THEN
+    DO:
+        REPOSITION q TO ROWID TO-ROWID(lc-lastrow) NO-ERROR.
+        IF ERROR-STATUS:ERROR = FALSE THEN
+        DO:
+            GET NEXT q NO-LOCK.
+            GET NEXT q NO-LOCK.
+            IF NOT AVAILABLE b-query THEN GET FIRST q.
+        END.
+    END.
+    ELSE
+        IF lc-navigation = "prevpage" THEN
+        DO:
+            REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
+            IF ERROR-STATUS:ERROR = FALSE THEN
+            DO:
+                GET NEXT q NO-LOCK.
+                REPOSITION q BACKWARDS li-max-lines + 1.
+                GET NEXT q NO-LOCK.
+                IF NOT AVAILABLE b-query THEN GET FIRST q.
+            END.
+        END.
+        ELSE
+            IF lc-navigation = "search" THEN
+            DO:
+                FIND FIRST b-search 
+                    WHERE b-search.pagename >= lc-search NO-LOCK NO-ERROR.
+                IF AVAILABLE b-search THEN
+                DO:
+                    REPOSITION q TO ROWID ROWID(b-search) NO-ERROR.
+                    GET NEXT q NO-LOCK.
+                END.
+                ELSE ASSIGN lc-smessage = "Your search found no records, displaying all".
+            END.
+            ELSE
+                IF lc-navigation = "refresh" THEN
+                DO:
+                    REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
+                    IF ERROR-STATUS:ERROR = FALSE THEN
+                    DO:
+                        GET NEXT q NO-LOCK.
+                        IF NOT AVAILABLE b-query THEN GET FIRST q.
+                    END.  
+                    ELSE GET FIRST q.
+                END.
 
-   assign li-count = 0
-          lr-first-row = ?
-          lr-last-row  = ?.
+    ASSIGN 
+        li-count = 0
+        lr-first-row = ?
+        lr-last-row  = ?.
 
-   repeat while avail b-query:
+    REPEAT WHILE AVAILABLE b-query:
 
 
-       assign lc-rowid = string(rowid(b-query)).
+        ASSIGN 
+            lc-rowid = STRING(ROWID(b-query)).
 
-       assign li-count = li-count + 1.
-       if lr-first-row = ?
-       then assign lr-first-row = rowid(b-query).
-       assign lr-last-row = rowid(b-query).
+        ASSIGN 
+            li-count = li-count + 1.
+        IF lr-first-row = ?
+            THEN ASSIGN lr-first-row = ROWID(b-query).
+        ASSIGN 
+            lr-last-row = ROWID(b-query).
 
-       assign lc-link-otherp = 'search=' + lc-search +
+        ASSIGN 
+            lc-link-otherp = 'search=' + lc-search +
                                '&firstrow=' + string(lr-first-row).
 
-       {&out}
-           '<tr class="tabrow1">' skip
+        {&out}
+        '<tr class="tabrow1">' skip
            '<td>'
            htmlib-AnswerHyperLink(lc-field1,
                              b-query.pagename,
@@ -329,69 +311,69 @@ PROCEDURE process-web-request :
 
 
 
-       if li-count = li-max-lines then leave.
+        IF li-count = li-max-lines THEN LEAVE.
 
-       get next q no-lock.
+        GET NEXT q NO-LOCK.
 
-   end.
+    END.
 
-   if li-count < li-max-lines then
-   do:
-       {&out} skip htmlib-BlankTableLines(li-max-lines - li-count) skip.
-   end.
+    IF li-count < li-max-lines THEN
+    DO:
+        {&out} skip htmlib-BlankTableLines(li-max-lines - li-count) skip.
+    END.
 
-   {&out} skip 
+    {&out} skip 
           htmlib-EndTable()
           skip.
 
-   {&out} htmlib-StartPanel() 
+    {&out} htmlib-StartPanel() 
           skip.
 
 
-   {&out}  '<tr><td align="left">'
-           .
+    {&out}  '<tr><td align="left">'
+        .
 
-   if lr-first-row <> ? then
-   do:
-       get first q no-lock.
-       if rowid(b-query) = lr-first-row 
-       then assign ll-prev = false.
-       else assign ll-prev = true.
+    IF lr-first-row <> ? THEN
+    DO:
+        GET FIRST q NO-LOCK.
+        IF ROWID(b-query) = lr-first-row 
+            THEN ASSIGN ll-prev = FALSE.
+        ELSE ASSIGN ll-prev = TRUE.
 
-       get last q no-lock.
-       if rowid(b-query) = lr-last-row
-       then assign ll-next = false.
-       else assign ll-next = true.
+        GET LAST q NO-LOCK.
+        IF ROWID(b-query) = lr-last-row
+            THEN ASSIGN ll-next = FALSE.
+        ELSE ASSIGN ll-next = TRUE.
 
-       if ll-prev 
-       then {&out} htmlib-LookupAction(appurl + '/' + "lookup/menupage.p","PrevPage","Prev Page").
+        IF ll-prev 
+            THEN {&out} htmlib-LookupAction(appurl + '/' + "lookup/menupage.p","PrevPage","Prev Page").
 
 
-       if ll-next 
-       then {&out} htmlib-LookupAction(appurl + '/' + "lookup/menupage.p","NextPage","Next Page").
+        IF ll-next 
+            THEN {&out} htmlib-LookupAction(appurl + '/' + "lookup/menupage.p","NextPage","Next Page").
 
-   end.
+    END.
 
-   {&out} '</td><td align="right">' htmlib-ErrorMessage(lc-smessage) '&nbsp;' htmlib-SideLabel("Search").
-   {&out} htmlib-InputField("search",20,lc-search)
-         '&nbsp;' htmlib-LookUpAction(appurl + '/' + "lookup/menupage.p","search","Search")
-         '&nbsp;' skip
+    {&out} '</td><td align="right">' htmlib-ErrorMessage(lc-smessage) '&nbsp;' htmlib-SideLabel("Search").
+    {&out} htmlib-InputField("search",20,lc-search)
+    '&nbsp;' htmlib-LookUpAction(appurl + '/' + "lookup/menupage.p","search","Search")
+    '&nbsp;' skip
                  htmlib-HelpButton(appurl , "lookup/menupage" )
                  skip
          '</td></tr>'.
 
-   {&out} htmlib-EndPanel().
+    {&out} htmlib-EndPanel().
 
-   {&out} skip
+    {&out} skip
           htmlib-Hidden("firstrow", string(lr-first-row)) skip
           htmlib-Hidden("lastrow", string(lr-last-row)) skip
           skip.
 
 
-   {&out} htmlib-EndForm().
+    {&out} htmlib-EndForm().
 
 
-   {&OUT} htmlib-Footer() skip.
+    {&OUT} htmlib-Footer() skip.
 
     {&out} htmlib-EndForm() skip.
     {&OUT} htmlib-Footer() skip.
@@ -399,8 +381,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
