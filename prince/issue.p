@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        rep/issue.p
@@ -22,102 +19,100 @@
 
 &IF DEFINED(UIB_is_Running) EQ 0 &THEN
 
-def input param pc-CompanyCode      as char no-undo.
-def input param pc-Account          as char no-undo.
-def input param pc-Status           as char no-undo.
-def input param pc-Assign           as char no-undo.
-def input param pc-Area             as char no-undo.
-def input param pc-user             as char no-undo.
-def input param pc-category         as char no-undo.
-def input param pc-lodate           as char no-undo.  /* 3708  */
-def input param pc-hidate           as char no-undo.  /* 3708  */
-def output param pc-pdf             as char no-undo.
+DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-Account          AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-Status           AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-Assign           AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-Area             AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-user             AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-category         AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-lodate           AS CHARACTER NO-UNDO.  /* 3708  */
+DEFINE INPUT PARAMETER pc-hidate           AS CHARACTER NO-UNDO.  /* 3708  */
+DEFINE OUTPUT PARAMETER pc-pdf             AS CHARACTER NO-UNDO.
 
 &ELSE
 
-def var pc-CompanyCode              as char no-undo.
-def var pc-Account                  as char no-undo.
-def var pc-Status                   as char no-undo.
-def var pc-Assign                   as char no-undo.
-def var pc-Area                     as char no-undo.
-def var pc-user                     as char no-undo.
-def var pc-category                 as char no-undo.
-def var pc-lodate                   as char no-undo.     /* 3708  */  
-def var pc-hidate                   as char no-undo.     /* 3708  */  
-def var pc-pdf                     as char no-undo.
+DEFINE VARIABLE pc-CompanyCode              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-Account                  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-Status                   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-Assign                   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-Area                     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-user                     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-category                 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-lodate                   AS CHARACTER NO-UNDO.     /* 3708  */  
+DEFINE VARIABLE pc-hidate                   AS CHARACTER NO-UNDO.     /* 3708  */  
+DEFINE VARIABLE pc-pdf                      AS CHARACTER NO-UNDO.
 
-assign pc-Account   = htmlib-Null()
-       pc-status = htmlib-Null()
-       pc-assign = htmlib-Null()
-       pc-Area   = htmlib-Null()
-       pc-user   = 'phoski'
-       pc-category = htmlib-Null()
-       pc-CompanyCode = "MICAR"
-       pc-lodate  = string(today - 30 )       /* 3708  */  
-       pc-hidate  = string(today)             /* 3708  */  
-  .
+ASSIGN 
+    pc-Account   = htmlib-Null()
+    pc-status = htmlib-Null()
+    pc-assign = htmlib-Null()
+    pc-Area   = htmlib-Null()
+    pc-user   = 'phoski'
+    pc-category = htmlib-Null()
+    pc-CompanyCode = "MICAR"
+    pc-lodate  = STRING(TODAY - 30 )       /* 3708  */  
+    pc-hidate  = STRING(TODAY)             /* 3708  */  
+    .
 
 &ENDIF
 
 
-def temp-table tt no-undo
-    field lineno        as int
-    field n-date        as date
-    field n-time        as int
-    field n-user        as char
-    field n-contents    as char
-    field s-date        as date
-    field s-time        as int
-    field s-user        as char
-    field s-status      as char
-    index lineno
-            lineno.
+DEFINE TEMP-TABLE tt NO-UNDO
+    FIELD lineno        AS INTEGER
+    FIELD n-date        AS DATE
+    FIELD n-time        AS INTEGER
+    FIELD n-user        AS CHARACTER
+    FIELD n-contents    AS CHARACTER
+    FIELD s-date        AS DATE
+    FIELD s-time        AS INTEGER
+    FIELD s-user        AS CHARACTER
+    FIELD s-status      AS CHARACTER
+    INDEX lineno
+    lineno.
 
-def buffer  WebUser     for WebUser.
-def buffer  b-query     for Issue.
-def buffer  b-status    for WebStatus.
-def buffer  b-area      for WebIssArea.
-def buffer  b-user      for WebUser.
+DEFINE BUFFER  WebUser     FOR WebUser.
+DEFINE BUFFER  b-query     FOR Issue.
+DEFINE BUFFER  b-status    FOR WebStatus.
+DEFINE BUFFER  b-area      FOR WebIssArea.
+DEFINE BUFFER  b-user      FOR WebUser.
 
-def query q for b-query scrolling.
-
-
-def var lc-pdf-file     as char no-undo.
-def var li-current-y    as int no-undo.
-def var li-max-y        as int initial 50 no-undo.
-def var li-current-page as int no-undo.
-
-def var lc-status       as char no-undo.
-def var lc-area         as char no-undo.
-
-def var lc-open-status  as char no-undo.
-def var lc-closed-status as char no-undo.
-def var lc-acc-lo       as char no-undo.
-def var lc-acc-hi       as char no-undo.
-def var lc-ass-lo       as char no-undo.
-def var lc-ass-hi       as char no-undo.
-def var lc-area-lo      as char no-undo.
-def var lc-area-hi      as char no-undo.
-def var lc-srch-status  as char no-undo.
-def var li-loop         as int no-undo.
-def var lc-char         as char no-undo.
-def var li-count        as int  no-undo.
-def var lc-cat-lo       as char no-undo.
-def var lc-cat-hi       as char no-undo.
-def var lc-date-lo      as char no-undo.        /* 3708  */  
-def var lc-date-hi      as char no-undo.        /* 3708  */  
-
-def var lc-html         as char     no-undo.
-def var lc-pdf          as char     no-undo.
-def var ll-ok           as log      no-undo.
-def var li-ReportNumber as int      no-undo.
-def var ll-customer     as log      no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE QUERY q FOR b-query SCROLLING.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+DEFINE VARIABLE lc-pdf-file     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-current-y    AS INTEGER NO-UNDO.
+DEFINE VARIABLE li-max-y        AS INTEGER INITIAL 50 NO-UNDO.
+DEFINE VARIABLE li-current-page AS INTEGER NO-UNDO.
+
+DEFINE VARIABLE lc-status       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-area         AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-open-status  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-closed-status AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-acc-lo       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-acc-hi       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ass-lo       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ass-hi       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-area-lo      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-area-hi      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-srch-status  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-loop         AS INTEGER NO-UNDO.
+DEFINE VARIABLE lc-char         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-count        AS INTEGER  NO-UNDO.
+DEFINE VARIABLE lc-cat-lo       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-cat-hi       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-date-lo      AS CHARACTER NO-UNDO.        /* 3708  */  
+DEFINE VARIABLE lc-date-hi      AS CHARACTER NO-UNDO.        /* 3708  */  
+
+DEFINE VARIABLE lc-html         AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-pdf          AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE ll-ok           AS LOG      NO-UNDO.
+DEFINE VARIABLE li-ReportNumber AS INTEGER      NO-UNDO.
+DEFINE VARIABLE ll-customer     AS LOG      NO-UNDO.
+
+
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -126,164 +121,153 @@ def var ll-customer     as log      no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
 
-find WebUser where WebUser.LoginID = pc-user no-lock no-error.
-assign
+FIND WebUser WHERE WebUser.LoginID = pc-user NO-LOCK NO-ERROR.
+ASSIGN
     ll-customer = WebUser.UserClass = "CUSTOMER".
 
-RUN ip-StatusType ( output lc-open-status , output lc-closed-status ).
+RUN ip-StatusType ( OUTPUT lc-open-status , OUTPUT lc-closed-status ).
 
 RUN ip-SetRanges.
 
-assign
+ASSIGN
     pc-pdf = ?
-    li-ReportNumber = next-value(ReportNumber).
-assign 
-    lc-html = session:temp-dir + caps(pc-CompanyCode) + "-IssueReport-" + string(li-ReportNumber).
+    li-ReportNumber = NEXT-VALUE(ReportNumber).
+ASSIGN 
+    lc-html = SESSION:TEMP-DIR + caps(pc-CompanyCode) + "-IssueReport-" + string(li-ReportNumber).
 
-assign 
+ASSIGN 
     lc-pdf = lc-html + ".pdf"
     lc-html = lc-html + ".html".
 
-os-delete value(lc-pdf) no-error.
-os-delete value(lc-html) no-error.
+OS-DELETE value(lc-pdf) no-error.
+OS-DELETE value(lc-html) no-error.
 
 
-dynamic-function("pxml-Initialise").
+DYNAMIC-FUNCTION("pxml-Initialise").
 
-create tt-pxml.
-assign 
+CREATE tt-pxml.
+ASSIGN 
     tt-pxml.PageOrientation = "LANDSCAPE".
 
-dynamic-function("pxml-OpenStream",lc-html).
-dynamic-function("pxml-Header", pc-CompanyCode).
+DYNAMIC-FUNCTION("pxml-OpenStream",lc-html).
+DYNAMIC-FUNCTION("pxml-Header", pc-CompanyCode).
 
 RUN ip-Print.
 
-dynamic-function("pxml-Footer",pc-CompanyCode).
-dynamic-function("pxml-CloseStream").
+DYNAMIC-FUNCTION("pxml-Footer",pc-CompanyCode).
+DYNAMIC-FUNCTION("pxml-CloseStream").
 
 
-ll-ok = dynamic-function("pxml-Convert",lc-html,lc-pdf).
+ll-ok = DYNAMIC-FUNCTION("pxml-Convert",lc-html,lc-pdf).
 
-if ll-ok
-then assign pc-pdf = lc-pdf.
+IF ll-ok
+    THEN ASSIGN pc-pdf = lc-pdf.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-Print) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Print Procedure 
 PROCEDURE ip-Print :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-def buffer IssNote for IssNote.
-def buffer Customer for Customer.
-def buffer b-assign for WebUser.
+    DEFINE BUFFER IssNote FOR IssNote.
+    DEFINE BUFFER Customer FOR Customer.
+    DEFINE BUFFER b-assign FOR WebUser.
 
 
-def var lc-customer as char no-undo.
-def var lc-assign   as char no-undo.
-def var li-line     as int  no-undo.
+    DEFINE VARIABLE lc-customer AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-assign   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-line     AS INTEGER  NO-UNDO.
 
-open query q for each b-query no-lock
-        where b-query.CompanyCode = pc-CompanyCode
-          and b-query.AccountNumber >= lc-acc-lo
-          and b-query.AccountNumber <= lc-acc-hi
-          and b-query.AssignTo >= lc-ass-lo
-          and b-query.AssignTo <= lc-ass-hi
-          and b-query.AreaCode >= lc-area-lo
-          and b-query.AreaCode <= lc-area-hi
-          and b-query.CatCode  >= lc-cat-lo
-          and b-query.CatCode  <= lc-cat-hi
-          and b-query.CreateDate  >= date(lc-date-lo)              /* 3708  */  
-          and b-query.CreateDate  <= date(lc-date-hi)              /* 3708  */  
-          and can-do(lc-srch-status,b-query.StatusCode)
-          by b-query.IssueNumber.
+    OPEN QUERY q FOR EACH b-query NO-LOCK
+        WHERE b-query.CompanyCode = pc-CompanyCode
+        AND b-query.AccountNumber >= lc-acc-lo
+        AND b-query.AccountNumber <= lc-acc-hi
+        AND b-query.AssignTo >= lc-ass-lo
+        AND b-query.AssignTo <= lc-ass-hi
+        AND b-query.AreaCode >= lc-area-lo
+        AND b-query.AreaCode <= lc-area-hi
+        AND b-query.CatCode  >= lc-cat-lo
+        AND b-query.CatCode  <= lc-cat-hi
+        AND b-query.CreateDate  >= date(lc-date-lo)              /* 3708  */  
+        AND b-query.CreateDate  <= date(lc-date-hi)              /* 3708  */  
+        AND can-do(lc-srch-status,b-query.StatusCode)
+        BY b-query.IssueNumber.
 
-get first q no-lock.
-repeat while avail b-query:
+    GET FIRST q NO-LOCK.
+    REPEAT WHILE AVAILABLE b-query:
 
-    find b-status of b-query no-lock no-error.
+        FIND b-status OF b-query NO-LOCK NO-ERROR.
 
-    if avail b-status then
-    do:
-        assign lc-status = b-status.Description.
-        if b-status.CompletedStatus
-        then lc-status = lc-status + ' (closed)'.
-        else lc-status = lc-status + ' (open)'.
+        IF AVAILABLE b-status THEN
+        DO:
+            ASSIGN 
+                lc-status = b-status.Description.
+            IF b-status.CompletedStatus
+                THEN lc-status = lc-status + ' (closed)'.
+            ELSE lc-status = lc-status + ' (open)'.
 
-        assign lc-status = pxml-safe(lc-status).
-    end.
-    else lc-status = "&nbsp;".
+            ASSIGN 
+                lc-status = pxml-safe(lc-status).
+        END.
+        ELSE lc-status = "&nbsp;".
 
-    find b-area of b-query no-lock no-error.
-    assign lc-area = if avail b-area 
-                     then pxml-safe(b-area.Description)
-                     else "&nbsp;".
+        FIND b-area OF b-query NO-LOCK NO-ERROR.
+        ASSIGN 
+            lc-area = IF AVAILABLE b-area 
+                     THEN pxml-safe(b-area.Description)
+                     ELSE "&nbsp;".
 
-    find Customer of b-query no-lock 
-                no-error.
-    assign lc-customer = if avail Customer
-                        then pxml-safe(Customer.name) else "Missing".
+        FIND Customer OF b-query NO-LOCK 
+            NO-ERROR.
+        ASSIGN 
+            lc-customer = IF AVAILABLE Customer
+                        THEN pxml-safe(Customer.name) ELSE "Missing".
     
-    find b-assign where b-assign.loginid = b-query.AssignTo no-lock no-error.
-    assign lc-assign = if avail b-assign then pxml-safe(b-assign.Name)
-                       else "".
+        FIND b-assign WHERE b-assign.loginid = b-query.AssignTo NO-LOCK NO-ERROR.
+        ASSIGN 
+            lc-assign = IF AVAILABLE b-assign THEN pxml-safe(b-assign.Name)
+                       ELSE "".
     
 
     
-    /*
-    ***
-    *** Header Here
-    ***
-    */
+        /*
+        ***
+        *** Header Here
+        ***
+        */
 
-    {&prince}
+        {&prince}
         '<table class="hinfo">' skip
         '<thead><tr>' skip
             '<th>Issue Number:</th><td>' b-query.IssueNumber '</td>' skip
@@ -293,10 +277,10 @@ repeat while avail b-query:
             '<th>Area:</th><td>' lc-area '</td>' skip
 
         '</tr>' skip.
-    {&prince}
+        {&prince}
         '<tr>'
-            '<th>Customer:</th>'
-            '<td>' lc-Customer '</td>' skip
+        '<th>Customer:</th>'
+        '<td>' lc-Customer '</td>' skip
             '<td colspan="4">' 
                 replace(pxml-safe(b-query.BriefDescription + '~n' + b-query.longdescription),'~n','<BR>')
             '</td>'
@@ -305,92 +289,98 @@ repeat while avail b-query:
         '</tr></thead>' skip.      
 
 
-    {&prince} '</table>'.
-    empty temp-table tt.
+        {&prince} '</table>'.
+        EMPTY TEMP-TABLE tt.
 
-    assign li-line = 0.
+        ASSIGN 
+            li-line = 0.
 
-    for each IssNote no-lock of b-query
-        by IssNote.CreateDate desc
-        by IssNote.CreateTime desc
-        :
-        find webnote of IssNote no-lock no-error.
-        if not avail webNote then next.
-        if ll-customer and not WebNote.CustomerCanView then next.
+        FOR EACH IssNote NO-LOCK OF b-query
+            BY IssNote.CreateDate DESCENDING
+            BY IssNote.CreateTime DESCENDING
+            :
+            FIND webnote OF IssNote NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE webNote THEN NEXT.
+            IF ll-customer AND NOT WebNote.CustomerCanView THEN NEXT.
         
-        find b-user where b-user.loginid = IssNote.Loginid no-lock no-error.
+            FIND b-user WHERE b-user.loginid = IssNote.Loginid NO-LOCK NO-ERROR.
 
-        assign li-line = li-line + 1.
-        create tt.
-        assign tt.lineno = li-line
-               tt.n-date = IssNote.CreateDate
-               tt.n-time = IssNote.CreateTime
-               tt.n-user = if avail b-user 
-                           then b-user.name else ""
-               tt.n-contents = IssNote.contents.
-    end.
+            ASSIGN 
+                li-line = li-line + 1.
+            CREATE tt.
+            ASSIGN 
+                tt.lineno = li-line
+                tt.n-date = IssNote.CreateDate
+                tt.n-time = IssNote.CreateTime
+                tt.n-user = IF AVAILABLE b-user 
+                           THEN b-user.name ELSE ""
+                tt.n-contents = IssNote.contents.
+        END.
 
-    for each IssStatus no-lock of b-query
-            by IssStatus.ChangeDate desc
-           by IssStatus.ChangeTime desc:
+        FOR EACH IssStatus NO-LOCK OF b-query
+            BY IssStatus.ChangeDate DESCENDING
+            BY IssStatus.ChangeTime DESCENDING:
 
-        find b-user where b-user.Loginid = IssStatus.LoginId no-lock no-error.
-        find b-status where b-status.companyCode = b-query.CompanyCode
-                        and b-status.StatusCode = IssStatus.NewStatusCode
-             no-lock no-error.
-        find first tt where tt.s-date = ? exclusive-lock no-error.
-        if not avail tt then
-        do:
-            find last tt no-lock no-error.
-            assign li-line = if avail tt then tt.lineno + 1
-                               else 1.
-            create tt.
-            assign tt.lineno = li-line.
-        end.
-        assign tt.s-date = IssStatus.ChangeDate
-               tt.s-time = IssStatus.ChangeTime
-               tt.s-user = if avail b-user then b-user.name else ""
-               tt.s-status = if avail b-status then b-status.description
-                             else "".
-    end.
+            FIND b-user WHERE b-user.Loginid = IssStatus.LoginId NO-LOCK NO-ERROR.
+            FIND b-status WHERE b-status.companyCode = b-query.CompanyCode
+                AND b-status.StatusCode = IssStatus.NewStatusCode
+                NO-LOCK NO-ERROR.
+            FIND FIRST tt WHERE tt.s-date = ? EXCLUSIVE-LOCK NO-ERROR.
+            IF NOT AVAILABLE tt THEN
+            DO:
+                FIND LAST tt NO-LOCK NO-ERROR.
+                ASSIGN 
+                    li-line = IF AVAILABLE tt THEN tt.lineno + 1
+                               ELSE 1.
+                CREATE tt.
+                ASSIGN 
+                    tt.lineno = li-line.
+            END.
+            ASSIGN 
+                tt.s-date = IssStatus.ChangeDate
+                tt.s-time = IssStatus.ChangeTime
+                tt.s-user = IF AVAILABLE b-user THEN b-user.name ELSE ""
+                tt.s-status = IF AVAILABLE b-status THEN b-status.description
+                             ELSE "".
+        END.
 
-    find first tt no-lock no-error.
-    if avail tt then
-    do:
-        {&prince}
+        FIND FIRST tt NO-LOCK NO-ERROR.
+        IF AVAILABLE tt THEN
+        DO:
+            {&prince}
             '<table class="browse">' skip
             '<thead>' skip
             '<tr><th colspan="3" style="border-bottom: none;">Notes</th><th colspan="3" style="border-bottom: none;">Status Changes</th></tr>'
             '<tr><th>Date</th><th>User</th><th>Details</th><th>Date</th><th>User</th><th>Status</tr></thead>' skip.
 
-        for each tt no-lock:
-            {&prince}
+            FOR EACH tt NO-LOCK:
+                {&prince}
                 '<tr>'
-                    '<td>'
-                        if tt.n-date = ? then "&nbsp;" 
-                        else string(tt.n-date,"99/99/9999") + "&nbsp;" + string(tt.n-time,"hh:mm am")
-                    '</td>'
-                    '<td>'
-                        if tt.n-user = "" then "&nbsp;"
-                        else pxml-safe(tt.n-user)
-                    '</td>'
-                    '<td>'
-                        if tt.n-contents = "" then "&nbsp;"
-                        else replace(pxml-safe(tt.n-contents),'~n','<BR>')
-                    '</td>'
+                '<td>'
+                IF tt.n-date = ? THEN "&nbsp;" 
+                ELSE STRING(tt.n-date,"99/99/9999") + "&nbsp;" + string(tt.n-time,"hh:mm am")
+                '</td>'
+                '<td>'
+                IF tt.n-user = "" THEN "&nbsp;"
+                ELSE pxml-safe(tt.n-user)
+                '</td>'
+                '<td>'
+                IF tt.n-contents = "" THEN "&nbsp;"
+                ELSE REPLACE(pxml-safe(tt.n-contents),'~n','<BR>')
+                '</td>'
 
-                    '<td>'
-                        if tt.s-date = ? then "&nbsp;" 
-                        else string(tt.s-date,"99/99/9999") + "&nbsp;" + string(tt.s-time,"hh:mm am")
-                    '</td>'
-                    '<td>'
-                        if tt.s-user = "" then "&nbsp;"
-                        else pxml-safe(tt.s-user)
-                    '</td>'
-                    '<td>'
-                        if tt.s-status = "" then "&nbsp;"
-                        else pxml-safe(tt.s-status)
-                    '</td>'
+                '<td>'
+                IF tt.s-date = ? THEN "&nbsp;" 
+                ELSE STRING(tt.s-date,"99/99/9999") + "&nbsp;" + string(tt.s-time,"hh:mm am")
+                '</td>'
+                '<td>'
+                IF tt.s-user = "" THEN "&nbsp;"
+                ELSE pxml-safe(tt.s-user)
+                '</td>'
+                '<td>'
+                IF tt.s-status = "" THEN "&nbsp;"
+                ELSE pxml-safe(tt.s-status)
+                '</td>'
 
 
 
@@ -398,193 +388,191 @@ repeat while avail b-query:
 
 
             
-        end.
+            END.
 
-        {&prince} '</table>' skip.
+            {&prince} '</table>' skip.
         
-    end.
+        END.
 
-    {&prince}
+        {&prince}
         '<br>' skip.
     
-    get next q no-lock.
+        GET NEXT q NO-LOCK.
 
     
-end.
+    END.
 
 
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-PrintRange) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-PrintRange Procedure 
 PROCEDURE ip-PrintRange :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-    def var lc-account      as char no-undo.
-    def var lc-status       as char no-undo.
-    def var lc-area         as char no-undo.
-    def var lc-assign       as char no-undo.
+    DEFINE VARIABLE lc-account      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-status       AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-area         AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-assign       AS CHARACTER NO-UNDO.
 
-    def buffer b-cust for Customer.
-    def buffer b-Status for WebStatus.
-    def buffer b-Area   for WebIssArea.
-    def buffer b-user   for WebUser.
+    DEFINE BUFFER b-cust FOR Customer.
+    DEFINE BUFFER b-Status FOR WebStatus.
+    DEFINE BUFFER b-Area   FOR WebIssArea.
+    DEFINE BUFFER b-user   FOR WebUser.
 
-    if pc-account = htmlib-Null()
-    then assign lc-account = 'All'.
-    else
-    do:
-        find b-cust where b-cust.AccountNumber = pc-account no-lock no-error.
-        assign lc-account = if avail b-cust then b-cust.name else "".
-    end.
+    IF pc-account = htmlib-Null()
+        THEN ASSIGN lc-account = 'All'.
+    ELSE
+    DO:
+        FIND b-cust WHERE b-cust.AccountNumber = pc-account NO-LOCK NO-ERROR.
+        ASSIGN 
+            lc-account = IF AVAILABLE b-cust THEN b-cust.name ELSE "".
+    END.
 
-    case pc-status:
-        when 'allopen' then lc-status = 'Open'.
-        when 'allclosed' then lc-status = 'Closed'.
-        when htmlib-null() then lc-status = 'All'.
-        otherwise
-        do:
-            find b-status where b-status.StatusCode = pc-status no-lock no-error.
-            assign lc-status = if avail b-status
-                               then b-status.Description else pc-status.
-        end.
-    end case.
+    CASE pc-status:
+        WHEN 'allopen' THEN 
+            lc-status = 'Open'.
+        WHEN 'allclosed' THEN 
+            lc-status = 'Closed'.
+        WHEN htmlib-null() THEN 
+            lc-status = 'All'.
+        OTHERWISE
+        DO:
+            FIND b-status WHERE b-status.StatusCode = pc-status NO-LOCK NO-ERROR.
+            ASSIGN 
+                lc-status = IF AVAILABLE b-status
+                               THEN b-status.Description ELSE pc-status.
+        END.
+    END CASE.
 
-    if pc-Area = htmlib-Null()
-    then assign lc-area = 'All'.
-    else
-    do:
-        find b-area where b-area.AreaCode = pc-Area no-lock no-error.
-        assign lc-area = if avail b-area 
-                         then b-area.Description else "".
-    end.
+    IF pc-Area = htmlib-Null()
+        THEN ASSIGN lc-area = 'All'.
+    ELSE
+    DO:
+        FIND b-area WHERE b-area.AreaCode = pc-Area NO-LOCK NO-ERROR.
+        ASSIGN 
+            lc-area = IF AVAILABLE b-area 
+                         THEN b-area.Description ELSE "".
+    END.
 
-    case pc-Assign:
-        when 'NotAssigned' then lc-assign = 'Not Assigned'.
-        when htmlib-Null() then lc-assign = 'All'.
-        otherwise
-        do:
-            find b-user where b-user.LoginID = pc-assign no-lock no-error.
-            assign lc-assign = if avail b-user then b-user.name else "".
-        end.
-    end case.
+    CASE pc-Assign:
+        WHEN 'NotAssigned' THEN 
+            lc-assign = 'Not Assigned'.
+        WHEN htmlib-Null() THEN 
+            lc-assign = 'All'.
+        OTHERWISE
+        DO:
+            FIND b-user WHERE b-user.LoginID = pc-assign NO-LOCK NO-ERROR.
+            ASSIGN 
+                lc-assign = IF AVAILABLE b-user THEN b-user.name ELSE "".
+        END.
+    END CASE.
     
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-SetRanges) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-SetRanges Procedure 
 PROCEDURE ip-SetRanges :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    if pc-account = htmlib-Null()
-    then assign lc-acc-lo = ""
-                lc-acc-hi = "ZZZZZZZZZZZZZZZZZZZZZZZZ".
-    else assign lc-acc-lo = pc-account
-                lc-acc-hi = pc-account.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    IF pc-account = htmlib-Null()
+        THEN ASSIGN lc-acc-lo = ""
+            lc-acc-hi = "ZZZZZZZZZZZZZZZZZZZZZZZZ".
+    ELSE ASSIGN lc-acc-lo = pc-account
+            lc-acc-hi = pc-account.
 
-    if ll-Customer
-    then assign lc-acc-lo = webuser.AccountNumber
-                lc-acc-hi = webUser.AccountNumber.
+    IF ll-Customer
+        THEN ASSIGN lc-acc-lo = webuser.AccountNumber
+            lc-acc-hi = webUser.AccountNumber.
 
-    if pc-status = htmlib-Null() 
-    then assign lc-srch-status = "*".
-    else
-    if pc-status = "AllOpen" 
-    then assign lc-srch-status = lc-open-status.
-    else 
-    if pc-status = "AllClosed"
-    then assign lc-srch-status = lc-closed-status.
-    else assign lc-srch-status = pc-status.
+    IF pc-status = htmlib-Null() 
+        THEN ASSIGN lc-srch-status = "*".
+    ELSE
+        IF pc-status = "AllOpen" 
+            THEN ASSIGN lc-srch-status = lc-open-status.
+        ELSE 
+            IF pc-status = "AllClosed"
+                THEN ASSIGN lc-srch-status = lc-closed-status.
+            ELSE ASSIGN lc-srch-status = pc-status.
 
     
-    if pc-assign = htmlib-null() 
-    then assign lc-ass-lo = ""
-                lc-ass-hi = "ZZZZZZZZZZZZZZZZ".
-    else
-    if pc-assign = "NotAssigned" 
-    then assign lc-ass-lo = ""
+    IF pc-assign = htmlib-null() 
+        THEN ASSIGN lc-ass-lo = ""
+            lc-ass-hi = "ZZZZZZZZZZZZZZZZ".
+    ELSE
+        IF pc-assign = "NotAssigned" 
+            THEN ASSIGN lc-ass-lo = ""
                 lc-ass-hi = "".
-    else assign lc-ass-lo = pc-assign
+        ELSE ASSIGN lc-ass-lo = pc-assign
                 lc-ass-hi = pc-assign.
 
-    if pc-area = htmlib-null() 
-    then assign lc-area-lo = ""
-                lc-area-hi = "ZZZZZZZZZZZZZZZZ".
-    else
-    if pc-area = "NotAssigned" 
-    then assign lc-area-lo = ""
+    IF pc-area = htmlib-null() 
+        THEN ASSIGN lc-area-lo = ""
+            lc-area-hi = "ZZZZZZZZZZZZZZZZ".
+    ELSE
+        IF pc-area = "NotAssigned" 
+            THEN ASSIGN lc-area-lo = ""
                 lc-area-hi = "".
-    else assign lc-area-lo = pc-area
+        ELSE ASSIGN lc-area-lo = pc-area
                 lc-area-hi = pc-area.
 
-    if pc-category = htmlib-Null()
-    then assign lc-cat-lo = ""
-                lc-cat-hi = "zzzzzzzzzzzzzzz".
-    else assign lc-cat-lo = pc-category
-                lc-cat-hi = pc-category.
+    IF pc-category = htmlib-Null()
+        THEN ASSIGN lc-cat-lo = ""
+            lc-cat-hi = "zzzzzzzzzzzzzzz".
+    ELSE ASSIGN lc-cat-lo = pc-category
+            lc-cat-hi = pc-category.
 
-    if pc-lodate = htmlib-Null()                             /* 3708  */  
-    then assign lc-date-lo = string(today - 365)             /* 3708  */  
-                lc-date-hi = string(today).                  /* 3708  */  
-    else assign lc-date-lo = pc-lodate                       /* 3708  */  
-                lc-date-hi = pc-hidate.
+    IF pc-lodate = htmlib-Null()                             /* 3708  */  
+        THEN ASSIGN lc-date-lo = STRING(TODAY - 365)             /* 3708  */  
+            lc-date-hi = STRING(TODAY).                  /* 3708  */  
+    ELSE ASSIGN lc-date-lo = pc-lodate                       /* 3708  */  
+            lc-date-hi = pc-hidate.
 
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-StatusType) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-StatusType Procedure 
 PROCEDURE ip-StatusType :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-    def output param    pc-open-status      as char no-undo.
-    def output param    pc-closed-status    as char no-undo.
+    DEFINE OUTPUT PARAMETER    pc-open-status      AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER    pc-closed-status    AS CHARACTER NO-UNDO.
 
-    def buffer b-status for WebStatus.
+    DEFINE BUFFER b-status FOR WebStatus.
 
-    for each b-status no-lock:
-        if b-status.CompletedStatus = false 
-        then assign pc-open-status = trim(pc-open-status + ',' + b-status.StatusCode).
-        else assign pc-closed-status = trim(pc-closed-status + ',' + b-status.StatusCode).
+    FOR EACH b-status NO-LOCK:
+        IF b-status.CompletedStatus = FALSE 
+            THEN ASSIGN pc-open-status = TRIM(pc-open-status + ',' + b-status.StatusCode).
+        ELSE ASSIGN pc-closed-status = TRIM(pc-closed-status + ',' + b-status.StatusCode).
        
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

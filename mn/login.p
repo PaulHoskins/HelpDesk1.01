@@ -23,17 +23,17 @@ CREATE WIDGET-POOL.
 DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-user AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-pass AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-reason AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-user        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pass        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-value       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-reason      AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-url-company  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-url-company AS CHARACTER NO-UNDO.
 
-DEFINE BUFFER WebUser      FOR webuser.
-DEFINE BUFFER company      FOR company.
+DEFINE BUFFER WebUser FOR webuser.
+DEFINE BUFFER company FOR company.
 
-DEFINE VARIABLE lc-AttrData     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AttrData AS CHARACTER NO-UNDO.
 
 
 
@@ -85,29 +85,29 @@ RUN process-web-request.
 &IF DEFINED(EXCLUDE-ip-CompanyInfo) = 0 &THEN
 
 PROCEDURE ip-CompanyInfo :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     {&out} '<br><br><div class="loglink" style="clear:both;">'.
     IF company.helpdeskEmail <> "" 
-    THEN {&out} '<p><img src="/images/contact/email.gif">&nbsp;' 
-                '<a href="mailto:' company.HelpDeskEmail '">'
+        THEN {&out} '<p><img src="/images/contact/email.gif">&nbsp;' 
+    '<a href="mailto:' company.HelpDeskEmail '">'
         
-                html-encode(company.helpdeskemail) 
-        '</a>'
-        '</p>'.
+    html-encode(company.helpdeskemail) 
+    '</a>'
+    '</p>'.
     IF company.helpdeskPhone <> "" 
-    THEN {&out} '<p><img src="/images/contact/phone.gif">&nbsp;' 
-        html-encode(company.helpdeskphone) '</p>'.
+        THEN {&out} '<p><img src="/images/contact/phone.gif">&nbsp;' 
+    html-encode(company.helpdeskphone) '</p>'.
     IF company.WebAddress <> "" 
-    THEN {&out} '<p><img  src="/images/contact/web.gif">&nbsp;'
-                '<a href="' company.WebAddress '">'
-                html-encode(company.WebAddress) 
-                '</a>'
-                '</p>'.
+        THEN {&out} '<p><img  src="/images/contact/web.gif">&nbsp;'
+    '<a href="' company.WebAddress '">'
+    html-encode(company.WebAddress) 
+    '</a>'
+    '</p>'.
     
 
 
@@ -122,11 +122,11 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     DEFINE INPUT PARAMETER pc-user AS CHARACTER NO-UNDO.
     DEFINE INPUT PARAMETER pc-pass AS CHARACTER NO-UNDO.
@@ -136,57 +136,59 @@ PROCEDURE ip-Validate :
     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    ASSIGN pc-reason = "".
+    ASSIGN 
+        pc-reason = "".
 
     DEFINE BUFFER b-webuser FOR webuser.
 
     IF pc-user = "" THEN
     DO:
         RUN htmlib-AddErrorMessage('User', 'You must enter your user name',
-                                   INPUT-OUTPUT pc-error-field,
-                                   INPUT-OUTPUT pc-error-msg ).
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
         RETURN.
     END.
     
     
     FIND b-webuser WHERE b-webuser.LoginID = pc-user NO-LOCK NO-ERROR.
     IF NOT AVAILABLE b-webuser 
-    OR b-webuser.companycode <> lc-url-company THEN
+        OR b-webuser.companycode <> lc-url-company THEN
     DO:
         RUN htmlib-AddErrorMessage('User', 'This user name does not exist',
-                                   INPUT-OUTPUT pc-error-field,
-                                   INPUT-OUTPUT pc-error-msg ).
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
         RETURN.
     END.
 
     IF b-webuser.disabled THEN
     DO:
         RUN htmlib-AddErrorMessage('User', 'Your user account has been disabled',
-                                   INPUT-OUTPUT pc-error-field,
-                                   INPUT-OUTPUT pc-error-msg ).
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
     END.
 
     IF ENCODE(lc-pass) <> b-webuser.Passwd THEN
     DO:
         RUN htmlib-AddErrorMessage('User', 'The password is incorrect',
-                                   INPUT-OUTPUT pc-error-field,
-                                   INPUT-OUTPUT pc-error-msg ).
-        ASSIGN pc-reason = "password".
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+        ASSIGN 
+            pc-reason = "password".
         RETURN.
     END.
 
     CASE b-webuser.UserClass:
         WHEN "CONTRACT" THEN
-        DO:
-            IF NOT CAN-FIND(FIRST ContAccess
-                            WHERE ContAccess.Loginid = b-webuser.LoginID
-                            NO-LOCK) THEN
             DO:
+                IF NOT CAN-FIND(FIRST ContAccess
+                    WHERE ContAccess.Loginid = b-webuser.LoginID
+                    NO-LOCK) THEN
+                DO:
 
 
+                END.
             END.
-        END.
     END CASE.
 
     
@@ -199,54 +201,54 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
@@ -256,22 +258,22 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
   
 
     ASSIGN
         lc-url-company = get-value("company").
 
     IF lc-url-company = ""
-    OR NOT CAN-FIND(company WHERE company.companycode = lc-url-company)
-    THEN ASSIGN lc-url-company = "MICAR".
+        OR NOT CAN-FIND(company WHERE company.companycode = lc-url-company)
+        THEN ASSIGN lc-url-company = "MICAR".
 
     ASSIGN
-        lc-url-company = LC(lc-url-company)
+        lc-url-company    = LC(lc-url-company)
         lc-global-company = lc-url-company.
 
     FIND company WHERE company.companycode = lc-url-company NO-LOCK NO-ERROR.
@@ -283,15 +285,16 @@ PROCEDURE process-web-request :
 
     IF request_method = "POST" THEN
     DO:
-        ASSIGN lc-user = get-field("user")
-               lc-pass = get-field("password").
+        ASSIGN 
+            lc-user = get-field("user")
+            lc-pass = get-field("password").
 
         RUN ip-Validate ( 
-                            INPUT lc-user,
-                            INPUT lc-pass,
-                            OUTPUT lc-reason,
-                            OUTPUT lc-error-field,
-                            OUTPUT lc-error-mess ).  
+            INPUT lc-user,
+            INPUT lc-pass,
+            OUTPUT lc-reason,
+            OUTPUT lc-error-field,
+            OUTPUT lc-error-mess ).  
         IF lc-error-mess = "" THEN
         DO:
             RUN attrlib-SetAttribute("USER",lc-user,INPUT-OUTPUT lc-AttrData).
@@ -301,21 +304,22 @@ PROCEDURE process-web-request :
 
             set-user-field("IPADD",REMOTE_ADDR).
 
-            ASSIGN lc-value = htmlib-EncodeUser(lc-user). 
+            ASSIGN 
+                lc-value = htmlib-EncodeUser(lc-user). 
             
             FIND webUser 
                 WHERE webUser.LoginID = lc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
             IF AVAILABLE WebUser
-            THEN ASSIGN WebUser.LastDate = TODAY
-                        WebUser.LastTime = TIME.
+                THEN ASSIGN WebUser.LastDate = TODAY
+                    WebUser.LastTime = TIME.
 
             Set-Cookie("ExtranetUser",
-                      lc-value,
-                      DYNAMIC-FUNCTION("com-CookieDate",lc-user),
-                      DYNAMIC-FUNCTION("com-CookieTime",lc-user),
-                      APPurl,
-                      ?,
-                      IF hostURL BEGINS "https" THEN "secure" ELSE ?).
+                lc-value,
+                DYNAMIC-FUNCTION("com-CookieDate",lc-user),
+                DYNAMIC-FUNCTION("com-CookieTime",lc-user),
+                APPurl,
+                ?,
+                IF hostURL BEGINS "https" THEN "secure" ELSE ?).
 
             ASSIGN
                 REQUEST_METHOD = "GET".
@@ -339,9 +343,9 @@ PROCEDURE process-web-request :
     {&out} htmlib-Header(company.name + " - Help Desk Login") skip.
     
     {&out}
-            '<div style="width: 100%;">'
-                '<img src="/images/menu/' lc-url-company '/banner.jpg" style="float: right;">'
-            '</div>' skip.
+    '<div style="width: 100%;">'
+    '<img src="/images/menu/' lc-url-company '/banner.jpg" style="float: right;">'
+    '</div>' skip.
    
     {&out} '<div style="clear: both;">'.
 
@@ -364,11 +368,11 @@ PROCEDURE process-web-request :
         FIND company WHERE company.companycode = WebUser.companycode NO-LOCK.
 
         IF WebUser.email <> "" 
-        AND ( company.smtp <> "" AND company.helpdeskemail <> "" ) THEN
+            AND ( company.smtp <> "" AND company.helpdeskemail <> "" ) THEN
         DO:
             {&out} '<br><br><div class="loglink">'
                     
-                   '<p>Hi ' WebUser.forename ',<br>' skip
+            '<p>Hi ' WebUser.forename ',<br>' skip
                    'The password entered was incorrect for your user name.&nbsp;'
                    'Click ' 
                         '<a href="' appurl "/mn/loginpass.p?rowid=" string(rowid(WebUser)) '" style="font-weight: bolder;">'
@@ -381,14 +385,14 @@ PROCEDURE process-web-request :
         END.
     END.
     {&out}
-            '</td><td valign="top" align="right">' skip.
+    '</td><td valign="top" align="right">' skip.
 
 
     {&out} '<table><tr><td>'.
 
     {&out} ( IF LOOKUP("user",lc-error-field,'|') > 0 
-           THEN htmlib-SideLabelError("User Name")
-           ELSE htmlib-SideLabel("User Name"))
+        THEN htmlib-SideLabelError("User Name")
+        ELSE htmlib-SideLabel("User Name"))
            skip
            '</td><td valign="top" align="left">'
            htmlib-InputField("user",20,lc-user)
@@ -404,7 +408,7 @@ PROCEDURE process-web-request :
 
   
     {&out} '<tr><td align=center colspan="2" nowrap><BR>' htmlib-MultiplyErrorMessage(lc-error-mess)
-           htmlib-SubmitButton("submitform","Login") skip
+    htmlib-SubmitButton("submitform","Login") skip
           '</td></tr></table>' skip.
 
     

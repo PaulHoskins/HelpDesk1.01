@@ -14,33 +14,36 @@
 
 {src/web/method/wrap-cgi.i}
 
-def var lc-global-helpdesk      as char no-undo.
-def var lc-global-reportpath    as char no-undo.
-def var lc-docid                as char no-undo.
-def var lc-doctype              as char no-undo.
-def var lb-blob                 as raw  no-undo.
-def var li-line                 as int  no-undo.
-def var TYPEOF                  as char initial "Detail,Summary_Detail,Summary" no-undo.
-def var ISSUE                   as char initial "Customer,Engineer,Issues"  no-undo.
-def var CAL                     as char initial "Week,Month" no-undo.
+DEFINE VARIABLE lc-global-helpdesk      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-reportpath    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-docid                AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-doctype              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lb-blob                 AS RAW  NO-UNDO.
+DEFINE VARIABLE li-line                 AS INTEGER  NO-UNDO.
+DEFINE VARIABLE TYPEOF                  AS CHARACTER INITIAL "Detail,Summary_Detail,Summary" NO-UNDO.
+DEFINE VARIABLE ISSUE                   AS CHARACTER INITIAL "Customer,Engineer,Issues"  NO-UNDO.
+DEFINE VARIABLE CAL                     AS CHARACTER INITIAL "Week,Month" NO-UNDO.
  
 
-find WebAttr where WebAttr.SystemID = "BATCHWORK"
-             and   WebAttr.AttrID   = "BATCHPATH"
-no-lock no-error.
-assign lc-global-helpdesk =  WebAttr.AttrValue .
+FIND WebAttr WHERE WebAttr.SystemID = "BATCHWORK"
+    AND   WebAttr.AttrID   = "BATCHPATH"
+    NO-LOCK NO-ERROR.
+ASSIGN 
+    lc-global-helpdesk =  WebAttr.AttrValue .
 
-find WebAttr where WebAttr.SystemID = "BATCHWORK"
-             and   WebAttr.AttrID   = "REPORTPATH"
-no-lock no-error.
-assign lc-global-reportpath =  WebAttr.AttrValue .
+FIND WebAttr WHERE WebAttr.SystemID = "BATCHWORK"
+    AND   WebAttr.AttrID   = "REPORTPATH"
+    NO-LOCK NO-ERROR.
+ASSIGN 
+    lc-global-reportpath =  WebAttr.AttrValue .
 
-assign lc-docid = get-value("docid").
+ASSIGN 
+    lc-docid = get-value("docid").
 
-find first BatchWork where rowid(BatchWork) = to-rowid(lc-docid) no-lock no-error.
+FIND FIRST BatchWork WHERE ROWID(BatchWork) = to-rowid(lc-docid) NO-LOCK NO-ERROR.
 
-  output-content-type("text/html").
-  put {&webstream} unformatted
+output-content-type("text/html").
+PUT {&webstream} unformatted
       '<html><head><title>Document Details</title></head>' skip
       '<body>' skip
       '<h2> Details for batch ' string(BatchWork.BatchID) ' </h2><br /> ' skip
@@ -51,9 +54,9 @@ find first BatchWork where rowid(BatchWork) = to-rowid(lc-docid) no-lock no-erro
       ' For :  '        entry(integer(BatchWork.BatchParams[3]),ISSUE) ' <br /> ' skip
       ' By : '          entry(integer(BatchWork.BatchParams[4]),CAL) ' <br /> ' skip.
 
-      if BatchWork.BatchParams[3] = "2" then  put {&webstream} unformatted ' Engineers : '   BatchWork.BatchParams[5] ' <br /> ' skip.
-        else  put {&webstream} unformatted ' Customers : '   BatchWork.BatchParams[6] ' <br /> ' skip.
-  put {&webstream} unformatted
+IF BatchWork.BatchParams[3] = "2" THEN  PUT {&webstream} unformatted ' Engineers : '   BatchWork.BatchParams[5] ' <br /> ' skip.
+ELSE  PUT {&webstream} unformatted ' Customers : '   BatchWork.BatchParams[6] ' <br /> ' skip.
+PUT {&webstream} unformatted
       ' Period : '      BatchWork.BatchParams[7] ' <br /> <br />' skip
       '<input   type="button" id=closebutton value="Close"    name="ButtonClose" onclick="javascript:window.close()"  class="button">'  skip
       ' </body></html>' skip.
@@ -63,14 +66,14 @@ find first BatchWork where rowid(BatchWork) = to-rowid(lc-docid) no-lock no-erro
  
 
 
-procedure ip-Error:
-    def input param pc-error as char no-undo.
+PROCEDURE ip-Error:
+    DEFINE INPUT PARAMETER pc-error AS CHARACTER NO-UNDO.
     output-content-type("text/html").
-    put {&webstream} unformatted
+    PUT {&webstream} unformatted
         '<html><head><title>Document Error</title></head>'
         '<body>'
         '<h1>This document can not be displayed</h1><br>'
         '<h2>Document ID =' lc-docid '</h2><br>'
         '<h2>' pc-error '</h2></body></html>' skip.
-    return.
-end procedure.
+    RETURN.
+END PROCEDURE.

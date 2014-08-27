@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /*------------------------------------------------------------------------
 
   File: 
@@ -34,20 +31,17 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg   as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 
-def var lc-oldpass     as char no-undo.
-def var lc-newpass1    as char no-undo.
-def var lc-newpass2    as char no-undo.
+DEFINE VARIABLE lc-oldpass     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-newpass1    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-newpass2    AS CHARACTER NO-UNDO.
 
-def var lc-expire       as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-expire      AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -56,48 +50,32 @@ def var lc-expire       as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -105,243 +83,238 @@ def var lc-expire       as char no-undo.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def input param pc-user as char no-undo.
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pc-user AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
-    def var li-length as int no-undo.
+    DEFINE VARIABLE li-length AS INTEGER NO-UNDO.
 
-    def buffer b-user for webuser.
+    DEFINE BUFFER b-user FOR webuser.
 
 
-    assign li-length = int(htmlib-GetAttr("PasswordRule","MinLength")).
+    ASSIGN 
+        li-length = int(htmlib-GetAttr("PasswordRule","MinLength")).
 
-    find b-user where b-user.loginid = pc-user no-lock no-error.
+    FIND b-user WHERE b-user.loginid = pc-user NO-LOCK NO-ERROR.
 
-    if not avail b-user then
-    do:
-        run htmlib-AddErrorMessage(
-                    'null', 
-                    'Your user record has been deleted',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-        return.
-    end.
-    if lc-oldpass = "" 
-    then run htmlib-AddErrorMessage(
-                    'oldpass', 
-                    'You must enter your old password',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-    else 
-    if encode(lc-oldpass) <> b-user.passwd 
-    then run htmlib-AddErrorMessage(
-                    'oldpass', 
-                    'This is not the correct password',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF NOT AVAILABLE b-user THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
+            'null', 
+            'Your user record has been deleted',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+        RETURN.
+    END.
+    IF lc-oldpass = "" 
+        THEN RUN htmlib-AddErrorMessage(
+            'oldpass', 
+            'You must enter your old password',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    ELSE 
+        IF ENCODE(lc-oldpass) <> b-user.passwd 
+            THEN RUN htmlib-AddErrorMessage(
+                'oldpass', 
+                'This is not the correct password',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
 
-    if lc-newpass1 = "" 
-    then run htmlib-AddErrorMessage(
-                    'newpass1', 
-                    'You must enter the new password',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-    else
-    if length(lc-newpass1) < li-length 
-    then run htmlib-AddErrorMessage(
-                    'newpass1', 
-                    'Your new password must be at least ' + 
-                        string(li-length) + ' characters long',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-    else
-    if lc-newpass1 begins pc-user 
-    then run htmlib-AddErrorMessage(
+    IF lc-newpass1 = "" 
+        THEN RUN htmlib-AddErrorMessage(
+            'newpass1', 
+            'You must enter the new password',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    ELSE
+        IF LENGTH(lc-newpass1) < li-length 
+            THEN RUN htmlib-AddErrorMessage(
+                'newpass1', 
+                'Your new password must be at least ' + 
+                string(li-length) + ' characters long',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+        ELSE
+            IF lc-newpass1 BEGINS pc-user 
+                THEN RUN htmlib-AddErrorMessage(
                     'newpass1', 
                     'Your new password can start with or be your user name',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
-    else
-    if lc-newpass1 <> lc-newpass2 
-    then run htmlib-AddErrorMessage(
-                    'newpass1', 
-                    'The new passwords must be the same',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
+            ELSE
+                IF lc-newpass1 <> lc-newpass2 
+                    THEN RUN htmlib-AddErrorMessage(
+                        'newpass1', 
+                        'The new passwords must be the same',
+                        INPUT-OUTPUT pc-error-field,
+                        INPUT-OUTPUT pc-error-msg ).
     
     
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    def buffer b-user for webuser.
+    DEFINE BUFFER b-user FOR webuser.
 
     {lib/checkloggedin.i}
 
     lc-expire    = get-value("expire").
 
-    if request_method = "POST" then
-    do:
-        assign lc-oldpass   = get-value("oldpass")
-               lc-newpass1  = get-value("newpass1")
-               lc-newpass2  = get-value("newpass2")
-               .
+    IF request_method = "POST" THEN
+    DO:
+        ASSIGN 
+            lc-oldpass   = get-value("oldpass")
+            lc-newpass1  = get-value("newpass1")
+            lc-newpass2  = get-value("newpass2")
+            .
         RUN ip-Validate ( lc-user ,
-                          output lc-error-field,
-                          output lc-error-msg ).
-        if lc-error-msg = "" then
-        do:
+            OUTPUT lc-error-field,
+            OUTPUT lc-error-msg ).
+        IF lc-error-msg = "" THEN
+        DO:
 
-            find b-user where b-user.loginid = lc-user
-                 exclusive-lock.
-            assign b-user.passwd = encode(lc-newpass1).
+            FIND b-user WHERE b-user.loginid = lc-user
+                EXCLUSIVE-LOCK.
+            ASSIGN 
+                b-user.passwd = ENCODE(lc-newpass1).
 
-            assign b-user.LastPasswordChange = today.
+            ASSIGN 
+                b-user.LastPasswordChange = TODAY.
 
             
             set-user-field("passwordchanged","yes").
-            if lc-expire = "yes"
-            then RUN run-web-object IN web-utilities-hdl ("mn/main.p").
-            else RUN run-web-object IN web-utilities-hdl ("mn/mainframe.p").
-            return.
+            IF lc-expire = "yes"
+                THEN RUN run-web-object IN web-utilities-hdl ("mn/main.p").
+            ELSE RUN run-web-object IN web-utilities-hdl ("mn/mainframe.p").
+            RETURN.
 
-        end.
+        END.
                    
-    end.
+    END.
 
     RUN outputHeader.
     
     {&out} htmlib-Header("Change Password") 
-           htmlib-StartForm("mainform","post", appurl + '/mn/changepassword.p' ).
+    htmlib-StartForm("mainform","post", appurl + '/mn/changepassword.p' ).
 
-    if lc-expire = "yes"
-    then {&out} htmlib-ProgramTitle("Password Expired - Please select a new one").
+    IF lc-expire = "yes"
+        THEN {&out} htmlib-ProgramTitle("Password Expired - Please select a new one").
     else {&out} htmlib-ProgramTitle("Change Your Password").
 
-    if lc-expire = "yes" then
-    {&out}
-      '<div style="border: 1px dotted red; padding: 15px; margin-bottom: 10px; margin-top: 10px; font-weight: bold; font-size: 12px; background-color: #FFFFCC;">'
+    IF lc-expire = "yes" THEN
+        {&out}
+    '<div style="border: 1px dotted red; padding: 15px; margin-bottom: 10px; margin-top: 10px; font-weight: bold; font-size: 12px; background-color: #FFFFCC;">'
                 
-        '<p>For security reasons your password is required to be changed.<p>'
+    '<p>For security reasons your password is required to be changed.<p>'
         
-      '</div>' skip.
+    '</div>' skip.
 
     {&out} htmlib-StartInputTable() skip.
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           ( if lookup("oldpass",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Old Password")
-           else htmlib-SideLabel("Old Password"))
-           '</TD>' skip
+        ( IF LOOKUP("oldpass",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Old Password")
+        ELSE htmlib-SideLabel("Old Password"))
+    '</TD>' skip
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-InputPassword("oldpass",20,"") skip
            '</TD></TR>' SKIP.
     
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           ( if lookup("newpass1",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("New Password")
-           else htmlib-SideLabel("New Password"))
-           '</TD>' skip
+        ( IF LOOKUP("newpass1",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("New Password")
+        ELSE htmlib-SideLabel("New Password"))
+    '</TD>' skip
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-InputPassword("newpass1",20,"") skip
            '</TD></TR>' SKIP.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           ( if lookup("newpass2",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Re-enter New Password")
-           else htmlib-SideLabel("Re-enter New Password"))
-           '</TD>' skip
+        ( IF LOOKUP("newpass2",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Re-enter New Password")
+        ELSE htmlib-SideLabel("Re-enter New Password"))
+    '</TD>' skip
            '<TD VALIGN="TOP" ALIGN="left">'
            htmlib-InputPassword("newpass2",20,"") skip
            '</TD></TR>' SKIP.
@@ -349,17 +322,17 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-EndTable() skip.
 
-    if lc-error-msg <> "" then
-    do:
+    IF lc-error-msg <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
-                htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+        htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
+    END.
 
     {&out} '<center>' htmlib-SubmitButton("submitform","Change Password") 
-               '</center>' skip.
+    '</center>' skip.
     
     {&out}
-        htmlib-hidden("expire",get-value("expire")).
+    htmlib-hidden("expire",get-value("expire")).
 
     {&OUT} htmlib-EndForm() skip 
            htmlib-Footer() skip.
@@ -367,8 +340,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

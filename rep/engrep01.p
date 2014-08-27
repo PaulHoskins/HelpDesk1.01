@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        rep/engrep01.p
@@ -21,33 +18,30 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-global-helpdesk    as char no-undo.
-def var lc-global-reportpath  as char no-undo.
+DEFINE VARIABLE lc-global-helpdesk   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-reportpath AS CHARACTER NO-UNDO.
 
-def var lc-error-field      as char no-undo.
-def var lc-error-msg        as char no-undo.
-def var lc-title            as char no-undo.
+DEFINE VARIABLE lc-error-field       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title             AS CHARACTER NO-UNDO.
 
-def var lc-reptypeA         as char no-undo.   
-def var lc-reptypeE         as char no-undo.
-def var lc-reptypeC         as char no-undo.
-def var lc-reptype-checked  as char no-undo.
-def var lc-selectengineer   as char no-undo.
-def var lc-selectcustomer   as char no-undo.
-def var lc-selectmonth      as char no-undo.
-def var lc-selectweek       as char no-undo.
-def var lc-selectyear       as char no-undo.
+DEFINE VARIABLE lc-reptypeA          AS CHARACTER NO-UNDO.   
+DEFINE VARIABLE lc-reptypeE          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-reptypeC          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-reptype-checked   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectengineer    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectcustomer    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectmonth       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectweek        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectyear        AS CHARACTER NO-UNDO.
 
-def var lc-date             as char no-undo.
-def var lc-days             as char no-undo.
-def var lc-pdf              as char no-undo.
-def var lc-setrun           as log  no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-date              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-days              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pdf               AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-setrun            AS LOG       NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -56,130 +50,101 @@ def var lc-setrun           as log  no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-Date2Wk) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Date2Wk Procedure 
 FUNCTION Date2Wk RETURNS INTEGER
-  (input dMyDate as date)  FORWARD.
+    (INPUT dMyDate AS DATE)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Period) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Period Procedure 
 FUNCTION Format-Select-Period RETURNS CHARACTER
-  ( pc-htm as char)  FORWARD.
+    ( pc-htm AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Type) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-Type Procedure 
 FUNCTION Format-Select-Type RETURNS CHARACTER
-  ( pc-htm as char)  FORWARD.
+    ( pc-htm AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Submit-Button) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Submit-Button Procedure 
 FUNCTION Format-Submit-Button RETURNS CHARACTER
-  ( pc-htm as char,
-    pc-val as char)  FORWARD.
+    ( pc-htm AS CHARACTER,
+    pc-val AS CHARACTER)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 34.29.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 {lib/maillib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
 
 {lib/checkloggedin.i}
 
-find WebAttr where WebAttr.SystemID = "BATCHWORK"
-             and   WebAttr.AttrID   = "BATCHPATH"
-no-lock no-error.
-assign lc-global-helpdesk =  WebAttr.AttrValue .
+FIND WebAttr WHERE WebAttr.SystemID = "BATCHWORK"
+    AND   WebAttr.AttrID   = "BATCHPATH"
+    NO-LOCK NO-ERROR.
+ASSIGN 
+    lc-global-helpdesk =  WebAttr.AttrValue .
 
-find WebAttr where WebAttr.SystemID = "BATCHWORK"
-             and   WebAttr.AttrID   = "REPORTPATH"
-no-lock no-error.
-assign lc-global-reportpath =  WebAttr.AttrValue .
+FIND WebAttr WHERE WebAttr.SystemID = "BATCHWORK"
+    AND   WebAttr.AttrID   = "REPORTPATH"
+    NO-LOCK NO-ERROR.
+ASSIGN 
+    lc-global-reportpath =  WebAttr.AttrValue .
 
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-customer-select) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-customer-select Procedure 
 PROCEDURE ip-customer-select :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
  
     {&out}  '<div id="customerdiv" style="display:none;">' skip
@@ -187,46 +152,43 @@ PROCEDURE ip-customer-select :
             '<select id="selectcustomer" name="selectcustomer" class="inputfield" ' skip
             'multiple="multiple" size=8 width="200px" style="width:200px;" >' skip.
  
-       {&out}
-            '<option value="ALL" selected >Select All</option>' skip.
+    {&out}
+    '<option value="ALL" selected >Select All</option>' skip.
 
-    for each customer no-lock
-       where customer.company = lc-global-company
-          by customer.name:
+    FOR EACH customer NO-LOCK
+        WHERE customer.company = lc-global-company
+        BY customer.name:
  
-      {&out}
-            '<option value="'  customer.accountnumber '" ' '>'  html-encode(customer.name) '</option>' skip.
-        end.
+        {&out}
+        '<option value="'  customer.accountnumber '" ' '>'  html-encode(customer.name) '</option>' skip.
+    END.
     {&out} '</select></div>'.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-engcust-table) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-engcust-table Procedure 
 PROCEDURE ip-engcust-table :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
  
 
     {&out}
-      htmlib-StartMntTable()
-      htmlib-TableHeading("Customer or Engineer") skip.
+    htmlib-StartMntTable()
+    htmlib-TableHeading("Customer or Engineer") skip.
     
     {&out}
-      htmlib-trmouse() '<td>' skip
+    htmlib-trmouse() '<td>' skip
       Format-Select-Type(htmlib-Radio("engcust", "eng" , true ) ) '</td>' skip
       htmlib-TableField(html-encode("Engineer"),'left') '</tr>' skip.
     
     {&out}
-      htmlib-trmouse() '<td>' skip
+    htmlib-trmouse() '<td>' skip
       Format-Select-Type(htmlib-Radio("engcust" , "cust", false) ) '</td>' skip
       htmlib-TableField(html-encode("Customer"),'left') '</tr>' skip.
     
@@ -237,20 +199,17 @@ PROCEDURE ip-engcust-table :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-engineer-select) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-engineer-select Procedure 
 PROCEDURE ip-engineer-select :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
   
  
     {&out}  '<div id="engineerdiv" style="display:block;">' skip
@@ -259,22 +218,22 @@ PROCEDURE ip-engineer-select :
             'multiple="multiple" size=8 width="200px" style="width:200px;" >' skip.
 
  
-   {&out}
+    {&out}
     '<option value="ALL" selected >Select All</option>' skip.
 
-    for each webUser no-lock
-       where webuser.company = lc-global-company
-       and   webuser.UserClass matches "*internal*"
-       and   webuser.superuser = true
-/*        and   webuser.JobTitle matches "*engineer*" */
-        by webUser.name:
+    FOR EACH webUser NO-LOCK
+        WHERE webuser.company = lc-global-company
+        AND   webuser.UserClass MATCHES "*internal*"
+        AND   webuser.superuser = TRUE
+        /*        and   webuser.JobTitle matches "*engineer*" */
+        BY webUser.name:
 
                 
  
-      {&out}
-            '<option value="'  webUser.loginid '" ' '>'  html-encode(webuser.name) '</option>' skip.
+        {&out}
+        '<option value="'  webUser.loginid '" ' '>'  html-encode(webuser.name) '</option>' skip.
  
-        end.
+    END.
   
       
 
@@ -283,24 +242,21 @@ PROCEDURE ip-engineer-select :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ExportJavascript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJavascript Procedure 
 PROCEDURE ip-ExportJavascript :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
   
-      {&out}
-      '<script language="JavaScript">' skip
+    {&out}
+    '<script language="JavaScript">' skip
 
 
 /*         function loopSelected()                                                    */
@@ -370,177 +326,171 @@ PROCEDURE ip-ExportJavascript :
               
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-month-select) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-month-select Procedure 
 PROCEDURE ip-month-select :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-def var lc-year  as char  no-undo.
-def var zx       as int   no-undo.
-def var lc-desc  as char  initial "January,February,March,April,May,June,July,August,September,October,November,December" no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lc-year  AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE zx       AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-desc  AS CHARACTER  INITIAL "January,February,March,April,May,June,July,August,September,October,November,December" NO-UNDO.
 
  
     {&out}  '<div id="monthdiv" style="display:none;">' skip
       '<span class="tableheading" >Please select period(s)</span><br>' skip .
       
       
-/*       '<select id="selectyear" name="selectyear" class="inputfield" align="top" >' skip.                                  */
-/*                                                                                                                           */
-/*       do zx = 0 to 4:                                                                                                     */
-/*         lc-year = string(year(today) - zx).                                                                               */
-/*       {&out}                                                                                                              */
-/*             '<option value="' lc-year '" ' if zx = 0 then "selected" else "" ' >'  html-encode(lc-year) '</option>' skip. */
-/*         end.                                                                                                              */
-/*            {&out} '</select>' skip                                                                                        */
+    /*       '<select id="selectyear" name="selectyear" class="inputfield" align="top" >' skip.                                  */
+    /*                                                                                                                           */
+    /*       do zx = 0 to 4:                                                                                                     */
+    /*         lc-year = string(year(today) - zx).                                                                               */
+    /*       {&out}                                                                                                              */
+    /*             '<option value="' lc-year '" ' if zx = 0 then "selected" else "" ' >'  html-encode(lc-year) '</option>' skip. */
+    /*         end.                                                                                                              */
+    /*            {&out} '</select>' skip                                                                                        */
 
-      {&out} 
-            '<select id="selectmonth" name="selectmonth" class="inputfield" ' skip
+    {&out} 
+    '<select id="selectmonth" name="selectmonth" class="inputfield" ' skip
             'multiple="multiple" size=8 width="150px" style="width:150px;" >' skip.
-        {&out}
-            '<option value="ALL" selected >Select All</option>' skip.
+    {&out}
+    '<option value="ALL" selected >Select All</option>' skip.
  
-      do zx = 1 to 12 :
-      {&out}
-            '<option value="' string(zx,"99") '" >'  html-encode(entry(zx,lc-desc)) '</option>' skip.
-        end.
-     {&out} '</select></div>'.
+    DO zx = 1 TO 12 :
+        {&out}
+        '<option value="' STRING(zx,"99") '" >'  html-encode(ENTRY(zx,lc-desc)) '</option>' skip.
+    END.
+    {&out} '</select></div>'.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ProcessReport) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ProcessReport Procedure 
 PROCEDURE ip-ProcessReport :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-DEF BUFFER BatchWork FOR BatchWork.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE BUFFER BatchWork FOR BatchWork.
 
-def var li-run      as int no-undo.
-def var TYPEOF      as char initial "Detail,Summary_Detail,Summary" no-undo.
-def var ISSUE       as char initial "Customer,Engineer,Issues"  no-undo.
-def var CAL         as char initial "Week,Month" no-undo.
-def var typedesc    as char initial "Detail,SumDet,Summary" no-undo.
-def var engcust     as char initial "Cust,Eng,Iss"  no-undo.
-def var weekly      as char initial "Week,Month" no-undo.
-def var period      as char no-undo.
-def var reportdesc  as char no-undo.
-def var periodDesc as char no-undo.
+    DEFINE VARIABLE li-run      AS INTEGER NO-UNDO.
+    DEFINE VARIABLE TYPEOF      AS CHARACTER INITIAL "Detail,Summary_Detail,Summary" NO-UNDO.
+    DEFINE VARIABLE ISSUE       AS CHARACTER INITIAL "Customer,Engineer,Issues"  NO-UNDO.
+    DEFINE VARIABLE CAL         AS CHARACTER INITIAL "Week,Month" NO-UNDO.
+    DEFINE VARIABLE typedesc    AS CHARACTER INITIAL "Detail,SumDet,Summary" NO-UNDO.
+    DEFINE VARIABLE engcust     AS CHARACTER INITIAL "Cust,Eng,Iss"  NO-UNDO.
+    DEFINE VARIABLE weekly      AS CHARACTER INITIAL "Week,Month" NO-UNDO.
+    DEFINE VARIABLE period      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE reportdesc  AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE periodDesc AS CHARACTER NO-UNDO.
 
-/* build period string  */
+    /* build period string  */
 
 
-assign period = if lc-reptypeC = "week" 
-                then 
-                  if num-entries(lc-selectweek) > 1 then string(string(entry(1,lc-selectweek),"99") + "-" + string(lc-selectyear,"9999") + "|" +  string(entry(num-entries(lc-selectweek),lc-selectweek),"99") + "-" + string(lc-selectyear,"9999")   )
-                           else string(string(lc-selectweek,"99") + "-" + string(lc-selectyear,"9999"))
-                else 
-                  if num-entries(lc-selectmonth) > 1 then string(string(entry(1,lc-selectmonth),"99") + "-" + string(lc-selectyear,"9999") + "|" +  string(entry(num-entries(lc-selectmonth),lc-selectmonth),"99") + "-" + string(lc-selectyear,"9999")   )
-                             else string(string(lc-selectmonth,"99") + "-" + string(lc-selectyear,"9999")).
+    ASSIGN 
+        period = IF lc-reptypeC = "week" 
+                THEN 
+                  IF NUM-ENTRIES(lc-selectweek) > 1 THEN STRING(STRING(ENTRY(1,lc-selectweek),"99") + "-" + string(lc-selectyear,"9999") + "|" +  string(ENTRY(NUM-ENTRIES(lc-selectweek),lc-selectweek),"99") + "-" + string(lc-selectyear,"9999")   )
+                           ELSE STRING(STRING(lc-selectweek,"99") + "-" + string(lc-selectyear,"9999"))
+                ELSE 
+                  IF NUM-ENTRIES(lc-selectmonth) > 1 THEN STRING(STRING(ENTRY(1,lc-selectmonth),"99") + "-" + string(lc-selectyear,"9999") + "|" +  string(ENTRY(NUM-ENTRIES(lc-selectmonth),lc-selectmonth),"99") + "-" + string(lc-selectyear,"9999")   )
+                             ELSE STRING(STRING(lc-selectmonth,"99") + "-" + string(lc-selectyear,"9999")).
    
 
-if period begins "AL" then period = replace(period,"AL","ALL").
+    IF period BEGINS "AL" THEN period = REPLACE(period,"AL","ALL").
 
 
-/* build report name  */
+    /* build report name  */
 
-if index(period,"|") > 0 then periodDesc = replace(period,"|","_").
-                         else periodDesc = period.
+    IF INDEX(period,"|") > 0 THEN periodDesc = REPLACE(period,"|","_").
+    ELSE periodDesc = period.
 
-reportdesc = entry(lookup(lc-reptypeE,engcust  ) ,ISSUE ) + "_" 
-           + entry(lookup(lc-reptypeA,typedesc ) ,TYPEOF) + "_" 
-           + entry(lookup(lc-reptypeC,weekly   ) ,CAL   )  + "_" 
-           + periodDesc.
+    reportdesc = ENTRY(LOOKUP(lc-reptypeE,engcust  ) ,ISSUE ) + "_" 
+        + entry(LOOKUP(lc-reptypeA,typedesc ) ,TYPEOF) + "_" 
+        + entry(LOOKUP(lc-reptypeC,weekly   ) ,CAL   )  + "_" 
+        + periodDesc.
 
-/* fetch next report id  */
-assign li-run = next-value(ReportNumber).
+    /* fetch next report id  */
+    ASSIGN 
+        li-run = NEXT-VALUE(ReportNumber).
 
-DO TRANSACTION:
+    DO TRANSACTION:
 
 
-create BatchWork  no-error.
-assign
-     BatchWork.BatchDate      = today
-     BatchWork.BatchTime      = time
-     BatchWork.BatchID        = li-run
-     BatchWork.BatchProg      = "rep/engineerRep01.w"
-     BatchWork.BatchUser      = lc-global-user
-     BatchWork.Description    = reportdesc
-     BatchWork.BatchParams[1] = lc-global-company                     /* lc-local-company     */ 
-     BatchWork.BatchParams[2] = string(lookup(lc-reptypeA,typedesc))  /* lc-local-view-type   1=Detailed, 2=SummaryDetail, 3=Summary */
-     BatchWork.BatchParams[3] = string(lookup(lc-reptypeE,engcust))   /* lc-local-report-type 1=Customer, 2=Engineer, 3=Issues       */
-     BatchWork.BatchParams[4] = string(lookup(lc-reptypeC,weekly))    /* lc-local-period-type */
-     BatchWork.BatchParams[5] = lc-selectengineer                     /* lc-local-customers   */ 
-     BatchWork.BatchParams[6] = lc-selectcustomer                     /* lc-local-engineers   */ 
-     BatchWork.BatchParams[7] = period                                /* lc-local-period      */ 
-     BatchWork.BatchParams[8] = "offline"  /* ALWAYS!! */             /* lc-local-offline     */ 
-.
+        CREATE BatchWork  no-error.
+        ASSIGN
+            BatchWork.BatchDate      = TODAY
+            BatchWork.BatchTime      = TIME
+            BatchWork.BatchID        = li-run
+            BatchWork.BatchProg      = "rep/engineerRep01.w"
+            BatchWork.BatchUser      = lc-global-user
+            BatchWork.Description    = reportdesc
+            BatchWork.BatchParams[1] = lc-global-company                     /* lc-local-company     */ 
+            BatchWork.BatchParams[2] = STRING(LOOKUP(lc-reptypeA,typedesc))  /* lc-local-view-type   1=Detailed, 2=SummaryDetail, 3=Summary */
+            BatchWork.BatchParams[3] = STRING(LOOKUP(lc-reptypeE,engcust))   /* lc-local-report-type 1=Customer, 2=Engineer, 3=Issues       */
+            BatchWork.BatchParams[4] = STRING(LOOKUP(lc-reptypeC,weekly))    /* lc-local-period-type */
+            BatchWork.BatchParams[5] = lc-selectengineer                     /* lc-local-customers   */ 
+            BatchWork.BatchParams[6] = lc-selectcustomer                     /* lc-local-engineers   */ 
+            BatchWork.BatchParams[7] = period                                /* lc-local-period      */ 
+            BatchWork.BatchParams[8] = "offline"  /* ALWAYS!! */             /* lc-local-offline     */ 
+            .
  
 
-MESSAGE "Batch ID = "  BatchWork.BatchID  LC-global-helpdesk SKIP.
-RELEASE BatchWork.
+        MESSAGE "Batch ID = "  BatchWork.BatchID  LC-global-helpdesk SKIP.
+        RELEASE BatchWork.
 
-END.
+    END.
 
 
 
- os-command silent value("start /min " + lc-global-helpdesk + "\batchwork.bat " + string(li-run)).
+    OS-COMMAND SILENT VALUE("start /min " + lc-global-helpdesk + "\batchwork.bat " + string(li-run)).
 
 
  
-assign lc-setrun = true.
+    ASSIGN 
+        lc-setrun = TRUE.
        
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-report-type) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-report-type Procedure 
 PROCEDURE ip-report-type :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     {&out}
-      htmlib-StartMntTable()
-      htmlib-TableHeading("Report Type") skip.
+    htmlib-StartMntTable()
+    htmlib-TableHeading("Report Type") skip.
     
     {&out}
-      htmlib-trmouse() '<td>' 
-      htmlib-Radio("reptype", "detail" , true ) '</td>'
-      htmlib-TableField(html-encode("Detail"),'left') '</tr>' skip.
+    htmlib-trmouse() '<td>' 
+    htmlib-Radio("reptype", "detail" , TRUE ) '</td>'
+    htmlib-TableField(html-encode("Detail"),'left') '</tr>' skip.
     
     {&out}
-      htmlib-trmouse() '<td>' 
-      htmlib-Radio("reptype" , "sumdet", false) '</td>'
-      htmlib-TableField(html-encode("Summary Detail"),'left') '</tr>' skip.
+    htmlib-trmouse() '<td>' 
+    htmlib-Radio("reptype" , "sumdet", FALSE) '</td>'
+    htmlib-TableField(html-encode("Summary Detail"),'left') '</tr>' skip.
 
     {&out}
-      htmlib-trmouse() '<td>' 
-      htmlib-Radio("reptype" , "summary", false) '</td>'
-      htmlib-TableField(html-encode("Summary"),'left') '</tr>' skip.
+    htmlib-trmouse() '<td>' 
+    htmlib-Radio("reptype" , "summary", FALSE) '</td>'
+    htmlib-TableField(html-encode("Summary"),'left') '</tr>' skip.
     
     {&out} skip 
       htmlib-EndTable()
@@ -549,58 +499,52 @@ PROCEDURE ip-report-type :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  emails:       
-------------------------------------------------------------------------------*/
-def output param pc-error-field as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      emails:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
  
- if lc-selectengineer begins "ALL," and num-entries(lc-selectengineer) > 1 then lc-selectengineer = substr(lc-selectengineer,index(lc-selectengineer,",") + 1).
- if lc-selectcustomer begins "ALL," and num-entries(lc-selectcustomer) > 1 then lc-selectcustomer = substr(lc-selectcustomer,index(lc-selectcustomer,",") + 1).
- if lc-selectmonth    begins "ALL," and num-entries(lc-selectmonth)    > 1 then lc-selectmonth = substr(lc-selectmonth,index(lc-selectmonth,",") + 1).
- if lc-selectweek     begins "ALL," and num-entries(lc-selectweek)     > 1 then lc-selectweek = substr(lc-selectweek,index(lc-selectweek,",") + 1).
+    IF lc-selectengineer BEGINS "ALL," AND NUM-ENTRIES(lc-selectengineer) > 1 THEN lc-selectengineer = substr(lc-selectengineer,INDEX(lc-selectengineer,",") + 1).
+    IF lc-selectcustomer BEGINS "ALL," AND NUM-ENTRIES(lc-selectcustomer) > 1 THEN lc-selectcustomer = substr(lc-selectcustomer,INDEX(lc-selectcustomer,",") + 1).
+    IF lc-selectmonth    BEGINS "ALL," AND NUM-ENTRIES(lc-selectmonth)    > 1 THEN lc-selectmonth = substr(lc-selectmonth,INDEX(lc-selectmonth,",") + 1).
+    IF lc-selectweek     BEGINS "ALL," AND NUM-ENTRIES(lc-selectweek)     > 1 THEN lc-selectweek = substr(lc-selectweek,INDEX(lc-selectweek,",") + 1).
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-week-month) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-week-month Procedure 
 PROCEDURE ip-week-month :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     {&out}
-      htmlib-StartMntTable()
-      htmlib-TableHeading("Week or Month") skip.
+    htmlib-StartMntTable()
+    htmlib-TableHeading("Week or Month") skip.
     
     {&out}
-      htmlib-trmouse() '<td>' 
-      Format-Select-Period(htmlib-Radio("weekly", "week" , true ) ) '</td>'
-      htmlib-TableField(html-encode("By Week"),'left') '</tr>' skip.
+    htmlib-trmouse() '<td>' 
+    Format-Select-Period(htmlib-Radio("weekly", "week" , TRUE ) ) '</td>'
+    htmlib-TableField(html-encode("By Week"),'left') '</tr>' skip.
     
     {&out}
-      htmlib-trmouse() '<td>' 
-      Format-Select-Period(htmlib-Radio("weekly" , "month", false) ) '</td>'
-      htmlib-TableField(html-encode("By Month"),'left') '</tr>' skip.
+    htmlib-trmouse() '<td>' 
+    Format-Select-Period(htmlib-Radio("weekly" , "month", FALSE) ) '</td>'
+    htmlib-TableField(html-encode("By Month"),'left') '</tr>' skip.
     
     {&out} skip 
       htmlib-EndTable()
@@ -608,22 +552,19 @@ PROCEDURE ip-week-month :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-week-select) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-week-select Procedure 
 PROCEDURE ip-week-select :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-def var zx       as int   no-undo.
-def var lc-year  as char  no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE zx       AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-year  AS CHARACTER  NO-UNDO.
 
   
     
@@ -632,35 +573,35 @@ def var lc-year  as char  no-undo.
 
 
 
-/*       '<select id="selectyear" name="selectyear" class="inputfield" align="top" >' skip.                                  */
-/*                                                                                                                           */
-/*                                                                                                                           */
-/*                                                                                                                           */
-/*       do zx = 0 to 4:                                                                                                     */
-/*                                                                                                                           */
-/*         lc-year = string(year(today) - zx).                                                                               */
-/*                                                                                                                           */
-/*       {&out}                                                                                                              */
-/*             '<option value="' lc-year '" ' if zx = 0 then "selected" else "" ' >'  html-encode(lc-year) '</option>' skip. */
-/*                                                                                                                           */
-/*         end.                                                                                                              */
-/*     {&out} '</select>' skip                                                                                               */
+    /*       '<select id="selectyear" name="selectyear" class="inputfield" align="top" >' skip.                                  */
+    /*                                                                                                                           */
+    /*                                                                                                                           */
+    /*                                                                                                                           */
+    /*       do zx = 0 to 4:                                                                                                     */
+    /*                                                                                                                           */
+    /*         lc-year = string(year(today) - zx).                                                                               */
+    /*                                                                                                                           */
+    /*       {&out}                                                                                                              */
+    /*             '<option value="' lc-year '" ' if zx = 0 then "selected" else "" ' >'  html-encode(lc-year) '</option>' skip. */
+    /*                                                                                                                           */
+    /*         end.                                                                                                              */
+    /*     {&out} '</select>' skip                                                                                               */
 
 
     {&out} 
-            '<select id="selectweek" name="selectweek" class="inputfield" ' skip
+    '<select id="selectweek" name="selectweek" class="inputfield" ' skip
             'multiple="multiple" size=8 width="150px" style="width:150px;" >' skip.
   
+    {&out}
+    '<option value="ALL" selected >Select All</option>' skip.
+ 
+    DO zx = 1 TO 53 :
+  
+ 
         {&out}
-            '<option value="ALL" selected >Select All</option>' skip.
+        '<option value="' STRING(zx,"99") '" ' '>Week '  html-encode(STRING(zx,"99")) '</option>' skip.
  
-      do zx = 1 to 53 :
-  
- 
-      {&out}
-            '<option value="' string(zx,"99") '" ' '>Week '  html-encode(string(zx,"99")) '</option>' skip.
- 
-        end.
+    END.
   
       
 
@@ -668,26 +609,23 @@ def var lc-year  as char  no-undo.
       
  
       
-     {&out} '</select></div>'.
+    {&out} '</select></div>'.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-year-select) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-year-select Procedure 
 PROCEDURE ip-year-select :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-def var lc-year as char no-undo.
-def var zx      as int  no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lc-year AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE zx      AS INTEGER  NO-UNDO.
 
     {&out}  '<div id="yeardiv" style="display:block; margin-top:14px;">' skip
              
@@ -696,88 +634,82 @@ def var zx      as int  no-undo.
   
  
  
-      do zx = 0 to 4:
+    DO zx = 0 TO 4:
                 
-        lc-year = string(year(today) - zx).
+        lc-year = STRING(YEAR(TODAY) - zx).
  
-      {&out}
-            '<option value="' lc-year '" >'  html-encode(lc-year) '</option>' skip.
+        {&out}
+        '<option value="' lc-year '" >'  html-encode(lc-year) '</option>' skip.
  
-        end.
+    END.
   
       
 
     {&out} '</select></div>'.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  emails:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      emails:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -787,43 +719,43 @@ PROCEDURE process-web-request :
     
   {lib/checkloggedin.i} 
   
-  find webuser where webuser.loginid = lc-global-user no-lock no-error.
+    FIND webuser WHERE webuser.loginid = lc-global-user NO-LOCK NO-ERROR.
   
-  if request_method = "POST" then
-  do:
-      assign
-          lc-reptypeA       = get-value("reptype")   /* 1=Detailed , 2=SummaryDetail, 3=Summary */ 
-          lc-reptypeE       = get-value("engcust")
-          lc-reptypeC       = get-value("weekly")
-          lc-selectengineer = get-value("selectengineer")
-          lc-selectcustomer = get-value("selectcustomer")
-          lc-selectmonth    = get-value("selectmonth")      
-          lc-selectweek     = get-value("selectweek") 
-          lc-selectyear     = entry(1,get-value("selectyear")).  
+    IF request_method = "POST" THEN
+    DO:
+        ASSIGN
+            lc-reptypeA       = get-value("reptype")   /* 1=Detailed , 2=SummaryDetail, 3=Summary */ 
+            lc-reptypeE       = get-value("engcust")
+            lc-reptypeC       = get-value("weekly")
+            lc-selectengineer = get-value("selectengineer")
+            lc-selectcustomer = get-value("selectcustomer")
+            lc-selectmonth    = get-value("selectmonth")      
+            lc-selectweek     = get-value("selectweek") 
+            lc-selectyear     = ENTRY(1,get-value("selectyear")).  
 
-      output to "C:\temp\djstest.txt" append.
+        OUTPUT to "C:\temp\djstest.txt" append.
 
-      put unformatted
-      "lc-reptypeA         "   lc-reptypeA        skip
-      "lc-reptypeE         "   lc-reptypeE        skip
-      "lc-reptypeC         "   lc-reptypeC        skip
-      "lc-selectengineer   "   lc-selectengineer  skip
-      "lc-selectcustomer   "   lc-selectcustomer  skip
-      "lc-selectmonth      "   lc-selectmonth     skip
-      "lc-selectweek       "   lc-selectweek      skip
-      "lc-selectyear       "   lc-selectyear      skip(2).
+        PUT UNFORMATTED
+            "lc-reptypeA         "   lc-reptypeA        SKIP
+            "lc-reptypeE         "   lc-reptypeE        SKIP
+            "lc-reptypeC         "   lc-reptypeC        SKIP
+            "lc-selectengineer   "   lc-selectengineer  SKIP
+            "lc-selectcustomer   "   lc-selectcustomer  SKIP
+            "lc-selectmonth      "   lc-selectmonth     SKIP
+            "lc-selectweek       "   lc-selectweek      SKIP
+            "lc-selectyear       "   lc-selectyear      SKIP(2).
 
-      output close.
+        OUTPUT close.
 
-      run ip-Validate(output lc-error-field).
+        RUN ip-Validate(OUTPUT lc-error-field).
 
-      if lc-error-field = "" then RUN ip-ProcessReport.
+        IF lc-error-field = "" THEN RUN ip-ProcessReport.
       
-  end.
+    END.
 
-  if request_method <> "post"
-    then assign lc-date = string(today,"99/99/9999")
-                lc-days = "7".
+    IF request_method <> "post"
+        THEN ASSIGN lc-date = STRING(TODAY,"99/99/9999")
+            lc-days = "7".
 
     RUN outputHeader.  
     
@@ -835,65 +767,65 @@ PROCEDURE process-web-request :
     '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
     '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip
     '<script language="JavaScript" src="/scripts/js/effects.js"></script>' skip
-   .
+    .
     
-    run ip-ExportJavascript.
+    RUN ip-ExportJavascript.
 
     {&out} htmlib-StartTable("mnt",
-                              0,
-                              0,
-                              5,
-                              0,
-                              "center") skip.
+        0,
+        0,
+        5,
+        0,
+        "center") skip.
 
     {&out} '<TD VALIGN="TOP" ALIGN="center" WIDTH="200px">'  skip.
-      run ip-report-type.
+    RUN ip-report-type.
     {&out}         '</TD> ' skip.
 
    
     {&out} ' <TD VALIGN="TOP" ALIGN="center" WIDTH="200px">'  skip.
-      run ip-engcust-table.
-      run ip-week-month.
+    RUN ip-engcust-table.
+    RUN ip-week-month.
     {&out}         '</TD>' skip.
     
     {&out} '<TD VALIGN="TOP" ALIGN="center" HEIGHT="150px">'  skip.
-       run ip-year-select.
+    RUN ip-year-select.
     {&out}         '</TD>' skip.
      
     {&out} '<TD VALIGN="TOP" ALIGN="center" HEIGHT="150px">'  skip.
-       run ip-week-select.
-       run ip-month-select.
+    RUN ip-week-select.
+    RUN ip-month-select.
     {&out}         '</TD>' skip.
      
     {&out} '<TD VALIGN="TOP" ALIGN="center" HEIGHT="150px">'  skip.
-      run ip-engineer-select.
-      run ip-customer-select.
+    RUN ip-engineer-select.
+    RUN ip-customer-select.
     {&out}         '</TD></TR>' skip.
 
     {&out} htmlib-EndTable() skip.
 
 
-    if lc-error-msg <> "" then
-    do:
+    IF lc-error-msg <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
-                htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+        htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
+    END.
     
     {&out} '<center>' Format-Submit-Button("submitform","Report")
-           '</center><br>' skip.
+    '</center><br>' skip.
     
-   {&out} htmlib-Hidden("submitsource","null").
+    {&out} htmlib-Hidden("submitsource","null").
   
   
-   {&out} htmlib-EndForm() skip.
+    {&out} htmlib-EndForm() skip.
 
-   {&out} '<div id="ajaxdiv"></div>' skip.
+    {&out} '<div id="ajaxdiv"></div>' skip.
 
-   find webuser where webuser.loginid = lc-global-user no-lock no-error.
+    FIND webuser WHERE webuser.loginid = lc-global-user NO-LOCK NO-ERROR.
    
-   if avail webuser and dynamic-function("com-IsSuperUser",webuser.LoginID) then
-   do:
-       {&out} 
+    IF AVAILABLE webuser AND dynamic-function("com-IsSuperUser",webuser.LoginID) THEN
+    DO:
+        {&out} 
         '<script language="JavaScript" >' skip
          ' <!-- ' skip
           'function GetAlerts(target) ~{' skip
@@ -906,15 +838,13 @@ PROCEDURE process-web-request :
          'AjaxStartPage();' skip
          ' --> ' skip
          '</script>'.
-   end.
+    END.
 
-   {&out} htmlib-Footer() skip.
+    {&out} htmlib-Footer() skip.
     
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -922,104 +852,92 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-Date2Wk) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Date2Wk Procedure 
 FUNCTION Date2Wk RETURNS INTEGER
-  (input dMyDate as date) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    (INPUT dMyDate AS DATE) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-def var cYear as char no-undo.
-def var iDayNo as integer no-undo.
-def var iCent as int no-undo.
-def var iWkNo as int  no-undo.
-assign
-cYear = substring(string(dMyDate),7)
-cYear = if length(cYear) = 4 then substring(cYear,3) else cYear
-iCent = truncate(year(today) / 100,0)
-iDayNo = dMyDate - date(12,31,(iCent * 100) + (integer(cYear) - 1)).
-iWkNo = iDayNo / 7. 
+    DEFINE VARIABLE cYear AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE iDayNo AS INTEGER NO-UNDO.
+    DEFINE VARIABLE iCent AS INTEGER NO-UNDO.
+    DEFINE VARIABLE iWkNo AS INTEGER  NO-UNDO.
+    ASSIGN
+        cYear = SUBSTRING(STRING(dMyDate),7)
+        cYear = IF LENGTH(cYear) = 4 THEN SUBSTRING(cYear,3) ELSE cYear
+        iCent = TRUNCATE(YEAR(TODAY) / 100,0)
+        iDayNo = dMyDate - date(12,31,(iCent * 100) + (INTEGER(cYear) - 1)).
+    iWkNo = iDayNo / 7. 
 
-return  iWkNo.
+    RETURN  iWkNo.
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Period) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Period Procedure 
 FUNCTION Format-Select-Period RETURNS CHARACTER
-  ( pc-htm as char) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
-  def var lc-htm as char no-undo.
+    ( pc-htm AS CHARACTER) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<input',
-                   '<input onClick="ChangeReportPeriod(this.value)"'). 
+    lc-htm = REPLACE(pc-htm,'<input',
+        '<input onClick="ChangeReportPeriod(this.value)"'). 
 
 
-  RETURN lc-htm.
+    RETURN lc-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Type) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-Type Procedure 
 FUNCTION Format-Select-Type RETURNS CHARACTER
-  ( pc-htm as char) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
-  def var lc-htm as char no-undo.
+    ( pc-htm AS CHARACTER) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<input',
-                   '<input onClick="ChangeReportType(this.value)"'). 
+    lc-htm = REPLACE(pc-htm,'<input',
+        '<input onClick="ChangeReportType(this.value)"'). 
 
 
-  RETURN lc-htm.
+    RETURN lc-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Submit-Button) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Submit-Button Procedure 
 FUNCTION Format-Submit-Button RETURNS CHARACTER
-  ( pc-htm as char,
-    pc-val as char) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
-  def var lc-htm as char no-undo.
+    ( pc-htm AS CHARACTER,
+    pc-val AS CHARACTER) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = '<input onclick="return validateForm()" class="submitbutton" type="submit" name="' + pc-htm + '" value="' + pc-val + '"> ' .
+    lc-htm = '<input onclick="return validateForm()" class="submitbutton" type="submit" name="' + pc-htm + '" value="' + pc-val + '"> ' .
 
  
-  RETURN lc-htm.
+    RETURN lc-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

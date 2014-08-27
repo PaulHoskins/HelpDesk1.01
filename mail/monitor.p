@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        mail/monitor.p
@@ -27,26 +24,23 @@ CREATE WIDGET-POOL.
 {lib/maillib.i}
 
 
-def var lc-from         as char no-undo.
-def var lc-to           as char no-undo.
-def var lc-subject      as char no-undo.
-def var lc-body         as char no-undo.
-def var lc-attachdir    as char no-undo.
-def var lc-attachfile   as char no-undo.
-def var lc-html         as char no-undo.
+DEFINE VARIABLE lc-from         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-to           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-subject      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-body         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-attachdir    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-attachfile   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-html         AS CHARACTER NO-UNDO.
 
-def var lc-epulse-cstring as char initial
+DEFINE VARIABLE lc-epulse-cstring AS CHARACTER INITIAL
     "THIS REPORT HAS BEEN SENT TO THE CLIENT:"
-    no-undo.
+    NO-UNDO.
 
-def var lc-epulse-error-begin   as char initial
-        "<http://dashboard.hound-dog.co.uk/images/testerror.gif>" no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-epulse-error-begin   AS CHARACTER INITIAL
+    "<http://dashboard.hound-dog.co.uk/images/testerror.gif>" NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -55,47 +49,31 @@ def var lc-epulse-error-begin   as char initial
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -103,111 +81,115 @@ def var lc-epulse-error-begin   as char initial
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-EpulseMessage) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-EpulseMessage Procedure 
 PROCEDURE ip-EpulseMessage :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def input param pc-msg          as char         no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pc-msg          AS CHARACTER         NO-UNDO.
 
-    def output param pc-AccountNumber as char       no-undo.
-    def output param pc-Result        as char       no-undo.
+    DEFINE OUTPUT PARAMETER pc-AccountNumber AS CHARACTER       NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Result        AS CHARACTER       NO-UNDO.
     
-    def var li-customer             as int          no-undo.
-    def var lc-work                 as char         no-undo.
-    def var li-loop                 as int          no-undo.
-    def var li-begin                as int          no-undo.
-    def var li-end                  as int          no-undo.
-    def var li-error                as int          no-undo.
-    def var lc-error                as char         no-undo.
-    def var lc-result               as char         no-undo.
-    def var lc-word                 as char         no-undo.
-    def var lc-final                as char         no-undo.
+    DEFINE VARIABLE li-customer             AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-work                 AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE li-loop                 AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-begin                AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-end                  AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-error                AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-error                AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE lc-result               AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE lc-word                 AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE lc-final                AS CHARACTER         NO-UNDO.
 
-    assign pc-result = ?.
+    ASSIGN 
+        pc-result = ?.
     
     
-    assign 
-        li-customer = index(pc-msg,lc-epulse-cstring).
+    ASSIGN 
+        li-customer = INDEX(pc-msg,lc-epulse-cstring).
 
-    if li-customer = 0 then return.
+    IF li-customer = 0 THEN RETURN.
     
     {&out} skip
             "EPLUSE MESSAGE FOR " lc-Subject.
 
-    assign lc-work = 
-        replace(replace(lc-subject," ","|"),"~n","|").
+    ASSIGN 
+        lc-work = 
+        REPLACE(REPLACE(lc-subject," ","|"),"~n","|").
 
     
     
-    if num-entries(lc-work,"|") = 0 then return.
+    IF NUM-ENTRIES(lc-work,"|") = 0 THEN RETURN.
     
     
-    do li-loop = 1 to min(30,num-entries(lc-work,"|")):
-        assign pc-AccountNumber = trim(entry(li-loop,lc-work,"|")) .
-        if pc-AccountNumber = "-" then leave.
-        if pc-AccountNumber = "" then next.
-        if can-find(Customer where customer.companyCode = lc-global-company
-                               and customer.AccountNumber = pc-AccountNumber no-lock)
-        then leave.
+    DO li-loop = 1 TO min(30,NUM-ENTRIES(lc-work,"|")):
+        ASSIGN 
+            pc-AccountNumber = TRIM(ENTRY(li-loop,lc-work,"|")) .
+        IF pc-AccountNumber = "-" THEN LEAVE.
+        IF pc-AccountNumber = "" THEN NEXT.
+        IF CAN-FIND(Customer WHERE customer.companyCode = lc-global-company
+            AND customer.AccountNumber = pc-AccountNumber NO-LOCK)
+            THEN LEAVE.
         pc-AccountNumber = "".
         
         
-    end.
+    END.
     
-    find Customer
-        where Customer.CompanyCode = lc-global-company
-          and Customer.AccountNumber = pc-AccountNumber 
-          no-lock no-error.
+    FIND Customer
+        WHERE Customer.CompanyCode = lc-global-company
+        AND Customer.AccountNumber = pc-AccountNumber 
+        NO-LOCK NO-ERROR.
     
-    if not avail Customer then 
-    do:
+    IF NOT AVAILABLE Customer THEN 
+    DO:
         pc-AccountNumber = "".
-        return.
+        RETURN.
        
-    end.
+    END.
     
     
-    assign
-        li-error = index(pc-msg,lc-epulse-error-begin).
+    ASSIGN
+        li-error = INDEX(pc-msg,lc-epulse-error-begin).
     
-    if li-error = 0 then 
-    do:
+    IF li-error = 0 THEN 
+    DO:
         {&out} "NO TAG OF " lc-epulse-error-begin.
         
-    end.
+    END.
     
     
     lc-work = pc-msg.
     
-    do while true:
+    DO WHILE TRUE:
 
-        assign li-error = index(lc-work,lc-epulse-error-begin).
-        if li-error = 0 then leave.
+        ASSIGN 
+            li-error = INDEX(lc-work,lc-epulse-error-begin).
+        IF li-error = 0 THEN LEAVE.
 
         /*
         *** Position after error
         */
-        assign lc-work = substr(lc-work,li-error + length(lc-epulse-error-begin)).
+        ASSIGN 
+            lc-work = substr(lc-work,li-error + length(lc-epulse-error-begin)).
         
         /*
         *** Theres a link to an error gif so position after this
         */
-        assign li-begin = index(lc-work,">").
+        ASSIGN 
+            li-begin = INDEX(lc-work,">").
 
-        if li-begin = 0 then leave.
+        IF li-begin = 0 THEN LEAVE.
 
-        assign lc-work = substr(lc-work,li-begin + 1).
+        ASSIGN 
+            lc-work = substr(lc-work,li-begin + 1).
         
 
         /* 
@@ -215,265 +197,261 @@ PROCEDURE ip-EpulseMessage :
         *** so need to get the next < which denotes the next epulse start message
         */
 
-        assign
-            li-end = index(lc-work,"<").
+        ASSIGN
+            li-end = INDEX(lc-work,"<").
 
-        if li-end > 0
-        then lc-error = substr(lc-work,1,li-end - 1).
-        else lc-error = lc-work.
+        IF li-end > 0
+            THEN lc-error = substr(lc-work,1,li-end - 1).
+        ELSE lc-error = lc-work.
 
-        lc-error = replace(lc-error,"~n","|").
-        lc-error = replace(lc-error," ","|").
+        lc-error = REPLACE(lc-error,"~n","|").
+        lc-error = REPLACE(lc-error," ","|").
 
-        assign lc-result = "".
-        do li-loop = 1 to num-entries(lc-error,"|").
-            lc-word = entry(li-loop,lc-error,"|").
-            if lc-word = "" then next.
+        ASSIGN 
+            lc-result = "".
+        DO li-loop = 1 TO NUM-ENTRIES(lc-error,"|").
+            lc-word = ENTRY(li-loop,lc-error,"|").
+            IF lc-word = "" THEN NEXT.
             lc-result = lc-result + " " + lc-word.
 
-        end.
-        lc-result = trim(lc-result).
+        END.
+        lc-result = TRIM(lc-result).
            
        
 
-        if lc-final = ""
-        then assign lc-final = lc-result.
-        else assign lc-final = lc-final + "~n" + lc-result.
+        IF lc-final = ""
+            THEN ASSIGN lc-final = lc-result.
+        ELSE ASSIGN lc-final = lc-final + "~n" + lc-result.
 
-        if li-end = 0 then leave.
+        IF li-end = 0 THEN LEAVE.
 
-        assign
+        ASSIGN
             lc-work = substr(lc-work,li-end).
        
 
-    end.
+    END.
 
-    assign pc-Result = lc-Final.
+    ASSIGN 
+        pc-Result = lc-Final.
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ProcessEmail) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ProcessEmail Procedure 
 PROCEDURE ip-ProcessEmail :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-    def buffer b        for EmailH.
-    def buffer WebUser  for WebUser.
+    DEFINE BUFFER b        FOR EmailH.
+    DEFINE BUFFER WebUser  FOR WebUser.
 
-    def var li-loop             as int  no-undo.
-    def var lc-file             as char no-undo.
-    def var lc-title            as char no-undo.
-    def var lc-AccountNumber    as char no-undo.
-    def var lc-msg              as char no-undo.
+    DEFINE VARIABLE li-loop             AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-file             AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-title            AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-AccountNumber    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-msg              AS CHARACTER NO-UNDO.
     
    
 
-    def var lf-EmailID      like    EmailH.EmailID      no-undo.
+    DEFINE VARIABLE lf-EmailID      LIKE    EmailH.EmailID      NO-UNDO.
 
-    find company where company.CompanyCode = lc-global-company no-lock no-error.
+    FIND company WHERE company.CompanyCode = lc-global-company NO-LOCK NO-ERROR.
 
   
-    repeat transaction on error undo , leave:
+    REPEAT TRANSACTION ON ERROR UNDO , LEAVE:
 
         RUN ip-EpulseMessage ( lc-body, 
-                               output lc-AccountNumber, 
-                               output lc-Msg ).
+            OUTPUT lc-AccountNumber, 
+            OUTPUT lc-Msg ).
 
-        if lc-msg = ? then return.
-        message "Process for account " lc-AccountNumber.
+        IF lc-msg = ? THEN RETURN.
+        MESSAGE "Process for account " lc-AccountNumber.
 
-        find last b no-lock no-error.
+        FIND LAST b NO-LOCK NO-ERROR.
 
-        assign
-            lf-EmailID = if avail b then b.EmailID + 1 else 1.
-        create b.
-        assign 
+        ASSIGN
+            lf-EmailID = IF AVAILABLE b THEN b.EmailID + 1 ELSE 1.
+        CREATE b.
+        ASSIGN 
             b.CompanyCode = lc-global-company
             b.EmailID     = lf-EmailID.
 
-        assign
+        ASSIGN
             b.Email       = lc-from
             b.mText       = lc-msg
             b.Subject     = lc-Subject
-            b.RcpDate     = today
-            b.RcpTime     = time.
-            b.AccountNumber = lc-AccountNumber.
+            b.RcpDate     = TODAY
+            b.RcpTime     = TIME.
+        b.AccountNumber = lc-AccountNumber.
 
            
-        leave.
-    end.
+        LEAVE.
+    END.
    
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-UploadAttachment) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-UploadAttachment Procedure 
 PROCEDURE ip-UploadAttachment :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def input param pf-EmailID      like EmailH.EmailID     no-undo.
-    def input param pc-FileName     as char                 no-undo.
-    def input param pc-Title        as char                 no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pf-EmailID      LIKE EmailH.EmailID     NO-UNDO.
+    DEFINE INPUT PARAMETER pc-FileName     AS CHARACTER                 NO-UNDO.
+    DEFINE INPUT PARAMETER pc-Title        AS CHARACTER                 NO-UNDO.
     
-    def var li-docid    like doch.docid no-undo.
-    def var lr-raw      as raw          no-undo.
-    def var li-line     as int          no-undo.
-    def var li-size     as int          no-undo.
+    DEFINE VARIABLE li-docid    LIKE doch.docid NO-UNDO.
+    DEFINE VARIABLE lr-raw      AS RAW          NO-UNDO.
+    DEFINE VARIABLE li-line     AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-size     AS INTEGER          NO-UNDO.
     
 
 
-    def var lc-ext   as char no-undo.
-    def var lc-valid as char initial
-            "zip,doc,dot,xlt,xls,ppt,pdf,htm,html,txt,ini,d,df,xml,png,gif,jpg,jpeg,jpe,png" no-undo.
+    DEFINE VARIABLE lc-ext   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-valid AS CHARACTER INITIAL
+        "zip,doc,dot,xlt,xls,ppt,pdf,htm,html,txt,ini,d,df,xml,png,gif,jpg,jpeg,jpe,png" NO-UNDO.
 
 
-    assign lc-ext = substr(pc-FileName,r-index(pc-FileName,".") + 1) no-error.
+    ASSIGN 
+        lc-ext = substr(pc-FileName,R-INDEX(pc-FileName,".") + 1) no-error.
 
-    if error-status:error then return.
+    IF ERROR-STATUS:ERROR THEN RETURN.
     
-    if can-do(lc-valid,lc-ext) = false then return.
+    IF CAN-DO(lc-valid,lc-ext) = FALSE THEN RETURN.
     
-    file-info:file-name = pc-FileName.
-    li-size = file-info:file-size.
-    if li-size = 0 
-    then return.
+    FILE-INFO:FILE-NAME = pc-FileName.
+    li-size = FILE-INFO:FILE-SIZE.
+    IF li-size = 0 
+        THEN RETURN.
     
-    repeat:
-        li-docid = next-value(docid).
-        if can-find(doch where doch.docid = li-docid no-lock) then next.
-        create doch.
-        assign doch.docid = li-docid
-              doch.CreateBy = "EMAIL"
-              doch.CreateDate = today
-              doch.CreateTime = time
-              doch.RelType = "EMAIL"
-              doch.RelKey  = string(pf-EmailID)
-              doch.CompanyCode = lc-global-company
-              doch.DocType = caps(lc-ext)
-              doch.InBytes = li-size.
+    REPEAT:
+        li-docid = NEXT-VALUE(docid).
+        IF CAN-FIND(doch WHERE doch.docid = li-docid NO-LOCK) THEN NEXT.
+        CREATE doch.
+        ASSIGN 
+            doch.docid = li-docid
+            doch.CreateBy = "EMAIL"
+            doch.CreateDate = TODAY
+            doch.CreateTime = TIME
+            doch.RelType = "EMAIL"
+            doch.RelKey  = STRING(pf-EmailID)
+            doch.CompanyCode = lc-global-company
+            doch.DocType = CAPS(lc-ext)
+            doch.InBytes = li-size.
 
-        assign 
-              doch.descr = pc-title
-              .
+        ASSIGN 
+            doch.descr = pc-title
+            .
 
 
-        assign length(lr-raw) = 16384.
-        input from value(pc-FileName) binary no-map no-convert.
-        repeat:
-            import unformatted lr-raw.
-            assign li-line = li-line + 1.
-            create docl.
-            assign docl.DocID = li-DocID
-                   docl.Lineno  = li-line
-                   docl.rdata    = lr-raw.
+        ASSIGN 
+            LENGTH(lr-raw) = 16384.
+        INPUT from value(pc-FileName) binary no-map no-convert.
+        REPEAT:
+            IMPORT UNFORMATTED lr-raw.
+            ASSIGN 
+                li-line = li-line + 1.
+            CREATE docl.
+            ASSIGN 
+                docl.DocID = li-DocID
+                docl.Lineno  = li-line
+                docl.rdata    = lr-raw.
                
-        end.
-        input close.
-        os-delete value(pc-filename) no-error.
-        assign length(lr-raw) = 0.
+        END.
+        INPUT close.
+        OS-DELETE value(pc-filename) no-error.
+        ASSIGN 
+            LENGTH(lr-raw) = 0.
 
-        leave.
+        LEAVE.
 
-   end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type("text/plain~; charset=iso-8859-1":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type("text/plain~; charset=iso-8859-1":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
   
-    assign
+    ASSIGN
         lc-from         = get-value("from")
         lc-to           = get-value("to")
         lc-subject      = get-value("subject")
@@ -487,28 +465,26 @@ PROCEDURE process-web-request :
     RUN outputHeader.
     
    
-    assign
+    ASSIGN
         lc-body = lc-subject + "|" + lc-body.
 
-    assign
+    ASSIGN
         lc-global-company = "OURITDEPT".
 
    
-    {&out} string(time,"hh:mm:ss") " mail monitor received from "
-            lc-from " to " lc-to " for company " lc-global-company
-            " subject " lc-subject 
-            .
+    {&out} STRING(TIME,"hh:mm:ss") " mail monitor received from "
+    lc-from " to " lc-to " for company " lc-global-company
+    " subject " lc-subject 
+        .
 
-    if lc-global-company <> "" 
-    and lc-from <> ""
-    then RUN ip-ProcessEmail.
+    IF lc-global-company <> "" 
+        AND lc-from <> ""
+        THEN RUN ip-ProcessEmail.
     
     
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

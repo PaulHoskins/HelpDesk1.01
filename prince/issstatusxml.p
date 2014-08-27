@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        prince/issstatusxml.p
@@ -17,21 +14,22 @@
 ***********************************************************************/
 
 &IF DEFINED(UIB_is_Running) EQ 0 &THEN
-def input param pc-CompanyCode  as char     no-undo.
-def input param pi-IssueNumber  as int      no-undo.
-def input param pc-destination  as char     no-undo.
-def output param pc-text        as char     no-undo.
-def output param pc-html        as char     no-undo.
+
+DEFINE INPUT PARAMETER pc-CompanyCode  AS CHARACTER     NO-UNDO.
+DEFINE INPUT PARAMETER pi-IssueNumber  AS INTEGER       NO-UNDO.
+DEFINE INPUT PARAMETER pc-destination  AS CHARACTER     NO-UNDO.
+DEFINE OUTPUT PARAMETER pc-text        AS CHARACTER     NO-UNDO.
+DEFINE OUTPUT PARAMETER pc-html        AS CHARACTER     NO-UNDO.
 
 &ELSE
 
-def var pc-CompanyCode  as char     no-undo.
-def var pi-IssueNumber  as int      no-undo.
-def var pc-destination  as char     no-undo.
-def var pc-text         as char     no-undo.
-def var pc-html         as char     no-undo.
+DEFINE VARIABLE pc-CompanyCode AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pi-IssueNumber AS INTEGER   NO-UNDO.
+DEFINE VARIABLE pc-destination AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-text        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-html        AS CHARACTER NO-UNDO.
 
-assign
+ASSIGN
     pc-companyCode = "MICAR"
     pi-IssueNumber = 2309
     pc-destination = "internal".
@@ -39,25 +37,22 @@ assign
 
 {lib/princexml.i}
 
-def buffer WebUser      for WebUser.
-def buffer b-WebUser    for WebUser.
-def buffer WebIssArea   for WebIssArea.
-def buffer WebStatus    for WebStatus.
-def buffer IssStatus    for IssStatus.
-def buffer Issue        for Issue.
-def buffer Customer     for Customer.
+DEFINE BUFFER WebUser      FOR WebUser.
+DEFINE BUFFER b-WebUser    FOR WebUser.
+DEFINE BUFFER WebIssArea   FOR WebIssArea.
+DEFINE BUFFER WebStatus    FOR WebStatus.
+DEFINE BUFFER IssStatus    FOR IssStatus.
+DEFINE BUFFER Issue        FOR Issue.
+DEFINE BUFFER Customer     FOR Customer.
 
 
-def var lc-pdf          as char     no-undo.
-def var lc-Raised       as char     no-undo.
-def var lc-Assigned     as char     no-undo.
-def var ll-ok           as log      no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-pdf          AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-Raised       AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-Assigned     AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE ll-ok           AS LOG           NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -66,65 +61,52 @@ def var ll-ok           as log      no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
-def var lc-html     as char no-undo.
-def var lc-text     as char no-undo.
-def var odd-even    as log initial false no-undo.
+DEFINE VARIABLE lc-html     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-text     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE odd-even    AS LOG INITIAL FALSE NO-UNDO.
 
  
-find Issue where Issue.CompanyCode = pc-companycode
-             and issue.IssueNumber = pi-IssueNumber
-             no-lock no-error.
-if not avail Issue then return.
+FIND Issue WHERE Issue.CompanyCode = pc-companycode
+    AND issue.IssueNumber = pi-IssueNumber
+    NO-LOCK NO-ERROR.
+IF NOT AVAILABLE Issue THEN RETURN.
 
-find customer of Issue no-lock no-error.
-if not avail Customer then return.
+FIND customer OF Issue NO-LOCK NO-ERROR.
+IF NOT AVAILABLE Customer THEN RETURN.
 
-if Issue.RaisedLoginID <> "" then
-do:
-    find WebUser where WebUser.loginID = Issue.RaisedLoginID no-lock no-error.
-    if avail webUser 
-    then assign lc-Raised = trim(WebUser.Forename + " " + WebUser.Surname).
+IF Issue.RaisedLoginID <> "" THEN
+DO:
+    FIND WebUser WHERE WebUser.loginID = Issue.RaisedLoginID NO-LOCK NO-ERROR.
+    IF AVAILABLE webUser 
+        THEN ASSIGN lc-Raised = TRIM(WebUser.Forename + " " + WebUser.Surname).
 
-end.
+END.
 
-find WebIssArea of Issue no-lock no-error.
-find WebStatus of Issue no-lock no-error.
+FIND WebIssArea OF Issue NO-LOCK NO-ERROR.
+FIND WebStatus OF Issue NO-LOCK NO-ERROR.
 
 /* assign                                                                                      */
 /*     lc-html = session:temp-dir + caps(pc-CompanyCode) + "-Issue-" + string(pi-IssueNumber). */
@@ -140,11 +122,11 @@ lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text
 lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text-top;">Raised By:</th><td style="padding-left: 10px;">' + pxml-Safe(lc-Raised) + '</td></tr>' .
 lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text-top;">Description:</th><td style="padding-left: 10px;">' + pxml-Safe(Issue.BriefDescription) + '</td></tr>' .
 lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text-top;">Details:</th><td style="padding-left: 10px;">' + replace(pxml-safe(Issue.LongDescription),'~n','<BR>') + '</td></tr>' .
-lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text-top;">Area:</th><td style="padding-left: 10px;">' + pxml-safe(if avail WebIssArea then string(WebIssArea.description) else "") + '</td></tr>' .
-lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text-top;">Current Status:</th><td style="padding-left: 10px;">' + pxml-safe(if avail WebStatus then string(WebStatus.description) else "").
+lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text-top;">Area:</th><td style="padding-left: 10px;">' + pxml-safe(IF AVAILABLE WebIssArea THEN STRING(WebIssArea.description) ELSE "") + '</td></tr>' .
+lc-html = lc-html +     '<tr><th style = "text-align: right;vertical-align: text-top;">Current Status:</th><td style="padding-left: 10px;">' + pxml-safe(IF AVAILABLE WebStatus THEN STRING(WebStatus.description) ELSE "").
 
-if avail WebStatus and WebStatus.CompletedStatus then lc-html = lc-html + '&nbsp;<b>(Completed)</b>' .
-                             else lc-html = lc-html + "" . 
+IF AVAILABLE WebStatus AND WebStatus.CompletedStatus THEN lc-html = lc-html + '&nbsp;<b>(Completed)</b>' .
+ELSE lc-html = lc-html + "" . 
 
 lc-html = lc-html +    '</td></tr>' .
  
@@ -156,25 +138,26 @@ lc-text = lc-text +     'Date:~t~t~t' + string(Issue.IssueDate,"99/99/9999") + '
 lc-text = lc-text +     'Raised By:~t~t' + pxml-Safe(lc-Raised) + '~n' .
 lc-text = lc-text +     'Description:~t~t' + pxml-Safe(Issue.BriefDescription) + '~n' .
 lc-text = lc-text +     'Details:~t~t' + replace(pxml-safe(Issue.LongDescription),'~n','<BR>') + '~n' .
-lc-text = lc-text +     'Area:~t~t~t' + pxml-safe(if avail WebIssArea then string(WebIssArea.description) else "") + '~n' .
-lc-text = lc-text +     'Current Status:~t~t' + pxml-safe(if avail WebStatus then string(WebStatus.description) else "").
+lc-text = lc-text +     'Area:~t~t~t' + pxml-safe(IF AVAILABLE WebIssArea THEN STRING(WebIssArea.description) ELSE "") + '~n' .
+lc-text = lc-text +     'Current Status:~t~t' + pxml-safe(IF AVAILABLE WebStatus THEN STRING(WebStatus.description) ELSE "").
 
-if avail WebStatus and WebStatus.CompletedStatus then lc-text = lc-text + ' (Completed) ~n~n' .
-                             else lc-text = lc-text + '~n~n' .
-
-
+IF AVAILABLE WebStatus AND WebStatus.CompletedStatus THEN lc-text = lc-text + ' (Completed) ~n~n' .
+ELSE lc-text = lc-text + '~n~n' .
 
 
 
 
-if pc-destination = "INTERNAL" then
-do:
-    find b-WebUser
-        where b-WebUser.LoginID = Issue.AssignTo no-lock no-error.
-    assign lc-Assigned = if avail b-WebUser then pxml-Safe(trim(b-webUser.Forename + " " + b-WebUser.Surname)) + " " + string(Issue.AssignDate,"99/99/9999") else "&nbsp;"
-           lc-html = lc-html + '<tr><th style = "text-align: right;vertical-align: text-top;">Assigned To:</th><td style="padding-left: 10px;">' + lc-Assigned + '</td></tr>'
-           lc-text = lc-text + 'Assigned To:~t' + lc-Assigned + '~n' .
-end.
+
+
+IF pc-destination = "INTERNAL" THEN
+DO:
+    FIND b-WebUser
+        WHERE b-WebUser.LoginID = Issue.AssignTo NO-LOCK NO-ERROR.
+    ASSIGN 
+        lc-Assigned = IF AVAILABLE b-WebUser THEN pxml-Safe(TRIM(b-webUser.Forename + " " + b-WebUser.Surname)) + " " + string(Issue.AssignDate,"99/99/9999") ELSE "&nbsp;"
+        lc-html = lc-html + '<tr><th style = "text-align: right;vertical-align: text-top;">Assigned To:</th><td style="padding-left: 10px;">' + lc-Assigned + '</td></tr>'
+        lc-text = lc-text + 'Assigned To:~t' + lc-Assigned + '~n' .
+END.
 
 lc-html = lc-html + '</table>' .
 lc-html = lc-html + '<p class="sub" style="font-weight: bold;font-size: 15px;text-align: center;">Issue History</p>'.
@@ -185,47 +168,47 @@ lc-text = lc-text + 'Issue History ~n'.
 lc-text = lc-text + 'Date~t~tTime~t~tStatus~t~tBy ~n~n' .
 
 
-for each IssStatus no-lock of Issue
-    by IssStatus.ChangeDate desc
-    by IssStatus.ChangeTime desc:
+FOR EACH IssStatus NO-LOCK OF Issue
+    BY IssStatus.ChangeDate DESCENDING
+    BY IssStatus.ChangeTime DESCENDING:
 
-    find WebStatus where WebStatus.CompanyCode = Issue.Company
-                     and WebStatus.StatusCode = IssStatus.NewStatusCode no-lock no-error.
+    FIND WebStatus WHERE WebStatus.CompanyCode = Issue.Company
+        AND WebStatus.StatusCode = IssStatus.NewStatusCode NO-LOCK NO-ERROR.
 
-    if not avail WebStatus then next.
+    IF NOT AVAILABLE WebStatus THEN NEXT.
 
-    find b-WebUser
-        where b-WebUser.LoginID = IssStatus.LoginID no-lock no-error.
-    assign lc-Assigned =
-        if avail b-WebUser
-        then pxml-Safe(trim(b-webUser.Forename + " " + b-WebUser.Surname)) else "&nbsp;".
+    FIND b-WebUser
+        WHERE b-WebUser.LoginID = IssStatus.LoginID NO-LOCK NO-ERROR.
+    ASSIGN 
+        lc-Assigned =
+        IF AVAILABLE b-WebUser
+        THEN pxml-Safe(TRIM(b-webUser.Forename + " " + b-WebUser.Surname)) ELSE "&nbsp;".
 
  
-        lc-html = lc-html + '<tr ' + if odd-even then 'style="background-color: #F2F2F2;        border-top: 1px solid black;"' else ''  +  ' >' .
-        lc-html = lc-html +     '<td>' + string(IssStatus.ChangeDate,"99/99/9999") + '</td>' .
-        lc-html = lc-html +     '<td>' + string(IssStatus.ChangeTime,"hh:mm am") + '</td>'. 
-        lc-html = lc-html +     '<td>' + pxml-Safe(WebStatus.description) + '</td>'. 
-        lc-html = lc-html +     '<td>' + lc-Assigned + '</td>' .
-        lc-html = lc-html + '</tr>' .
-        odd-even = odd-even = false.
+    lc-html = lc-html + '<tr ' + IF odd-even THEN 'style="background-color: #F2F2F2;        border-top: 1px solid black;"' ELSE ''  +  ' >' .
+    lc-html = lc-html +     '<td>' + string(IssStatus.ChangeDate,"99/99/9999") + '</td>' .
+    lc-html = lc-html +     '<td>' + string(IssStatus.ChangeTime,"hh:mm am") + '</td>'. 
+    lc-html = lc-html +     '<td>' + pxml-Safe(WebStatus.description) + '</td>'. 
+    lc-html = lc-html +     '<td>' + lc-Assigned + '</td>' .
+    lc-html = lc-html + '</tr>' .
+    odd-even = odd-even = FALSE.
 
 
-        lc-text = lc-text + string(IssStatus.ChangeDate,"99/99/9999") + '~t' .
-        lc-text = lc-text + string(IssStatus.ChangeTime,"hh:mm am")  + '~t' .
-        lc-text = lc-text + pxml-Safe(WebStatus.description)  + '~t' .
-        lc-text = lc-text + lc-Assigned  + '~n' .
+    lc-text = lc-text + string(IssStatus.ChangeDate,"99/99/9999") + '~t' .
+    lc-text = lc-text + string(IssStatus.ChangeTime,"hh:mm am")  + '~t' .
+    lc-text = lc-text + pxml-Safe(WebStatus.description)  + '~t' .
+    lc-text = lc-text + lc-Assigned  + '~n' .
 
 
-end.
+END.
 
 
 lc-html = lc-html + '</table><br /><br />'.
 
 
-assign pc-html = lc-html
-       pc-text = lc-text.
+ASSIGN 
+    pc-html = lc-html
+    pc-text = lc-text.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 

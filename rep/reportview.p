@@ -1,86 +1,102 @@
 {src/web/method/wrap-cgi.i}
 
-def var lc-global-helpdesk      as char no-undo.
-def var lc-global-reportpath    as char no-undo.
-def var lc-docid                as char no-undo.
-def var lc-doctype              as char no-undo.
-def var lb-blob                 as raw  no-undo.
-def var li-line                 as int  no-undo.
+DEFINE VARIABLE lc-global-helpdesk      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-reportpath    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-docid                AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-doctype              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lb-blob                 AS RAW  NO-UNDO.
+DEFINE VARIABLE li-line                 AS INTEGER  NO-UNDO.
 
-def temp-table newdoc like docl.
+DEFINE TEMP-TABLE newdoc LIKE docl.
 
-find WebAttr where WebAttr.SystemID = "BATCHWORK"
-             and   WebAttr.AttrID   = "BATCHPATH"
-no-lock no-error.
-assign lc-global-helpdesk =  WebAttr.AttrValue .
+FIND WebAttr WHERE WebAttr.SystemID = "BATCHWORK"
+    AND   WebAttr.AttrID   = "BATCHPATH"
+    NO-LOCK NO-ERROR.
+ASSIGN 
+    lc-global-helpdesk =  WebAttr.AttrValue .
 
-find WebAttr where WebAttr.SystemID = "BATCHWORK"
-             and   WebAttr.AttrID   = "REPORTPATH"
-no-lock no-error.
-assign lc-global-reportpath =  WebAttr.AttrValue .
+FIND WebAttr WHERE WebAttr.SystemID = "BATCHWORK"
+    AND   WebAttr.AttrID   = "REPORTPATH"
+    NO-LOCK NO-ERROR.
+ASSIGN 
+    lc-global-reportpath =  WebAttr.AttrValue .
 
-assign lc-docid = get-value("docid").
+ASSIGN 
+    lc-docid = get-value("docid").
 
-assign lc-docid = string(lc-global-reportpath + "\" + lc-docid + ".xls")
-       lc-doctype = "xls".
+ASSIGN 
+    lc-docid = STRING(lc-global-reportpath + "\" + lc-docid + ".xls")
+    lc-doctype = "xls".
 
 
-assign length(lb-blob) = 16384.
-input from value(lc-docid) binary no-map no-convert.
-repeat:
-    import unformatted lb-blob.
-    assign li-line = li-line + 1.
-    create newdoc.
-    assign newdoc.DocID   = 1
-           newdoc.Lineno  = li-line
-           newdoc.rdata   = lb-blob.
-end.
-input close.
-assign length(lb-blob) = 0.
+ASSIGN 
+    LENGTH(lb-blob) = 16384.
+INPUT from value(lc-docid) binary no-map no-convert.
+REPEAT:
+    IMPORT UNFORMATTED lb-blob.
+    ASSIGN 
+        li-line = li-line + 1.
+    CREATE newdoc.
+    ASSIGN 
+        newdoc.DocID   = 1
+        newdoc.Lineno  = li-line
+        newdoc.rdata   = lb-blob.
+END.
+INPUT close.
+ASSIGN 
+    LENGTH(lb-blob) = 0.
 
-case lc-doctype:
-    when "PDF" then output-content-type("application/pdf").
-    when "DOC" 
-    or when "DOT" then output-content-type("application/msword").
-    when "HTM"  
-    or when "HTML" then output-content-type("text/html").
-    when "XLS" 
-    or when "XLT" 
-    or when "XLTX" then output-content-type("application/vnd.ms-excel").
-    when "TXT" then output-content-type("text/plain~;charset=iso-8859-1").
-    when "INI"
-    or when "D"
-    or when "DF" then output-content-type("text/plain").
-    when "PPT" then output-content-type("application/ms-powerpoint").
-    when "PNG" then output-content-type("image/png").
-    when "GIF" then output-content-type("image/gif").
-    when "jpe"
-    or when "jpg"
-    or when "jpeg" then output-content-type("image/jpeg").
-    when "XML" then output-content-type("text/xml").
-    when "ZIP" then output-content-type("application/zip").
+CASE lc-doctype:
+    WHEN "PDF" THEN output-content-type("application/pdf").
+    WHEN "DOC" 
+    OR 
+    WHEN "DOT" THEN output-content-type("application/msword").
+    WHEN "HTM"  
+    OR 
+    WHEN "HTML" THEN output-content-type("text/html").
+    WHEN "XLS" 
+    OR 
+    WHEN "XLT" 
+    OR 
+    WHEN "XLTX" THEN output-content-type("application/vnd.ms-excel").
+    WHEN "TXT" THEN output-content-type("text/plain~;charset=iso-8859-1").
+    WHEN "INI"
+    OR 
+    WHEN "D"
+    OR 
+    WHEN "DF" THEN output-content-type("text/plain").
+    WHEN "PPT" THEN output-content-type("application/ms-powerpoint").
+    WHEN "PNG" THEN output-content-type("image/png").
+    WHEN "GIF" THEN output-content-type("image/gif").
+    WHEN "jpe"
+    OR 
+    WHEN "jpg"
+    OR 
+    WHEN "jpeg" THEN output-content-type("image/jpeg").
+    WHEN "XML" THEN output-content-type("text/xml").
+    WHEN "ZIP" THEN output-content-type("application/zip").
     WHEN "msg" THEN output-content-type("application/vnd.ms-outlook").
-    otherwise
-        do:
-            run ip-Error("Unknown content type of " + lc-docid).
-            return.
-        end.
-end case.
+    OTHERWISE
+    DO:
+        RUN ip-Error("Unknown content type of " + lc-docid).
+        RETURN.
+    END.
+END CASE.
 
-for each newdoc where newdoc.docid = 1 no-lock:
-    put {&WEBSTREAM} control newdoc.rdata.
-end.
+FOR EACH newdoc WHERE newdoc.docid = 1 NO-LOCK:
+    PUT {&WEBSTREAM} control newdoc.rdata.
+END.
 
 
 
-procedure ip-Error:
-    def input param pc-error as char no-undo.
+PROCEDURE ip-Error:
+    DEFINE INPUT PARAMETER pc-error AS CHARACTER NO-UNDO.
     output-content-type("text/html").
-    put {&webstream} unformatted
+    PUT {&webstream} unformatted
         '<html><head><title>Document Error</title></head>'
         '<body>'
         '<h1>This document can not be displayed</h1><br>'
         '<h2>Document ID =' lc-docid '</h2><br>'
         '<h2>' pc-error '</h2></body></html>' skip.
-    return.
-end procedure.
+    RETURN.
+END PROCEDURE.

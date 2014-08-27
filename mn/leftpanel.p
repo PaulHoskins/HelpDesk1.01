@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v10r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        mn/leftpanel.p
@@ -21,35 +18,32 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-mess  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-def var lc-user as char no-undo.
-def var lc-pass as char no-undo.
+DEFINE VARIABLE lc-user        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pass        AS CHARACTER NO-UNDO.
 
-def var li-item as int no-undo.
-
-
-def temp-table tt-menu no-undo
-    field ItemNo        as int
-    field Level         as int
-    field Description   as char 
-    field ObjURL        as char
-    field ObjTarget     as char
-    field ObjType       as char
-
-    index ItemNo is primary unique
-            ItemNo.
-
-def var lc-system as char no-undo.
-def var lc-image  as char no-undo.
-def var lc-company as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE li-item        AS INTEGER   NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+DEFINE TEMP-TABLE tt-menu NO-UNDO
+    FIELD ItemNo      AS INTEGER
+    FIELD Level       AS INTEGER
+    FIELD Description AS CHARACTER 
+    FIELD ObjURL      AS CHARACTER
+    FIELD ObjTarget   AS CHARACTER
+    FIELD ObjType     AS CHARACTER
+
+    INDEX ItemNo IS PRIMARY UNIQUE
+    ItemNo.
+
+DEFINE VARIABLE lc-system  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-image   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-company AS CHARACTER NO-UNDO.
+
+
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -58,48 +52,32 @@ def var lc-company as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -107,15 +85,12 @@ def var lc-company as char no-undo.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-HeaderMenu) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-HeaderMenu Procedure 
 PROCEDURE ip-HeaderMenu :
 /*------------------------------------------------------------------------------
   Purpose:     
@@ -126,22 +101,19 @@ PROCEDURE ip-HeaderMenu :
     
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-NewMenu) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-NewMenu Procedure 
 PROCEDURE ip-NewMenu :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    return.
+    RETURN.
 
 /*
     for each tt-menu no-lock:
@@ -152,296 +124,299 @@ PROCEDURE ip-NewMenu :
     end. */
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-mnlib-BuildIssueMenu) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE mnlib-BuildIssueMenu Procedure 
 PROCEDURE mnlib-BuildIssueMenu :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    def input param pc-menu     as char no-undo.
-    def input param pi-level    as int  no-undo.
+    DEFINE INPUT PARAMETER pc-menu     AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pi-level    AS INTEGER  NO-UNDO.
 
-    def buffer b-menu for webmhead.
-    def buffer b2-menu for webmhead.
-    def buffer b-line for webmline.
-    def buffer b2-line for webmline.
-    def buffer b-object for webobject.
-    def buffer b-user   for webuser.
+    DEFINE BUFFER b-menu FOR webmhead.
+    DEFINE BUFFER b2-menu FOR webmhead.
+    DEFINE BUFFER b-line FOR webmline.
+    DEFINE BUFFER b2-line FOR webmline.
+    DEFINE BUFFER b-object FOR webobject.
+    DEFINE BUFFER b-user   FOR webuser.
 
-    def var li-ItemNo       as int no-undo.
-    def var lc-desc         as char no-undo.
+    DEFINE VARIABLE li-ItemNo       AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lc-desc         AS CHARACTER NO-UNDO.
 
-    find b-user where b-user.loginid = lc-user no-lock no-error.
+    FIND b-user WHERE b-user.loginid = lc-user NO-LOCK NO-ERROR.
 
-    if can-do("INTERNAL,CONTRACT",b-user.UserClass) then
-    do:
-        for each Issue no-lock
-            where Issue.CompanyCode = b-user.CompanyCode,
-            first WebStatus where WebStatus.CompanyCode = Issue.CompanyCode 
-                              and WebStatus.StatusCode = Issue.StatusCode
-                              and WebStatus.CompletedStatus = false
+    IF CAN-DO("INTERNAL,CONTRACT",b-user.UserClass) THEN
+    DO:
+        FOR EACH Issue NO-LOCK
+            WHERE Issue.CompanyCode = b-user.CompanyCode,
+            FIRST WebStatus WHERE WebStatus.CompanyCode = Issue.CompanyCode 
+            AND WebStatus.StatusCode = Issue.StatusCode
+            AND WebStatus.CompletedStatus = FALSE
 
-            break by Issue.AccountNumber
-                  by Issue.IssueNumber desc:
+            BREAK BY Issue.AccountNumber
+            BY Issue.IssueNumber DESCENDING:
 
-            find Customer of Issue no-lock no-error.
+            FIND Customer OF Issue NO-LOCK NO-ERROR.
 
-            assign lc-desc = if avail customer then customer.name 
-                             else "No Customer".
+            ASSIGN 
+                lc-desc = IF AVAILABLE customer THEN customer.name 
+                             ELSE "No Customer".
 
-            if first-of(issue.AccountNumber) then
-            do:
-                find last tt-menu no-lock no-error.
-                assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-                create tt-menu.
-                assign tt-menu.ItemNo = li-itemno
-                       tt-menu.Level  = pi-level
-                       tt-menu.Description = lc-desc.
-            end.
-            find last tt-menu no-lock no-error.
-            assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-            create tt-menu.
-            assign tt-menu.itemno = li-itemno
-                   tt-menu.Level =  pi-level + 1
-                   tt-menu.Description = string(Issue.IssueNumber) + ' ' + 
+            IF FIRST-OF(issue.AccountNumber) THEN
+            DO:
+                FIND LAST tt-menu NO-LOCK NO-ERROR.
+                ASSIGN 
+                    li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+                CREATE tt-menu.
+                ASSIGN 
+                    tt-menu.ItemNo = li-itemno
+                    tt-menu.Level  = pi-level
+                    tt-menu.Description = lc-desc.
+            END.
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN 
+                li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+            CREATE tt-menu.
+            ASSIGN 
+                tt-menu.itemno = li-itemno
+                tt-menu.Level =  pi-level + 1
+                tt-menu.Description = STRING(Issue.IssueNumber) + ' ' + 
                                          Issue.BriefDescription
-                   tt-menu.ObjType = "WS"
-                   tt-menu.ObjTarget = "mainwindow"
-                   tt-menu.ObjURL  = "iss/issueframe.p?mode=update&return=home&rowid=" + string(rowid(issue)).
-                   .
+                tt-menu.ObjType = "WS"
+                tt-menu.ObjTarget = "mainwindow"
+                tt-menu.ObjURL  = "iss/issueframe.p?mode=update&return=home&rowid=" + string(ROWID(issue)).
+            .
            
-        end.
-    end.
-    else
+        END.
+    END.
+    ELSE
     /*
     ***
     *** Customer 
     ***
     */
-    do:
-        for each Issue no-lock
-            where Issue.CompanyCode = b-user.CompanyCode
-              and Issue.AccountNumber = b-user.AccountNumber,
-            first WebStatus where webStatus.CompanyCode = Issue.CompanyCode
-                              and WebStatus.StatusCode = Issue.StatusCode
-                              and WebStatus.CompletedStatus = false
+    DO:
+        FOR EACH Issue NO-LOCK
+            WHERE Issue.CompanyCode = b-user.CompanyCode
+            AND Issue.AccountNumber = b-user.AccountNumber,
+            FIRST WebStatus WHERE webStatus.CompanyCode = Issue.CompanyCode
+            AND WebStatus.StatusCode = Issue.StatusCode
+            AND WebStatus.CompletedStatus = FALSE
 
-            break by Issue.AreaCode
-                  by Issue.IssueNumber desc:
+            BREAK BY Issue.AreaCode
+            BY Issue.IssueNumber DESCENDING:
 
-            find WebIssArea of Issue no-lock no-error.
+            FIND WebIssArea OF Issue NO-LOCK NO-ERROR.
 
-            assign lc-desc = if avail WebIssArea then WebIssArea.Description 
-                             else "Not Known".
+            ASSIGN 
+                lc-desc = IF AVAILABLE WebIssArea THEN WebIssArea.Description 
+                             ELSE "Not Known".
 
-            if first-of(issue.AreaCode) then
-            do:
-                find last tt-menu no-lock no-error.
-                assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-                create tt-menu.
-                assign tt-menu.ItemNo = li-itemno
-                       tt-menu.Level  = pi-level
-                       tt-menu.Description = lc-desc.
-            end.
-            find last tt-menu no-lock no-error.
-            assign li-itemno = if avail tt-menu 
-                               then tt-menu.itemno + 1
-                               else 1.
-            create tt-menu.
-            assign tt-menu.itemno = li-itemno
-                   tt-menu.Level =  pi-level + 1
-                   tt-menu.Description = string(Issue.IssueNumber) + ' ' + 
+            IF FIRST-OF(issue.AreaCode) THEN
+            DO:
+                FIND LAST tt-menu NO-LOCK NO-ERROR.
+                ASSIGN 
+                    li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+                CREATE tt-menu.
+                ASSIGN 
+                    tt-menu.ItemNo = li-itemno
+                    tt-menu.Level  = pi-level
+                    tt-menu.Description = lc-desc.
+            END.
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN 
+                li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+            CREATE tt-menu.
+            ASSIGN 
+                tt-menu.itemno = li-itemno
+                tt-menu.Level =  pi-level + 1
+                tt-menu.Description = STRING(Issue.IssueNumber) + ' ' + 
                                          Issue.BriefDescription
-                   tt-menu.ObjType = "WS"
-                   tt-menu.ObjTarget = "mainwindow"
-                   tt-menu.ObjURL  = "iss/issueview.p?mode=update&return=home&rowid=" + string(rowid(issue)).
-                   .
+                tt-menu.ObjType = "WS"
+                tt-menu.ObjTarget = "mainwindow"
+                tt-menu.ObjURL  = "iss/issueview.p?mode=update&return=home&rowid=" + string(ROWID(issue)).
+            .
            
-        end.
-    end.
+        END.
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-mnlib-BuildMenu) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE mnlib-BuildMenu Procedure 
 PROCEDURE mnlib-BuildMenu :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-    def input param pc-menu     as char no-undo.
-    def input param pi-level    as int  no-undo.
+    DEFINE INPUT PARAMETER pc-menu     AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pi-level    AS INTEGER  NO-UNDO.
 
-    def buffer b-menu for webmhead.
-    def buffer b2-menu for webmhead.
-    def buffer b-line for webmline.
-    def buffer b2-line for webmline.
-    def buffer b-object for webobject.
+    DEFINE BUFFER b-menu FOR webmhead.
+    DEFINE BUFFER b2-menu FOR webmhead.
+    DEFINE BUFFER b-line FOR webmline.
+    DEFINE BUFFER b2-line FOR webmline.
+    DEFINE BUFFER b-object FOR webobject.
 
-    def var li-ItemNo       as int no-undo.
-    def var ll-has-side     as log no-undo.
+    DEFINE VARIABLE li-ItemNo       AS INTEGER NO-UNDO.
+    DEFINE VARIABLE ll-has-side     AS LOG NO-UNDO.
 
-    find b-menu where b-menu.pagename = pc-menu no-lock no-error.
+    FIND b-menu WHERE b-menu.pagename = pc-menu NO-LOCK NO-ERROR.
 
-    if not avail b-menu then return.
+    IF NOT AVAILABLE b-menu THEN RETURN.
 
-    for each b-line of b-menu no-lock:
-        if b-line.linktype = 'page' then
-        do:
-            find b2-menu where b2-menu.pagename = b-line.linkobject
-                 no-lock no-error.
-            if not avail b2-menu then next.
-            find first b2-line of b2-menu no-lock no-error.
-            if not avail b2-line then next.
-            assign ll-has-side = false.
-            for each b2-line of b2-menu no-lock:
-                find b-object where b-object.objectid = b2-line.linkobject no-lock no-error.
-                if not avail b-object then next.
-                if can-do("l,b",b-object.menulocation) = false then next.
-                assign ll-has-side = true.
-                leave.
-            end.
-            if not ll-has-side then next.
-        end.
-        else
-        do:
-            find b-object where b-object.objectid = b-line.linkobject
-                          no-lock no-error.
-            if not avail b-object then next.
-            if can-do("l,b",b-object.menulocation) = false then next.
-        end.
-        find last tt-menu no-lock no-error.
-        assign li-itemno = if avail tt-menu 
-                           then tt-menu.itemno + 1
-                           else 1.
-        if b-line.linktype = 'Page' then
-        do:
-            create tt-menu.
-            assign tt-menu.ItemNo = li-itemno
-                   tt-menu.Level  = pi-Level
-                   tt-menu.Description  = b2-menu.PageDesc.
-            run mnlib-BuildMenu( b2-menu.PageName, pi-level + 1 ).
+    FOR EACH b-line OF b-menu NO-LOCK:
+        IF b-line.linktype = 'page' THEN
+        DO:
+            FIND b2-menu WHERE b2-menu.pagename = b-line.linkobject
+                NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE b2-menu THEN NEXT.
+            FIND FIRST b2-line OF b2-menu NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE b2-line THEN NEXT.
+            ASSIGN 
+                ll-has-side = FALSE.
+            FOR EACH b2-line OF b2-menu NO-LOCK:
+                FIND b-object WHERE b-object.objectid = b2-line.linkobject NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE b-object THEN NEXT.
+                IF CAN-DO("l,b",b-object.menulocation) = FALSE THEN NEXT.
+                ASSIGN 
+                    ll-has-side = TRUE.
+                LEAVE.
+            END.
+            IF NOT ll-has-side THEN NEXT.
+        END.
+        ELSE
+        DO:
+            FIND b-object WHERE b-object.objectid = b-line.linkobject
+                NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE b-object THEN NEXT.
+            IF CAN-DO("l,b",b-object.menulocation) = FALSE THEN NEXT.
+        END.
+        FIND LAST tt-menu NO-LOCK NO-ERROR.
+        ASSIGN 
+            li-itemno = IF AVAILABLE tt-menu 
+                           THEN tt-menu.itemno + 1
+                           ELSE 1.
+        IF b-line.linktype = 'Page' THEN
+        DO:
+            CREATE tt-menu.
+            ASSIGN 
+                tt-menu.ItemNo = li-itemno
+                tt-menu.Level  = pi-Level
+                tt-menu.Description  = b2-menu.PageDesc.
+            RUN mnlib-BuildMenu( b2-menu.PageName, pi-level + 1 ).
 
-        end.
-        else
-        do:
-            create tt-menu.
-            assign tt-menu.ItemNo = li-itemno
-                   tt-menu.Level  = pi-Level
-                   tt-menu.Description = b-object.Description
-                   tt-menu.ObjURL      = b-object.ObjURL
-                   tt-menu.ObjTarget   = b-object.ObjTarget
-                   tt-menu.ObjType     = b-object.ObjType.
+        END.
+        ELSE
+        DO:
+            CREATE tt-menu.
+            ASSIGN 
+                tt-menu.ItemNo = li-itemno
+                tt-menu.Level  = pi-Level
+                tt-menu.Description = b-object.Description
+                tt-menu.ObjURL      = b-object.ObjURL
+                tt-menu.ObjTarget   = b-object.ObjTarget
+                tt-menu.ObjType     = b-object.ObjType.
 
-        end.
-    end.
+        END.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-p-BeginNexus) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE p-BeginNexus Procedure 
 PROCEDURE p-BeginNexus :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     {&out}
     '<applet code=ryNexus width=' 
-            htmlib-GetAttr("Nexus", "Width") 
-            ' height='
-            htmlib-GetAttr("Nexus","Height")
-            ' archive="' htmlib-GetAttr("Nexus","ScriptDir") 'Nexus.jar" mayscript name="' 
-        htmlib-GetAttr("Nexus","ScriptDir" )
-                       'Nexus.jar">' skip
+    htmlib-GetAttr("Nexus", "Width") 
+    ' height='
+    htmlib-GetAttr("Nexus","Height")
+    ' archive="' htmlib-GetAttr("Nexus","ScriptDir") 'Nexus.jar" mayscript name="' 
+    htmlib-GetAttr("Nexus","ScriptDir" )
+    'Nexus.jar">' skip
     '<param name=Copyright value="Nexus (c) 2001 Cool Focus [www.coolfocus.com]">' skip 
     '<param name=CabBase value="' htmlib-GetAttr("Nexus","ScriptDir") 'Nexus.cab">' skip.
 
@@ -493,102 +468,97 @@ PROCEDURE p-BeginNexus :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-p-BuildItem) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE p-BuildItem Procedure 
 PROCEDURE p-BuildItem :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def input-output param pi-item as int no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT-OUTPUT PARAMETER pi-item AS INTEGER NO-UNDO.
 
-    def input param pi-level as int no-undo.
+    DEFINE INPUT PARAMETER pi-level AS INTEGER NO-UNDO.
 
-    def input param pc-label as char no-undo.
-    def input param pc-url   as char no-undo.
-    def input param pc-target as char no-undo.
+    DEFINE INPUT PARAMETER pc-label AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-url   AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-target AS CHARACTER NO-UNDO.
 
 
-    assign pi-item = pi-item + 1.
+    ASSIGN 
+        pi-item = pi-item + 1.
 
-    if pi-level > 0
-    then assign pc-label = fill('*',pi-level) + pc-label.
+    IF pi-level > 0
+        THEN ASSIGN pc-label = FILL('*',pi-level) + pc-label.
 
-    {&out} '<param name=Item' string(pi-item) ' value="' pc-label '">' skip.
+    {&out} '<param name=Item' STRING(pi-item) ' value="' pc-label '">' skip.
 
-    if pc-url = ""
-    then pc-url = "$".
+    IF pc-url = ""
+        THEN pc-url = "$".
 
-    if pc-url begins 'javascriptxxxxxxx':U 
-    then {&out} '<param name=URL' string(pi-item) ' value=' pc-url '>' skip.
+    IF pc-url BEGINS 'javascriptxxxxxxx':U 
+        THEN {&out} '<param name=URL' STRING(pi-item) ' value=' pc-url '>' skip.
     else {&out} '<param name=URL' string(pi-item) ' value="' pc-url '">' skip.
 
-    if pc-target <> ""
-    then {&out} '<param name=Target' string(pi-item) ' value="' pc-target '">' skip.
+    IF pc-target <> ""
+        THEN {&out} '<param name=Target' STRING(pi-item) ' value="' pc-target '">' skip.
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-p-EndNexus) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE p-EndNexus Procedure 
 PROCEDURE p-EndNexus :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
     {&out} '</APPLET>' skip.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
     
    
-    def var lc-value as char no-undo.
+    DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
 
 
 
-    assign lc-value = get-cookie("ExtranetUser").
+    ASSIGN 
+        lc-value = get-cookie("ExtranetUser").
 
-    assign lc-user = htmlib-DecodeUser(lc-value).
+    ASSIGN 
+        lc-user = htmlib-DecodeUser(lc-value).
 
-     assign lc-system = htmlib-GetAttr("system","systemname")
-            lc-image  = htmlib-GetAttr("system","companylogo")
-            lc-company = htmlib-GetAttr("system","companyname").
+    ASSIGN 
+        lc-system = htmlib-GetAttr("system","systemname")
+        lc-image  = htmlib-GetAttr("system","companylogo")
+        lc-company = htmlib-GetAttr("system","companyname").
 
     RUN outputHeader.
     
     /* {&out} htmlib-Header("leftpanel") skip. */
     {&out}
-         '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">' skip "~n" +
+    '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">' skip "~n" +
          '<HTML>' skip
          '<HEAD>' skip
          '<meta http-equiv="Cache-Control" content="No-Cache">' skip
@@ -599,52 +569,52 @@ PROCEDURE process-web-request :
 
     RUN ip-HeaderMenu.
     {&out}
-        '</HEAD>' skip
+    '</HEAD>' skip
         '<script language="JavaScript" src="/scripts/js/standard.js"></script>' skip
         '<BODY class="normaltext">'.
    
-    find webuser where webuser.loginid = lc-user no-lock no-error.
+    FIND webuser WHERE webuser.loginid = lc-user NO-LOCK NO-ERROR.
 
-    if avail webuser then
-    do:
+    IF AVAILABLE webuser THEN
+    DO:
         {&out} '<div class="inform"><fieldset>'
-               "You are logged in as " + webuser.name
-                '</fieldset></div>'.
-    end.
-    else {&out} '<p>no user</p>'.
+        "You are logged in as " + webuser.name
+        '</fieldset></div>'.
+    END.
+    ELSE {&out} '<p>no user</p>'.
 
     
     
 
-    if avail webuser then
-    do:
+    IF AVAILABLE webuser THEN
+    DO:
         RUN mnlib-BuildIssueMenu ( webuser.pagename, 1 ).
         RUN mnlib-BuildMenu ( webuser.pagename, 1 ).
-    end.
+    END.
 
 
     RUN ip-NewMenu.
     RUN p-BeginNexus.
 
 
-    RUN p-BuildItem ( input-output li-item,
-                      1,
-                      'Your Issues',
-                      appurl + '/mn/mainframe.p',
-                      'mainwindow').
+    RUN p-BuildItem ( INPUT-OUTPUT li-item,
+        1,
+        'Your Issues',
+        appurl + '/mn/mainframe.p',
+        'mainwindow').
 
 
-    for each tt-menu exclusive-lock:
-        if tt-menu.ObjType = 'WS'
-        then assign tt-menu.ObjURL = appurl + '/' + tt-menu.ObjURL.
+    FOR EACH tt-menu EXCLUSIVE-LOCK:
+        IF tt-menu.ObjType = 'WS'
+            THEN ASSIGN tt-menu.ObjURL = appurl + '/' + tt-menu.ObjURL.
         
-        run p-BuildItem( input-output li-item,
-                         tt-menu.Level,
-                         tt-menu.Description,
-                         tt-menu.ObjURL,
-                         tt-menu.ObjTarget ).
+        RUN p-BuildItem( INPUT-OUTPUT li-item,
+            tt-menu.Level,
+            tt-menu.Description,
+            tt-menu.ObjURL,
+            tt-menu.ObjTarget ).
 
-    end.
+    END.
 
     /*
     RUN p-BuildItem ( input-output li-item,
@@ -654,12 +624,12 @@ PROCEDURE process-web-request :
                       'mainwindow').
     */
 
-    if avail webuser then
-    RUN p-BuildItem ( input-output li-item,
-                      1,
-                      'Change Your Password',
-                      appurl + '/mn/changepassword.p',
-                      'mainwindow').
+    IF AVAILABLE webuser THEN
+        RUN p-BuildItem ( INPUT-OUTPUT li-item,
+            1,
+            'Change Your Password',
+            appurl + '/mn/changepassword.p',
+            'mainwindow').
 
     RUN p-EndNexus.
     
@@ -669,30 +639,26 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-xip-HTM-Header) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE xip-HTM-Header Procedure 
 PROCEDURE xip-HTM-Header :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def output param pc-htm             as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-htm             AS CHARACTER NO-UNDO.
 
-    assign pc-htm = 
+    ASSIGN 
+        pc-htm = 
         '<meta http-equiv="refresh" content="300;url=' 
         + appurl + '/mn/leftpanel.p' +
         '"><META HTTP-EQUIV="Expires" CONTENT="0">'.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

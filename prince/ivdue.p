@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        prince/ivdue.p
@@ -20,42 +17,40 @@
 
 &IF DEFINED(UIB_is_Running) EQ 0 &THEN
 
-def input param pc-user             as char no-undo.
-def input param pc-CompanyCode      as char no-undo.
-def input param pd-lodate           as date no-undo.
-def input param pd-hidate           as date  no-undo.
-def output param pc-pdf             as char no-undo.
+DEFINE INPUT PARAMETER pc-user             AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pd-lodate           AS DATE NO-UNDO.
+DEFINE INPUT PARAMETER pd-hidate           AS DATE  NO-UNDO.
+DEFINE OUTPUT PARAMETER pc-pdf             AS CHARACTER NO-UNDO.
 
 &ELSE
 
-def var pc-user                    as char no-undo.
-def var pc-CompanyCode             as char no-undo.
-def var pd-lodate                    as date no-undo.
-def var pd-hidate                    as date  no-undo.
-def var pc-pdf                     as char no-undo.
+DEFINE VARIABLE pc-user                    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-CompanyCode             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pd-lodate                    AS DATE NO-UNDO.
+DEFINE VARIABLE pd-hidate                    AS DATE  NO-UNDO.
+DEFINE VARIABLE pc-pdf                     AS CHARACTER NO-UNDO.
 
-assign pc-CompanyCode = "MICAR"
-       pd-lodate        = today - 100
-       pd-hidate        = today + 100.
+ASSIGN 
+    pc-CompanyCode = "MICAR"
+    pd-lodate        = TODAY - 100
+    pd-hidate        = TODAY + 100.
 
 
 &ENDIF
 
 
 
-def var lc-html         as char     no-undo.
-def var lc-pdf          as char     no-undo.
-def var ll-ok           as log      no-undo.
-def var li-ReportNumber as int      no-undo.
+DEFINE VARIABLE lc-html         AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-pdf          AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE ll-ok           AS LOG      NO-UNDO.
+DEFINE VARIABLE li-ReportNumber AS INTEGER      NO-UNDO.
 
 
 {prince/ivdue.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -64,138 +59,122 @@ def var li-ReportNumber as int      no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
 
-assign
+ASSIGN
     pc-pdf = ?
-    li-ReportNumber = next-value(ReportNumber).
-assign 
-    lc-html = session:temp-dir + caps(pc-CompanyCode) + "-ivDue-" + string(li-ReportNumber).
+    li-ReportNumber = NEXT-VALUE(ReportNumber).
+ASSIGN 
+    lc-html = SESSION:TEMP-DIR + caps(pc-CompanyCode) + "-ivDue-" + string(li-ReportNumber).
 
-assign 
+ASSIGN 
     lc-pdf = lc-html + ".pdf"
     lc-html = lc-html + ".html".
 
-os-delete value(lc-pdf) no-error.
-os-delete value(lc-html) no-error.
+OS-DELETE value(lc-pdf) no-error.
+OS-DELETE value(lc-html) no-error.
 
 
-dynamic-function("pxml-Initialise").
+DYNAMIC-FUNCTION("pxml-Initialise").
 
-create tt-pxml.
-assign 
+CREATE tt-pxml.
+ASSIGN 
     tt-pxml.PageOrientation = "LANDSCAPE".
 
-dynamic-function("pxml-OpenStream",lc-html).
-dynamic-function("pxml-Header", pc-CompanyCode).
+DYNAMIC-FUNCTION("pxml-OpenStream",lc-html).
+DYNAMIC-FUNCTION("pxml-Header", pc-CompanyCode).
 
 RUN ip-BuildTT.
 RUN ip-Print.
 
-dynamic-function("pxml-Footer",pc-CompanyCode).
-dynamic-function("pxml-CloseStream").
+DYNAMIC-FUNCTION("pxml-Footer",pc-CompanyCode).
+DYNAMIC-FUNCTION("pxml-CloseStream").
 
 
-ll-ok = dynamic-function("pxml-Convert",lc-html,lc-pdf).
+ll-ok = DYNAMIC-FUNCTION("pxml-Convert",lc-html,lc-pdf).
 
-if ll-ok
-then assign pc-pdf = lc-pdf.
+IF ll-ok
+    THEN ASSIGN pc-pdf = lc-pdf.
     
 &IF DEFINED(UIB_is_Running) ne 0 &THEN
 
-    os-command silent start value(lc-pdf).
+OS-COMMAND SILENT START VALUE(lc-pdf).
 &ENDIF
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-BuildTT) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-BuildTT Procedure 
 PROCEDURE ip-BuildTT :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def var ld-date     as date         no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE ld-date     AS DATE         NO-UNDO.
 
-    for each ivField no-lock
-        where ivField.dType = "date"
-          and ivField.dWarning > 0,
-          first ivSub of ivField no-lock:
+    FOR EACH ivField NO-LOCK
+        WHERE ivField.dType = "date"
+        AND ivField.dWarning > 0,
+        FIRST ivSub OF ivField NO-LOCK:
 
-        if ivSub.Company <> pc-CompanyCode then next.
+        IF ivSub.Company <> pc-CompanyCode THEN NEXT.
 
         
-        for each CustField no-lock
-            where CustField.ivFieldID = ivField.ivFieldID:
+        FOR EACH CustField NO-LOCK
+            WHERE CustField.ivFieldID = ivField.ivFieldID:
 
             
-            if custField.FieldData = "" 
-            or custField.FieldData = ? then next.
+            IF custField.FieldData = "" 
+                OR custField.FieldData = ? THEN NEXT.
 
-            assign
-                ld-date = date(custfield.FieldData) no-error.
-            if error-status:error 
-            or ld-date = ? then next.
+            ASSIGN
+                ld-date = DATE(custfield.FieldData) no-error.
+            IF ERROR-STATUS:ERROR 
+                OR ld-date = ? THEN NEXT.
 
             
-            if ld-date < pd-lodate
-            or ld-date > pd-hidate then next.
+            IF ld-date < pd-lodate
+                OR ld-date > pd-hidate THEN NEXT.
             
 
-            find CustIV 
-                where custIV.custIvID = custField.custIvID no-lock no-error.
-            if not avail custIV then next.
+            FIND CustIV 
+                WHERE custIV.custIvID = custField.custIvID NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE custIV THEN NEXT.
            
-            find customer 
-                where customer.CompanyCode = pc-CompanyCode
-                  and customer.AccountNumber = custIv.AccountNumber no-lock no-error.
-            if not avail customer then next.
+            FIND customer 
+                WHERE customer.CompanyCode = pc-CompanyCode
+                AND customer.AccountNumber = custIv.AccountNumber NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE customer THEN NEXT.
 
-            create tt.
-            assign
-                tt.CustFieldRow     = rowid(CustField)
-                tt.ivFieldRow       = rowid(ivField)
+            CREATE tt.
+            ASSIGN
+                tt.CustFieldRow     = ROWID(CustField)
+                tt.ivFieldRow       = ROWID(ivField)
                 tt.ivDate           = ld-date
                 tt.AccountNumber    = customer.AccountNumber
                 tt.name             = customer.name
@@ -204,75 +183,70 @@ PROCEDURE ip-BuildTT :
                 .
 
 
-        end.
+        END.
 
        
             
-    end.
+    END.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Print) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Print Procedure 
 PROCEDURE ip-Print :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
   
-  {&prince}
-      '<p style="text-align: center; font-size: 14px; font-weight: 900;">Customer Inventory Due Report - '
-      'From ' string(pd-lodate,"99/99/9999")
-      ' To ' string(pd-hidate,"99/99/9999") 
+    {&prince}
+    '<p style="text-align: center; font-size: 14px; font-weight: 900;">Customer Inventory Due Report - '
+    'From ' STRING(pd-lodate,"99/99/9999")
+    ' To ' STRING(pd-hidate,"99/99/9999") 
       
-      '</div>'.
+    '</div>'.
 
 
     {&prince}
-        '<table class="landrep">'
-            '<thead>'
-            '<tr>'
-                '<th>Account</th>'
-                '<th>Name</th>'
-                '<th>Reference</th>'
-                '<th>Field</th>'
-                '<th>Renewal</th>'
+    '<table class="landrep">'
+    '<thead>'
+    '<tr>'
+    '<th>Account</th>'
+    '<th>Name</th>'
+    '<th>Reference</th>'
+    '<th>Field</th>'
+    '<th>Renewal</th>'
                 
-            '</tr>'
-            '</thead>'
+    '</tr>'
+    '</thead>'
         skip.
 
 
-    for each tt no-lock:
+    FOR EACH tt NO-LOCK:
 
         {&prince} 
-            '<tr>'
-                '<td>' pxml-safe(tt.AccountNumber) '</td>'
-                '<td>' pxml-safe(tt.name) '</td>'
-                '<td>' pxml-safe(tt.Ref)  '</td>'
-                '<td>' pxml-safe(tt.dLabel)  '</td>'
-                '<td>' string(tt.ivDate,"99/99/9999") '</td>'
-                '</tr>' skip
-                .
+        '<tr>'
+        '<td>' pxml-safe(tt.AccountNumber) '</td>'
+        '<td>' pxml-safe(tt.name) '</td>'
+        '<td>' pxml-safe(tt.Ref)  '</td>'
+        '<td>' pxml-safe(tt.dLabel)  '</td>'
+        '<td>' STRING(tt.ivDate,"99/99/9999") '</td>'
+        '</tr>' skip
+        .
 
-    end.
+    END.
 
     {&prince} 
-        '</table>'.
+    '</table>'.
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

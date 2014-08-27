@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /*------------------------------------------------------------------------
 
   File: 
@@ -34,11 +31,8 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -47,48 +41,32 @@ CREATE WIDGET-POOL.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -96,15 +74,12 @@ CREATE WIDGET-POOL.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
 /*------------------------------------------------------------------------------
   Purpose:     Output the MIME header, and any "cookie" information needed 
@@ -157,14 +132,11 @@ PROCEDURE outputHeader :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -184,33 +156,12 @@ PROCEDURE process-web-request :
             "</script>" skip
         '</head>'
         '<body>'
-        'here at notl' skip
         '</body>'
         '</html>'.
     
-    /*
-    {&out} htmlib-Header("mainframe") skip.
-
-    {&out} htmlib-ProgramTitle("There was an error logging into " + 
-                                 htmlib-GetAttr("system","systemname")).
-
-   
-    /* explain cookie problem */
-
-    {&out} '<BR><P>'
-            'There was a problem loading the web page you requested or you have not logged in.' skip
-            ' Please also ensure you have set your Web browser to accept cookies from this site.</P>' 
-            '<P>Please ' replace(htmlib-TextLink("Login again", appurl + "/mn/login.p"),'HREF','target=_top href')
-            '</P>'
-            .
     
-    {&OUT} htmlib-Footer() skip.
-    
-    */
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

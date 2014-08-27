@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        mail/mailsave.p
@@ -22,35 +19,32 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 
-def var lc-rowid as char no-undo.
-def var lc-link-print as char no-undo.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-print  AS CHARACTER NO-UNDO.
 
-def var li-max-lines as int initial 12 no-undo.
+DEFINE VARIABLE li-max-lines   AS INTEGER   INITIAL 12 NO-UNDO.
 
 
-def buffer b-query  for doch.
-def buffer b-search for doch.
-def buffer doch     for Doch.
+DEFINE BUFFER b-query  FOR doch.
+DEFINE BUFFER b-search FOR doch.
+DEFINE BUFFER doch     FOR Doch.
 
 
   
-def query q for b-query scrolling.
+DEFINE QUERY q FOR b-query SCROLLING.
 
-def var lc-tog-name     as char no-undo.
-def var lc-desc-name    as char no-undo.
+DEFINE VARIABLE lc-tog-name      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-desc-name     AS CHARACTER NO-UNDO.
 
-def var lc-list-number      as char no-undo.
-def var lc-list-name        as char no-undo.
-def var lc-accountnumber    as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-list-number   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-name     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accountnumber AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -59,48 +53,32 @@ def var lc-accountnumber    as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -110,21 +88,18 @@ def var lc-accountnumber    as char no-undo.
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportJScript Procedure 
 PROCEDURE ip-ExportJScript :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     {&out} skip
             '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' skip.
@@ -133,275 +108,266 @@ PROCEDURE ip-ExportJScript :
     
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-GetAccountNumbers) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-GetAccountNumbers Procedure 
 PROCEDURE ip-GetAccountNumbers :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def output param pc-AccountNumber as char no-undo.
-    def output param pc-Name          as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-AccountNumber AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name          AS CHARACTER NO-UNDO.
 
-    def buffer b-user for WebUser.
-    def buffer b-cust for Customer.
-
-
-    assign pc-AccountNumber = htmlib-Null()
-           pc-Name          = "Select Account".
+    DEFINE BUFFER b-user FOR WebUser.
+    DEFINE BUFFER b-cust FOR Customer.
 
 
-    for each b-cust no-lock
-             where b-cust.CompanyCode = lc-global-company
-             by b-cust.name:
+    ASSIGN 
+        pc-AccountNumber = htmlib-Null()
+        pc-Name          = "Select Account".
 
-        assign pc-AccountNumber = pc-AccountNumber + '|' + b-cust.AccountNumber
-               pc-Name          = pc-Name + '|' + b-cust.name.
 
-    end.
+    FOR EACH b-cust NO-LOCK
+        WHERE b-cust.CompanyCode = lc-global-company
+        BY b-cust.name:
+
+        ASSIGN 
+            pc-AccountNumber = pc-AccountNumber + '|' + b-cust.AccountNumber
+            pc-Name          = pc-Name + '|' + b-cust.name.
+
+    END.
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Save) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Save Procedure 
 PROCEDURE ip-Save :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     
-    find emailh where rowid(emailh) = to-rowid(lc-rowid) exclusive-lock.
+    FIND emailh WHERE ROWID(emailh) = to-rowid(lc-rowid) EXCLUSIVE-LOCK.
 
-    for each doch exclusive-lock
-        where doch.CompanyCode = lc-global-company
-          and doch.RelType     = "EMAIL"
-          and doch.RelKey      = string(emailh.EmailID):
+    FOR EACH doch EXCLUSIVE-LOCK
+        WHERE doch.CompanyCode = lc-global-company
+        AND doch.RelType     = "EMAIL"
+        AND doch.RelKey      = string(emailh.EmailID):
 
-        assign lc-tog-name = "tog" + string(rowid(doch))
-               lc-desc-name = "desc" + string(rowid(doch)).
+        ASSIGN 
+            lc-tog-name = "tog" + string(ROWID(doch))
+            lc-desc-name = "desc" + string(ROWID(doch)).
 
-        if get-value(lc-tog-name) <> "on" then 
-        do:
-            for each docl of doch exclusive-lock:
-                delete docl.
-            end.
-            delete doch.
-            next.
-        end.
+        IF get-value(lc-tog-name) <> "on" THEN 
+        DO:
+            FOR EACH docl OF doch EXCLUSIVE-LOCK:
+                DELETE docl.
+            END.
+            DELETE doch.
+            NEXT.
+        END.
             
 
-        assign
+        ASSIGN
             doch.RelType = "CUSTOMER"
             doch.RelKey  = lc-accountnumber.
-        assign
+        ASSIGN
             doch.Descr   = get-value(lc-desc-name).
-        assign
+        ASSIGN
             doch.CreateBy = lc-global-user.
         
-    end.
+    END.
 
-    delete emailh.
+    DELETE emailh.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
-    def var li-count        as int      no-undo.
+    DEFINE VARIABLE li-count        AS INTEGER      NO-UNDO.
 
-    if not can-find(customer where customer.accountnumber 
-                        = lc-accountnumber 
-                        and customer.companycode = lc-global-company
-                        no-lock) 
-    then run htmlib-AddErrorMessage(
-                    'accountnumber', 
-                    'You must select the account',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF NOT CAN-FIND(customer WHERE customer.accountnumber 
+        = lc-accountnumber 
+        AND customer.companycode = lc-global-company
+        NO-LOCK) 
+        THEN RUN htmlib-AddErrorMessage(
+            'accountnumber', 
+            'You must select the account',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
-    for each doch no-lock
-        where doch.CompanyCode = lc-global-company
-          and doch.RelType     = "EMAIL"
-          and doch.RelKey      = string(emailh.EmailID):
+    FOR EACH doch NO-LOCK
+        WHERE doch.CompanyCode = lc-global-company
+        AND doch.RelType     = "EMAIL"
+        AND doch.RelKey      = string(emailh.EmailID):
 
-        assign lc-tog-name = "tog" + string(rowid(doch))
-               lc-desc-name = "desc" + string(rowid(doch)).
+        ASSIGN 
+            lc-tog-name = "tog" + string(ROWID(doch))
+            lc-desc-name = "desc" + string(ROWID(doch)).
 
-        if get-value(lc-tog-name) <> "on" then next.
+        IF get-value(lc-tog-name) <> "on" THEN NEXT.
 
-        if get-value(lc-desc-name) = "" then
-        do:
-            run htmlib-AddErrorMessage(
-                    lc-desc-name, 
-                    'You must enter the description',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+        IF get-value(lc-desc-name) = "" THEN
+        DO:
+            RUN htmlib-AddErrorMessage(
+                lc-desc-name, 
+                'You must enter the description',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
 
-        end.
-        assign
+        END.
+        ASSIGN
             li-count = li-count + 1.
-    end.
+    END.
 
-    if li-count = 0 
-    then run htmlib-AddErrorMessage(
-                    'accountnumber', 
-                    'You must select one or more attachments to save',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF li-count = 0 
+        THEN RUN htmlib-AddErrorMessage(
+            'accountnumber', 
+            'You must select one or more attachments to save',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
         
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    def buffer Customer for Customer.
+    DEFINE BUFFER Customer FOR Customer.
 
-    def var lc-message  as char     no-undo.
-    def var li-Attach   as int      no-undo.
+    DEFINE VARIABLE lc-message  AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE li-Attach   AS INTEGER      NO-UNDO.
 
     {lib/checkloggedin.i}
 
-    assign
+    ASSIGN
         lc-rowid = get-value("rowid").
 
-    find emailh where rowid(emailh) = to-rowid(lc-rowid) no-lock no-error.
+    FIND emailh WHERE ROWID(emailh) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
 
-    RUN ip-GetAccountNumbers ( output lc-list-number,
-                               output lc-list-name ).
+    RUN ip-GetAccountNumbers ( OUTPUT lc-list-number,
+        OUTPUT lc-list-name ).
 
 
-    if emailh.AccountNumber <> "" then
-    do:
-        find customer
-            where customer.CompanyCode      = lc-global-company
-              and customer.AccountNumber    = emailh.AccountNumber
-              no-lock no-error.
-        if avail customer then
-        do:
-            assign
+    IF emailh.AccountNumber <> "" THEN
+    DO:
+        FIND customer
+            WHERE customer.CompanyCode      = lc-global-company
+            AND customer.AccountNumber    = emailh.AccountNumber
+            NO-LOCK NO-ERROR.
+        IF AVAILABLE customer THEN
+        DO:
+            ASSIGN
                 lc-list-number = customer.AccountNumber
                 lc-list-name   = customer.name
                 lc-accountnumber = customer.AccountNumber.
-        end.
-    end.
+        END.
+    END.
     
-    if request_method = 'post' then
-    do:
-        assign lc-accountnumber = get-value("accountnumber")
-               .
-        RUN ip-Validate( output lc-error-field,
-                             output lc-error-msg ).
-        if lc-error-field = "" then
-        do:
+    IF request_method = 'post' THEN
+    DO:
+        ASSIGN 
+            lc-accountnumber = get-value("accountnumber")
+            .
+        RUN ip-Validate( OUTPUT lc-error-field,
+            OUTPUT lc-error-msg ).
+        IF lc-error-field = "" THEN
+        DO:
             RUN ip-Save.
-            assign request_method = "GET".
+            ASSIGN 
+                request_method = "GET".
             RUN run-web-object IN web-utilities-hdl ("mail/mail.p").
-            return.
-        end.
+            RETURN.
+        END.
               
     
-    end.
+    END.
 
     RUN outputHeader.
     
@@ -415,8 +381,8 @@ PROCEDURE process-web-request :
     {&out} htmlib-StartForm("mainform","post", appurl + '/mail/mailsave.p' ) skip.
 
     {&out} htmlib-ProgramTitle("HelpDesk Emails - Save To Customer Documents") 
-           htmlib-hidden("submitsource","") skip
-           .
+    htmlib-hidden("submitsource","") skip
+    .
   
     {&out} skip
            replace(htmlib-StartMntTable(),'width="100%"','width="97%"') skip
@@ -425,14 +391,14 @@ PROCEDURE process-web-request :
             ) skip.
 
     {&out}
-        '<tr>'
-        htmlib-MntTableField(
-            htmlib-Select("accountnumber",lc-list-number,lc-list-name,
-                lc-accountnumber)
-            ,'left')
-        htmlib-MntTableField(html-encode(emailh.Email),'left')
-        htmlib-MntTableField(html-encode(emailh.Subject),'left')
-        htmlib-MntTableField(string(emailh.RcpDate,'99/99/9999') + ' - ' + string(emailh.RcpTime,"hh:mm am"),'left')
+    '<tr>'
+    htmlib-MntTableField(
+        htmlib-Select("accountnumber",lc-list-number,lc-list-name,
+        lc-accountnumber)
+        ,'left')
+    htmlib-MntTableField(html-encode(emailh.Email),'left')
+    htmlib-MntTableField(html-encode(emailh.Subject),'left')
+    htmlib-MntTableField(STRING(emailh.RcpDate,'99/99/9999') + ' - ' + string(emailh.RcpTime,"hh:mm am"),'left')
         .
 
     {&out} skip 
@@ -446,24 +412,25 @@ PROCEDURE process-web-request :
             "Save?^left|Attachment^left|Description^left"
             ) skip.
  
-    open query q for each b-query no-lock
-        where b-query.CompanyCode = lc-global-company
-          and b-query.RelType     = "EMAIL"
-          and b-query.RelKey      = string(emailh.EmailID)
+    OPEN QUERY q FOR EACH b-query NO-LOCK
+        WHERE b-query.CompanyCode = lc-global-company
+        AND b-query.RelType     = "EMAIL"
+        AND b-query.RelKey      = string(emailh.EmailID)
           
-          .
+        .
           
 
-    get first q no-lock.
+    GET FIRST q NO-LOCK.
     
-    repeat while avail b-query:
+    REPEAT WHILE AVAILABLE b-query:
         
-        assign lc-tog-name = "tog" + string(rowid(b-query))
-               lc-desc-name = "desc" + string(rowid(b-query)).
+        ASSIGN 
+            lc-tog-name = "tog" + string(ROWID(b-query))
+            lc-desc-name = "desc" + string(ROWID(b-query)).
 
-        if request_method = "GET"
-        then set-user-field(lc-desc-name,
-                            b-query.descr).
+        IF request_method = "GET"
+            THEN set-user-field(lc-desc-name,
+                b-query.descr).
 
         {&out}
             skip
@@ -483,27 +450,27 @@ PROCEDURE process-web-request :
 
         {&out}
            
-           '</tr>' skip.
+        '</tr>' skip.
 
-        get next q no-lock.
+        GET NEXT q NO-LOCK.
             
-    end.
+    END.
 
     {&out} skip 
            htmlib-EndTable()
            skip.
 
-    if lc-error-msg <> "" then
-    do:
+    IF lc-error-msg <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
-                htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+        htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
+    END.
 
     {&out} '<center>' htmlib-SubmitButton("submitform","Copy") 
-               '</center>' skip.
+    '</center>' skip.
 
     {&out}
-        htmlib-Hidden("rowid",lc-rowid).
+    htmlib-Hidden("rowid",lc-rowid).
    
     {&out} htmlib-EndForm().
 
@@ -513,8 +480,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

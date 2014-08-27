@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        prince/issstatus.p
@@ -20,19 +17,19 @@
 ***********************************************************************/
 
 &IF DEFINED(UIB_is_Running) EQ 0 &THEN
-def input param pc-CompanyCode  as char     no-undo.
-def input param pi-IssueNumber  as int      no-undo.
-def input param pc-destination  as char     no-undo.
-def output param pc-pdf         as char     no-undo.
+DEFINE INPUT PARAMETER pc-CompanyCode  AS CHARACTER     NO-UNDO.
+DEFINE INPUT PARAMETER pi-IssueNumber  AS INTEGER      NO-UNDO.
+DEFINE INPUT PARAMETER pc-destination  AS CHARACTER     NO-UNDO.
+DEFINE OUTPUT PARAMETER pc-pdf         AS CHARACTER     NO-UNDO.
 
 &ELSE
 
-def var pc-CompanyCode  as char     no-undo.
-def var pi-IssueNumber  as int      no-undo.
-def var pc-destination  as char     no-undo.
-def var pc-pdf         as char     no-undo.
+DEFINE VARIABLE pc-CompanyCode AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pi-IssueNumber AS INTEGER   NO-UNDO.
+DEFINE VARIABLE pc-destination AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-pdf         AS CHARACTER NO-UNDO.
 
-assign
+ASSIGN
     pc-companyCode = "MICAR"
     pi-IssueNumber = 2309
     pc-destination = "internal".
@@ -40,25 +37,22 @@ assign
 
 {lib/princexml.i}
 
-def buffer WebUser      for WebUser.
-def buffer b-WebUser    for WebUser.
-def buffer WebIssArea   for WebIssArea.
-def buffer WebStatus    for WebStatus.
-def buffer IssStatus    for IssStatus.
-def buffer Issue        for Issue.
-def buffer Customer     for Customer.
+DEFINE BUFFER WebUser      FOR WebUser.
+DEFINE BUFFER b-WebUser    FOR WebUser.
+DEFINE BUFFER WebIssArea   FOR WebIssArea.
+DEFINE BUFFER WebStatus    FOR WebStatus.
+DEFINE BUFFER IssStatus    FOR IssStatus.
+DEFINE BUFFER Issue        FOR Issue.
+DEFINE BUFFER Customer     FOR Customer.
 
-def var lc-html         as char     no-undo.
-def var lc-pdf          as char     no-undo.
-def var lc-Raised       as char     no-undo.
-def var lc-Assigned     as char     no-undo.
-def var ll-ok           as log      no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-html         AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-pdf          AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-Raised       AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE lc-Assigned     AS CHARACTER     NO-UNDO.
+DEFINE VARIABLE ll-ok           AS LOG      NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -67,82 +61,69 @@ def var ll-ok           as log      no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
 
     
-assign
+ASSIGN
     pc-pdf = ?.
 
-find Issue where Issue.CompanyCode = pc-companycode
-             and issue.IssueNumber = pi-IssueNumber
-             no-lock no-error.
-if not avail Issue then return.
+FIND Issue WHERE Issue.CompanyCode = pc-companycode
+    AND issue.IssueNumber = pi-IssueNumber
+    NO-LOCK NO-ERROR.
+IF NOT AVAILABLE Issue THEN RETURN.
 
-find customer of Issue no-lock no-error.
-if not avail Customer then return.
+FIND customer OF Issue NO-LOCK NO-ERROR.
+IF NOT AVAILABLE Customer THEN RETURN.
 
-if Issue.RaisedLoginID <> "" then
-do:
-    find WebUser where WebUser.loginID = Issue.RaisedLoginID no-lock no-error.
-    if avail webUser 
-    then assign lc-Raised = trim(WebUser.Forename + " " + WebUser.Surname).
+IF Issue.RaisedLoginID <> "" THEN
+DO:
+    FIND WebUser WHERE WebUser.loginID = Issue.RaisedLoginID NO-LOCK NO-ERROR.
+    IF AVAILABLE webUser 
+        THEN ASSIGN lc-Raised = TRIM(WebUser.Forename + " " + WebUser.Surname).
 
-end.
+END.
 
-find WebIssArea of Issue no-lock no-error.
-find WebStatus of Issue no-lock no-error.
+FIND WebIssArea OF Issue NO-LOCK NO-ERROR.
+FIND WebStatus OF Issue NO-LOCK NO-ERROR.
 
-assign 
-    lc-html = session:temp-dir + caps(pc-CompanyCode) + "-Issue-" + string(pi-IssueNumber).
+ASSIGN 
+    lc-html = SESSION:TEMP-DIR + caps(pc-CompanyCode) + "-Issue-" + string(pi-IssueNumber).
 
-assign 
+ASSIGN 
     lc-pdf = lc-html + ".pdf"
     lc-html = lc-html + ".html".
 
-os-delete value(lc-pdf) no-error.
-os-delete value(lc-html) no-error.
+OS-DELETE value(lc-pdf) no-error.
+OS-DELETE value(lc-html) no-error.
 
-dynamic-function("pxml-Initialise").
-dynamic-function("pxml-OpenStream",lc-html).
+DYNAMIC-FUNCTION("pxml-Initialise").
+DYNAMIC-FUNCTION("pxml-OpenStream",lc-html).
 
-dynamic-function("pxml-Header", pc-CompanyCode).
+DYNAMIC-FUNCTION("pxml-Header", pc-CompanyCode).
 
 {&prince}
-    '<p class="sub">Issue Number ' string(Issue.IssueNumber) '</p>' skip
+'<p class="sub">Issue Number ' STRING(Issue.IssueNumber) '</p>' skip
     '<table class="info">' skip
     '<tr><th>Customer:</th><td>' pxml-Safe(Customer.AccountNumber) '&nbsp;' 
                 pxml-Safe(Customer.name) '</td></tr>' skip
@@ -153,71 +134,72 @@ dynamic-function("pxml-Header", pc-CompanyCode).
     '<tr><th>Area:</th><td>' pxml-safe(WebIssArea.description) '</td></tr>' skip
     '<tr><th>Current Status:</th><td>' pxml-safe(WebStatus.description)
             ( if WebStatus.CompletedStatus then '&nbsp;<b>(Completed)</b>' else "" ) '</td></tr>' skip
-    .
+.
 
-if pc-destination = "INTERNAL" then
-do:
-    find b-WebUser
-        where b-WebUser.LoginID = Issue.AssignTo no-lock no-error.
-    assign lc-Assigned =
-        if avail b-WebUser
-        then pxml-Safe(trim(b-webUser.Forename + " " + b-WebUser.Surname)) + 
-             " " + string(Issue.AssignDate,"99/99/9999") else "&nbsp;".
+IF pc-destination = "INTERNAL" THEN
+DO:
+    FIND b-WebUser
+        WHERE b-WebUser.LoginID = Issue.AssignTo NO-LOCK NO-ERROR.
+    ASSIGN 
+        lc-Assigned =
+        IF AVAILABLE b-WebUser
+        THEN pxml-Safe(TRIM(b-webUser.Forename + " " + b-WebUser.Surname)) + 
+             " " + string(Issue.AssignDate,"99/99/9999") ELSE "&nbsp;".
     {&prince}                                                                       
-        '<tr><th>Assigned To:</th><td>' lc-Assigned '</td></tr>' skip.
-end.
+    '<tr><th>Assigned To:</th><td>' lc-Assigned '</td></tr>' skip.
+END.
 
 {&prince}
-    '</table>' skip.
+'</table>' skip.
 
 
 
 {&prince}
-    '<p class="sub">Issue History</p>' skip
+'<p class="sub">Issue History</p>' skip
     '<table class="browse">' skip
     '<thead><tr><th>Date</th><th>Time</th><th>Status</th><th>By</th></tr></thead>' skip.
 
 
-for each IssStatus no-lock of Issue
-    by IssStatus.ChangeDate desc
-    by IssStatus.ChangeTime desc:
+FOR EACH IssStatus NO-LOCK OF Issue
+    BY IssStatus.ChangeDate DESCENDING
+    BY IssStatus.ChangeTime DESCENDING:
 
-    find WebStatus where WebStatus.CompanyCode = Issue.Company
-                     and WebStatus.StatusCode = IssStatus.NewStatusCode no-lock no-error.
+    FIND WebStatus WHERE WebStatus.CompanyCode = Issue.Company
+        AND WebStatus.StatusCode = IssStatus.NewStatusCode NO-LOCK NO-ERROR.
 
-    if not avail WebStatus then next.
+    IF NOT AVAILABLE WebStatus THEN NEXT.
 
-    find b-WebUser
-        where b-WebUser.LoginID = IssStatus.LoginID no-lock no-error.
-    assign lc-Assigned =
-        if avail b-WebUser
-        then pxml-Safe(trim(b-webUser.Forename + " " + b-WebUser.Surname)) else "&nbsp;".
+    FIND b-WebUser
+        WHERE b-WebUser.LoginID = IssStatus.LoginID NO-LOCK NO-ERROR.
+    ASSIGN 
+        lc-Assigned =
+        IF AVAILABLE b-WebUser
+        THEN pxml-Safe(TRIM(b-webUser.Forename + " " + b-WebUser.Surname)) ELSE "&nbsp;".
 
     {&prince} 
-        '<tr>' skip
+    '<tr>' skip
             '<td>' string(IssStatus.ChangeDate,"99/99/9999") '</td>' skip
             '<td>' string(IssStatus.ChangeTime,"hh:mm am") '</td>' skip
             '<td>' pxml-Safe(WebStatus.description) '</td>' skip
             '<td>' lc-Assigned '</td>' skip
         '</tr>' skip.
 
-end.
+END.
 
 
 {&prince} '</table>'.
 
 
-dynamic-function("pxml-Footer",pc-CompanyCode).
-dynamic-function("pxml-CloseStream").
+DYNAMIC-FUNCTION("pxml-Footer",pc-CompanyCode).
+DYNAMIC-FUNCTION("pxml-CloseStream").
 
 
 /* ll-ok = dynamic-function("pxml-Convert",lc-html,lc-pdf). */
 
 /* if ll-ok */
 /* then     */
-  assign pc-pdf = lc-html.
+ASSIGN 
+    pc-pdf = lc-html.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 

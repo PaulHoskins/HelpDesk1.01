@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER UIB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        rep/issuelogbuild.p
@@ -33,12 +30,12 @@ DEFINE OUTPUT PARAMETER table              FOR tt-ilog.
 
 &ELSE
 
-DEFINE VARIABLE pc-companycode          AS CHARACTER         NO-UNDO.
-DEFINE VARIABLE pc-loginid              AS CHARACTER         NO-UNDO.
-DEFINE VARIABLE pc-FromAccountNumber    AS CHARACTER         NO-UNDO.
-DEFINE VARIABLE pc-ToAccountNumber      AS CHARACTER         NO-UNDO.
-DEFINE VARIABLE pd-FromDate             AS DATE         NO-UNDO.
-DEFINE VARIABLE pd-ToDate               AS DATE         NO-UNDO.
+DEFINE VARIABLE pc-companycode       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-loginid           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-FromAccountNumber AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pc-ToAccountNumber   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pd-FromDate          AS DATE      NO-UNDO.
+DEFINE VARIABLE pd-ToDate            AS DATE      NO-UNDO.
 
 
 
@@ -48,11 +45,8 @@ DEFINE VARIABLE pd-ToDate               AS DATE         NO-UNDO.
 
 {iss/issue.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -61,38 +55,25 @@ DEFINE VARIABLE pd-ToDate               AS DATE         NO-UNDO.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 15
          WIDTH              = 60.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ***************************  Main Block  *************************** */
@@ -101,21 +82,18 @@ DEFINE VARIABLE pd-ToDate               AS DATE         NO-UNDO.
 
 RUN ip-BuildData.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-BuildData) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-BuildData Procedure 
 PROCEDURE ip-BuildData :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
     DEFINE BUFFER issue        FOR issue.
     DEFINE BUFFER IssStatus    FOR IssStatus.
@@ -138,11 +116,11 @@ PROCEDURE ip-BuildData :
     */    
     FOR EACH issue NO-LOCK
         WHERE issue.CompanyCode = pc-companyCode
-          AND issue.AccountNumber >= pc-FromAccountNumber
-          AND issue.AccountNumber <= pc-ToAccountNumber
-          AND issue.IssueDate >= pd-fromDate
-          AND issue.IssueDate <= pd-ToDate
-          AND CAN-DO(pc-classList,issue.iClass)
+        AND issue.AccountNumber >= pc-FromAccountNumber
+        AND issue.AccountNumber <= pc-ToAccountNumber
+        AND issue.IssueDate >= pd-fromDate
+        AND issue.IssueDate <= pd-ToDate
+        AND CAN-DO(pc-classList,issue.iClass)
         :
 
         IF NOT CAN-FIND(customer OF Issue NO-LOCK) THEN NEXT.
@@ -163,9 +141,10 @@ PROCEDURE ip-BuildData :
             tt-ilog.isClosed =  NOT DYNAMIC-FUNCTION("islib-IssueIsOpen",ROWID(Issue)).
 
         IF tt-ilog.SLALevel = ?
-        THEN tt-ilog.SLALevel = 0.
+            THEN tt-ilog.SLALevel = 0.
 
-        ASSIGN tt-ilog.SLAAchieved = TRUE.
+        ASSIGN 
+            tt-ilog.SLAAchieved = TRUE.
 
 
         IF tt-ilog.isClosed THEN
@@ -197,14 +176,15 @@ PROCEDURE ip-BuildData :
                 DO:
                     ldt-Comp = DATETIME(
                         STRING(tt-ilog.CompDate,"99/99/9999") + " " + 
-                                        STRING(tt-ilog.CompTime,"hh:mm")
-                               ).
+                        STRING(tt-ilog.CompTime,"hh:mm")
+                        ).
                     ASSIGN
                         tt-ilog.SLAAchieved = ldt-Comp <= issue.SLATrip.
 
 
                 END.
-                ASSIGN tt-ilog.SLAComment = 
+                ASSIGN 
+                    tt-ilog.SLAComment = 
                    /* STRING(ldt-comp,"99/99/9999 HH:MM") + " " + */
                     STRING(issue.SLATrip,"99/99/9999 HH:MM").
             END.
@@ -239,8 +219,8 @@ PROCEDURE ip-BuildData :
             li-min = li-seconds MOD 60.
 
             IF li-seconds - li-min >= 60 THEN
-            ASSIGN
-                li-hr = ROUND( (li-seconds - li-min) / 60 , 0 ).
+                ASSIGN
+                    li-hr = ROUND( (li-seconds - li-min) / 60 , 0 ).
             ELSE li-hr = 0.
 
             ASSIGN
@@ -254,8 +234,6 @@ PROCEDURE ip-BuildData :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
