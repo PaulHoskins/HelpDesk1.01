@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        sys/webconttime.p
@@ -23,69 +20,66 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field    as char no-undo.
-def var lc-error-msg      as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 
-def var li-curr-year      as int format "9999"  no-undo.
-def var li-end-week       as int format "99"    no-undo.
-def var ld-curr-hours     as dec  format "99.99" extent 7   no-undo.
-def var lc-day            as char initial "Mon,Tue,Wed,Thu,Fri,Sat,Sun" no-undo.
+DEFINE VARIABLE li-curr-year   AS INTEGER   FORMAT "9999" NO-UNDO.
+DEFINE VARIABLE li-end-week    AS INTEGER   FORMAT "99" NO-UNDO.
+DEFINE VARIABLE ld-curr-hours  AS DECIMAL   FORMAT "99.99" EXTENT 7 NO-UNDO.
+DEFINE VARIABLE lc-day         AS CHARACTER INITIAL "Mon,Tue,Wed,Thu,Fri,Sat,Sun" NO-UNDO.
 
-def var lc-mode           as char no-undo.
-def var lc-rowid          as char no-undo.
-def var lc-title          as char no-undo.
+DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
                           
-def buffer b-valid        for webuser.
-def buffer b-table        for webuser.
-def buffer b-query        for Customer.
+DEFINE BUFFER b-valid FOR webuser.
+DEFINE BUFFER b-table FOR webuser.
+DEFINE BUFFER b-query FOR Customer.
 
-def var lc-search         as char  no-undo.
-def var lc-firstrow       as char  no-undo.
-def var lc-lastrow        as char  no-undo.
-def var lc-navigation     as char no-undo.
-def var lc-parameters     as char no-undo.
+DEFINE VARIABLE lc-search        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters    AS CHARACTER NO-UNDO.
                           
-def var lc-link-label     as char no-undo.
-def var lc-submit-label   as char no-undo.
-def var lc-link-url       as char no-undo.
+DEFINE VARIABLE lc-link-label    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url      AS CHARACTER NO-UNDO.
 
-def var lc-loginid        as char no-undo.
-def var lc-forename       as char no-undo.
-def var lc-surname        as char no-undo.
-def var lc-email          as char no-undo.
-def var lc-usertitle      as char no-undo.
-def var lc-pagename       as char no-undo.
-def var lc-disabled       as char no-undo.
-def var lc-accountnumber  as char no-undo.
-def var lc-jobtitle       as char no-undo.
-def var lc-telephone      as char no-undo.
-def var lc-password       as char no-undo.
-def var lc-userClass      as char no-undo.
+DEFINE VARIABLE lc-loginid       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-forename      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-surname       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-email         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-usertitle     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pagename      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-disabled      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accountnumber AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-jobtitle      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-telephone     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-password      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-userClass     AS CHARACTER NO-UNDO.
 
-def var lc-usertitleCode  as char initial '' no-undo.
-def var lc-usertitleDesc  as char initial '' no-undo.
+DEFINE VARIABLE lc-usertitleCode AS CHARACTER INITIAL '' NO-UNDO.
+DEFINE VARIABLE lc-usertitleDesc AS CHARACTER INITIAL '' NO-UNDO.
 
-def temp-table this-year
-  field ty-week-no  as int
-  field ty-hours    as dec
-  index i-week ty-week-no.
+DEFINE TEMP-TABLE this-year
+    FIELD ty-week-no AS INTEGER
+    FIELD ty-hours   AS DECIMAL
+    INDEX i-week ty-week-no.
 
-def temp-table this-day
-  field td-week-no  as int
-  field td-day-no   as int
-  field td-hours    as dec
-  field td-reason   as char
-  index i-week td-week-no td-day-no.
+DEFINE TEMP-TABLE this-day
+    FIELD td-week-no AS INTEGER
+    FIELD td-day-no  AS INTEGER
+    FIELD td-hours   AS DECIMAL
+    FIELD td-reason  AS CHARACTER
+    INDEX i-week td-week-no td-day-no.
 
-def var lc-submitweek       as char     no-undo.
-def var lc-submitday        as char extent 7    no-undo.
-def var lc-submitreason     as char extent 7    no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-submitweek   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submitday    AS CHARACTER EXTENT 7 NO-UNDO.
+DEFINE VARIABLE lc-submitreason AS CHARACTER EXTENT 7 NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -94,100 +88,72 @@ def var lc-submitreason     as char extent 7    no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-Date2Wk) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Date2Wk Procedure 
 FUNCTION Date2Wk RETURNS CHARACTER
-  (input dMyDate as date)  FORWARD.
+    (INPUT dMyDate AS DATE)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-dayOfWeek) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD dayOfWeek Procedure 
 FUNCTION dayOfWeek RETURNS INTEGER
-  (input dMyDate as date)  FORWARD.
+    (INPUT dMyDate AS DATE)  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-html-InputFieldMasked) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD html-InputFieldMasked Procedure 
 FUNCTION html-InputFieldMasked RETURNS CHARACTER
-  ( pc-name as char,
-    pc-maxlength as char,
-    pc-datatype as char,
-    pc-mask as char,
-    pc-value as char,
-    pc-style as char )  FORWARD.
+    ( pc-name AS CHARACTER,
+    pc-maxlength AS CHARACTER,
+    pc-datatype AS CHARACTER,
+    pc-mask AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-style AS CHARACTER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Wk2Date) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Wk2Date Procedure 
 FUNCTION Wk2Date RETURNS CHARACTER
- (cWkYrNo as char) FORWARD.
+    (cWkYrNo AS CHARACTER) FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.15
          WIDTH              = 60.57.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 {lib/maillib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -195,101 +161,106 @@ FUNCTION Wk2Date RETURNS CHARACTER
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-build-year) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-build-year Procedure 
 PROCEDURE ip-build-year :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def var vx        as int  no-undo.
-    def var vz        as int  no-undo.
-    def var lc-date   as char no-undo.
-    def var hi-date   as date no-undo.
-    def var lo-date   as date no-undo.
-    def var std-hours as dec format "99.99" no-undo.
-    def var tmp-hours as dec format "99.99" no-undo.
-    def var lc-list-reason-id as char initial "|01|02|03|04|05|10"  no-undo.
-    def var lc-list-reason    as char initial "Select|BANK|LEAVE|SICK|DOC|DENT|OT"  no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE vx        AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE vz        AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-date   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE hi-date   AS DATE NO-UNDO.
+    DEFINE VARIABLE lo-date   AS DATE NO-UNDO.
+    DEFINE VARIABLE std-hours AS DECIMAL FORMAT "99.99" NO-UNDO.
+    DEFINE VARIABLE tmp-hours AS DECIMAL FORMAT "99.99" NO-UNDO.
+    DEFINE VARIABLE lc-list-reason-id AS CHARACTER INITIAL "|01|02|03|04|05|10"  NO-UNDO.
+    DEFINE VARIABLE lc-list-reason    AS CHARACTER INITIAL "Select|BANK|LEAVE|SICK|DOC|DENT|OT"  NO-UNDO.
   
 
-    for each WebStdTime where WebStdTime.CompanyCode = lc-global-company                      
-                        and   WebStdTime.LoginID     = lc-loginid                             
-                        and   WebStdTime.StdWkYear   = li-curr-year
-                        no-lock:
-          do vx = 1 to 7:
-            assign tmp-hours         =   ((truncate(WebStdTime.StdAMEndTime[vx] / 100,0) + dec(WebStdTime.StdAMEndTime[vx] modulo 100 / 60))          /* convert time to decimal  */ 
-                                       - (truncate(WebStdTime.StdAMStTime[vx] / 100,0) + dec(WebStdTime.StdAMStTime[vx] modulo 100 / 60)))            /* convert time to decimal  */ 
-                                       + ((truncate(WebStdTime.StdPMEndTime[vx] / 100,0) + dec(WebStdTime.StdPMEndTime[vx] modulo 100 / 60))          /* convert time to decimal  */                               
-                                       - (truncate(WebStdTime.StdPMStTime[vx] / 100,0) + dec(WebStdTime.StdPMStTime[vx] modulo 100 / 60)))            /* convert time to decimal  */ 
-                   ld-curr-hours[vx] = tmp-hours                                                                                                                                       
-                   std-hours         = std-hours + tmp-hours.  
-          end.
-    end.
+    FOR EACH WebStdTime WHERE WebStdTime.CompanyCode = lc-global-company                      
+        AND   WebStdTime.LoginID     = lc-loginid                             
+        AND   WebStdTime.StdWkYear   = li-curr-year
+        NO-LOCK:
+        DO vx = 1 TO 7:
+            ASSIGN 
+                tmp-hours         =   ((TRUNCATE(WebStdTime.StdAMEndTime[vx] / 100,0) + dec(WebStdTime.StdAMEndTime[vx] MODULO 100 / 60))          /* convert time to decimal  */ 
+                                       - (TRUNCATE(WebStdTime.StdAMStTime[vx] / 100,0) + dec(WebStdTime.StdAMStTime[vx] MODULO 100 / 60)))            /* convert time to decimal  */ 
+                                       + ((TRUNCATE(WebStdTime.StdPMEndTime[vx] / 100,0) + dec(WebStdTime.StdPMEndTime[vx] MODULO 100 / 60))          /* convert time to decimal  */                               
+                - (TRUNCATE(WebStdTime.StdPMStTime[vx] / 100,0) + dec(WebStdTime.StdPMStTime[vx] MODULO 100 / 60)))            /* convert time to decimal  */ 
+                ld-curr-hours[vx] = tmp-hours                                                                                                                                       
+                std-hours         = std-hours + tmp-hours.  
+        END.
+    END.
  
 
-    do vx = 1 to li-end-week:
-      assign lc-date = Wk2Date(string(string(vx,"99") + "-" + string(li-curr-year,"9999")))
-             hi-date = date(entry(1,lc-date,"|"))
-             lo-date = date(entry(2,lc-date,"|")).
+    DO vx = 1 TO li-end-week:
+        ASSIGN 
+            lc-date = Wk2Date(STRING(STRING(vx,"99") + "-" + string(li-curr-year,"9999")))
+            hi-date = DATE(ENTRY(1,lc-date,"|"))
+            lo-date = DATE(ENTRY(2,lc-date,"|")).
 
-      create this-year.
-      assign ty-week-no = vx
-             ty-hours   = std-hours.
+        CREATE this-year.
+        ASSIGN 
+            ty-week-no = vx
+            ty-hours   = std-hours.
        
-        for each WebUserTime where WebUserTime.CompanyCode = lc-global-company                      
-                             and   WebUserTime.LoginID     = lc-loginid                             
-                             and   WebUserTime.EventDate   >= hi-date
-                             and   WebUserTime.EventDate   <= lo-date 
-                             no-lock:
-          case WebUserTime.EventType :
-            when "BANK"  then ty-hours = ty-hours - WebUserTime.EventHours.
-            when "LEAVE" then ty-hours = ty-hours - WebUserTime.EventHours.
-            when "SICK"  then ty-hours = ty-hours - WebUserTime.EventHours.
-            when "DOC"   then ty-hours = ty-hours - WebUserTime.EventHours.
-            when "DENT"  then ty-hours = ty-hours - WebUserTime.EventHours.
-            when "OT"    then ty-hours = ty-hours + WebUserTime.EventHours.
-          end case.
-          assign vz = dayOfWeek(WebUserTime.EventDate).
-          create this-day.
-          assign td-week-no = vx
-                 td-day-no  = vz
-                 td-hours   = WebUserTime.EventHours 
-                 td-reason  = entry(lookup(WebUserTime.EventType,lc-list-reason,"|"),lc-list-reason-id,"|")
-            .
+        FOR EACH WebUserTime WHERE WebUserTime.CompanyCode = lc-global-company                      
+            AND   WebUserTime.LoginID     = lc-loginid                             
+            AND   WebUserTime.EventDate   >= hi-date
+            AND   WebUserTime.EventDate   <= lo-date 
+            NO-LOCK:
+            CASE WebUserTime.EventType :
+                WHEN "BANK"  THEN 
+                    ty-hours = ty-hours - WebUserTime.EventHours.
+                WHEN "LEAVE" THEN 
+                    ty-hours = ty-hours - WebUserTime.EventHours.
+                WHEN "SICK"  THEN 
+                    ty-hours = ty-hours - WebUserTime.EventHours.
+                WHEN "DOC"   THEN 
+                    ty-hours = ty-hours - WebUserTime.EventHours.
+                WHEN "DENT"  THEN 
+                    ty-hours = ty-hours - WebUserTime.EventHours.
+                WHEN "OT"    THEN 
+                    ty-hours = ty-hours + WebUserTime.EventHours.
+            END CASE.
+            ASSIGN 
+                vz = dayOfWeek(WebUserTime.EventDate).
+            CREATE this-day.
+            ASSIGN 
+                td-week-no = vx
+                td-day-no  = vz
+                td-hours   = WebUserTime.EventHours 
+                td-reason  = ENTRY(LOOKUP(WebUserTime.EventType,lc-list-reason,"|"),lc-list-reason-id,"|")
+                .
          
-        end.
-    end.
+        END.
+    END.
 
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-ExportAccordion) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-ExportAccordion Procedure 
 PROCEDURE ip-ExportAccordion :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
-  {&out}
-      '<style type="text/css">' skip
+    {&out}
+    '<style type="text/css">' skip
       
       '.clear ~{ /* generic container (i.e. div) for floating buttons */' skip
       'overflow: hidden;'    skip
@@ -587,47 +558,45 @@ PROCEDURE ip-ExportAccordion :
       '~}' skip
       
       '</script>' skip
-      .
+    .
 
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-time-display) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-time-display Procedure 
 PROCEDURE ip-time-display :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    def var vx      as int  no-undo.
-    def var vz      as int  no-undo.
-    def var lc-date as char no-undo.
-    def var hi-date as date no-undo.
-    def var lo-date as date no-undo.
-    def var lc-list-reason-id as char initial "|01|02|03|04|05|10"  no-undo.
-    def var lc-list-reason    as char initial "Select|B.Hol|A/Leave|Sick|Doctor|Dentist|Overtime"  no-undo.
-    def var lc-saved-reason   as char initial "00" no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE vx      AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE vz      AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-date AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE hi-date AS DATE NO-UNDO.
+    DEFINE VARIABLE lo-date AS DATE NO-UNDO.
+    DEFINE VARIABLE lc-list-reason-id AS CHARACTER INITIAL "|01|02|03|04|05|10"  NO-UNDO.
+    DEFINE VARIABLE lc-list-reason    AS CHARACTER INITIAL "Select|B.Hol|A/Leave|Sick|Doctor|Dentist|Overtime"  NO-UNDO.
+    DEFINE VARIABLE lc-saved-reason   AS CHARACTER INITIAL "00" NO-UNDO.
 
  
 
     
-   for each this-year :
+    FOR EACH this-year :
 
    
-      assign lc-date = Wk2Date(string(string(this-year.ty-week-no,"99") + "-" + string(li-curr-year,"9999")))
-             hi-date  = date(entry(1,lc-date,"|")).
+        ASSIGN 
+            lc-date = Wk2Date(STRING(STRING(this-year.ty-week-no,"99") + "-" + string(li-curr-year,"9999")))
+            hi-date  = DATE(ENTRY(1,lc-date,"|")).
 
 
-      {&out}
-          '<div onclick="runAccordion(' string(this-year.ty-week-no) ');">' skip
+        {&out}
+        '<div onclick="runAccordion(' STRING(this-year.ty-week-no) ');">' skip
           '  <div class="AccordionTitle' string(if this-year.ty-week-no modulo 2 = 0 then 1 else 2)  '"  onselectstart="return false;">' skip
           '    <span style="float:left;margin-left:20px;text-align:bottom;"><strong>Week ' string(this-year.ty-week-no,"99") '</strong> (' replace(lc-date,"|"," - ") ')'
           '    </span><span style="float:right;margin-right:20px;text-align:bottom;">' string(ty-hours,">9.99") '</span>' skip
@@ -638,10 +607,10 @@ PROCEDURE ip-time-display :
 
  
  
-       {&out} 
+        {&out} 
  
          
-               '   <div id="weekdiv' string(this-year.ty-week-no) '" name="weekdiv' string(this-year.ty-week-no) '"  >' skip
+        '   <div id="weekdiv' STRING(this-year.ty-week-no) '" name="weekdiv' STRING(this-year.ty-week-no) '"  >' skip
                '      <table   style="border:5px solid ' if this-year.ty-week-no modulo 2 = 0 then "#E4ECF0" else "#A4C1F4" ';"  ><tr><td>&nbsp;' skip
                '</td>'
                ''
@@ -655,52 +624,52 @@ PROCEDURE ip-time-display :
                '      </tr>' skip
                '      <tr><td width="50px">Contracted Hours:</td> ' skip.
           
-       do vx = 1 to 7:
+        DO vx = 1 TO 7:
 
 
-                  {&out} '     <td>'       string(ld-curr-hours[vx],"99.99") '</td>'  skip.
-       end.
+            {&out} '     <td>'       STRING(ld-curr-hours[vx],"99.99") '</td>'  skip.
+        END.
 
 
-       {&out}  '      <tr><td width="50px">Change Hours:</td> ' skip.
+        {&out}  '      <tr><td width="50px">Change Hours:</td> ' skip.
 
-       do vx = 1 to 7:
+        DO vx = 1 TO 7:
 
-         find first this-day where this-day.td-week-no = this-year.ty-week-no
-                             and   this-day.td-day-no  = vx
-                             no-lock no-error.
+            FIND FIRST this-day WHERE this-day.td-week-no = this-year.ty-week-no
+                AND   this-day.td-day-no  = vx
+                NO-LOCK NO-ERROR.
 
 
-         if avail this-day then
-         do:
-           if integer(this-day.td-reason) < 10 then
-            {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99",  
-                                             string(this-day.td-hours,"99.99"),"font-family:verdana;font-size:10pt;color:red;width:40px;") '</td>'  skip.
+            IF AVAILABLE this-day THEN
+            DO:
+                IF INTEGER(this-day.td-reason) < 10 THEN
+                    {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99",  
+                    STRING(this-day.td-hours,"99.99"),"font-family:verdana;font-size:10pt;color:red;width:40px;") '</td>'  skip.
            else
             {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99",  
                                              string(this-day.td-hours,"99.99"),"font-family:verdana;font-size:10pt;color:green;width:40px;") '</td>'  skip.
 
-         end.
-         else
-            {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99", "00.00" 
-                                            ,"font-family:verdana;font-size:10pt;width:40px;") '</td>'  skip.
-       end.
+            END.
+            ELSE
+                {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99", "00.00" 
+                ,"font-family:verdana;font-size:10pt;width:40px;") '</td>'  skip.
+        END.
 
-       {&out} '     </tr><tr><td> Reason:</td> ' skip.
+        {&out} '     </tr><tr><td> Reason:</td> ' skip.
 
-       do vx = 1 to 7:
+        DO vx = 1 TO 7:
          
-         find first this-day where this-day.td-week-no = this-year.ty-week-no
-                             and   this-day.td-day-no  = vx
-                             no-lock no-error.
+            FIND FIRST this-day WHERE this-day.td-week-no = this-year.ty-week-no
+                AND   this-day.td-day-no  = vx
+                NO-LOCK NO-ERROR.
 
-         {&out} '       <td width="40px" >' htmlib-Select("reasonno" + string(this-year.ty-week-no) + "-" + string(vx,"99"),lc-list-reason-id,lc-list-reason,
-                                                   if avail this-day then this-day.td-reason else "")  '</td>'  skip.
+            {&out} '       <td width="40px" >' htmlib-Select("reasonno" + string(this-year.ty-week-no) + "-" + string(vx,"99"),lc-list-reason-id,lc-list-reason,
+                IF AVAILABLE this-day THEN this-day.td-reason ELSE "")  '</td>'  skip.
               
-       end.
+        END.
 
 
-       {&out}  '</tr>' skip
+        {&out}  '</tr>' skip
          '<tr><td cellpadding="2px" height="20px" colspan=8 >'
          '<div style="width:100%; height:20px; margin-right:auto; margin-left:auto; ">'
          '<input class="submitbutton" type="button" onclick="javascript:inEdit=false;runAccordion(' string(this-year.ty-week-no) ');"  value="Cancel" />' skip
@@ -715,95 +684,89 @@ PROCEDURE ip-time-display :
  
         {&out}
           
-          ' </div>' skip
+        ' </div>' skip
           '</div>' skip.
 
-       end.
+    END.
  
 
  
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  emails:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      emails:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  emails:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      emails:       
+    ------------------------------------------------------------------------------*/
     
-    def var lc-object           as char     no-undo.
-    def var vx                  as int      no-undo.
-    def var lc-date             as char     no-undo.
-    def var lc-list-reason-id as char initial "|01|02|03|04|05|10"  no-undo.
-    def var lc-list-reason    as char initial "Select|BANK|LEAVE|SICK|DOC|DENT|OT"  no-undo.
+    DEFINE VARIABLE lc-object           AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE vx                  AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-date             AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-list-reason-id AS CHARACTER INITIAL "|01|02|03|04|05|10"  NO-UNDO.
+    DEFINE VARIABLE lc-list-reason    AS CHARACTER INITIAL "Select|BANK|LEAVE|SICK|DOC|DENT|OT"  NO-UNDO.
 
 
     {lib/checkloggedin.i} 
@@ -811,137 +774,146 @@ PROCEDURE process-web-request :
 
 
 
-    assign lc-mode            = get-value("mode")
-           lc-rowid           = get-value("rowid")
-           lc-search          = get-value("search")
-           lc-firstrow        = get-value("firstrow")
-           lc-lastrow         = get-value("lastrow")
-           lc-navigation      = get-value("navigation")
-           li-curr-year       = integer(get-value("submityear"))
-           lc-submitweek      = get-value("submitweek")
-           lc-submitday[1]    = get-value("submitday1")
-           lc-submitday[2]    = get-value("submitday2")
-           lc-submitday[3]    = get-value("submitday3")
-           lc-submitday[4]    = get-value("submitday4")
-           lc-submitday[5]    = get-value("submitday5")
-           lc-submitday[6]    = get-value("submitday6")
-           lc-submitday[7]    = get-value("submitday7")
-           lc-submitreason[1] = get-value("submitreason1")
-           lc-submitreason[2] = get-value("submitreason2")
-           lc-submitreason[3] = get-value("submitreason3")
-           lc-submitreason[4] = get-value("submitreason4")
-           lc-submitreason[5] = get-value("submitreason5")
-           lc-submitreason[6] = get-value("submitreason6")
-           lc-submitreason[7] = get-value("submitreason7")
-           .
-    if li-curr-year = ? or li-curr-year = 0 then li-curr-year = year(today).
+    ASSIGN 
+        lc-mode            = get-value("mode")
+        lc-rowid           = get-value("rowid")
+        lc-search          = get-value("search")
+        lc-firstrow        = get-value("firstrow")
+        lc-lastrow         = get-value("lastrow")
+        lc-navigation      = get-value("navigation")
+        li-curr-year       = INTEGER(get-value("submityear"))
+        lc-submitweek      = get-value("submitweek")
+        lc-submitday[1]    = get-value("submitday1")
+        lc-submitday[2]    = get-value("submitday2")
+        lc-submitday[3]    = get-value("submitday3")
+        lc-submitday[4]    = get-value("submitday4")
+        lc-submitday[5]    = get-value("submitday5")
+        lc-submitday[6]    = get-value("submitday6")
+        lc-submitday[7]    = get-value("submitday7")
+        lc-submitreason[1] = get-value("submitreason1")
+        lc-submitreason[2] = get-value("submitreason2")
+        lc-submitreason[3] = get-value("submitreason3")
+        lc-submitreason[4] = get-value("submitreason4")
+        lc-submitreason[5] = get-value("submitreason5")
+        lc-submitreason[6] = get-value("submitreason6")
+        lc-submitreason[7] = get-value("submitreason7")
+        .
+    IF li-curr-year = ? OR li-curr-year = 0 THEN li-curr-year = YEAR(TODAY).
   
-    assign  li-end-week  = integer(entry(2,Date2Wk(date("01/01/" + string(li-curr-year + 1 )) - 1) ,"|")). /* work out the number of weeks for this year */
+    ASSIGN  
+        li-end-week  = INTEGER(ENTRY(2,Date2Wk(DATE("01/01/" + string(li-curr-year + 1 )) - 1) ,"|")). /* work out the number of weeks for this year */
 
 
-    if lc-mode = "" 
-    then assign lc-mode = get-field("savemode")
-                lc-rowid = get-field("saverowid")
-                lc-search = get-value("savesearch")
-                lc-firstrow = get-value("savefirstrow")
-                lc-lastrow  = get-value("savelastrow")
-                lc-navigation = get-value("savenavigation").
+    IF lc-mode = "" 
+        THEN ASSIGN lc-mode = get-field("savemode")
+            lc-rowid = get-field("saverowid")
+            lc-search = get-value("savesearch")
+            lc-firstrow = get-value("savefirstrow")
+            lc-lastrow  = get-value("savelastrow")
+            lc-navigation = get-value("savenavigation").
 
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN 
+        lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
   
 
-    find b-table where rowid(b-table) = to-rowid(lc-rowid)
-         no-lock no-error.
-    if not avail b-table then
-    do:
+    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+        NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE b-table THEN
+    DO:
         set-user-field("mode",lc-mode).
         set-user-field("title",lc-title).
         set-user-field("nexturl",appurl + "/sys/webuser.p").
         RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
-        return.
-    end.
-    assign lc-loginid = b-table.loginid.
-    assign lc-title = 'Contracted Times For ' + 
+        RETURN.
+    END.
+    ASSIGN 
+        lc-loginid = b-table.loginid.
+    ASSIGN 
+        lc-title = 'Contracted Times For ' + 
            html-encode(b-table.forename + " " + b-table.surname)
-           lc-link-label = "Cancel"
-           lc-submit-label = "Update Times".
+        lc-link-label = "Cancel"
+        lc-submit-label = "Update Times".
       
-    assign lc-link-url = appurl + '/sys/webuser.p' + 
+    ASSIGN 
+        lc-link-url = appurl + '/sys/webuser.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
                                   '&navigation=refresh' +
-                                  '&time=' + string(time).
+                                  '&time=' + string(TIME).
    
 
-    if request_method = "POST" then
-    do:
+    IF request_method = "POST" THEN
+    DO:
  
-                output to "C:\djstext.txt" append.
-                put unformatted  
-                       " lc-mode         " lc-mode  skip
-                       " li-curr-year  "   li-curr-year  skip
-                       " lc-submitweek "   lc-submitweek   skip
-                       " lc-submitday1 "   lc-submitday[1]   skip
-                       " lc-submitday2 "   lc-submitday[2]   skip
-                       " lc-submitday3 "   lc-submitday[3]   skip
-                       " lc-submitday4 "   lc-submitday[4]   skip
-                       " lc-submitday5 "   lc-submitday[5]   skip
-                       " lc-submitday6 "   lc-submitday[6]   skip
-                       " lc-submitday7 "   lc-submitday[7]   skip
-                       " lc-submitreason1 "   lc-submitreason[1]   skip
-                       " lc-submitreason2 "   lc-submitreason[2]   skip
-                       " lc-submitreason3 "   lc-submitreason[3]   skip
-                       " lc-submitreason4 "   lc-submitreason[4]   skip
-                       " lc-submitreason5 "   lc-submitreason[5]   skip
-                       " lc-submitreason6 "   lc-submitreason[6]   skip
-                       " lc-submitreason7 "   lc-submitreason[7]   skip                  .
+        OUTPUT to "C:\djstext.txt" append.
+        PUT UNFORMATTED  
+            " lc-mode         " lc-mode  SKIP
+            " li-curr-year  "   li-curr-year  SKIP
+            " lc-submitweek "   lc-submitweek   SKIP
+            " lc-submitday1 "   lc-submitday[1]   SKIP
+            " lc-submitday2 "   lc-submitday[2]   SKIP
+            " lc-submitday3 "   lc-submitday[3]   SKIP
+            " lc-submitday4 "   lc-submitday[4]   SKIP
+            " lc-submitday5 "   lc-submitday[5]   SKIP
+            " lc-submitday6 "   lc-submitday[6]   SKIP
+            " lc-submitday7 "   lc-submitday[7]   SKIP
+            " lc-submitreason1 "   lc-submitreason[1]   SKIP
+            " lc-submitreason2 "   lc-submitreason[2]   SKIP
+            " lc-submitreason3 "   lc-submitreason[3]   SKIP
+            " lc-submitreason4 "   lc-submitreason[4]   SKIP
+            " lc-submitreason5 "   lc-submitreason[5]   SKIP
+            " lc-submitreason6 "   lc-submitreason[6]   SKIP
+            " lc-submitreason7 "   lc-submitreason[7]   SKIP                  .
 
-                output close.
+        OUTPUT close.
 
 
-        do vx = 1 to 7:
+        DO vx = 1 TO 7:
  
-          assign lc-object  = string(integer(lc-submitweek),"99") + "-" + string(li-curr-year)
-                 lc-date    = entry(1,Wk2Date(lc-object),"|")
-                 lc-date    = string(date(lc-date) - 1 + vx).
+            ASSIGN 
+                lc-object  = STRING(INTEGER(lc-submitweek),"99") + "-" + string(li-curr-year)
+                lc-date    = ENTRY(1,Wk2Date(lc-object),"|")
+                lc-date    = STRING(DATE(lc-date) - 1 + vx).
 
-           if lc-submitreason[vx] <> "" then
-           do:
+            IF lc-submitreason[vx] <> "" THEN
+            DO:
                
-             find first WebUserTime where WebUserTime.CompanyCode = lc-global-company                      
-                                    and   WebUserTime.LoginID     = lc-loginid                             
-                                    and   WebUserTime.EventDate   = date(lc-date)
-                                    exclusive-lock no-error.
+                FIND FIRST WebUserTime WHERE WebUserTime.CompanyCode = lc-global-company                      
+                    AND   WebUserTime.LoginID     = lc-loginid                             
+                    AND   WebUserTime.EventDate   = date(lc-date)
+                    EXCLUSIVE-LOCK NO-ERROR.
                     
-                  output to "C:\djstext.txt" append.
-                  put unformatted  "lc-mode " lc-mode  skip
-                    "USER  " lc-loginid skip
-                  "lc-object     "    lc-object  skip
-                  "lc-date       "    lc-date        skip
-                  "Avail?  "      avail webUserTime    skip(2).
+                OUTPUT to "C:\djstext.txt" append.
+                PUT UNFORMATTED  "lc-mode " lc-mode  SKIP
+                    "USER  " lc-loginid SKIP
+                    "lc-object     "    lc-object  SKIP
+                    "lc-date       "    lc-date        SKIP
+                    "Avail?  "      AVAILABLE webUserTime    SKIP(2).
                     
-                  output close.
+                OUTPUT close.
   
-              if avail WebuserTime then
-              do:
-                assign WebUserTime.EventHours  = dec(lc-submitday[vx])
-                       WebUserTime.EventType   = entry(lookup(lc-submitreason[vx],lc-list-reason-id,"|"),lc-list-reason,"|").
-              end.
-              else
-              do:
-                create WebUserTime.
-                assign WebUserTime.CompanyCode = lc-global-company           
-                       WebUserTime.LoginID     = lc-loginid                  
-                       WebUserTime.EventDate   = date(lc-date) 
-                       WebUserTime.EventHours  = dec(lc-submitday[vx])
-                       WebUserTime.EventType   = entry(lookup(lc-submitreason[vx],lc-list-reason-id,"|"),lc-list-reason,"|").      
-              end.
-           end.
-        end.          
-    end.
+                IF AVAILABLE WebuserTime THEN
+                DO:
+                    ASSIGN 
+                        WebUserTime.EventHours  = dec(lc-submitday[vx])
+                        WebUserTime.EventType   = ENTRY(LOOKUP(lc-submitreason[vx],lc-list-reason-id,"|"),lc-list-reason,"|").
+                END.
+                ELSE
+                DO:
+                    CREATE WebUserTime.
+                    ASSIGN 
+                        WebUserTime.CompanyCode = lc-global-company           
+                        WebUserTime.LoginID     = lc-loginid                  
+                        WebUserTime.EventDate   = DATE(lc-date) 
+                        WebUserTime.EventHours  = dec(lc-submitday[vx])
+                        WebUserTime.EventType   = ENTRY(LOOKUP(lc-submitreason[vx],lc-list-reason-id,"|"),lc-list-reason,"|").      
+                END.
+            END.
+        END.          
+    END.
 
 
 
@@ -951,7 +923,7 @@ PROCEDURE process-web-request :
            htmlib-StartForm("mainform","post", selfurl )
            htmlib-ProgramTitle(lc-title) skip.
 
-         run ip-ExportAccordion.
+    RUN ip-ExportAccordion.
 
     {&out} '<script language="JavaScript" src="/scripts/js/debug.js"></script>' skip
            '<script language="JavaScript" src="/scripts/js/validate.js"></script>' skip.
@@ -981,7 +953,7 @@ PROCEDURE process-web-request :
            htmlib-Hidden ("submitreason5", "") skip
            htmlib-Hidden ("submitreason6", "") skip
            htmlib-Hidden ("submitreason7", "") skip 
-      .
+    .
         
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
@@ -989,18 +961,18 @@ PROCEDURE process-web-request :
     {&out} skip
           htmlib-StartMntTable().
     {&out}
-           htmlib-TableHeading(
-           "Contracted Times for " + string(li-curr-year) + 
-           "| <div id=~"chgyear~"style=~"cursor:pointer;~" onclick=~"changeYear();~" >Change Year</div>"
-           ) skip.
+    htmlib-TableHeading(
+        "Contracted Times for " + string(li-curr-year) + 
+        "| <div id=~"chgyear~"style=~"cursor:pointer;~" onclick=~"changeYear();~" >Change Year</div>"
+        ) skip.
 
 
 
-          {&out}
-          '<tr><td><br><div id="AccordionContainer" class="AccordionContainer">' skip.
+    {&out}
+    '<tr><td><br><div id="AccordionContainer" class="AccordionContainer">' skip.
 
-    run ip-build-year.
-    run ip-time-display.
+    RUN ip-build-year.
+    RUN ip-time-display.
 
     {&out} skip '</div         ></td></tr>' skip.
 
@@ -1009,8 +981,8 @@ PROCEDURE process-web-request :
            htmlib-EndTable()
            skip.
 
-           def var lc-year as char no-undo.
-           def var zx      as int  no-undo.
+    DEFINE VARIABLE lc-year AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE zx      AS INTEGER  NO-UNDO.
            
     {&out} '<div id="hiddenyeardiv" style="display:none;">' skip 
 
@@ -1018,10 +990,10 @@ PROCEDURE process-web-request :
            ' onchange="changeYear(this);"  >' skip
            '<option value="" ' '>  Select Year </option>' skip.
 
-           do zx = -1 to 4:
-             lc-year = string(year(today) - zx).
-             {&out} '<option value="' lc-year '" ' '>'  html-encode(lc-year) '</option>' skip.
-            end.
+    DO zx = -1 TO 4:
+        lc-year = STRING(YEAR(TODAY) - zx).
+        {&out} '<option value="' lc-year '" ' '>'  html-encode(lc-year) '</option>' skip.
+    END.
     {&out} '</select>' skip.
       
     {&out} '</div>'.
@@ -1046,8 +1018,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -1055,78 +1025,73 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-Date2Wk) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Date2Wk Procedure 
 FUNCTION Date2Wk RETURNS CHARACTER
-  (input dMyDate as date) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
-  def var cYear     as char no-undo.
-  def var iWkNo     as int  no-undo.
-  def var iDayNo    as int  no-undo.
-  def var dYrBegin  as date no-undo.
-  def var WkOne     as int  no-undo.
-  assign cYear  = entry(3,string(dMyDate),"/")
-         WkOne  = weekday(date("01/01/" + cYear)).
-  if WkOne <= 5 then dYrBegin = date("01/01/" + cYear).
-  else dYrBegin = date("01/01/" + cYear) + WkOne.
-  assign iDayNo = integer(dMyDate - dYrBegin) + 1  
-         iWkNo  = round(iDayNo / 7,0) + 1 . 
-  return string(string(iDayNo) + "|" + string(iWkNo) + "|" + cYear).
+    (INPUT dMyDate AS DATE) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE cYear     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE iWkNo     AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE iDayNo    AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE dYrBegin  AS DATE NO-UNDO.
+    DEFINE VARIABLE WkOne     AS INTEGER  NO-UNDO.
+    ASSIGN 
+        cYear  = ENTRY(3,STRING(dMyDate),"/")
+        WkOne  = WEEKDAY(DATE("01/01/" + cYear)).
+    IF WkOne <= 5 THEN dYrBegin = DATE("01/01/" + cYear).
+    ELSE dYrBegin = DATE("01/01/" + cYear) + WkOne.
+    ASSIGN 
+        iDayNo = INTEGER(dMyDate - dYrBegin) + 1  
+        iWkNo  = ROUND(iDayNo / 7,0) + 1 . 
+    RETURN STRING(STRING(iDayNo) + "|" + string(iWkNo) + "|" + cYear).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-dayOfWeek) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION dayOfWeek Procedure 
 FUNCTION dayOfWeek RETURNS INTEGER
-  (input dMyDate as date) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    (INPUT dMyDate AS DATE) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var rDate     as int no-undo.
-  def var WkSt      as int  initial 2 no-undo. /* 1=Sun,2=Mon */
-  def var DayList   as char no-undo.
-  if WkSt = 1 then DayList = "1,2,3,4,5,6,7".
-              else DayList = "7,1,2,3,4,5,6".
+    DEFINE VARIABLE rDate     AS INTEGER NO-UNDO.
+    DEFINE VARIABLE WkSt      AS INTEGER  INITIAL 2 NO-UNDO. /* 1=Sun,2=Mon */
+    DEFINE VARIABLE DayList   AS CHARACTER NO-UNDO.
+    IF WkSt = 1 THEN DayList = "1,2,3,4,5,6,7".
+    ELSE DayList = "7,1,2,3,4,5,6".
 
-  rDate = weekday(dMyDate).
-  rDate = integer(entry(rDate,DayList)).
-  return  rDate.
+    rDate = WEEKDAY(dMyDate).
+    rDate = INTEGER(ENTRY(rDate,DayList)).
+    RETURN  rDate.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-html-InputFieldMasked) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION html-InputFieldMasked Procedure 
 FUNCTION html-InputFieldMasked RETURNS CHARACTER
-  ( pc-name as char,
-    pc-maxlength as char,
-    pc-datatype as char,
-    pc-mask as char,
-    pc-value as char,
-    pc-style as char ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-name AS CHARACTER,
+    pc-maxlength AS CHARACTER,
+    pc-datatype AS CHARACTER,
+    pc-mask AS CHARACTER,
+    pc-value AS CHARACTER,
+    pc-style AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-def var r-htm as char no-undo.
+    DEFINE VARIABLE r-htm AS CHARACTER NO-UNDO.
    
-r-htm = '<input type="text" id="' + pc-name + '" name="' + pc-name + '" value="' + pc-value + '"' +
+    r-htm = '<input type="text" id="' + pc-name + '" name="' + pc-name + '" value="' + pc-value + '"' +
         ' maxlength="' + pc-maxlength + '" datatype="' + pc-datatype + '" mask="' + pc-mask + '"' +
         ' onpaste="return tbPaste(this);"' +
         ' onfocus="return tbFocus(this);"' +
@@ -1134,48 +1099,45 @@ r-htm = '<input type="text" id="' + pc-name + '" name="' + pc-name + '" value="'
         ' onkeypress="return tbMask(this);"' +
         ' style="' + pc-style + '">'.
         
-return r-htm.
+    RETURN r-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Wk2Date) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Wk2Date Procedure 
 FUNCTION Wk2Date RETURNS CHARACTER
- (cWkYrNo as char):
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    (cWkYrNo AS CHARACTER):
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var cYear     as char no-undo.
-  def var iWkNo     as int  no-undo.
-  def var iDayNo    as int  no-undo.
-  def var iSDayNo   as date no-undo.
-  def var iEDayNo   as date no-undo.
-  def var dYrBegin  as date no-undo.
-  def var WkOne     as int  no-undo.
-  def var WkSt      as int  initial 2 no-undo. /* 1=Sun,2=Mon */
-  if index(cWkYrNo,"-") <> 3 then return "Format should be xx-xxxx".
-  assign cYear  = entry(2,cWkYrNo,"-")
-         WkOne  = weekday(date("01/01/" + cYear)).
-  if WkOne <= 5 then dYrBegin = date("01/01/" + cYear).
-  else dYrBegin = date("01/01/" + cYear) + WkOne.
-  assign iWkNo  = integer(entry(1,cWkYrNo,"-"))
-         iDayNo = (iWkNo * 7) - 7
+    DEFINE VARIABLE cYear     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE iWkNo     AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE iDayNo    AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE iSDayNo   AS DATE NO-UNDO.
+    DEFINE VARIABLE iEDayNo   AS DATE NO-UNDO.
+    DEFINE VARIABLE dYrBegin  AS DATE NO-UNDO.
+    DEFINE VARIABLE WkOne     AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE WkSt      AS INTEGER  INITIAL 2 NO-UNDO. /* 1=Sun,2=Mon */
+    IF INDEX(cWkYrNo,"-") <> 3 THEN RETURN "Format should be xx-xxxx".
+    ASSIGN 
+        cYear  = ENTRY(2,cWkYrNo,"-")
+        WkOne  = WEEKDAY(DATE("01/01/" + cYear)).
+    IF WkOne <= 5 THEN dYrBegin = DATE("01/01/" + cYear).
+    ELSE dYrBegin = DATE("01/01/" + cYear) + WkOne.
+    ASSIGN 
+        iWkNo  = INTEGER(ENTRY(1,cWkYrNo,"-"))
+        iDayNo = (iWkNo * 7) - 7
         iSDayNo = dYrBegin + iDayNo - WkOne + WkSt 
         iEDayNo = iSDayNo + 6 .
-  return string(string(iSDayNo,"99/99/9999") + "|" + string(iEDayNo,"99/99/9999")).
+    RETURN STRING(STRING(iSDayNo,"99/99/9999") + "|" + string(iEDayNo,"99/99/9999")).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

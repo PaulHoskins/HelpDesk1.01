@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        sys/webeqclassmnt.p
@@ -22,42 +19,39 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-msg  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 
 
-def var lc-mode as char no-undo.
-def var lc-rowid as char no-undo.
-def var lc-title as char no-undo.
+DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
 
 
-def buffer b-valid for ivClass.
-def buffer b-table for ivClass.
+DEFINE BUFFER b-valid FOR ivClass.
+DEFINE BUFFER b-table FOR ivClass.
 
 
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-parameters   as char no-undo.
+DEFINE VARIABLE lc-search          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters      AS CHARACTER NO-UNDO.
 
 
-def var lc-link-label   as char no-undo.
-def var lc-submit-label as char no-undo.
-def var lc-link-url     as char no-undo.
+DEFINE VARIABLE lc-link-label      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url        AS CHARACTER NO-UNDO.
 
 
 
-def var lc-classcode        as char no-undo.
-def var lc-name             as char no-undo.
-def var lc-style            as char no-undo.
-def var lc-displaypriority  as char no-undo.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-classcode       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-name            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-style           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-displaypriority AS CHARACTER NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -66,48 +60,32 @@ def var lc-displaypriority  as char no-undo.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -115,138 +93,130 @@ def var lc-displaypriority  as char no-undo.
 /* Process the latest Web event. */
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Validate Procedure 
 PROCEDURE ip-Validate :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  emails:       
-------------------------------------------------------------------------------*/
-    def output param pc-error-field as char no-undo.
-    def output param pc-error-msg  as char no-undo.
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      emails:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
-    def var li-int                  as int no-undo.
+    DEFINE VARIABLE li-int                  AS INTEGER NO-UNDO.
     
-    if lc-mode = "ADD":U then
-    do:
-        if lc-classcode = ""
-        or lc-classcode = ?
-        then run htmlib-AddErrorMessage(
-                    'classcode', 
-                    'You must enter the code',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF lc-mode = "ADD":U THEN
+    DO:
+        IF lc-classcode = ""
+            OR lc-classcode = ?
+            THEN RUN htmlib-AddErrorMessage(
+                'classcode', 
+                'You must enter the code',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
         
 
-        if can-find(first b-valid
-                    where b-valid.companycode = lc-global-company
-                      and b-valid.classcode = lc-classcode
-                    no-lock)
-        then run htmlib-AddErrorMessage(
-                    'classcode', 
-                    'This code already exists',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+        IF CAN-FIND(FIRST b-valid
+            WHERE b-valid.companycode = lc-global-company
+            AND b-valid.classcode = lc-classcode
+            NO-LOCK)
+            THEN RUN htmlib-AddErrorMessage(
+                'classcode', 
+                'This code already exists',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
 
-    end.
+    END.
 
-    if lc-name = ""
-    or lc-name = ?
-    then run htmlib-AddErrorMessage(
-                    'name', 
-                    'You must enter the class name',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    IF lc-name = ""
+        OR lc-name = ?
+        THEN RUN htmlib-AddErrorMessage(
+            'name', 
+            'You must enter the class name',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
    
-    assign li-int = int(lc-displaypriority) no-error.
-    if error-status:error
-    or li-int < 0
-    then run htmlib-AddErrorMessage(
-                    'displaypriority', 
-                    'The display priority must be zero or a positive number',
-                    input-output pc-error-field,
-                    input-output pc-error-msg ).
+    ASSIGN 
+        li-int = int(lc-displaypriority) no-error.
+    IF ERROR-STATUS:ERROR
+        OR li-int < 0
+        THEN RUN htmlib-AddErrorMessage(
+            'displaypriority', 
+            'The display priority must be zero or a positive number',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
     
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  emails:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      emails:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -258,175 +228,188 @@ PROCEDURE process-web-request :
 
 
     
-    assign lc-mode = get-value("mode")
-           lc-rowid = get-value("rowid")
-           lc-search = get-value("search")
-           lc-firstrow = get-value("firstrow")
-           lc-lastrow  = get-value("lastrow")
-           lc-navigation = get-value("navigation").
+    ASSIGN 
+        lc-mode = get-value("mode")
+        lc-rowid = get-value("rowid")
+        lc-search = get-value("search")
+        lc-firstrow = get-value("firstrow")
+        lc-lastrow  = get-value("lastrow")
+        lc-navigation = get-value("navigation").
 
-    if lc-mode = "" 
-    then assign lc-mode = get-field("savemode")
-                lc-rowid = get-field("saverowid")
-                lc-search = get-value("savesearch")
-                lc-firstrow = get-value("savefirstrow")
-                lc-lastrow  = get-value("savelastrow")
-                lc-navigation = get-value("savenavigation").
+    IF lc-mode = "" 
+        THEN ASSIGN lc-mode = get-field("savemode")
+            lc-rowid = get-field("saverowid")
+            lc-search = get-value("savesearch")
+            lc-firstrow = get-value("savefirstrow")
+            lc-lastrow  = get-value("savelastrow")
+            lc-navigation = get-value("savenavigation").
 
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN 
+        lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
 
-    case lc-mode:
-        when 'add'
-        then assign lc-title = 'Add'
-                    lc-link-label = "Cancel addition"
-                    lc-submit-label = "Add Classification".
-        when 'view'
-        then assign lc-title = 'View'
-                    lc-link-label = "Back"
-                    lc-submit-label = "".
-        when 'delete'
-        then assign lc-title = 'Delete'
-                    lc-link-label = 'Cancel deletion'
-                    lc-submit-label = 'Delete Classification'.
-        when 'Update'
-        then assign lc-title = 'Update'
-                    lc-link-label = 'Cancel update'
-                    lc-submit-label = 'Update Classification'.
-    end case.
+    CASE lc-mode:
+        WHEN 'add'
+        THEN 
+            ASSIGN 
+                lc-title = 'Add'
+                lc-link-label = "Cancel addition"
+                lc-submit-label = "Add Classification".
+        WHEN 'view'
+        THEN 
+            ASSIGN 
+                lc-title = 'View'
+                lc-link-label = "Back"
+                lc-submit-label = "".
+        WHEN 'delete'
+        THEN 
+            ASSIGN 
+                lc-title = 'Delete'
+                lc-link-label = 'Cancel deletion'
+                lc-submit-label = 'Delete Classification'.
+        WHEN 'Update'
+        THEN 
+            ASSIGN 
+                lc-title = 'Update'
+                lc-link-label = 'Cancel update'
+                lc-submit-label = 'Update Classification'.
+    END CASE.
 
 
-    assign lc-title = lc-title + ' Inventory Classification'
-           lc-link-url = appurl + '/sys/webeqclass.p' + 
+    ASSIGN 
+        lc-title = lc-title + ' Inventory Classification'
+        lc-link-url = appurl + '/sys/webeqclass.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
                                   '&navigation=refresh' +
-                                  '&time=' + string(time)
-                           .
+                                  '&time=' + string(TIME)
+        .
 
-    if can-do("view,update,delete",lc-mode) then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid)
-             no-lock no-error.
-        if not avail b-table then
-        do:
+    IF CAN-DO("view,update,delete",lc-mode) THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+            NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE b-table THEN
+        DO:
             set-user-field("mode",lc-mode).
             set-user-field("title",lc-title).
             set-user-field("nexturl",appurl + "/sys/webeqclass.p").
             RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
-            return.
-        end.
+            RETURN.
+        END.
 
-    end.
+    END.
 
 
-    if request_method = "POST" then
-    do:
+    IF request_method = "POST" THEN
+    DO:
 
-        if lc-mode <> "delete" then
-        do:
-            assign lc-classcode   = get-value("classcode")
-                   lc-name          = get-value("name")
-                   lc-style       = get-value("style")
-                   lc-displaypriority = get-value("displaypriority")
-                   .
+        IF lc-mode <> "delete" THEN
+        DO:
+            ASSIGN 
+                lc-classcode   = get-value("classcode")
+                lc-name          = get-value("name")
+                lc-style       = get-value("style")
+                lc-displaypriority = get-value("displaypriority")
+                .
             
                
-            RUN ip-Validate( output lc-error-field,
-                             output lc-error-msg ).
+            RUN ip-Validate( OUTPUT lc-error-field,
+                OUTPUT lc-error-msg ).
 
-            if lc-error-msg = "" then
-            do:
+            IF lc-error-msg = "" THEN
+            DO:
                 
-                if lc-mode = 'update' then
-                do:
-                    find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                        exclusive-lock no-wait no-error.
-                    if locked b-table 
-                    then  run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-                end.
-                else
-                do:
-                    create b-table.
-                    assign 
+                IF lc-mode = 'update' THEN
+                DO:
+                    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                        EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                    IF LOCKED b-table 
+                        THEN  RUN htmlib-AddErrorMessage(
+                            'none', 
+                            'This record is locked by another user',
+                            INPUT-OUTPUT lc-error-field,
+                            INPUT-OUTPUT lc-error-msg ).
+                END.
+                ELSE
+                DO:
+                    CREATE b-table.
+                    ASSIGN 
                         b-table.Companycode = lc-global-company
-                        b-table.classcode = caps(lc-classcode)
-                        lc-firstrow      = string(rowid(b-table))
-                           .
+                        b-table.classcode = CAPS(lc-classcode)
+                        lc-firstrow      = STRING(ROWID(b-table))
+                        .
                    
-                end.
-                if lc-error-msg = "" then
-                do:
-                    assign 
+                END.
+                IF lc-error-msg = "" THEN
+                DO:
+                    ASSIGN 
                         b-table.name            = lc-name
                         b-table.style           = lc-style
                         b-table.displaypriority = int(lc-displaypriority)
                         
-                           .
+                        .
                    
-                end.
-            end.
-        end.
-        else
-        do:
-            find b-table where rowid(b-table) = to-rowid(lc-rowid)
-                 exclusive-lock no-wait no-error.
-            if locked b-table 
-            then  run htmlib-AddErrorMessage(
-                                   'none', 
-                                   'This record is locked by another user',
-                                   input-output lc-error-field,
-                                   input-output lc-error-msg ).
-            else 
-            do:
-                for each ivSub of b-table exclusive-lock:
-                    for each ivField where ivField.ivSubID = ivSub.ivSubID exclusive-lock:
-                        for each custField where custField.ivFieldID = ivField.ivFieldID exclusive-lock:
-                            delete custField.
-                        end.
-                        delete ivField.
-                    end.
-                    for each custIv where custIv.ivSubID = ivSub.ivSubID exclusive-lock:
-                        delete custIv.
-                    end.
-                    delete ivSub.
-                end.
-                delete b-table.
+                END.
+            END.
+        END.
+        ELSE
+        DO:
+            FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+            IF LOCKED b-table 
+                THEN  RUN htmlib-AddErrorMessage(
+                    'none', 
+                    'This record is locked by another user',
+                    INPUT-OUTPUT lc-error-field,
+                    INPUT-OUTPUT lc-error-msg ).
+            ELSE 
+            DO:
+                FOR EACH ivSub OF b-table EXCLUSIVE-LOCK:
+                    FOR EACH ivField WHERE ivField.ivSubID = ivSub.ivSubID EXCLUSIVE-LOCK:
+                        FOR EACH custField WHERE custField.ivFieldID = ivField.ivFieldID EXCLUSIVE-LOCK:
+                            DELETE custField.
+                        END.
+                        DELETE ivField.
+                    END.
+                    FOR EACH custIv WHERE custIv.ivSubID = ivSub.ivSubID EXCLUSIVE-LOCK:
+                        DELETE custIv.
+                    END.
+                    DELETE ivSub.
+                END.
+                DELETE b-table.
 
-            end.
-        end.
+            END.
+        END.
 
-        if lc-error-field = "" then
-        do:
+        IF lc-error-field = "" THEN
+        DO:
             RUN outputHeader.
             set-user-field("navigation",'refresh').
             set-user-field("firstrow",lc-firstrow).
             set-user-field("search",lc-search).
             RUN run-web-object IN web-utilities-hdl ("sys/webeqclass.p").
-            return.
-        end.
-    end.
+            RETURN.
+        END.
+    END.
 
-    if lc-mode <> 'add' then
-    do:
-        find b-table where rowid(b-table) = to-rowid(lc-rowid) no-lock.
-        assign lc-classcode = b-table.ClassCode.
+    IF lc-mode <> 'add' THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
+        ASSIGN 
+            lc-classcode = b-table.ClassCode.
 
-        if can-do("view,delete",lc-mode)
-        or request_method <> "post"
-        then assign 
+        IF CAN-DO("view,delete",lc-mode)
+            OR request_method <> "post"
+            THEN ASSIGN 
                 lc-name             = b-table.name
                 lc-style            = b-table.style
-                lc-displaypriority  = string(b-table.displaypriority)
+                lc-displaypriority  = STRING(b-table.displaypriority)
                 .
        
-    end.
+    END.
 
     RUN outputHeader.
     
@@ -444,27 +427,27 @@ PROCEDURE process-web-request :
         
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
-    if lc-mode = "DELETE" then
-    do:
+    IF lc-mode = "DELETE" THEN
+    DO:
         {&out}  '<div class="infobox">'
-                'Warning:<br>'
-                'Deletion of this class will also delete all other related details, e.g customer inventory of this class'
-                '</div>' skip.
-    end.
+        'Warning:<br>'
+        'Deletion of this class will also delete all other related details, e.g customer inventory of this class'
+        '</div>' skip.
+    END.
 
     {&out} htmlib-StartInputTable() skip.
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           ( if lookup("classcode",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Classification")
-           else htmlib-SideLabel("Classification"))
-           '</TD>' skip
-           .
+        ( IF LOOKUP("classcode",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Classification")
+        ELSE htmlib-SideLabel("Classification"))
+    '</TD>' skip
+    .
 
-    if lc-mode = "ADD" then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-           htmlib-InputField("classcode",10,lc-classcode) skip
+    IF lc-mode = "ADD" THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("classcode",10,lc-classcode) skip
            '</TD>'.
     else
     {&out} htmlib-TableField(html-encode(lc-classcode),'left')
@@ -474,45 +457,45 @@ PROCEDURE process-web-request :
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("name",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Name")
-            else htmlib-SideLabel("Name"))
-            '</TD>'.
+        (IF LOOKUP("name",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Name")
+        ELSE htmlib-SideLabel("Name"))
+    '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-InputField("name",40,lc-name) 
-            '</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("name",40,lc-name) 
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-name),'left')
            skip.
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-            (if lookup("displaypriority",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("Display Priority")
-            else htmlib-SideLabel("Display Priority"))
-            '</TD>'.
+        (IF LOOKUP("displaypriority",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Display Priority")
+        ELSE htmlib-SideLabel("Display Priority"))
+    '</TD>'.
     
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-InputField("displaypriority",3,lc-displaypriority) 
-            '</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("displaypriority",3,lc-displaypriority) 
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-displaypriority),'left')
            skip.
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-           (if lookup("style",lc-error-field,'|') > 0 
-           then htmlib-SideLabelError("Display CSS")
-           else htmlib-SideLabel("Display CSS"))
-           '</TD>' skip.
+        (IF LOOKUP("style",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Display CSS")
+        ELSE htmlib-SideLabel("Display CSS"))
+    '</TD>' skip.
 
-    if not can-do("view,delete",lc-mode) then
-    {&out} '<TD VALIGN="TOP" ALIGN="left">'
-            htmlib-TextArea("style",lc-style,10,60)
-           '</TD>' 
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-TextArea("style",lc-style,10,60)
+    '</TD>' 
             skip.
     else {&out} '<td valign="top">'
             replace(html-encode(lc-style),'~n','<br>')
@@ -522,17 +505,17 @@ PROCEDURE process-web-request :
     {&out} htmlib-EndTable() skip.
 
 
-    if lc-error-msg <> "" then
-    do:
+    IF lc-error-msg <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
-                htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
-    end.
+        htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
+    END.
 
-    if lc-submit-label <> "" then
-    do:
+    IF lc-submit-label <> "" THEN
+    DO:
         {&out} '<center>' htmlib-SubmitButton("submitform",lc-submit-label) 
-               '</center>' skip.
-    end.
+        '</center>' skip.
+    END.
          
     {&out} htmlib-EndForm() skip
            htmlib-Footer() skip.
@@ -540,8 +523,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

@@ -277,7 +277,7 @@ PROCEDURE ipProcess:
                     FIND CustField WHERE CustField.CustIvID = CustIv.CustIvID
                         AND CustField.ivFieldID = ivField.ivFieldID NO-LOCK NO-ERROR.
                     DISPLAY STREAM slog
-                        REPLACE(CustField.FieldData,"~n","<n>") FORMAT 'x(50)' LABEL 'Data' 
+                        REPLACE(IF AVAIL custField THEN CustField.FieldData ELSE "","~n","<n>") FORMAT 'x(50)' LABEL 'Data' 
                         WHEN  AVAILABLE CustField 
                         AVAILABLE CustField LABEL 'Avail Data'.
                                                
@@ -288,7 +288,9 @@ PROCEDURE ipProcess:
                 CREATE toCustField.
                 ASSIGN
                     tocustField.CustIvID  = tocustiv.CustIvID
-                    tocustfield.ivFieldID = toivfield.ivFieldID
+                    tocustfield.ivFieldID = toivfield.ivFieldID.
+                IF AVAIL custfield THEN
+                ASSIGN
                     tocustfield.FieldData = CustField.FieldData.
                     
                                           

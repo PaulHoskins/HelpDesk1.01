@@ -1,66 +1,75 @@
 {src/web/method/wrap-cgi.i}
 
-def var li-docid as int no-undo.
+DEFINE VARIABLE li-docid AS INTEGER NO-UNDO.
 
-assign li-docid = dec(get-value("docid")).
+ASSIGN 
+    li-docid = dec(get-value("docid")).
 
-find doch where doch.docid = li-docid no-lock no-error.
+FIND doch WHERE doch.docid = li-docid NO-LOCK NO-ERROR.
 
-if not avail doch then
-do:
-    run ip-Error("Missing document").
-    return.
-end.
+IF NOT AVAILABLE doch THEN
+DO:
+    RUN ip-Error("Missing document").
+    RETURN.
+END.
 
-case doch.doctype:
-    when "PDF" then output-content-type("application/pdf").
-    when "DOC" 
-    or when "DOT" then output-content-type("application/msword").
-    when "HTM"  
-    or when "HTML" then output-content-type("text/html").
-    when "XLS" 
-    or when "XLT" 
-    or when "XLTX" then output-content-type("application/vnd.ms-excel").
-    when "TXT" then output-content-type("text/plain~;charset=iso-8859-1").
-    when "INI"
-    or when "D"
-    or when "DF" then output-content-type("text/plain").
-    when "PPT" then output-content-type("application/ms-powerpoint").
-    when "PNG" then output-content-type("image/png").
-    when "GIF" then output-content-type("image/gif").
-    when "jpe"
-    or when "jpg"
-    or when "jpeg" then output-content-type("image/jpeg").
-    when "XML" then output-content-type("text/xml").
-    when "ZIP" then output-content-type("application/zip").
+CASE doch.doctype:
+    WHEN "PDF" THEN output-content-type("application/pdf").
+    WHEN "DOC" 
+    OR 
+    WHEN "DOT" THEN output-content-type("application/msword").
+    WHEN "HTM"  
+    OR 
+    WHEN "HTML" THEN output-content-type("text/html").
+    WHEN "XLS" 
+    OR 
+    WHEN "XLT" 
+    OR 
+    WHEN "XLTX" THEN output-content-type("application/vnd.ms-excel").
+    WHEN "TXT" THEN output-content-type("text/plain~;charset=iso-8859-1").
+    WHEN "INI"
+    OR 
+    WHEN "D"
+    OR 
+    WHEN "DF" THEN output-content-type("text/plain").
+    WHEN "PPT" THEN output-content-type("application/ms-powerpoint").
+    WHEN "PNG" THEN output-content-type("image/png").
+    WHEN "GIF" THEN output-content-type("image/gif").
+    WHEN "jpe"
+    OR 
+    WHEN "jpg"
+    OR 
+    WHEN "jpeg" THEN output-content-type("image/jpeg").
+    WHEN "XML" THEN output-content-type("text/xml").
+    WHEN "ZIP" THEN output-content-type("application/zip").
     WHEN "msg" THEN output-content-type("application/vnd.ms-outlook").
-    otherwise
-        do:
-            output-content-type("application/" + lc(doch.doctype)).
-            /*
-            run ip-Error("Unknown content type of " + doch.doctype).
-            return.
-            */
-        end.
-end case.
+    OTHERWISE
+    DO:
+        output-content-type("application/" + lc(doch.doctype)).
+    /*
+    run ip-Error("Unknown content type of " + doch.doctype).
+    return.
+    */
+    END.
+END CASE.
 
-for each docl where docl.docid = li-docid no-lock:
-    put {&WEBSTREAM} control docl.rdata.
-end.
+FOR EACH docl WHERE docl.docid = li-docid NO-LOCK:
+    PUT {&WEBSTREAM} control docl.rdata.
+END.
 
-procedure ip-Error:
+PROCEDURE ip-Error:
 
-    def input param pc-error as char no-undo.
+    DEFINE INPUT PARAMETER pc-error AS CHARACTER NO-UNDO.
 
     output-content-type("text/html").
 
-    put {&webstream} unformatted
+    PUT {&webstream} unformatted
         '<html><head><title>Document Error</title></head>'
         '<body>'
         '<h1>This document can not be displayed</h1><br>'
         '<h2>Document ID =' li-docid '</h2><br>'
         '<h2>' pc-error '</h2></body></html>' skip.
 
-    return.
+    RETURN.
 
-end procedure.
+END PROCEDURE.

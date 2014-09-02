@@ -52,10 +52,6 @@ DEFINE VARIABLE lc-selacc      AS CHARACTER NO-UNDO.
 DEFINE BUFFER b-query  FOR webuser.
 DEFINE BUFFER b-search FOR webuser.
 
-/*
-def query q for b-query scrolling.
-*/
-
 DEFINE VARIABLE lc-QPhrase AS CHARACTER NO-UNDO.
 DEFINE VARIABLE vhLBuffer  AS HANDLE    NO-UNDO.
 DEFINE VARIABLE vhLQuery   AS HANDLE    NO-UNDO.

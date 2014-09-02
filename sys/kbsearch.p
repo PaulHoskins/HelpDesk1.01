@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        sys/kbsearch.p
@@ -22,47 +19,44 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field as char no-undo.
-def var lc-error-mess  as char no-undo.
+DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess  AS CHARACTER NO-UNDO.
 
-def var lc-rowid as char no-undo.
+DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 
-def var li-max-lines as int initial 12 no-undo.
-def var lr-first-row as rowid no-undo.
-def var lr-last-row  as rowid no-undo.
-def var li-count     as int   no-undo.
-def var ll-prev      as log   no-undo.
-def var ll-next      as log   no-undo.
-def var lc-search    as char  no-undo.
-def var lc-firstrow  as char  no-undo.
-def var lc-lastrow   as char  no-undo.
-def var lc-navigation as char no-undo.
-def var lc-parameters   as char no-undo.
-def var lc-smessage     as char no-undo.
-def var lc-link-otherp  as char no-undo.
-def var lc-char         as char no-undo.
-def var lc-nopass       as char no-undo.
+DEFINE VARIABLE li-max-lines   AS INTEGER   INITIAL 12 NO-UNDO.
+DEFINE VARIABLE lr-first-row   AS ROWID     NO-UNDO.
+DEFINE VARIABLE lr-last-row    AS ROWID     NO-UNDO.
+DEFINE VARIABLE li-count       AS INTEGER   NO-UNDO.
+DEFINE VARIABLE ll-prev        AS LOG       NO-UNDO.
+DEFINE VARIABLE ll-next        AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-search      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-smessage    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-otherp AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-nopass      AS CHARACTER NO-UNDO.
 
-def var lc-code     as char no-undo.
-def var lc-desc     as char no-undo.
-def var lc-knbcode  as char no-undo.
-def var lc-type     as char no-undo.
+DEFINE VARIABLE lc-code        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-desc        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-knbcode     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-type        AS CHARACTER NO-UNDO.
 
-def var lc-type-code    as char
-    initial "T|I|C"     no-undo.
-def var lc-type-desc    as char
-    initial "Title|Text|Both Title And Text" no-undo.
-
-
-def buffer b-query for knbtext.
-def buffer b-search for knbtext.
-def query q for b-query scrolling.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE VARIABLE lc-type-code   AS CHARACTER
+    INITIAL "T|I|C" NO-UNDO.
+DEFINE VARIABLE lc-type-desc   AS CHARACTER
+    INITIAL "Title|Text|Both Title And Text" NO-UNDO.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+DEFINE BUFFER b-query  FOR knbtext.
+DEFINE BUFFER b-search FOR knbtext.
+DEFINE QUERY q FOR b-query SCROLLING.
+
+
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -71,62 +65,43 @@ def query q for b-query scrolling.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-fnText) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnText Procedure 
 FUNCTION fnText RETURNS CHARACTER
-  ( pf-knbid as dec,
-    pi-count as int )  FORWARD.
+    ( pf-knbid AS DECIMAL,
+    pi-count AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 14.14
          WIDTH              = 60.6.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -136,112 +111,114 @@ FUNCTION fnText RETURNS CHARACTER
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ip-Search) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ip-Search Procedure 
 PROCEDURE ip-Search :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
     
-    def buffer knbItem      for knbitem.
-    def buffer knbSection   for knbSection.
+    DEFINE BUFFER knbItem      FOR knbitem.
+    DEFINE BUFFER knbSection   FOR knbSection.
 
     
-    if lc-knbCode = "ALL" then
-    open query q for each b-query no-lock
-        where b-query.dData contains lc-search
-          and b-query.dType = lc-type
-          and b-query.companycode = lc-global-company.
-    else 
-    open query q for each b-query no-lock
-        where b-query.dData contains lc-search
-          and b-query.dType = lc-type
-          and b-query.companycode = lc-global-company
-          and b-query.knbcode = lc-knbCode.
+    IF lc-knbCode = "ALL" THEN
+        OPEN QUERY q FOR EACH b-query NO-LOCK
+            WHERE b-query.dData CONTAINS lc-search
+            AND b-query.dType = lc-type
+            AND b-query.companycode = lc-global-company.
+    ELSE 
+        OPEN QUERY q FOR EACH b-query NO-LOCK
+            WHERE b-query.dData CONTAINS lc-search
+            AND b-query.dType = lc-type
+            AND b-query.companycode = lc-global-company
+            AND b-query.knbcode = lc-knbCode.
 
     {&out}
-            tbar-Begin(
-                ""
-                )
-            tbar-BeginOption()
-            tbar-Link("view",?,"off",lc-link-otherp)
+    tbar-Begin(
+        ""
+        )
+    tbar-BeginOption()
+    tbar-Link("view",?,"off",lc-link-otherp)
             
-            tbar-EndOption()
-            tbar-End().
+    tbar-EndOption()
+    tbar-End().
 
     
     {&out} skip
            htmlib-StartMntTable().
 
     {&out}
-            htmlib-TableHeading(
-            "Title|Section|Ref"
-            ) skip.
+    htmlib-TableHeading(
+        "Title|Section|Ref"
+        ) skip.
 
-    get first q no-lock.
+    GET FIRST q NO-LOCK.
 
-    if lc-navigation = "nextpage" then
-    do:
-        reposition q to rowid to-rowid(lc-lastrow) no-error.
-        if error-status:error = false then
-        do:
-            get next q no-lock.
-            get next q no-lock.
-            if not avail b-query then get first q no-lock.
-        end.
-    end.
-    else
-    if lc-navigation = "prevpage" then
-    do:
-        reposition q to rowid to-rowid(lc-firstrow) no-error.
-        if error-status:error = false then
-        do:
-            get next q no-lock.
-            reposition q backwards li-max-lines + 1.
-            get next q no-lock.
-            if not avail b-query then get first q no-lock.
-        end.
-    end.
-    else
-    if lc-navigation = "refresh" then
-    do:
-        reposition q to rowid to-rowid(lc-firstrow) no-error.
-        if error-status:error = false then
-        do:
-            get next q no-lock.
-            if not avail b-query then get first q no-lock.
-        end.  
-        else get first q no-lock.
-    end.
+    IF lc-navigation = "nextpage" THEN
+    DO:
+        REPOSITION q TO ROWID TO-ROWID(lc-lastrow) NO-ERROR.
+        IF ERROR-STATUS:ERROR = FALSE THEN
+        DO:
+            GET NEXT q NO-LOCK.
+            GET NEXT q NO-LOCK.
+            IF NOT AVAILABLE b-query THEN GET FIRST q NO-LOCK.
+        END.
+    END.
+    ELSE
+        IF lc-navigation = "prevpage" THEN
+        DO:
+            REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
+            IF ERROR-STATUS:ERROR = FALSE THEN
+            DO:
+                GET NEXT q NO-LOCK.
+                REPOSITION q BACKWARDS li-max-lines + 1.
+                GET NEXT q NO-LOCK.
+                IF NOT AVAILABLE b-query THEN GET FIRST q NO-LOCK.
+            END.
+        END.
+        ELSE
+            IF lc-navigation = "refresh" THEN
+            DO:
+                REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
+                IF ERROR-STATUS:ERROR = FALSE THEN
+                DO:
+                    GET NEXT q NO-LOCK.
+                    IF NOT AVAILABLE b-query THEN GET FIRST q NO-LOCK.
+                END.  
+                ELSE GET FIRST q NO-LOCK.
+            END.
 
-    assign li-count = 0
-           lr-first-row = ?
-           lr-last-row  = ?.
+    ASSIGN 
+        li-count = 0
+        lr-first-row = ?
+        lr-last-row  = ?.
 
 
-    repeat while avail b-query:
+    REPEAT WHILE AVAILABLE b-query:
         
-        assign lc-rowid = string(rowid(b-query)).
+        ASSIGN 
+            lc-rowid = STRING(ROWID(b-query)).
         
-        assign li-count = li-count + 1.
-        if lr-first-row = ?
-        then assign lr-first-row = rowid(b-query).
-        assign lr-last-row = rowid(b-query).
+        ASSIGN 
+            li-count = li-count + 1.
+        IF lr-first-row = ?
+            THEN ASSIGN lr-first-row = ROWID(b-query).
+        ASSIGN 
+            lr-last-row = ROWID(b-query).
         
-        assign lc-link-otherp = 'search=' + lc-search +
+        ASSIGN 
+            lc-link-otherp = 'search=' + lc-search +
                                 '&firstrow=' + string(lr-first-row).
 
-        find knbItem where knbItem.knbID = b-query.knbID no-lock no-error.
-        find knbSection of knbItem no-lock no-error.
+        FIND knbItem WHERE knbItem.knbID = b-query.knbID NO-LOCK NO-ERROR.
+        FIND knbSection OF knbItem NO-LOCK NO-ERROR.
        
         {&out}
             skip
@@ -274,30 +251,30 @@ PROCEDURE ip-Search :
             
        
 
-        if li-count = li-max-lines then leave.
+        IF li-count = li-max-lines THEN LEAVE.
 
-        get next q no-lock.
+        GET NEXT q NO-LOCK.
             
-    end.
+    END.
 
-    if li-count < li-max-lines then
-    do:
+    IF li-count < li-max-lines THEN
+    DO:
         {&out} skip htmlib-BlankTableLines(li-max-lines - li-count) skip.
-    end.
+    END.
 
     {&out} skip 
            htmlib-EndTable()
            skip.
 
     
-    if lr-first-row = ? 
-    then lc-error-mess = "No entries where found".
+    IF lr-first-row = ? 
+        THEN lc-error-mess = "No entries where found".
 
     {lib/navpanel.i "sys/kbsearch.p"}
 
     
     {&out} 
-        '<div id="urlinfo">|type=' lc-type "|knbcode=" lc-knbcode '</div>'.
+    '<div id="urlinfo">|type=' lc-type "|knbcode=" lc-knbcode '</div>'.
     {&out} skip
            htmlib-Hidden("firstrow", string(lr-first-row)) skip
            htmlib-Hidden("lastrow", string(lr-last-row)) skip
@@ -306,74 +283,68 @@ PROCEDURE ip-Search :
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
 /*------------------------------------------------------------------------------
   Purpose:     Process the web request.
@@ -384,36 +355,40 @@ PROCEDURE process-web-request :
     {lib/checkloggedin.i}
 
    
-    assign lc-search = get-value("search")
-           lc-firstrow = get-value("firstrow")
-           lc-lastrow  = get-value("lastrow")
-           lc-navigation = get-value("navigation").
+    ASSIGN 
+        lc-search = get-value("search")
+        lc-firstrow = get-value("firstrow")
+        lc-lastrow  = get-value("lastrow")
+        lc-navigation = get-value("navigation").
     
-    assign lc-parameters = "search=" + lc-search +
+    ASSIGN 
+        lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
 
     
     
-    assign lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
+    ASSIGN 
+        lc-char = htmlib-GetAttr('system','MNTNoLinesDown').
     
-    assign li-max-lines = int(lc-char) no-error.
-    if error-status:error
-    or li-max-lines < 1
-    or li-max-lines = ? then li-max-lines = 12.
+    ASSIGN 
+        li-max-lines = int(lc-char) no-error.
+    IF ERROR-STATUS:ERROR
+        OR li-max-lines < 1
+        OR li-max-lines = ? THEN li-max-lines = 12.
 
-    assign
+    ASSIGN
         li-max-lines = 5.
 
-    run com-GetKBSection(lc-global-company,
-                         output lc-code,
-                         output lc-desc).
+    RUN com-GetKBSection(lc-global-company,
+        OUTPUT lc-code,
+        OUTPUT lc-desc).
 
-    assign 
+    ASSIGN 
         lc-code = "ALL|" + lc-code
         lc-desc = "All Sections|" + lc-desc.
 
-    assign
+    ASSIGN
         lc-knbcode = get-value("knbcode")
         lc-type    = get-value("type").
 
@@ -423,7 +398,7 @@ PROCEDURE process-web-request :
     {&out} htmlib-Header("KB Search") skip.
 
     {&out}
-        '<style>' skip
+    '<style>' skip
            '.hi ~{ color: red; font-size: 10px; margin-left: 15px; font-style: italic;~}' skip
            '</style>' skip.
 
@@ -439,23 +414,23 @@ PROCEDURE process-web-request :
     {&out} '<table align=center>' skip.
 
     {&out}
-           '<tr>'
-           '<td align=right valign=top>' htmlib-SideLabel("Search For") '</td>'
-           '<td align=left valign=top>' 
-                htmlib-InputField("search",80,lc-search) '</td></tr>' 
+    '<tr>'
+    '<td align=right valign=top>' htmlib-SideLabel("Search For") '</td>'
+    '<td align=left valign=top>' 
+    htmlib-InputField("search",80,lc-search) '</td></tr>' 
             skip.
     {&out}
-           '<tr>'
-           '<td align=right valign=top>' htmlib-SideLabel("In Sections") '</td>'
-           '<td align=left valign=top>' 
-                htmlib-Select("knbcode",lc-code,lc-desc,lc-knbcode)
+    '<tr>'
+    '<td align=right valign=top>' htmlib-SideLabel("In Sections") '</td>'
+    '<td align=left valign=top>' 
+    htmlib-Select("knbcode",lc-code,lc-desc,lc-knbcode)
             skip.
 
-     {&out}
-           '<tr>'
-           '<td align=right valign=top>' htmlib-SideLabel("Search In") '</td>'
-           '<td align=left valign=top>' 
-                htmlib-Select("type",lc-type-code,lc-type-desc,lc-type)
+    {&out}
+    '<tr>'
+    '<td align=right valign=top>' htmlib-SideLabel("Search In") '</td>'
+    '<td align=left valign=top>' 
+    htmlib-Select("type",lc-type-code,lc-type-desc,lc-type)
             skip.
 
     {&out} '</table>'.
@@ -472,26 +447,26 @@ PROCEDURE process-web-request :
             '</p>'.
      */       
     {&out} '<center>' htmlib-SubmitButton("submitform","Search") 
-               '</center>' skip.
+    '</center>' skip.
     
 
     {&out} htmlib-EndCriteria().
 
-    if lc-search <> "" then
-    do:
+    IF lc-search <> "" THEN
+    DO:
         RUN ip-Search.
-    end.
-    else 
-    if request_method = "post"
-    then lc-error-mess = "You must select something to search for".
+    END.
+    ELSE 
+        IF request_method = "post"
+            THEN lc-error-mess = "You must select something to search for".
 
     
 
-    if lc-error-mess <> "" then
-    do:
+    IF lc-error-mess <> "" THEN
+    DO:
         {&out} '<BR><BR><CENTER>' 
-                htmlib-MultiplyErrorMessage(lc-error-mess) '</CENTER>' skip.
-    end.
+        htmlib-MultiplyErrorMessage(lc-error-mess) '</CENTER>' skip.
+    END.
 
     {&out} htmlib-EndForm().
 
@@ -501,8 +476,6 @@ PROCEDURE process-web-request :
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -510,48 +483,47 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-fnText) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnText Procedure 
 FUNCTION fnText RETURNS CHARACTER
-  ( pf-knbid as dec,
-    pi-count as int ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pf-knbid AS DECIMAL,
+    pi-count AS INTEGER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    def buffer knbText  for knbText.  
-    def var li-count    as int no-undo.
-    def var li-found    as int no-undo.
-    def var lc-return   as char no-undo.
-    def var lc-char     as char no-undo.
+    DEFINE BUFFER knbText  FOR knbText.  
+    DEFINE VARIABLE li-count    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-found    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lc-return   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-char     AS CHARACTER NO-UNDO.
 
-    find knbText where knbText.knbID = pf-knbID
-                   and knbText.dType = "I" no-lock no-error.
-    if not avail knbText then return "&nbsp;".
+    FIND knbText WHERE knbText.knbID = pf-knbID
+        AND knbText.dType = "I" NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE knbText THEN RETURN "&nbsp;".
 
 
-    do li-count = 1 to num-entries(knbText.dData,"~n"):
+    DO li-count = 1 TO NUM-ENTRIES(knbText.dData,"~n"):
 
-        assign lc-char = entry(li-count,knbText.dData,"~n").
-        if trim(lc-char) = "" then next.
+        ASSIGN 
+            lc-char = ENTRY(li-count,knbText.dData,"~n").
+        IF TRIM(lc-char) = "" THEN NEXT.
 
        
-        if li-found = 0
-        then assign lc-return = right-trim(lc-char).
-        else assign lc-return = lc-return + "<br>" + right-trim(lc-char).
+        IF li-found = 0
+            THEN ASSIGN lc-return = RIGHT-TRIM(lc-char).
+        ELSE ASSIGN lc-return = lc-return + "<br>" + right-trim(lc-char).
 
-        assign li-found = li-found + 1.
+        ASSIGN 
+            li-found = li-found + 1.
 
-        if li-found = pi-count then leave.
+        IF li-found = pi-count THEN LEAVE.
 
-    end.
+    END.
 
-    return lc-return.
+    RETURN lc-return.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
