@@ -1622,15 +1622,23 @@ PROCEDURE process-web-request :
     {&out}
     '<div class="tabber">' skip.
 
-
-    {&out}
-    '<div class="tabbertab" title="Inventory">' skip
-    .
-    RUN ip-Inventory ( customer.CompanyCode, customer.AccountNumber ).
+    /*
+    ***
+    *** 22.09.2014 Quick fix don't show inventory
+    ***
+    */
+    IF NOT ll-customer THEN
+    DO:
+        
+        {&out}
+        '<div class="tabbertab" title="Inventory">' skip
+        .
+        RUN ip-Inventory ( customer.CompanyCode, customer.AccountNumber ).
     
-    {&out} 
-    '</div>'.
-
+        {&out} 
+        '</div>'.
+    END.
+    
     {&out}
     '<div class="tabbertab" title="Open Issues">' skip.
     RUN ip-CustomerOpenIssue ( customer.CompanyCode, customer.AccountNumber, lc-Issue-TBAR ).
