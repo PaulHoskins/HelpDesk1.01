@@ -39,6 +39,7 @@ DEFINE VARIABLE MyUUID         AS RAW       NO-UNDO.
 DEFINE VARIABLE cGUID          AS CHARACTER NO-UNDO. 
 
 DEFINE VARIABLE lc-unq         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Enc-Key     AS CHARACTER NO-UNDO.
 
 
 DEFINE TEMP-TABLE tt-menu NO-UNDO
@@ -532,7 +533,11 @@ PROCEDURE mnlib-BuildIssueMenu :
             BY Issue.IssueNumber DESCENDING:
 
             FIND Customer OF Issue NO-LOCK NO-ERROR.
-
+            
+            ASSIGN lc-enc-key =
+                 DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
+            
             ASSIGN 
                 lc-desc = IF AVAILABLE customer THEN customer.name 
                              ELSE "No Customer".
@@ -565,11 +570,11 @@ PROCEDURE mnlib-BuildIssueMenu :
                         tt-menu.Description = "Inventory"
                         tt-menu.ObjType     = "WS"
                         tt-menu.ObjTarget   = "mainwindow"
-                        tt-menu.ObjURL      = "cust/custequiplist.p?expand=yes&customer=" + string(ROWID(customer)).
-
+                        tt-menu.ObjURL      = "cust/custequiplist.p?expand=yes&customer=" +  url-encode(lc-enc-key,"Query") 
+                        .
                     ASSIGN 
                         tt-menu.aTitle = 'Inventory for ' + html-encode(customer.name).
-                    .
+                    
                 END.
             END.
             FIND LAST tt-menu NO-LOCK NO-ERROR.
@@ -807,12 +812,7 @@ PROCEDURE process-web-request :
 
 
     ASSIGN 
-        lc-user = get-value("user").
-
-
-
-
-    ASSIGN  
+        lc-user = get-value("user")
         MyUUID = GENERATE-UUID  
         cGUID  = GUID(MyUUID). 
 
@@ -834,9 +834,7 @@ PROCEDURE process-web-request :
 
         IF CAN-DO(lc-global-internal,WebUser.UserClass) THEN
         DO:
-            /* {&out} "You are logged in as " + html-encode(webuser.name). */
-            
-            
+                      
             RUN ip-InternalUser.
         END.
         ELSE
@@ -844,6 +842,9 @@ PROCEDURE process-web-request :
             FIND customer WHERE customer.CompanyCode = WebUser.CompanyCode
                 AND Customer.AccountNumber = webUser.AccountNumber
                 NO-LOCK NO-ERROR.
+                
+            ASSIGN lc-enc-key =
+                 DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
             ASSIGN
                 lc-address   = customer.name
                 li-cust-open = com-CustomerOpenIssues(customer.companycode,
@@ -859,7 +860,7 @@ PROCEDURE process-web-request :
             {&out} '<p>' REPLACE(lc-address,"~n","<br>") '</p>'.
             {&out} SKIP
                 '<a title="Your Details" target="mainwindow" class="tlink" style="border:none;" href="' appurl '/cust/custview.p?source=menu&rowid=' 
-                    string(rowid(customer)) '">'
+                    url-encode(lc-enc-key,"Query") '">'
                 "View Your Details"
                 '</a>' SKIP.
 

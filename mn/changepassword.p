@@ -40,6 +40,8 @@ DEFINE VARIABLE lc-newpass2    AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-expire      AS CHARACTER NO-UNDO.
 
+DEFINE VARIABLE lc-AttrData AS CHARACTER NO-UNDO.
+
 
 
 
@@ -261,6 +263,11 @@ PROCEDURE process-web-request :
             ASSIGN 
                 b-user.LastPasswordChange = TODAY.
 
+            lc-AttrData ="IP|" + remote_addr.
+            
+
+            com-SystemLog("OK:PasswordChanged",lc-user,lc-AttrData).
+            
             
             set-user-field("passwordchanged","yes").
             IF lc-expire = "yes"
@@ -278,7 +285,7 @@ PROCEDURE process-web-request :
     htmlib-StartForm("mainform","post", appurl + '/mn/changepassword.p' ).
 
     IF lc-expire = "yes"
-        THEN {&out} htmlib-ProgramTitle("Password Expired - Please select a new one").
+        THEN {&out} htmlib-ProgramTitle("Password Expired - Please Select A New One").
     else {&out} htmlib-ProgramTitle("Change Your Password").
 
     IF lc-expire = "yes" THEN

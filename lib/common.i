@@ -306,7 +306,7 @@ FUNCTION com-StringReturn RETURNS CHARACTER
     pc-add AS CHARACTER )  FORWARD.
 
 
-FUNCTION com-SystemLog RETURNS LOGICAL
+FUNCTION com-SystemLog RETURNS ROWID
     ( pc-ActType AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AttrData AS CHARACTER )  FORWARD.
@@ -2593,7 +2593,7 @@ FUNCTION com-StringReturn RETURNS CHARACTER
 END FUNCTION.
 
 
-FUNCTION com-SystemLog RETURNS LOGICAL
+FUNCTION com-SystemLog RETURNS ROWID
     ( pc-ActType AS CHARACTER,
     pc-LoginID AS CHARACTER,
     pc-AttrData AS CHARACTER ) :
@@ -2601,7 +2601,8 @@ FUNCTION com-SystemLog RETURNS LOGICAL
       Purpose:  
         Notes:  
     ------------------------------------------------------------------------------*/
-
+    DEFINE VARIABLE lrSysAct    AS ROWID NO-UNDO.
+    
     DEFINE BUFFER SysAct FOR SysAct.
 
     DO TRANSACTION:
@@ -2612,12 +2613,13 @@ FUNCTION com-SystemLog RETURNS LOGICAL
             SysAct.LoginID  = pc-LoginID
             SysAct.ActType  = pc-ActType
             SysAct.AttrData = pc-AttrData.
-
+        lrSysAct = ROWID(SysAct).
+        
         RELEASE SysAct.
     END.
 
 
-    RETURN TRUE.
+    RETURN lrSysAct.
 
 END FUNCTION.
 

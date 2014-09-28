@@ -1189,9 +1189,7 @@ PROCEDURE process-web-request :
                     DO:
                         ASSIGN 
                             b-table.PassWd = ENCODE(lc-password).
-                    /*
-                    dynamic-function("mlib-SendPassword",b-table.loginid,lc-password).
-                    */
+                    
                     END.
                     FOR EACH webusteam OF b-table  EXCLUSIVE-LOCK:
                     
@@ -1351,7 +1349,7 @@ PROCEDURE process-web-request :
            htmlib-StartForm("mainform","post", selfurl )
            htmlib-ProgramTitle(lc-title) skip.
 
-    /*     {&out} '<script language="JavaScript" src="/scripts/js/debug.js"></script>' skip.  */
+  
 
     {&out} '<script language="JavaScript"> var debugThis         = false; </script>' skip.
     {&out} '<script language="JavaScript" src="/scripts/js/validate.js"></script>' skip.
@@ -1369,8 +1367,10 @@ PROCEDURE process-web-request :
 
     {&out} '<table><tr><td>' skip.
 
-    {&out} htmlib-StartInputTable() skip.
 
+    {&out} REPLACE(htmlib-StartInputTable(),"mnt","MainTable") skip.
+
+    
 
     RUN ip-Page.          
 

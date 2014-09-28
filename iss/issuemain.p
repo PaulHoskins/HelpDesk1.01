@@ -12,6 +12,7 @@
     06/06/2006  phoski      Category
     
     30/08/2010  DJS         3704 Amended to include new gmap & rdp buttons
+    27/09/2014  phoski      Encrpyted link to custequip
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -108,6 +109,7 @@ DEFINE VARIABLE lc-ContractCode     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-billable-flag    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE ll-billing          AS LOG       NO-UNDO.
 DEFINE VARIABLE lc-ContractAccount  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Enc-Key          AS CHARACTER NO-UNDO.
 
 
 
@@ -265,6 +267,8 @@ PROCEDURE ip-BackToIssue :
       Notes:       
     ------------------------------------------------------------------------------*/
     DEFINE VARIABLE lc-link-url AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-Enc-Key  AS CHARACTER NO-UNDO.
+    
 
     RUN outputHeader.
     {&out} htmlib-Header(lc-title) skip.
@@ -310,9 +314,14 @@ PROCEDURE ip-BackToIssue :
             WHERE customer.CompanyCode = b-table.CompanyCode
             AND customer.AccountNumber = b-table.AccountNumber 
             NO-LOCK NO-ERROR.
+         
+        ASSIGN 
+            lc-enc-key =
+             DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+        
         ASSIGN
             lc-link-url = appurl + "/cust/custview.p?mode=view&source=menu&rowid=" + 
-            string(ROWID(customer)).
+           url-encode(lc-enc-key,"Query").
 
         lc-link-url = '"' + lc-link-url + '"'.
         
@@ -332,7 +341,7 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-ip-ContractSelect) = 0 &THEN
 
-PROCEDURE ip-ContractSelect PRIVATE :
+PROCEDURE ip-ContractSelect :
     /*------------------------------------------------------------------------------
       Purpose:     
       Parameters:  <none>
@@ -1172,6 +1181,7 @@ PROCEDURE process-web-request :
     {lib/checkloggedin.i}
 
 
+
     ASSIGN 
         ll-superuser = DYNAMIC-FUNCTION("com-IsSuperUser",lc-global-user).
 
@@ -1271,7 +1281,9 @@ PROCEDURE process-web-request :
     ASSIGN 
         lc-title           = lc-title + ' Issue ' + string(b-table.issuenumber) + ' - ' +
            html-encode(customer.accountNumber + " - " + customer.name)
-        lc-ContractAccount = customer.accountNumber.
+        lc-ContractAccount = customer.accountNumber
+        lc-enc-key =
+        DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
     
     ASSIGN
         lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,b-table.AccountNumber).
@@ -1360,7 +1372,7 @@ PROCEDURE process-web-request :
     {&out}  
     '<script>'
     'var NoteAjax = "' appurl '/iss/ajax/note.p?rowid=' STRING(ROWID(b-table)) '"' skip
-           'var CustomerAjax = "' appurl '/cust/custequiplist.p?expand=yes&ajaxsubwindow=yes&customer=' string(rowid(customer)) '"' skip
+           'var CustomerAjax = "' appurl '/cust/custequiplist.p?expand=yes&ajaxsubwindow=yes&customer=' url-encode(lc-enc-key,"Query")  '"' skip
            'var DocumentAjax = "' appurl '/iss/ajax/document.p?rowid=' string(rowid(b-table)) 
                     '&toolbarid=' lc-Doc-TBAR 
                     '"' skip

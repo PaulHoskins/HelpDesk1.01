@@ -1,28 +1,16 @@
-/*------------------------------------------------------------------------
+/***********************************************************************
 
-  File: 
-
-  Description: 
-
-  Input Parameters:
-      <none>
-
-  Output Parameters:
-      <none>
-
-  Author: 
-
-  Created: 
-
-------------------------------------------------------------------------*/
-/*           This .W file was created with the Progress AppBuilder.     */
-/*----------------------------------------------------------------------*/
-
-/* Create an unnamed pool to store all the widgets created 
-     by this procedure. This is a good default which assures
-     that this procedure's triggers and internal procedures 
-     will execute in this procedure's storage, and that proper
-     cleanup will occur on deletion of the procedure. */
+    Program:        mn/main.p
+    
+    Purpose:        main frame 
+    
+    Notes:
+    
+    
+    When        Who         What
+    22/04/2006  phoski      Initial  
+    25/09/2014  phoski      Security Lib
+***********************************************************************/
 CREATE WIDGET-POOL.
 
 /* ***************************  Definitions  ************************** */
@@ -157,7 +145,11 @@ PROCEDURE process-web-request :
     DO:
     
         ASSIGN 
-            lc-value = get-cookie("ExtranetUser").
+            lc-value = get-cookie(lc-global-cookie-name).
+            
+        lc-value = DYNAMIC-FUNCTION("sysec-DecodeValue","System",TODAY,"Password",lc-value).
+        MESSAGE "in main " lc-value.
+            
     
         ASSIGN 
             lc-user = htmlib-DecodeUser(lc-value).
@@ -166,6 +158,7 @@ PROCEDURE process-web-request :
     
     IF lc-user = "" THEN
     DO:
+        
         RUN run-web-object IN web-utilities-hdl ("mn/notloggedin.p").
         RETURN.
     END.
@@ -178,10 +171,10 @@ PROCEDURE process-web-request :
   
     set-user-field("ExtranetUser",webuser.LoginID).
 
-    ASSIGN 
-        lc-value = htmlib-EncodeUser(webuser.LoginID). 
-            
-    Set-Cookie("ExtranetUser",
+     
+    lc-value = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"Password",htmlib-EncodeUser(webuser.LoginID)).
+      
+    Set-Cookie(lc-global-cookie-name,
         lc-value,
         DYNAMIC-FUNCTION("com-CookieDate",lc-user),
         DYNAMIC-FUNCTION("com-CookieTime",lc-user),
@@ -196,21 +189,10 @@ PROCEDURE process-web-request :
          '<HTML>' skip
          '<HEAD>' skip
          "<TITLE>" Company.name ' - Help Desk' "</TITLE>":U SKIP
+         '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">' skip 
          "</HEAD>":U SKIP.
     
-  
-    /*
-    {&out}
-        '<frameset rows="50,*" cols="*" frameborder="NO" border="0" framespacing="0">' skip
-            '<frame src="' appurl '/mn/menutop.p" name="menutop" scrolling="NO" noresize>' skip
-            '<frameset cols="195,*" frameborder="NO" border="0" framespacing="0">' skip
-                '<frame src="' appurl '/mn/menupanel.p" name="leftpanel" scrolling="YES" noresize>' skip
-                '<frame src="' appurl '/mn/mainframe.p" name="mainwindow">' skip
-            '</frameset>' skip
-        '</frameset>' skip.
-    */
-    /* Increase for split assignments class */
-
+    
     {&out}
     '<frameset rows="50,*" cols="*" frameborder="NO" border="0" framespacing="0">' skip
             '<frame src="' appurl '/mn/menutop.p" name="menutop" scrolling="NO" noresize>' skip

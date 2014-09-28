@@ -12,6 +12,7 @@
     10/04/2006  phoski      Company Code
     11/04/2006  phoski      Show customer for CUSTOMER type users
     13/06/2014  phoski      Various for UX
+    26/09/2014  phoski      Disabled Features
 
 ***********************************************************************/
 
@@ -45,18 +46,15 @@ DEFINE VARIABLE lc-link-otherp AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-nopass      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-selacc      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-LastLogin   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-LastPass     AS CHARACTER NO-UNDO.
 
-
-
+DEFINE VARIABLE lc-QPhrase     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE vhLBuffer      AS HANDLE    NO-UNDO.
+DEFINE VARIABLE vhLQuery       AS HANDLE    NO-UNDO.
 
 DEFINE BUFFER b-query  FOR webuser.
 DEFINE BUFFER b-search FOR webuser.
-
-DEFINE VARIABLE lc-QPhrase AS CHARACTER NO-UNDO.
-DEFINE VARIABLE vhLBuffer  AS HANDLE    NO-UNDO.
-DEFINE VARIABLE vhLQuery   AS HANDLE    NO-UNDO.
-
-
 
 
 /* ********************  Preprocessor Definitions  ******************** */
@@ -338,7 +336,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "User Name^left|Name^left|Customer|Email^left|Disabled?"
+        "User Name^left|Name^left|Customer|Email^left|Last Password Change^left|Last Login^left|Disabled?"
         ) skip.
 
     lc-QPhrase = 
@@ -411,11 +409,23 @@ PROCEDURE process-web-request :
             lc-link-otherp = 'search=' + lc-search +
                                 '&firstrow=' + string(lr-first-row).
 
+        IF b-query.LastDate <> ? 
+        THEN ASSIGN lc-LastLogin = STRING(b-query.LastDate,'99/99/9999') + ' ' + string(b-query.LastTime,'hh:mm').
+        ELSE ASSIGN lc-lastlogin = "".
+        
+        IF b-query.LastPasswordChange <> ?
+        THEN lc-LastPass = STRING(b-query.LastPasswordChange,'99/99/9999').
+        ELSE lc-LastPass = "".
+        
         ASSIGN 
             lc-nopass = IF b-query.passwd = ""
                            OR b-query.passwd = ?
                            THEN " (No password)"
                            ELSE "".
+        IF b-query.Disabled AND b-query.AutoDisableTime <> ? THEN
+        DO:
+            lc-nopass = ' ' + TRIM(lc-nopass + ' ' + string(b-query.AutoDisableTime)).
+        END.                  
         {&out}
             skip
             tbar-tr(rowid(b-query))
@@ -425,6 +435,8 @@ PROCEDURE process-web-request :
             htmlib-MntTableField(html-encode(lc-CustomerInfo),'left')
 
             htmlib-MntTableField(html-encode(b-query.email),'left')
+             htmlib-MntTableField(html-encode(lc-lastPass),'left')
+            htmlib-MntTableField(html-encode(lc-lastLogin),'left')
             htmlib-MntTableField(html-encode((if b-query.disabled = true
                                           then 'Yes' else 'No') + lc-nopass),'left') skip
 

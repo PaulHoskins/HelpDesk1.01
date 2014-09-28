@@ -3897,6 +3897,51 @@ ADD INDEX "ObjectID" ON "WebObject"
   PRIMARY
   INDEX-FIELD "ObjectID" ASCENDING 
 
+ADD INDEX "objURL" ON "WebObject" 
+  AREA "Schema Area"
+  INDEX-FIELD "ObjURL" ASCENDING 
+
+ADD TABLE "websalt"
+  AREA "Schema Area"
+  DUMP-NAME "websalt"
+
+ADD FIELD "LoginID" OF "websalt" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "User ID"
+  POSITION 2
+  MAX-WIDTH 30
+  ORDER 20
+
+ADD FIELD "sdate" OF "websalt" AS date 
+  FORMAT "99/99/9999"
+  INITIAL ?
+  POSITION 3
+  MAX-WIDTH 4
+  ORDER 30
+
+ADD FIELD "sother" OF "websalt" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 16
+  ORDER 40
+
+ADD FIELD "sval" OF "websalt" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 5
+  MAX-WIDTH 16
+  ORDER 50
+
+ADD INDEX "prim-key" ON "websalt" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "LoginID" ASCENDING 
+  INDEX-FIELD "sdate" ASCENDING 
+  INDEX-FIELD "sother" ASCENDING 
+
 ADD TABLE "WebStatus"
   AREA "Schema Area"
   DUMP-NAME "webstatu"
@@ -4298,6 +4343,22 @@ ADD FIELD "DisableTimeOut" OF "WebUser" AS logical
   VIEW-AS "VIEW-AS TOGGLE-BOX"
   ORDER 280
 
+ADD FIELD "AutoDisableTime" OF "WebUser" AS datetime 
+  FORMAT "99/99/9999 HH:MM:SS.SSS"
+  INITIAL ?
+  LABEL "Auto Disabled At"
+  POSITION 31
+  MAX-WIDTH 8
+  ORDER 300
+
+ADD FIELD "FailedLoginCount" OF "WebUser" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Failed Login Count"
+  POSITION 32
+  MAX-WIDTH 4
+  ORDER 290
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -4442,4 +4503,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000087364
+0000088563

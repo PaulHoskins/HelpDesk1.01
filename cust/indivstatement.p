@@ -17,24 +17,19 @@ CREATE WIDGET-POOL.
 /* Parameters Definitions ---                                           */
 
 /* Local Variable Definitions ---                                       */
-
-DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
-
-
-DEFINE VARIABLE lc-lodate      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-hidate      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-pdf         AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-view        AS CHARACTER NO-UNDO.
 {lib/maillib.i}
 
+DEFINE VARIABLE lc-error-field   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lodate        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-hidate        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pdf           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-view          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-AccountNumber AS CHARACTER NO-UNDO.
-
-
-
 DEFINE VARIABLE lc-link-label    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-url      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Enc-Key       AS CHARACTER NO-UNDO.
 
 
 
@@ -275,6 +270,9 @@ PROCEDURE process-web-request :
         WHERE customer.companyCode = lc-global-company
         AND customer.AccountNumber = lc-AccountNumber NO-LOCK NO-ERROR.
     
+    ASSIGN 
+        lc-enc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
     IF request_method = "POST" THEN
     DO:
         
@@ -305,7 +303,7 @@ PROCEDURE process-web-request :
                 RETURN.
             END.
             set-user-field("source","menu").
-            set-user-field("rowid",STRING(ROWID(customer))).
+            set-user-field("rowid",lc-enc-key).
             
             RUN run-web-object IN web-utilities-hdl ("cust/custview.p").
             RETURN.
@@ -317,7 +315,7 @@ PROCEDURE process-web-request :
     ASSIGN
         lc-link-label = "Cancel"
         lc-link-url = appurl + '/cust/custview.p' + 
-                                  '?source=menu&rowid=' + string(ROWID(customer))
+                                  '?source=menu&rowid=' + url-encode(lc-enc-key,"Query")
                                    +
                                   '&time=' + string(TIME)
         .

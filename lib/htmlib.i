@@ -16,12 +16,14 @@
     02/09/2010  DJS         3674 - Added function for Document Quickview
                               toolbar buttons
                               
-    13/09/2010  DJS         3708  Added Calendar Input Field Submit                              
+    13/09/2010  DJS         3708  Added Calendar Input Field Submit     
+    25/09/2014  phoski      Include security lib                         
     
 ***********************************************************************/
 
 {lib/common.i}
 {lib/toolbar.i}
+{lib/syseclib.i}
 
 
 
@@ -2217,7 +2219,7 @@ FUNCTION htmlib-StyleSheet RETURNS CHARACTER
     ------------------------------------------------------------------------------*/
     
     RETURN 
-        
+        '~n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">~n~n' +
         REPLACE(htmlib-GetAttr("system","stylesheet"),
         ".css",
         ".css?fn=" + string(TIME) + string(RANDOM(1,100))
@@ -2236,7 +2238,7 @@ FUNCTION htmlib-SubmitButton RETURNS CHARACTER
         Notes:  
     ------------------------------------------------------------------------------*/
 
-    RETURN SUBSTITUTE('<input class="submitbutton" type="submit" name="&1" value="&2">',
+    RETURN SUBSTITUTE('<INPUT class="submitbutton" type="submit" name="&1" value="&2">',
         pc-name,
         pc-value).
 END FUNCTION.

@@ -60,6 +60,7 @@ DEFINE TEMP-TABLE tt NO-UNDO
     INDEX ivFieldID 
     ivFieldId.
 DEFINE VARIABLE lf-CustIVID LIKE custField.CustIVID NO-UNDO.
+DEFINE VARIABLE lc-Enc-Key  AS CHARACTER NO-UNDO.
 
 
 
@@ -576,6 +577,9 @@ PROCEDURE process-web-request :
 
     FIND customer WHERE ROWID(customer) = to-rowid(lc-customer)
         NO-LOCK NO-ERROR.
+    ASSIGN 
+        lc-enc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
 
     RUN ip-GetClass ( OUTPUT lc-list-class, OUTPUT lc-list-Name ).
 
@@ -595,8 +599,7 @@ PROCEDURE process-web-request :
         THEN ASSIGN lc-link-url = appurl + "/cust/ivrenewal.p".
     ELSE 
         IF lc-returnback = "customerview" 
-            THEN ASSIGN lc-link-url = appurl + "/cust/custview.p?source=menu&rowid=" + 
-        get-value("customer").
+            THEN ASSIGN lc-link-url = appurl + "/cust/custview.p?source=menu&rowid=" + url-encode(lc-enc-key,"Query").
 
     IF CAN-DO("view,update,delete",lc-mode) THEN
     DO:
@@ -729,7 +732,7 @@ PROCEDURE process-web-request :
                     IF lc-returnback = "customerview" THEN
                     DO:
                         set-user-field("source","menu").
-                        set-user-field("rowid",get-value("customer")).
+                        set-user-field("rowid",lc-enc-key).
                         RUN run-web-object IN web-utilities-hdl ("cust/custview.p").
                         RETURN.
                     END.

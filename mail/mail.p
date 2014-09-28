@@ -44,6 +44,8 @@ DEFINE VARIABLE li-tag-end      AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-dummy-return AS CHARACTER INITIAL "MYXXX111PPP2222" NO-UNDO.
 DEFINE VARIABLE lc-Customer     AS CHARACTER NO-UNDO.
 
+&GlOBAL-DEFINE object-class INTERNAL-ONLY
+
 
 
 
@@ -74,11 +76,6 @@ DEFINE VARIABLE lc-Customer     AS CHARACTER NO-UNDO.
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
-
-
-
- 
-
 
 
 

@@ -27,6 +27,7 @@ DEFINE VARIABLE lc-user      AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE ll-SuperUser AS LOG       NO-UNDO.
 
+DEFINE VARIABLE lc-Enc-Key   AS CHARACTER NO-UNDO.
 
 
 
@@ -98,11 +99,17 @@ PROCEDURE ip-ContractorView :
               
         :
         
+        
+        ASSIGN 
+            lc-enc-key =
+                 DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
+        
 
         {&out}
         '<tr><td>'
         '<a title="View Customer" target="mainwindow" class="tlink" style="border:none;" href="' appurl '/cust/custview.p?source=menu&rowid=' 
-        STRING(ROWID(customer)) '">'
+         url-encode(lc-enc-key,"Query")  '">'
         html-encode(customer.Name)
         '</a></td></tr>'.
 
@@ -180,10 +187,13 @@ PROCEDURE ip-CustomerQuickView :
             IF NOT ll-HasIss THEN NEXT.
         END.
 
+        ASSIGN lc-enc-key =
+                 DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
         {&out}
         '<tr><td>'
         '<a title="View Customer" target="mainwindow" class="tlink" style="border:none;" href="' appurl '/cust/custview.p?source=menu&rowid=' 
-        STRING(ROWID(customer)) '">'
+        url-encode(lc-enc-key,"Query") '">'
         html-encode(customer.Name)
         '</a></td></tr>'.
 

@@ -130,7 +130,7 @@ DEFINE VARIABLE lc-timeSecondSet    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-timeMinuteSet    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DefaultTimeSet   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-manChecked       AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-Enc-Key          AS CHARACTER NO-UNDO.
 DEFINE BUFFER webStatus FOR webStatus.
 
 /** Adding user on the fly */
@@ -2480,9 +2480,13 @@ PROCEDURE process-web-request :
 
                     IF lc-issueSource = "custenq" AND NOT ll-customer THEN
                     DO:
+                        ASSIGN 
+                            lc-enc-key =
+                            DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
                         set-user-field("mode","view").
                         set-user-field("source","menu").
-                        set-user-field("rowid",STRING(ROWID(customer))).
+                        set-user-field("rowid",lc-enc-key).
                         RUN run-web-object IN web-utilities-hdl ("cust/custview.p").
 
                     END.

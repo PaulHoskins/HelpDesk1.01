@@ -918,8 +918,9 @@ PROCEDURE process-web-request :
     vhLQuery:QUERY-PREPARE(lc-QPhrase).
     vhLQuery:QUERY-OPEN().
 
+/*
     DYNAMIC-FUNCTION("com-WriteQueryInfo",vhlQuery).
-  
+  */
 
     vhLQuery:GET-FIRST(NO-LOCK).
 

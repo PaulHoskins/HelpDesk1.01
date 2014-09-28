@@ -11,6 +11,8 @@
     08/04/2006  phoski      Page layout changes
     11/04/2006  phoski      Email password changes
     23/04/2006  phoski      Form changed
+    25/09/2014  phoski      Security Lib
+
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -150,7 +152,15 @@ PROCEDURE ip-Validate :
     END.
     
     
-    FIND b-webuser WHERE b-webuser.LoginID = pc-user NO-LOCK NO-ERROR.
+    FIND b-webuser WHERE b-webuser.LoginID = pc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+    IF LOCKED b-webuser THEN
+    DO:
+        RUN htmlib-AddErrorMessage('User', 'Your account is not available at the moment - please retry',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+        RETURN.
+    END.
+    
     IF NOT AVAILABLE b-webuser 
         OR b-webuser.companycode <> lc-url-company THEN
     DO:
@@ -162,14 +172,43 @@ PROCEDURE ip-Validate :
 
     IF b-webuser.disabled THEN
     DO:
+        lc-AttrData ="IP|" + remote_addr.
+        com-SystemLog("ERROR:LoginDisabledAccount",pc-user,lc-AttrData).
+        
         RUN htmlib-AddErrorMessage('User', 'Your user account has been disabled',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
+        RETURN.
 
     END.
 
-    IF ENCODE(lc-pass) <> b-webuser.Passwd THEN
+    IF ENCODE(lc-pass) <> b-webuser.Passwd 
+    OR b-webuser.Passwd = "" THEN
     DO:
+        lc-AttrData ="IP|" + remote_addr.
+            
+
+        com-SystemLog("ERROR:LoginPassWordIncorrect",pc-user,lc-AttrData).
+        
+        ASSIGN
+            b-webuser.FailedLoginCount = b-webuser.FailedLoginCount + 1.
+            
+        IF b-webuser.FailedLoginCount > li-global-pass-max-retry THEN
+        DO:
+            com-SystemLog("ERROR:LoginAutoDisable",pc-user,lc-AttrData).
+            ASSIGN 
+                b-webuser.disabled        = TRUE
+                b-webuser.AutoDisableTime = NOW.
+            RUN htmlib-AddErrorMessage('User', 'For security reasons your account has been disabled',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+            ASSIGN 
+                pc-reason = "AutoDisable".
+            RETURN.
+        
+          
+        END.
+        
         RUN htmlib-AddErrorMessage('User', 'The password is incorrect',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
@@ -263,7 +302,8 @@ PROCEDURE process-web-request :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-  
+    DEFINE VARIABLE lc-key AS CHARACTER NO-UNDO.
+     
 
     ASSIGN
         lc-url-company = get-value("company").
@@ -271,6 +311,7 @@ PROCEDURE process-web-request :
     IF lc-url-company = ""
         OR NOT CAN-FIND(company WHERE company.companycode = lc-url-company)
         THEN ASSIGN lc-url-company = "MICAR".
+
 
     ASSIGN
         lc-url-company    = LC(lc-url-company)
@@ -280,7 +321,10 @@ PROCEDURE process-web-request :
     
     IF request_method = "GET" AND get-value("logoff") = "yes" THEN
     DO:
-        delete-cookie("ExtranetUser",appurl,?).
+        delete-cookie(lc-global-cookie-name,appurl,"").
+        delete-cookie(lc-global-cookie-name,appurl,?).
+                  
+                
     END.
 
     IF request_method = "POST" THEN
@@ -297,24 +341,32 @@ PROCEDURE process-web-request :
             OUTPUT lc-error-mess ).  
         IF lc-error-mess = "" THEN
         DO:
-            RUN attrlib-SetAttribute("USER",lc-user,INPUT-OUTPUT lc-AttrData).
-            RUN attrlib-SetAttribute("IP",remote_addr,INPUT-OUTPUT lc-AttrData).
+           
+            lc-AttrData ="IP|" + remote_addr.
+            
 
-            com-SystemLog("Login",lc-user,lc-AttrData).
+            com-SystemLog("OK:Login",lc-user,lc-AttrData).
 
-            set-user-field("IPADD",REMOTE_ADDR).
-
+           
             ASSIGN 
                 lc-value = htmlib-EncodeUser(lc-user). 
-            
+            lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"Password",lc-value).
+           
             FIND webUser 
                 WHERE webUser.LoginID = lc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
-            IF AVAILABLE WebUser
-                THEN ASSIGN WebUser.LastDate = TODAY
-                    WebUser.LastTime = TIME.
-
-            Set-Cookie("ExtranetUser",
-                lc-value,
+            IF AVAILABLE WebUser THEN
+            DO:
+                ASSIGN 
+                    WebUser.LastDate         = TODAY
+                    WebUser.LastTime         = TIME
+                    WebUser.FailedLoginCount = 0.
+            END. 
+            
+            delete-cookie(lc-global-cookie-name,appurl,"").
+            delete-cookie(lc-global-cookie-name,appurl,?).
+        
+            Set-Cookie(lc-global-cookie-name,
+                lc-key,
                 DYNAMIC-FUNCTION("com-CookieDate",lc-user),
                 DYNAMIC-FUNCTION("com-CookieTime",lc-user),
                 APPurl,
@@ -342,6 +394,12 @@ PROCEDURE process-web-request :
     
     {&out} htmlib-Header(company.name + " - Help Desk Login") skip.
     
+    
+    {&out} '<script>' SKIP
+           'document.cookie = "' lc-global-cookie-name '=; expires=Thu, 01 Jan 1970 00:00:00 UTC";' SKIP
+           '</script>' SKIP.
+           
+    
     {&out}
     '<div style="width: 100%;">'
     '<img src="/images/menu/' lc-url-company '/banner.jpg" style="float: right;">'
@@ -361,7 +419,7 @@ PROCEDURE process-web-request :
     
     RUN ip-CompanyInfo.
     
-
+    /* PH 25/09/14 remove for now 
     IF lc-reason = "password" THEN 
     DO:
         FIND WebUser WHERE WebUser.Loginid = lc-user NO-LOCK NO-ERROR.
@@ -384,8 +442,8 @@ PROCEDURE process-web-request :
                     '</div>'.
         END.
     END.
-    {&out}
-    '</td><td valign="top" align="right">' skip.
+    */
+    {&out} '</td><td valign="top" align="right">' skip.
 
 
     {&out} '<table><tr><td>'.

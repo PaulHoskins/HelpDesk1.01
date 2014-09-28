@@ -11,6 +11,7 @@
     09/04/2006  phoski      Document link 
     10/04/2006  phoski      CompanyCode
     22/04/2006  phoski      Equip maint link
+    27/09/2014  phoski      Encrypted rowid to custview.p
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -41,6 +42,8 @@ DEFINE VARIABLE lc-parameters  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-smessage    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-otherp AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Enc-Key     AS CHARACTER NO-UNDO.
+
 
 
 
@@ -159,12 +162,14 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
   
+    DEFINE VARIABLE lc-view-Link AS CHARACTER NO-UNDO.
+    
     {lib/checkloggedin.i}
 
    
@@ -291,6 +296,11 @@ PROCEDURE process-web-request :
         
         ASSIGN 
             lc-rowid = STRING(ROWID(b-query)).
+            
+        ASSIGN 
+            lc-enc-key =
+                 DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(b-query))).
+                 
         
         ASSIGN 
             li-count = li-count + 1.
@@ -302,7 +312,11 @@ PROCEDURE process-web-request :
         ASSIGN 
             lc-link-otherp = 'search=' + lc-search +
                                 '&firstrow=' + string(lr-first-row).
-
+        ASSIGN
+            lc-view-link = tbar-Link("view",ROWID(b-query),appurl + '/' + "cust/custview.p",lc-link-otherp).
+        ASSIGN
+            lc-view-link = REPLACE(lc-view-link,STRING(ROWID(b-query)),url-encode(lc-enc-key,"Query")).
+                
         {&out}
             skip
             tbar-tr(rowid(b-query))
@@ -316,7 +330,7 @@ PROCEDURE process-web-request :
                                  else "&nbsp;",'right')
 
             tbar-BeginHidden(rowid(b-query))
-                tbar-Link("view",rowid(b-query),appurl + '/' + "cust/custview.p",lc-link-otherp)
+                lc-view-Link
                 tbar-Link("update",rowid(b-query),appurl + '/' + "cust/custmnt.p",lc-link-otherp)
                 tbar-Link("delete",rowid(b-query),
                           if DYNAMIC-FUNCTION('com-CanDelete':U,lc-user,"customer",rowid(b-query))

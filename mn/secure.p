@@ -1,21 +1,29 @@
-/***********************************************************************
+/*------------------------------------------------------------------------
 
-    Program:        iss/issueoverview.p
-    
-    Purpose:        Issue Overview - Summarise whats open etc
-    
-    Notes:
-    
-    
-    When        Who         What
-    26/05/2006  phoski      Initial
-    28/09/2014  phoski      Only super users get this page and no customers
+  File: 
 
-***********************************************************************/
+  Description: 
+
+  Input Parameters:
+      <none>
+
+  Output Parameters:
+      <none>
+
+  Author: 
+
+  Created: 
+
+------------------------------------------------------------------------*/
+/*           This .W file was created with the Progress AppBuilder.     */
+/*----------------------------------------------------------------------*/
+
+/* Create an unnamed pool to store all the widgets created 
+     by this procedure. This is a good default which assures
+     that this procedure's triggers and internal procedures 
+     will execute in this procedure's storage, and that proper
+     cleanup will occur on deletion of the procedure. */
 CREATE WIDGET-POOL.
-
-&GlOBAL-DEFINE object-class INTERNAL-ONLY
-
 
 /* ***************************  Definitions  ************************** */
 
@@ -53,7 +61,6 @@ CREATE WIDGET-POOL.
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
-{iss/issue.i}
 
 
 
@@ -131,18 +138,18 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
-    
-    {lib/checkloggedin.i}
-
-    FIND webuser WHERE webuser.loginid = lc-user NO-LOCK NO-ERROR.
-    
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+  
+    /* 
+     * Output the MIME header and set up the object as state-less or state-aware. 
+     * This is required if any HTML is to be returned to the browser.
+     */
     RUN outputHeader.
-      
+  
     {&out}
     '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">' skip 
          '<HTML>' skip
@@ -151,61 +158,30 @@ PROCEDURE process-web-request :
          '<meta http-equiv="Cache-Control" content="No-Cache">' skip
          '<meta http-equiv="Pragma"        content="No-Cache">' skip
          '<meta http-equiv="Expires"       content="0">' skip
+         '<TITLE>Security</TITLE>' skip
          DYNAMIC-FUNCTION('htmlib-StyleSheet':U) skip
-         '<script language="JavaScript" src="/scripts/js/standard.js"></script>'
-          skip
-         '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
-         '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip
-    .
-    .
-
-    IF AVAILABLE webuser AND dynamic-function("com-IsSuperUser",webuser.LoginID) 
-    AND DYNAMIC-FUNCTION("com-IsCustomer",lc-global-company,webuser.LoginID) = FALSE THEN
-    DO:
-        {&out} 
-        '<SCRIPT LANGUAGE = "JavaScript">' skip
-           'function GetAlerts(target) ~{' skip
-            '   var url = "' appurl '/iss/ajax/overview.p?user=' webuser.LoginID '"' skip
-            '   var myAjax = new Ajax.PeriodicalUpdater( target, url, ~{evalScripts: true, asynchronous:true, frequency:60 ~});' skip
-            '~}' skip
-           'function AjaxStartPage() ~{' skip
-           ' GetAlerts("ajaxdiv")' skip
-           '~}' skip
-        '</script>' skip.
-
-
-        {&out}
-        '</HEAD>' skip '<body onLoad="AjaxStartPage()">'.
-
-    END.
-    ELSE {&out}
-    '</HEAD>' skip
-         '<body class="normaltext" onUnload="ClosePage()">' skip
+        '<style>' skip
+       /* 'body ~{ margin-left: 15px; margin-right: 15px;~}' skip
+*/        'h2 ~{ text-align: center; ~}' skip
+        '</style>' skip
+      '</HEAD>' skip
+       '<body class="normaltext">' skip
     .
 
 
-   
   
-
+    /* Output your custom HTML to WEBSTREAM here (using {&OUT}).                */
+  
     {&out}
-    htmlib-StartForm("mainform","post", appurl + '/iss/issueoverview.p' )
-    htmlib-ProgramTitle("HelpDesk Monitor").
-
-
-    IF AVAILABLE webuser THEN
-    DO:
-        {&out} '<div id="ajaxdiv">Please wait.....</div>' skip.
-    END.
-
-
-    {&out} htmlib-Hidden("submitsource","null").
-
+    '<div class="infobox">'
+                
+    '<h2>You do not have access to the page requested ' get-user-field("ObjectName") '</h2>'
     
-    {&OUT} htmlib-EndForm() skip.
-
-   
-    {&out} htmlib-Footer() skip.
-    
+    '</div>' skip.
+    {&OUT}
+    "</BODY>":U SKIP
+    "</HTML>":U SKIP
+    .
   
 END PROCEDURE.
 

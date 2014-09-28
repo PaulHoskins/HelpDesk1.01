@@ -10,6 +10,7 @@
     When        Who         What
     22/04/2006  phoski      Initial - replace old leftpanel.p  
     26/06/2006  phoski      Prototype    
+    25/09/2014  phoski      Security Lib
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -163,10 +164,10 @@ PROCEDURE process-web-request :
    
     DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
 
-
-
     ASSIGN 
-        lc-value = get-cookie("ExtranetUser").
+        lc-value = get-cookie(lc-global-cookie-name).
+    
+    lc-value = DYNAMIC-FUNCTION("sysec-DecodeValue","System",TODAY,"Password",lc-value).
 
     ASSIGN 
         lc-user = htmlib-DecodeUser(lc-value).

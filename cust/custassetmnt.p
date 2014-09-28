@@ -60,7 +60,7 @@ DEFINE VARIABLE lc-Purchased    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-cost         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-descr        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-details      AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-Enc-Key      AS CHARACTER NO-UNDO.
 
 
 
@@ -335,8 +335,12 @@ PROCEDURE process-web-request :
 
     FIND customer WHERE ROWID(customer) = to-rowid(lc-customer)
         NO-LOCK NO-ERROR.
-
+     
    
+       
+    ASSIGN 
+        lc-enc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
     ASSIGN 
         lc-title = lc-title + ' Customer Asset'
         lc-link-url = appurl + '/cust/custasset.p' + 
@@ -354,7 +358,7 @@ PROCEDURE process-web-request :
     ELSE 
         IF lc-returnback = "customerview" 
             THEN ASSIGN lc-link-url = appurl + "/cust/custview.p?source=menu&rowid=" + 
-        get-value("customer") + "&showtab=ASSET".
+        url-encode(lc-enc-key,"Query") + "&showtab=ASSET".
  
 
     IF CAN-DO("view,update,delete",lc-mode) THEN
@@ -495,7 +499,7 @@ PROCEDURE process-web-request :
             IF lc-returnback = "customerview" THEN
             DO:
                 set-user-field("source","menu").
-                set-user-field("rowid",get-value("customer")).
+                set-user-field("rowid",lc-enc-key).
                 set-user-field("showtab","asset").
                 RUN run-web-object IN web-utilities-hdl ("cust/custview.p").
                 RETURN.

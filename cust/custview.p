@@ -17,6 +17,7 @@
     02/09/2010 DJS          3674 - Added Quickview buttons in view    
     28/04/2014 phoski       Customer Assets 
     14/06/2014 phoski       google maps fix
+    27/09/2014 phoski       Encrypted rowid
                           
                                 
 ***********************************************************************/
@@ -40,6 +41,7 @@ DEFINE BUFFER b-customer FOR customer.     /* 3677 & 3678 */
 DEFINE BUFFER b-custIv   FOR custIv.         /* 3677 & 3678 */           
 DEFINE BUFFER b-ivSub    FOR ivSub.           /* 3677 & 3678 */           
                                                
+DEFINE VARIABLE lc-Enc-Key        AS CHARACTER NO-UNDO.                                               
 DEFINE VARIABLE lc-search         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-firstrow       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-lastrow        AS CHARACTER NO-UNDO.
@@ -1461,6 +1463,12 @@ PROCEDURE process-web-request :
         lc-firstrow = get-value("firstrow")
         lc-lastrow  = get-value("lastrow")
         lc-navigation = get-value("navigation").
+   
+    ASSIGN lc-enc-key = lc-rowid.
+    
+    ASSIGN
+        lc-rowid = DYNAMIC-FUNCTION("sysec-DecodeValue",lc-user,TODAY,"Customer",lc-rowid).
+        
 
     ASSIGN 
         lc-mode = "view".
@@ -1498,10 +1506,12 @@ PROCEDURE process-web-request :
         NO-LOCK NO-ERROR.
     IF NOT AVAILABLE customer THEN
     DO:
+        MESSAGE "missing " lc-enc-key " --> " lc-rowid.
         set-user-field("mode",lc-mode).
         set-user-field("title",lc-title).
-        set-user-field("nexturl",appurl + "/cust/cust.p").
-        RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
+        set-user-field("linkinfo","custview.p with " + lc-enc-key).
+        
+        RUN run-web-object IN web-utilities-hdl ("mn/secure-fail.p").
         RETURN.
     END.
 
@@ -1546,14 +1556,6 @@ PROCEDURE process-web-request :
     'function goGMAP(pCODE, pNAME, pADD) ~{~n'
     'var pOPEN = "http://www.google.co.uk/maps/preview?q=";' SKIP
             'pOPEN = pOPEN + pCODE;~n' SKIP
-        /*
-            'pOPEN = pOPEN + "&Name=";~n'
-            'pOPEN = pOPEN + pNAME;~n'
-            'pOPEN = pOPEN + "&Address=";~n'
-            'pOPEN = pOPEN + pADD;~n'
-            */
-
-            /*alert(pOPEN);~n' */ 
             'window.open(pOPEN, ~'WinName~' , ~'width=645,height=720,left=0,top=0~');~n'
             ' ~}~n'
             '</script>'  skip.

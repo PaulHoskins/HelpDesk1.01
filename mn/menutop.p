@@ -9,6 +9,7 @@
     
     When        Who         What
     23/04/2006  phoski      Various
+    25/09/2014  phoski      Security Lib
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -367,10 +368,12 @@ PROCEDURE process-web-request :
   
     DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
 
-
-
     ASSIGN 
-        lc-value = get-cookie("ExtranetUser").
+        lc-value = get-cookie(lc-global-cookie-name).
+    
+    ASSIGN
+        lc-value = DYNAMIC-FUNCTION("sysec-DecodeValue","System",TODAY,"Password",lc-value).
+    
 
     ASSIGN 
         lc-user = htmlib-DecodeUser(lc-value).

@@ -8,7 +8,8 @@
     
     
     When        Who         What
-    10/04/2006  phoski      CompanyCode      
+    10/04/2006  phoski      CompanyCode    
+    26/09/2014  phoski      function disabled  
 ***********************************************************************/
 
 CREATE WIDGET-POOL.
@@ -170,13 +171,13 @@ PROCEDURE process-web-request :
     IF lc-rowid = "" 
         THEN ASSIGN lc-rowid = get-field("saverowid")
             .
-
+    /*
     ASSIGN 
         lc-title = 'New Password Sent'.
            
     
     FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) EXCLUSIVE-LOCK.
-
+    
 
     ASSIGN 
         lc-length = htmlib-GetAttr ('PASSWORDRULE', 'MinLength').
@@ -196,8 +197,11 @@ PROCEDURE process-web-request :
     ASSIGN 
         b-table.PassWd = ENCODE(lc-newpassword).
 
-
+    */
+    
     RUN outputHeader.
+    
+    lc-title = "Function disabled".
     
     {&out} htmlib-Header(lc-title) skip
            htmlib-StartForm("mainform","post", appurl + '/mn/loginpass.p')
@@ -205,7 +209,7 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-Hidden ("saverowid", lc-rowid) skip
     .
-        
+    /*    
     {&out} '<table align=center>' 
     '<tr><td>Your new password has been sent to your email address at '
     b-table.email '.</td></tr>' skip
@@ -213,7 +217,15 @@ PROCEDURE process-web-request :
                      htmlib-NormalTextLink("Help Desk",
                                      appurl + '/mn/login.p')
             '.</td></tr></table>'.
-    
+     */
+     {&out} '<table align=center>' 
+    '<tr><td>This function is disabled at present</td></tr>' skip
+            '<tr><td>Please contact the helpdesk to have your password changed for the '
+                     htmlib-NormalTextLink("Help Desk",
+                                     appurl + '/mn/login.p')
+            '.</td></tr></table>'.
+            
+     
     {&out} htmlib-EndForm() skip
            htmlib-Footer() skip.
     

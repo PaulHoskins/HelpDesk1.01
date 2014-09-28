@@ -56,7 +56,7 @@ DEFINE VARIABLE rdpPWord         AS CHARACTER NO-UNDO.                 /* 3704 *
 DEFINE VARIABLE rdpDomain        AS CHARACTER NO-UNDO.                 /* 3704 */ 
 DEFINE VARIABLE first-RDP        AS LOG       INITIAL TRUE NO-UNDO.    /* 3704 */ 
 DEFINE VARIABLE lc-tempAddress   AS CHARACTER NO-UNDO.                 /* 3704 */
-
+DEFINE VARIABLE lc-Enc-Key       AS CHARACTER NO-UNDO.
 
 
 
@@ -558,10 +558,21 @@ PROCEDURE process-web-request :
         lc-customer = get-value("customer")
         lc-ajaxSubWindow = get-value("ajaxsubwindow")
         lc-expand = get-value("expand").
-        
-
+    /*
+    ***
+    *** 'customer' contains encrypted rowid so decode it
+    ***
+    */
+    
+    ASSIGN
+        lc-customer = DYNAMIC-FUNCTION("sysec-DecodeValue",lc-user,TODAY,"Customer",lc-customer).
+    
     FIND customer
         WHERE ROWID(customer) = to-rowid(lc-customer) NO-LOCK NO-ERROR.
+        
+    ASSIGN 
+        lc-enc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+                 
 
     RUN outputHeader.
     

@@ -36,6 +36,7 @@ DEFINE VARIABLE lc-Alert-TBAR      AS CHARACTER
     INITIAL "alerttb"      NO-UNDO.
 
 
+&GlOBAL-DEFINE object-class INTERNAL-ONLY
 
 
 /* ********************  Preprocessor Definitions  ******************** */
