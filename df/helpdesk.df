@@ -873,11 +873,25 @@ ADD FIELD "old-AccountNumber" OF "Customer" AS character
   MAX-WIDTH 40
   ORDER 210
 
+ADD FIELD "AccountManager" OF "Customer" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "Account Manager"
+  POSITION 25
+  MAX-WIDTH 30
+  ORDER 220
+
 ADD INDEX "AccountNumber" ON "Customer" 
   AREA "Schema Area"
   UNIQUE
   PRIMARY
   INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "AccountNumber" ASCENDING 
+
+ADD INDEX "AccountManager" ON "Customer" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "AccountManager" ASCENDING 
   INDEX-FIELD "AccountNumber" ASCENDING 
 
 ADD INDEX "CustomerWordKey" ON "Customer" 
@@ -4503,4 +4517,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000088563
+0000088916

@@ -14,6 +14,7 @@
     15/07/2006  phoski      Ticket flag
     20/07/2006  phoski      Statement Email
     26/07/2006  phoski      Ticket Transactions
+    29/09/2014  phoski      Account Manager
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -77,6 +78,8 @@ DEFINE VARIABLE lc-viewActivity     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-st-num           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-st-code          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-st-descr         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AccountManager   AS CHARACTER NO-UNDO.
+
 
 
 
@@ -105,6 +108,8 @@ DEFINE VARIABLE lc-defcons-list     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-conactive-list   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-contractnotes    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-contractbilling  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ct-code          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ct-desc          AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-contract         AS CHARACTER EXTENT 20 NO-UNDO.
 DEFINE VARIABLE ll-billable         AS LOG       EXTENT 20 NO-UNDO.
@@ -646,100 +651,79 @@ PROCEDURE ip-MainPage :
         {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
     htmlib-InputField("postcode",20,lc-postcode) 
     '</TD>' skip.
-    else 
-    do:
-
-IF lc-postcode = "" THEN 
-    {&out} htmlib-TableField(html-encode(lc-postcode),'left')
-           skip.
-        else
-        do:
-lc-temp = REPLACE(htmlib-TableField(html-encode(lc-postcode),'left'),"</td>","").
-lc-temp = lc-temp + 
-    '<br><a  target="new" href="http://www.streetmap.co.uk/streetmap.dll?postcode2map?code=' 
-    + replace(lc-postcode," ","+") 
-    + "&title=" 
-    + replace(REPLACE(lc-name," ","+"),"&","")
-    + '"><img border=0 src=/images/general/map.gif title="View Map">' 
-    + '</a>'.
-.
-{&out} lc-temp.
-
-
-END.
-END.
-{&out} '</TR>' skip.
-
-{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-    (IF LOOKUP("contact",lc-error-field,'|') > 0 
-    THEN htmlib-SideLabelError("Contact")
-    ELSE htmlib-SideLabel("Contact"))
-'</TD>'.
     
-IF NOT CAN-DO("view,delete",lc-mode) THEN
-    {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
-htmlib-InputField("contact",40,lc-contact) 
-'</TD>' skip.
+    {&out} '</TR>' skip.
+
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("contact",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Contact")
+        ELSE htmlib-SideLabel("Contact"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    htmlib-InputField("contact",40,lc-contact) 
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-contact),'left')
            skip.
-{&out} '</TR>' skip.
+    {&out} '</TR>' skip.
 
-{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-    (IF LOOKUP("telephone",lc-error-field,'|') > 0 
-    THEN htmlib-SideLabelError("Telephone")
-    ELSE htmlib-SideLabel("Telephone"))
-'</TD>'.
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("telephone",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Telephone")
+        ELSE htmlib-SideLabel("Telephone"))
+    '</TD>'.
     
-IF NOT CAN-DO("view,delete",lc-mode) THEN
-    {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
-htmlib-InputField("telephone",20,lc-telephone) 
-'</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    htmlib-InputField("telephone",20,lc-telephone) 
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-telephone),'left')
            skip.
-{&out} '</TR>' skip.
+    {&out} '</TR>' skip.
 
-{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-    (IF LOOKUP("notes",lc-error-field,'|') > 0 
-    THEN htmlib-SideLabelError("Note")
-    ELSE htmlib-SideLabel("Note"))
-'</TD>'.
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("notes",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Note")
+        ELSE htmlib-SideLabel("Note"))
+    '</TD>'.
     
-IF NOT CAN-DO("view,delete",lc-mode) THEN
-    {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
-htmlib-TextArea("notes",lc-notes,5,60)
-'</TD>' skip.
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    htmlib-TextArea("notes",lc-notes,5,60)
+    '</TD>' skip.
     else 
     {&out} htmlib-TableField(replace(html-encode(lc-notes),"~n",'<br>'),'left')
            skip.
-{&out} '</TR>' skip.
+    {&out} '</TR>' skip.
 
     
-IF lc-sla-rows <> "" THEN
-DO:
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="right" width="25%">' 
-        (IF LOOKUP("sla",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Default SLA")
-        ELSE htmlib-SideLabel("Default SLA"))
-    '</TD>'
-        .
-    IF NOT CAN-DO("view,delete",lc-mode)
-        THEN 
+    IF lc-sla-rows <> "" THEN
     DO:
-        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">' skip.
-        RUN ip-SLATable.
-        {&out} '</td>'.
-    END.
-    ELSE 
-    DO:
-        IF b-table.DefaultSLAID = 0
-            THEN {&out} htmlib-TableField(html-encode("None"),'left').
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right" width="25%">' 
+            (IF LOOKUP("sla",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Default SLA")
+            ELSE htmlib-SideLabel("Default SLA"))
+        '</TD>'
+            .
+        IF NOT CAN-DO("view,delete",lc-mode)
+            THEN 
+        DO:
+            {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">' skip.
+            RUN ip-SLATable.
+            {&out} '</td>'.
+        END.
+        ELSE 
+        DO:
+            IF b-table.DefaultSLAID = 0
+                THEN {&out} htmlib-TableField(html-encode("None"),'left').
             else
             do:
-    FIND slahead WHERE slahead.SLAID = b-table.DefaultSLAID NO-LOCK NO-ERROR.
-    {&out} htmlib-TableField(html-encode(slahead.description),'left').
-END.
+        FIND slahead WHERE slahead.SLAID = b-table.DefaultSLAID NO-LOCK NO-ERROR.
+        {&out} htmlib-TableField(html-encode(slahead.description),'left').
+    END.
                
 
 END.
@@ -762,6 +746,23 @@ htmlib-Select("st-num",lc-st-Code,lc-st-descr,lc-st-num)
            skip.
 {&out} '</TR>' skip.
 
+
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("AccountManager",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Account Manager")
+    ELSE htmlib-SideLabel("Account Manager"))
+'</TD>'.
+
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+htmlib-Select("accountmanager",lc-ct-Code,lc-ct-desc,lc-AccountManager)
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(lc-AccountManager,'left')
+           skip.
+{&out} '</TR>' skip.
+
 /***/
 
 {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
@@ -771,7 +772,7 @@ htmlib-Select("st-num",lc-st-Code,lc-st-descr,lc-st-num)
 '</TD>'.
     
 IF NOT CAN-DO("view,delete",lc-mode) THEN
-    {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    {&out} '<TD VALIGN="TOP" ALIGN="left" SPAN="2">'
 htmlib-Select("supportticket",lc-global-SupportTicket-Code,lc-global-SupportTicket-Desc,lc-supportticket)
 '</TD>' skip.
     else 
@@ -1124,8 +1125,12 @@ PROCEDURE process-web-request :
     END.
 
     RUN com-GetTeams ( lc-global-company, OUTPUT lc-st-code, OUTPUT lc-st-descr ).
+    RUN com-GetUserListByClass ( lc-global-company, "INTERNAL",OUTPUT lc-ct-code, OUTPUT lc-ct-desc).
+    
 
     ASSIGN
+        lc-ct-code = "|" + lc-ct-code
+        lc-ct-desc = "None Selected|" + lc-ct-desc
         lc-st-code = "0|" + lc-st-code
         lc-st-descr = "None Selected|" + lc-st-descr.
 
@@ -1257,6 +1262,7 @@ PROCEDURE process-web-request :
                 lc-isactive          = get-value("isactive")
                 lc-st-num            = get-value("st-num")
                 lc-viewAction        = get-value("viewaction")
+                lc-AccountManager    = get-value("accountmanager")
                 lc-viewActivity      = get-value("viewactivity")
                 lc-saved-contracts   = get-value("savedcontracts")
                 lc-saved-billables   = get-value("savedbillables")
@@ -1311,6 +1317,7 @@ PROCEDURE process-web-request :
                         b-table.isActive       = lc-isActive = "on"
                         b-table.ViewAction     = lc-viewAction = "on"
                         b-table.ViewActivity   = lc-viewActivity = "on"
+                        b-table.AccountManager = lc-AccountManager
                         b-table.st-num         = INT(lc-st-num)
                         vz = 0.
                      
@@ -1393,6 +1400,7 @@ PROCEDURE process-web-request :
                 lc-viewAction = IF b-table.viewAction THEN "on" ELSE ""
                 lc-viewActivity = IF b-table.viewActivity THEN "on" ELSE ""
                 lc-st-num = STRING(b-table.st-num)
+                lc-AccountManager   = b-table.AccountManager
                 .
 
             IF b-table.DefaultSLAID = 0

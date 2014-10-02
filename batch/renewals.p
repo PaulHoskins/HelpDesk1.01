@@ -222,7 +222,7 @@ FOR EACH customer WHERE customer.IsActive
                 IF (ddate  - int(ivField.dwarning)) < TODAY THEN
                 DO:
                     RUN ip-GenerateInventory(INPUT ROWID(CustIv), OUTPUT lc-htmldesc).
-                    RUN ip-GenerateIssue( customer.account,
+                    RUN ip-GenerateIssue( customer.accountNumber,
                         ENTRY(1,getissue(TRIM(ivClass.name),""),"|"), /* eg "02",  software */
                         CAPS(ENTRY(2,getissue(TRIM(ivClass.name),""),"|")),
                         TRIM(CustIv.Ref) + " - " + trim(ivField.dLabel) + " " + string(ddate),

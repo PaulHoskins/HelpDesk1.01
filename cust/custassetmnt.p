@@ -778,9 +778,11 @@ PROCEDURE process-web-request :
         {&out} '<center>' htmlib-SubmitButton("submitform",lc-submit-label) 
         '</center>' skip.
     END.
-         
-    {&out} htmlib-CalendarScript("purchased") skip.
-
+    IF CAN-DO("ADD,UPDATE",lc-mode) THEN
+    DO:     
+        {&out} htmlib-CalendarScript("purchased") skip.
+    END.
+    
     {&out} skip
            htmlib-Hidden("customer",lc-customer) skip
            htmlib-Hidden("returnback",lc-returnback) skip

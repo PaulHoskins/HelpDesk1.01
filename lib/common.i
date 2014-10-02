@@ -1177,6 +1177,41 @@ PROCEDURE com-getTemplateSelect :
 END PROCEDURE.
 
 
+PROCEDURE com-GetUserListByClass:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pc-class       AS CHARACTER NO-UNDO.
+        
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
+
+    DEFINE VARIABLE icount  AS INT      NO-UNDO.
+    
+    DEFINE BUFFER b-user FOR WebUser.
+
+    FOR EACH b-user NO-LOCK 
+        WHERE CAN-DO(pc-class,b-user.UserClass)
+        AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
+        icount = icount + 1.
+        IF icount = 1 
+        THEN ASSIGN
+            pc-loginid = b-user.LoginID
+            pc-name  = b-user.name.
+        ELSE   
+        ASSIGN 
+            pc-LoginID = pc-LoginID + '|' + 
+               b-user.LoginID
+            pc-name    = pc-name + '|' + 
+               b-user.Name.
+    END.
+    
+
+END PROCEDURE.
+
 PROCEDURE com-ResetDefaultStatus :
     /*------------------------------------------------------------------------------
       Purpose:     
@@ -1644,6 +1679,11 @@ FUNCTION com-CanDelete RETURNS LOGICAL
 
 
             END.
+        WHEN 'sla' THEN
+        DO:
+            RETURN FALSE.
+        END.
+        
         OTHERWISE
         DO:
             MESSAGE "com-CanDelete invalid table for " pc-table.

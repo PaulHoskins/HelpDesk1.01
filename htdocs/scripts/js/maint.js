@@ -82,6 +82,12 @@ function IssueButtonPress(ButtonEvent,NewURL) {
 
      var piclass = document.mainform.iclass.value
 
+     var paccountmanager = document.mainform.accountmanager.checked
+
+     var paccm = ''
+     if ( paccountmanager ) {
+		 paccm='on'
+	}
 
          NewURL += "?search=" + pSearch
          NewURL += "&firstrow=" + pFirstRow
@@ -96,6 +102,7 @@ function IssueButtonPress(ButtonEvent,NewURL) {
 		 NewURL += "&sortfield=" + psortfield
 		 NewURL += "&sortorder=" + psortorder
 		 NewURL += "&iclass=" + piclass
+		 NewURL += "&accountmanager=" + paccm
 
 
 

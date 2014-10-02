@@ -1310,7 +1310,7 @@ FUNCTION htmlib-Jscript-Lookup RETURNS CHARACTER
         Notes:  
     ------------------------------------------------------------------------------*/
 
-    RETURN '<script language="JavaScript" src="/scripts/js/lookup.js"></script>'.   
+    RETURN '~n<script language="JavaScript" src="/scripts/js/lookup.js?v1.0.0"></script>~n'.   
 
 END FUNCTION.
 
@@ -1322,7 +1322,7 @@ FUNCTION htmlib-JScript-Maintenance RETURNS CHARACTER
         Notes:  
     ------------------------------------------------------------------------------*/
 
-    RETURN '<script language="JavaScript" src="/scripts/js/maint.js"></script>'.   
+    RETURN '~n<script language="JavaScript" src="/scripts/js/maint.js?v=1.0.0"></script>~n'.   
 
 END FUNCTION.
 
@@ -2220,10 +2220,11 @@ FUNCTION htmlib-StyleSheet RETURNS CHARACTER
     
     RETURN 
         '~n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">~n~n' +
-        REPLACE(htmlib-GetAttr("system","stylesheet"),
-        ".css",
-        ".css?fn=" + string(TIME) + string(RANDOM(1,100))
-        ).
+        REPLACE(
+         htmlib-GetAttr("system","stylesheet"),
+         ".css",
+         ".css?v=1.0.0") + '~n~n'
+        .
 
 
 END FUNCTION.

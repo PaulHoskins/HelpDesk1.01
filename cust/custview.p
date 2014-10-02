@@ -399,11 +399,15 @@ PROCEDURE ip-CustomerMainInfo :
     DEFINE INPUT PARAMETER pc-ToolBarID        AS CHARACTER     NO-UNDO.
     
     DEFINE BUFFER b-query  FOR Customer.
-    
+    DEFINE BUFFER b-webu   FOR WebUser.
+        
 
-    DEFINE VARIABLE lc-address      AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE lc-temp         AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE lc-tempAddress  AS CHARACTER     NO-UNDO. /* 3678 */ 
+    DEFINE VARIABLE lc-address      AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-temp         AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-tempAddress  AS CHARACTER        NO-UNDO.  
+    DEFINE VARIABLE lc-cam          AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-AMan          AS CHARACTER        NO-UNDO.
+    
 
     FIND b-query
         WHERE b-query.CompanyCode   = pc-CompanyCode
@@ -411,7 +415,9 @@ PROCEDURE ip-CustomerMainInfo :
     IF NOT AVAILABLE b-query THEN RETURN.
    
     ASSIGN
-        lc-address = "".
+        lc-address = ""
+        lc-cam = "&nbsp"
+        lc-AMan = "&nbsp".
 
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.Address1).
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.Address2).
@@ -420,8 +426,14 @@ PROCEDURE ip-CustomerMainInfo :
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.Country).
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.PostCode).
     
-    lc-tempAddress = lc-address.  /* 3678 */ 
+    lc-tempAddress = lc-address.  
+    
 
+    FIND b-webu WHERE b-webu.LoginID = b-query.AccountManager NO-LOCK NO-ERROR.
+    IF AVAILABLE b-webu
+    THEN lc-AMan = b-webu.Name.
+    
+    
     IF get-value("source") = "menu" THEN
     DO:
         {&out}
@@ -447,11 +459,11 @@ PROCEDURE ip-CustomerMainInfo :
         tbar-End().
     END.
     {&out} skip
-           replace(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"').
+           replace(htmlib-StartMntTable(),'width="100%"','width="100%" align="center"').
 
     {&out}
     htmlib-TableHeading(
-        "Account^left|Name^left|Address^left|Contact|Telephone|Support Team|Notes")
+        "Account^left|Name^left|Address^left|Contact|Telephone|Support Team|Account Manager|Notes")
             skip.
 
     {&out}
@@ -466,7 +478,7 @@ PROCEDURE ip-CustomerMainInfo :
     do:
 ASSIGN 
     lc-temp = REPLACE(htmlib-MntTableField(REPLACE(html-encode(lc-address),"~n","<br>"),'left'),"</td>","").
-/* 3678 removed streetmap */ 
+
 {&out} lc-temp.
 END.
 
@@ -476,6 +488,9 @@ htmlib-MntTableField(html-encode(b-query.Telephone),'left').
 FIND steam WHERE steam.companyCode = b-query.CompanyCode
     AND steam.st-num = b-query.st-num NO-LOCK NO-ERROR.
 {&out} htmlib-MntTableField(IF AVAILABLE steam THEN STRING(steam.st-num) + " - " + steam.descr ELSE 'None','left').
+{&out}
+htmlib-MntTableField(html-encode(lc-AMan),'left').
+
 IF b-query.notes = ""
     THEN {&out} htmlib-MntTableField("",'left').
     else {&out} replace(htmlib-TableField(replace(html-encode(b-query.notes),"~n",'<br>'),'left'),
@@ -1464,7 +1479,8 @@ PROCEDURE process-web-request :
         lc-lastrow  = get-value("lastrow")
         lc-navigation = get-value("navigation").
    
-    ASSIGN lc-enc-key = lc-rowid.
+    ASSIGN 
+        lc-enc-key = lc-rowid.
     
     ASSIGN
         lc-rowid = DYNAMIC-FUNCTION("sysec-DecodeValue",lc-user,TODAY,"Customer",lc-rowid).

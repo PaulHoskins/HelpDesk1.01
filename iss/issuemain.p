@@ -66,6 +66,8 @@ DEFINE VARIABLE lc-planned          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-catcode          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-ticket           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-category         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accountmanager   AS CHARACTER NO-UNDO.
+
 
 DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
@@ -290,6 +292,7 @@ PROCEDURE ip-BackToIssue :
                         '&area=' + lc-area + 
                         '&category=' + lc-category +
                         '&iclass=' + lc-iclass +
+                        '&accountmanager=' + lc-AccountManager +
                         '"'.
     
     IF lc-submitsource = "print" THEN
@@ -1191,6 +1194,7 @@ PROCEDURE process-web-request :
         lc-search        = get-value("search")
         lc-firstrow      = get-value("firstrow")
         lc-lastrow       = get-value("lastrow")
+        lc-accountmanager = get-value("accountmanager")
         lc-navigation    = get-value("navigation")
         lc-account       = get-value("account")
         lc-status        = get-value("status")
@@ -1208,10 +1212,12 @@ PROCEDURE process-web-request :
 
 
     IF lc-mode = "" 
-        THEN ASSIGN lc-mode          = get-field("savemode")
+        THEN ASSIGN 
+            lc-mode          = get-field("savemode")
             lc-rowid         = get-field("saverowid")
             lc-search        = get-value("savesearch")
             lc-firstrow      = get-value("savefirstrow")
+            lc-accountmanager = get-value("saveaccountmanager")
             lc-lastrow       = get-value("savelastrow")
             lc-navigation    = get-value("savenavigation")
             lc-account       = get-value("saveaccount")
@@ -1496,7 +1502,8 @@ PROCEDURE process-web-request :
     {&out} htmlib-Hidden ("savemode", lc-mode) skip
            htmlib-Hidden ("saverowid", lc-rowid) skip
            htmlib-Hidden ("savesearch", lc-search) skip
-           htmlib-Hidden ("savefirstrow", lc-firstrow) skip
+           htmlib-Hidden ("savefirstrow", lc-firstrow) SKIP
+           htmlib-hidden ("saveaccountmanager",lc-accountmanager) SKIP
            htmlib-Hidden ("savelastrow", lc-lastrow) skip
            htmlib-Hidden ("savenavigation", lc-navigation) skip
            htmlib-Hidden ("saveaccount", lc-account) skip
