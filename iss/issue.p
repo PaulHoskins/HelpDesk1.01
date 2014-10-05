@@ -22,7 +22,7 @@
     20/04/2014  phoski      fixed 3933 and customer page     
     24/04/2014  phoski      Various from specifications & fixes
     24/07/2014  phoski      Team Stuff
-    01/10/2014  phoski      Account Manager
+    01/10/2014  phoski      Account Manager (TAM/CAM)
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -89,6 +89,9 @@ DEFINE VARIABLE lc-list-sname     AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-list-assign    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-list-assname   AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-list-acm       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-acmname   AS CHARACTER NO-UNDO.
 
 
 DEFINE VARIABLE lc-list-area      AS CHARACTER NO-UNDO.
@@ -367,11 +370,20 @@ PROCEDURE ip-InitialProcess :
     DO:
         RUN com-GetAssignRoot ( lc-global-company , lc-global-user, 
             OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
+        /* here */
+        RUN com-GetAccountManagerList ( lc-global-company ,  OUTPUT lc-list-acm , OUTPUT lc-list-acmname ).
+             
+        IF lc-accountmanager = "on"
+        AND LOOKUP(lc-sel-assign,lc-list-acm,"|") = 0
+        THEN lc-sel-assign = ENTRY(1,lc-list-acm,"|").
+          
          
     END. 
     RUN com-GetArea ( lc-global-company , OUTPUT lc-list-area , OUTPUT lc-list-arname ).
 
     RUN com-GetCatSelect ( lc-global-company, OUTPUT lc-list-cat, OUTPUT lc-list-cname ).
+    
+    
 
 END PROCEDURE.
 
@@ -486,20 +498,28 @@ PROCEDURE ip-Selection :
     '</td>' skip.
 
     
-    IF NOT ll-customer THEN 
-    DO:
-        {&out} 
-        '</tr><tr>' 
-        '<td align=right valign=top>' htmlib-SideLabel("Assigned") '</td>'
-        '<td align=left valign=top>' 
-        format-Select-Account(htmlib-Select("assign",lc-list-assign,lc-list-assname,lc-sel-assign)).
-        {&out} REPLACE(htmlib-CheckBox("accountmanager", lc-accountManager = "on"),
-            '>',' onclick="ChangeAccount()">')
-        REPLACE(htmlib-SideLabel("Account Manager"),":","") SKIP.
-        
-        {&out}   
-        '</td>' skip.
-    END.
+    
+    {&out} 
+    '</tr><tr>'.
+    IF lc-accountmanager = 'on' THEN
+    {&out} 
+    '<td align=right valign=top>' htmlib-SideLabel("TAM/CAM") '</td>'
+    '<td align=left valign=top>' 
+    format-Select-Account(htmlib-Select("assign",lc-list-acm,lc-list-acmname,lc-sel-assign)).
+    else
+    {&out} 
+    '<td align=right valign=top>' htmlib-SideLabel("Assigned") '</td>'
+    '<td align=left valign=top>' 
+    format-Select-Account(htmlib-Select("assign",lc-list-assign,lc-list-assname,lc-sel-assign)).
+    
+    IF this-user.accountManager
+    THEN {&out} REPLACE(htmlib-CheckBox("accountmanager", lc-accountManager = "on"),
+        '>',' onclick="ChangeAccount()">')
+        REPLACE(htmlib-SideLabel("TAM/CAM"),":","") SKIP.
+    
+    {&out}   
+    '</td>' skip.
+   
     
     {&out} '<td align=right valign=top>' htmlib-SideLabel("Area") '</td>'
     '<td align=left valign=top>'
@@ -906,8 +926,9 @@ PROCEDURE process-web-request :
         ll-customer = this-user.UserClass = "CUSTOMER".
     RUN ip-InitialProcess.
     RUN outputHeader.
-    {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
+    
     {&out} htmlib-Header("Maintain Issue") skip.
+    {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
     RUN ip-ExportJScript.
     {&out} htmlib-JScript-Maintenance() skip.
     {&out} htmlib-StartForm("mainform","post", appurl + '/iss/issue.p' ) skip.

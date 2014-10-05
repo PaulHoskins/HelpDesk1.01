@@ -3185,17 +3185,17 @@ ADD FIELD "AttrData" OF "SysAct" AS character
   MAX-WIDTH 16
   ORDER 50
 
-ADD INDEX "ActDate" ON "SysAct" 
+ADD INDEX "primkey" ON "SysAct" 
   AREA "Schema Area"
   PRIMARY
-  INDEX-FIELD "ActDate" DESCENDING 
-  INDEX-FIELD "ActTime" DESCENDING 
-
-ADD INDEX "LoginID" ON "SysAct" 
-  AREA "Schema Area"
   INDEX-FIELD "LoginID" ASCENDING 
-  INDEX-FIELD "ActDate" DESCENDING 
-  INDEX-FIELD "ActTime" DESCENDING 
+  INDEX-FIELD "ActDate" ASCENDING 
+  INDEX-FIELD "ActTime" ASCENDING 
+
+ADD INDEX "Activity" ON "SysAct" 
+  AREA "Schema Area"
+  INDEX-FIELD "ActDate" ASCENDING 
+  INDEX-FIELD "ActTime" ASCENDING 
 
 ADD TABLE "Ticket"
   AREA "Schema Area"
@@ -4373,6 +4373,14 @@ ADD FIELD "FailedLoginCount" OF "WebUser" AS integer
   MAX-WIDTH 4
   ORDER 290
 
+ADD FIELD "AccountManager" OF "WebUser" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Account Manager?"
+  POSITION 33
+  MAX-WIDTH 1
+  ORDER 310
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -4517,4 +4525,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000088916
+0000089074

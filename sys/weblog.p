@@ -1,18 +1,14 @@
 /***********************************************************************
 
-    Program:        sys/webuser.p
+    Program:        sys/weblog.p
     
-    Purpose:        User Maintenance - Browser   
+    Purpose:        System log view
     
     Notes:
     
     
     When        Who         What
-    09/04/2006  phoski      Contractor link to accounts
-    10/04/2006  phoski      Company Code
-    11/04/2006  phoski      Show customer for CUSTOMER type users
-    13/06/2014  phoski      Various for UX
-    26/09/2014  phoski      Disabled Features
+    05/10/2014  phoski      initial
 
 ***********************************************************************/
 
@@ -50,8 +46,11 @@ DEFINE VARIABLE lc-LastLogin   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-LastPass    AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-QPhrase     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE vhLBuffer      AS HANDLE    NO-UNDO.
+DEFINE VARIABLE vhLBuffer1     AS HANDLE    NO-UNDO.
+DEFINE VARIABLE vhLBuffer2     AS HANDLE    NO-UNDO.
 DEFINE VARIABLE vhLQuery       AS HANDLE    NO-UNDO.
+DEFINE VARIABLE lc-lodate      AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
+
 
 DEFINE BUFFER b-query  FOR webuser.
 DEFINE BUFFER b-search FOR webuser.
@@ -137,7 +136,12 @@ PROCEDURE ip-ExportJScript :
     {&out} skip
         'function OptionChange(obj) ~{' skip
         '   SubmitThePage("selection");' SKIP
+        '~}' SKIP
+        'function ChangeDates() ~{' SKIP
+        '   SubmitThePage("DatesChange")' skip
         '~}' skip.
+        
+        
 
     {&out} skip
            '</script>' skip.
@@ -156,7 +160,7 @@ PROCEDURE ip-navigate :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-    
+  
     IF lc-navigation = "nextpage" THEN
     DO:
         vhLQuery:REPOSITION-TO-ROWID(TO-ROWID(lc-lastrow)) .
@@ -165,7 +169,7 @@ PROCEDURE ip-navigate :
             vhLQuery:GET-NEXT(NO-LOCK).
             vhLQuery:GET-NEXT(NO-LOCK).
     
-            IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+            IF NOT AVAILABLE SysAct THEN vhLQuery:GET-FIRST(NO-LOCK).
         END.
     END.
     ELSE
@@ -177,7 +181,7 @@ PROCEDURE ip-navigate :
                 vhLQuery:GET-NEXT(NO-LOCK).
                 vhLQuery:reposition-backwards(li-max-lines + 1). 
                 vhLQuery:GET-NEXT(NO-LOCK).
-                IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+                IF NOT AVAILABLE Sysact THEN vhLQuery:GET-FIRST(NO-LOCK).
             END.
         END.
         ELSE
@@ -187,7 +191,7 @@ PROCEDURE ip-navigate :
                 IF ERROR-STATUS:ERROR = FALSE THEN
                 DO:
                     vhLQuery:GET-NEXT(NO-LOCK).
-                    IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+                    IF NOT AVAILABLE sysAct THEN vhLQuery:GET-FIRST(NO-LOCK).
                 END.  
                 ELSE vhLQuery:GET-FIRST(NO-LOCK).
             END.
@@ -197,7 +201,7 @@ PROCEDURE ip-navigate :
                     vhLQuery:GET-LAST(NO-LOCK).
                     vhLQuery:reposition-backwards(li-max-lines).
                     vhLQuery:GET-NEXT(NO-LOCK).
-                    IF NOT AVAILABLE b-query THEN vhLQuery:GET-FIRST(NO-LOCK).
+                    IF NOT AVAILABLE Sysact THEN vhLQuery:GET-FIRST(NO-LOCK).
                 END.
 
 END PROCEDURE.
@@ -272,6 +276,8 @@ PROCEDURE process-web-request :
     ------------------------------------------------------------------------------*/
   
     DEFINE VARIABLE lc-CustomerInfo     AS CHARACTER         NO-UNDO.
+    DEFINE VARIABLE ld-date             AS DATE              NO-UNDO.
+    
 
     {lib/checkloggedin.i}
 
@@ -280,15 +286,28 @@ PROCEDURE process-web-request :
         lc-firstrow = get-value("firstrow")
         lc-lastrow  = get-value("lastrow")
         lc-navigation = get-value("navigation")
+        lc-lodate      = get-value("lodate")  
         lc-selacc     = get-value("selacc").
+   
+    
+    ld-date = DATE(lc-lodate) NO-ERROR.
+    IF ld-date = ?
+    OR ERROR-STATUS:ERROR 
+    THEN ASSIGN lc-lodate = "".
+    ELSE ASSIGN lc-lodate = STRING(ld-date,"99/99/9999").
+    
+    
+    
     
     ASSIGN 
         lc-parameters = "search=" + lc-search +
-                           "&firstrow=" + lc-firstrow + 
-                           "&lastrow=" + lc-lastrow +
-                           "&selacc=" + lc-selacc.
+                        "&firstrow=" + lc-firstrow + 
+                        "&lastrow=" + lc-lastrow +
+                        "&selacc=" + lc-selacc + 
+                        "&lodate=" + lc-lodate.
 
-    
+  
+      
     ASSIGN
         lc-link-otherp = lc-parameters.
 
@@ -302,32 +321,34 @@ PROCEDURE process-web-request :
         OR li-max-lines < 1
         OR li-max-lines = ? THEN li-max-lines = 12.
 
+
     RUN outputHeader.
     
-    {&out} htmlib-Header("Maintain Users") skip.
-
+    {&out} htmlib-Header("System Log") skip.
+    {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
+    
     {&out} htmlib-JScript-Maintenance() skip.
     RUN ip-ExportJScript.
 
-    {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webuser.p' ) skip.
+    {&out} htmlib-StartForm("mainform","post", appurl + '/sys/weblog.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Users") skip
+    {&out} htmlib-ProgramTitle("System Log") skip
            htmlib-hidden("submitsource","") skip.
     
     {&out}
     tbar-Begin(
+    
         DYNAMIC-FUNCTION('fnToolbarAccountSelection':U) 
         + 
-        tbar-FindLabel(appurl + "/sys/webuser.p","Find Name")
+        tbar-FindLabel(appurl + "/sys/weblog.p","Find User Name")
+        + "<b>From:</b> " + htmlib-CalendarInputField("lodate",10,lc-lodate) 
+        + htmlib-CalendarLink("lodate")
+      
         )
-    tbar-Link("add",?,appurl + '/' + "sys/webusermnt.p",lc-link-otherp)
+   
+    
     tbar-BeginOption()
-    tbar-Link("view",?,"off",lc-link-otherp)
-    tbar-Link("update",?,"off",lc-link-otherp)
-    tbar-Link("delete",?,"off",lc-link-otherp)
-    tbar-Link("genpassword",?,"off",lc-link-otherp)
-    tbar-Link("contaccess",?,"off",lc-link-otherp)
-    tbar-Link("conttime",?,"off",lc-link-otherp)
+  
     tbar-EndOption()
     tbar-End().
 
@@ -336,11 +357,27 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "User Name^left|Name^left|Customer|Email^left|Last Password Change^left|Last Login^left|Disabled?"
+        "Date|Action|Other Info|User Name^left|Name^left|Customer"
         ) skip.
 
-    lc-QPhrase = 
-        "for each b-query NO-LOCK where b-query.CompanyCode = '" + string(lc-Global-Company) + "'".
+
+    lc-qPhrase = "for each SysAct no-lock use-index Activity ".
+    IF ld-date <> ? 
+    THEN lc-qphrase = lc-qphrase + ' where sysact.actDate >= ' + lc-lodate.
+    
+    IF lc-search <> "" THEN
+    DO:
+        IF ld-date <> ?
+        THEN lc-qphrase = lc-qphrase + " and ".
+        ELSE lc-qphrase = lc-qphrase + " where ".
+        ASSIGN
+            lc-qPhrase = lc-qphrase + "  SysAct.Loginid begins '" + lc-search + "'".
+    END.
+    
+    
+    
+    lc-QPhrase = lc-qPhrase +
+        " , FIRST b-query NO-LOCK where b-query.loginid = Sysact.LoginId and b-query.CompanyCode = '" + string(lc-Global-Company) + "'".
 
     IF lc-selacc <> "" THEN
     DO:
@@ -357,23 +394,21 @@ PROCEDURE process-web-request :
 
 
      
-    IF lc-search <> "" THEN
-    DO:
-        ASSIGN
-            lc-qPhrase = lc-qphrase + " and b-query.name contains '" + lc-search + "'".
-    END.
-
+    
     lc-QPhrase = lc-QPhrase + ' INDEXED-REPOSITION'.
     
     CREATE QUERY vhLQuery.
 
-    vhLBuffer = BUFFER b-query:handle.
+    vhLBuffer1 = BUFFER SysAct:HANDLE.
+    vhLBuffer2 = BUFFER b-query:handle.
 
-    vhLQuery:SET-BUFFERS(vhLBuffer).
+    vhLQuery:SET-BUFFERS(vhLBuffer1,vhlBuffer2).
     vhLQuery:QUERY-PREPARE(lc-QPhrase).
     vhLQuery:QUERY-OPEN().
-
-
+    /*
+    DYNAMIC-FUNCTION("com-WriteQueryInfo",vhlQuery).
+    */
+    
     vhLQuery:GET-FIRST(NO-LOCK).
 
     RUN ip-navigate.
@@ -384,7 +419,7 @@ PROCEDURE process-web-request :
         lr-first-row = ?
         lr-last-row  = ?.
 
-    REPEAT WHILE vhLBuffer:AVAILABLE: 
+    REPEAT WHILE vhLBuffer1:AVAILABLE: 
 
         
         ASSIGN
@@ -401,62 +436,34 @@ PROCEDURE process-web-request :
         ASSIGN 
             li-count = li-count + 1.
         IF lr-first-row = ?
-            THEN ASSIGN lr-first-row = ROWID(b-query).
+            THEN ASSIGN lr-first-row = ROWID(SysAct).
         ASSIGN 
-            lr-last-row = ROWID(b-query).
+            lr-last-row = ROWID(SysAct).
         
         ASSIGN 
             lc-link-otherp = 'search=' + lc-search +
-                                '&firstrow=' + string(lr-first-row).
+                             '&firstrow=' + string(lr-first-row).
 
-        IF b-query.LastDate <> ? 
-            THEN ASSIGN lc-LastLogin = STRING(b-query.LastDate,'99/99/9999') + ' ' + string(b-query.LastTime,'hh:mm').
-        ELSE ASSIGN lc-lastlogin = "".
-        
-        IF b-query.LastPasswordChange <> ?
-            THEN lc-LastPass = STRING(b-query.LastPasswordChange,'99/99/9999').
-        ELSE lc-LastPass = "".
-        
-        ASSIGN 
-            lc-nopass = IF b-query.passwd = ""
-                           OR b-query.passwd = ?
-                           THEN " (No password)"
-                           ELSE "".
-        IF b-query.Disabled AND b-query.AutoDisableTime <> ? THEN
-        DO:
-            lc-nopass = ' ' + TRIM(lc-nopass + ' ' + string(b-query.AutoDisableTime)).
-        END.                  
+                   
         {&out}
             skip
-            tbar-tr(rowid(b-query))
-            skip
+            tbar-tr(rowid(SysAct))
+            SKIP
+            
+            htmlib-MntTableField(string(SysAct.ActDate,"99/99/9999") + 
+                                 ' ' + string(SysAct.ActTime,"hh:mm:ss") ,'left')
+            
+            htmlib-MntTableField(html-encode(SysAct.ActType),'left')
+            htmlib-MntTableField(html-encode(SysAct.AttrData),'left')
+            
             htmlib-MntTableField(html-encode(b-query.loginid),'left')
             htmlib-MntTableField(html-encode(b-query.name),'left')
             htmlib-MntTableField(html-encode(lc-CustomerInfo),'left')
 
-            htmlib-MntTableField(html-encode(b-query.email),'left')
-             htmlib-MntTableField(html-encode(lc-lastPass),'left')
-            htmlib-MntTableField(html-encode(lc-lastLogin),'left')
-            htmlib-MntTableField(html-encode((if b-query.disabled = true
-                                          then 'Yes' else 'No') + lc-nopass),'left') skip
-
-            tbar-BeginHidden(rowid(b-query))
-                tbar-Link("view",rowid(b-query),appurl + '/' + "sys/webusermnt.p",lc-link-otherp)
-                tbar-Link("update",rowid(b-query),appurl + '/' + "sys/webusermnt.p",lc-link-otherp)
-                tbar-Link("delete",rowid(b-query),
-                          if DYNAMIC-FUNCTION('com-CanDelete':U,lc-user,"webuser",rowid(b-query))
-                          then ( appurl + '/' + "sys/webusermnt.p") else "off",
-                          lc-link-otherp)
-                tbar-Link("genpassword",rowid(b-query),appurl + '/' + "sys/webusergen.p","customer=" + 
-                                                string(rowid(b-query)) 
-                                                )
-                tbar-Link("contaccess",rowid(b-query),
-                              if b-query.UserClass = "CONTRACT"
-                              then ( appurl + '/' + "sys/webcontaccess.p") else "off",lc-link-otherp)
-
-                tbar-Link("conttime",rowid(b-query),
-                              if b-query.UserClass = "INTERNAL"
-                              then ( appurl + '/' + "sys/webconttime.p") else "off",lc-link-otherp)
+             
+            tbar-BeginHidden(rowid(SysAct))
+           
+            
             tbar-EndHidden()
             '</tr>' skip.
 
@@ -466,15 +473,11 @@ PROCEDURE process-web-request :
 
 
        
-        vhLQuery:GET-NEXT(NO-LOCK). /* 3933  */
+        vhLQuery:GET-NEXT(NO-LOCK). 
 
             
     END.
 
-    IF li-count < li-max-lines THEN
-    DO:
-        {&out} skip htmlib-BlankTableLines(li-max-lines - li-count) skip.
-    END.
 
     {&out} skip 
            htmlib-EndTable()
@@ -492,23 +495,23 @@ PROCEDURE process-web-request :
     DO:
         vhLQuery:GET-FIRST(NO-LOCK). 
        
-        IF ROWID(b-query) = lr-first-row 
+        IF ROWID(SysAct) = lr-first-row 
             THEN ASSIGN ll-prev = FALSE.
         ELSE ASSIGN ll-prev = TRUE.
 
         
         vhLQuery:GET-LAST(NO-LOCK). 
 
-        IF ROWID(b-query) = lr-last-row
+        IF ROWID(SysAct) = lr-last-row
             THEN ASSIGN ll-next = FALSE.
         ELSE ASSIGN ll-next = TRUE.
 
         IF ll-prev 
-            THEN {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","PrevPage","Prev Page").
+            THEN {&out} htmlib-MntButton(appurl + '/' + "sys/weblog.p","PrevPage","Prev Page").
 
 
         IF ll-next 
-            THEN {&out} htmlib-MntButton(appurl + '/' + "sys/webuser.p","NextPage","Next Page").
+            THEN {&out} htmlib-MntButton(appurl + '/' + "sys/weblog.p","NextPage","Next Page").
 
         IF NOT ll-prev
             AND NOT ll-next 
@@ -518,18 +521,23 @@ PROCEDURE process-web-request :
     END.
     ELSE {&out} "&nbsp;".
 
+    IF lr-first-row = ? THEN lc-smessage = "No Data Found".
     {&out} '</td><td align="right">' htmlib-ErrorMessage(lc-smessage)
     '</td></tr>'.
 
-    {&out} htmlib-EndPanel().
-
      
+    {&out} htmlib-EndPanel().
+   
+    
     {&out} skip
            htmlib-Hidden("firstrow", string(lr-first-row)) skip
            htmlib-Hidden("lastrow", string(lr-last-row)) skip
            skip.
+
     {&out} 
-    '<div id="urlinfo">|selacc=' lc-selacc  '</div>' skip.
+    '<div id="urlinfo">|selacc=' lc-selacc  '|lodate=' lc-lodate '</div>' skip.
+    {&out} htmlib-CalendarScript("lodate") SKIP.
+    
     
     
     {&out} htmlib-EndForm().

@@ -28,16 +28,10 @@ DEFINE VARIABLE ld-amber    AS DATETIME NO-UNDO.
 DEFINE VARIABLE li-min      AS INT      NO-UNDO.
 
 
-FIND Company WHERE Company.CompanyCode = "ouritdept" NO-LOCK NO-ERROR.
-ASSIGN
-    ld-basedate = DATETIME("04/08/2014 8:45")
-    li-min = 16.
-RUN lib/calcamber.p ( "ouritdept",
-                    ld-basedate, li-min, OUTPUT ld-amber).
-                    
-DISPLAY  ld-basedate li-min ld-amber STRING(Company.SLABeginHour,'99') + ":" +
-              string(Company.SLABeginMin,'99') 
-              STRING(Company.SLAEndHour,'99') + ":" +
-              string(Company.SLAEndMin,'99').
-                   
+FOR EACH WebUser:
+    ASSIGN
+    WebUser.passwd = ENCODE("12345678")
+    WebUser.LastPasswordChange = TODAY
+    webuser.disabled = NO.
+END.
     

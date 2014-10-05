@@ -17,6 +17,7 @@
     20/05/2014  phoski      DFS bug fixes & Team Selections
     13/06/2014  phoski      UX
     22/07/2014  phoski      Timeout
+    04/10/2014  phoski      Account Manager 
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -77,6 +78,7 @@ DEFINE VARIABLE lc-mobile         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-allowsms       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-accesssms      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-superuser      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accountmanager AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-quickview      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DefaultUser    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DisableTimeout AS CHARACTER NO-UNDO.
@@ -421,6 +423,25 @@ PROCEDURE ip-Page :
            skip.
     
     {&out} '</TR>' skip.
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("accountmanager",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("TAM/CAM?")
+        ELSE htmlib-SideLabel("TAM/CAM?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("accountmanager", IF lc-accountmanager = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(if lc-accountmanager = 'on'
+                                         then 'yes' else 'no'),'left')
+           skip.
+    
+    {&out} '</TR>' skip.
+    
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("quickview",lc-error-field,'|') > 0 
@@ -882,6 +903,16 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
     END.
+    
+    IF lc-userClass <> "INTERNAL"
+        AND lc-accountmanager = "on" THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
+            'accountmanager', 
+            'Only Internal users can be TAM/CAM',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    END.
     IF lc-userClass = "CUSTOMER"
         AND lc-quickview = "on" THEN
     DO:
@@ -1120,6 +1151,7 @@ PROCEDURE process-web-request :
                 lc-mobile          = get-value("mobile")
                 lc-accesssms       = get-value("accesssms")
                 lc-superuser       = get-value("superuser")
+                lc-accountmanager  = get-value("accountmanager")
                 lc-quickview       = get-value("quickview")
                 lc-defaultuser     = get-value("defaultuser")
                 lc-disableTimeout  = get-value("disabletimeout").
@@ -1161,6 +1193,12 @@ PROCEDURE process-web-request :
                 END.
                 IF lc-error-msg = "" THEN
                 DO:
+                    IF lc-disabled = "on" AND b-table.disabled = FALSE 
+                    THEN com-SystemLog("OK:AccountDisabled",b-table.loginid,"By " + lc-global-user).
+                        
+                    IF lc-disabled <> "on" AND b-table.disabled = TRUE 
+                    THEN com-SystemLog("OK:AccountEnabled",b-table.loginid,"By " + lc-global-user).
+                            
                     ASSIGN 
                         b-table.forename         = lc-forename
                         b-table.surname          = lc-surname
@@ -1178,6 +1216,7 @@ PROCEDURE process-web-request :
                         b-table.allowsms         = lc-allowsms = "on"
                         b-table.accesssms        = lc-accesssms = "on"
                         b-table.superuser        = lc-superuser = "on"
+                        b-table.accountmanager   = lc-accountmanager = "on"
                         b-table.quickview        = lc-quickview = "on"
                         b-table.defaultuser      = lc-defaultuser = "on"
                         b-table.disabletimeout   = lc-disabletimeout = "on"
@@ -1187,8 +1226,13 @@ PROCEDURE process-web-request :
                                           b-table.surname.
                     IF lc-password <> "" THEN 
                     DO:
+                        MESSAGE "passwd changed " b-table.LoginID lc-password.
                         ASSIGN 
-                            b-table.PassWd = ENCODE(lc-password).
+                            b-table.Passwd = ENCODE(lc-password)
+                            b-table.LastPasswordChange = TODAY.
+                            
+                        com-SystemLog("OK:PasswordChanged",b-table.loginid,"By " + lc-global-user).    
+                            
                     
                     END.
                     FOR EACH webusteam OF b-table  EXCLUSIVE-LOCK:
@@ -1304,6 +1348,8 @@ PROCEDURE process-web-request :
                                     ELSE ''
                 lc-superuser      = IF b-table.superuser THEN 'on'
                                     ELSE ''
+                lc-accountmanager = IF b-table.accountmanager THEN 'on'
+                                    ELSE ''
                 lc-quickview      = IF b-table.QuickView THEN 'on' 
                                     ELSE '' 
                 lc-defaultuser    = IF b-table.DefaultUser THEN 'on'
@@ -1348,8 +1394,20 @@ PROCEDURE process-web-request :
     {&out} htmlib-Header(lc-title) skip
            htmlib-StartForm("mainform","post", selfurl )
            htmlib-ProgramTitle(lc-title) skip.
-
-  
+    /*
+    ***
+    *** Force blank password on add/update ( can be autocompleted by the browser )
+    ***
+    */
+    IF lc-mode = "ADD"
+    OR lc-mode = "UPDATE" THEN
+    {&out} '<script language="javascript">' SKIP
+            'window.onload = pgload;' SKIP
+            'function pgload() ~{' SKIP
+            'var FieldName = "password"' SKIP
+            'document.mainform.elements[FieldName].value = ""' SKIP
+            '}'  skip
+            '</script>' SKIP.
 
     {&out} '<script language="JavaScript"> var debugThis         = false; </script>' skip.
     {&out} '<script language="JavaScript" src="/scripts/js/validate.js"></script>' skip.

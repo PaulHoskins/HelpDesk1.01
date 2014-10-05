@@ -633,10 +633,10 @@ FUNCTION htmlib-CalendarInclude RETURNS CHARACTER
     ------------------------------------------------------------------------------*/
 
     RETURN '~n' + 
-        '<link rel="stylesheet" href="/scripts/cal/calendar-blue.css?fn="' + string(TIME) + string(RANDOM(1,100)) + '" type="text/css" >' + '~n' +
-        '<script type="text/javascript" src="/scripts/cal/calendar.js"></script>' + '~n' + 
-        '<script type="text/javascript" src="/scripts/cal/lang/calendar-en.js"></script>' + '~n' + 
-        '<script type="text/javascript" src="/scripts/cal/calendar-setup.js"></script>' + '~n'.
+        '<link rel="stylesheet" href="/scripts/cal/calendar-blue.css?v=1.0.0" type="text/css" >' + '~n' +
+        '<script type="text/javascript" src="/scripts/cal/calendar.js?v1.0.0"></script>' + '~n' + 
+        '<script type="text/javascript" src="/scripts/cal/lang/calendar-en.js?v=1.0.0"></script>' + '~n' + 
+        '<script type="text/javascript" src="/scripts/cal/calendar-setup.js?v=1.0.0"></script>' + '~n'.
 
 
 END FUNCTION.
@@ -1053,7 +1053,7 @@ FUNCTION htmlib-Footer RETURNS CHARACTER
         Notes:  
     ------------------------------------------------------------------------------*/
 
-    RETURN "</BODY></HTML>".
+    RETURN "</body></html>".
 
 
 END FUNCTION.
@@ -1160,31 +1160,31 @@ FUNCTION htmlib-Header RETURNS CHARACTER
 
     ASSIGN 
         lc-return = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">' + '~n' +
-         '<html>' +
-         '<head>' +
+         '<html>~n' +
+         '<head>~n' +
          lc-header + 
-         '<meta http-equiv="X-UA-Compatible" content="IE=7">' + '~n' +
+         '~n<meta http-equiv="X-UA-Compatible" content="IE=7">' + '~n' +
          '<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>' + '~n' +
          '<meta http-equiv="Cache-Control" content="No-Cache">' + '~n' +
          '<meta http-equiv="Pragma"        content="No-Cache">' + '~n' +
          '<meta http-equiv="Expires"       content="0">' + '~n' +
-         '<title>' + pc-title + '</title>' +
+         '<title>' + pc-title + '</title>~n' +
          DYNAMIC-FUNCTION('htmlib-StyleSheet':U) +
-         '<script type="text/javascript" src="/scripts/js/tabber.js"></script>' + '~n' +
-         '<link rel="stylesheet" href="/style/tab.css" TYPE="text/css" MEDIA="screen">' + '~n' +
-         '<script language="JavaScript" src="/scripts/js/standard.js"></script>' + '~n'.
+         '~n<script type="text/javascript" src="/scripts/js/tabber.js?v=1.0.0"></script>' + '~n' +
+         '<link rel="stylesheet" href="/style/tab.css?v=1.0.0" TYPE="text/css" MEDIA="screen">' + '~n' +
+         '<script language="JavaScript" src="/scripts/js/standard.js?v=1.0.0"></script>' + '~n'.
    
   
 
     IF LOOKUP("ip-HeaderInclude-Calendar",THIS-PROCEDURE:INTERNAL-ENTRIES) > 0 THEN
     DO:
         ASSIGN 
-            lc-return = lc-return + DYNAMIC-FUNCTION('htmlib-CalendarInclude':U).
+            lc-return = lc-return  + DYNAMIC-FUNCTION('htmlib-CalendarInclude':U).
           
     END.
 
     ASSIGN
-        lc-return = lc-return + '~n</HEAD>' + '<body class="normaltext" onUnload="ClosePage()">'
+        lc-return = lc-return + '~n</head>~n' + '<body class="normaltext" onUnload="ClosePage()">~n'
         .
 
     RETURN lc-return.
@@ -1206,22 +1206,6 @@ FUNCTION htmlib-HelpButton RETURNS CHARACTER
     DEFINE BUFFER b-attr FOR webattr.
 
     RETURN "".
-/*
-find b-attr 
-      where b-attr.systemid = 'help'
-        and b-attr.attrid   = pc-program
-        no-lock no-error.
-if not avail b-attr then return "".
-if b-attr.attrvalue = '' then return ''.
-
-assign lc-url = pc-appurl + '/mn/help.p?rowid=' + string(rowid(b-attr)).
-
-return  substitute(
-        '<INPUT onclick="HelpWindow(~'&1~')" type=button class="actionbutton" value="Help">',
-        lc-url).
-
-RETURN "".   /* Function return value. */
-*/
   
 END FUNCTION.
 
@@ -2097,7 +2081,7 @@ FUNCTION htmlib-StartForm RETURNS CHARACTER
         pc-name,
         pc-method,
         pc-action) + 
-        '<span class="inform"><fieldset>'. 
+        '~n<span class="inform"><fieldset>~n'. 
  
 
 END FUNCTION.

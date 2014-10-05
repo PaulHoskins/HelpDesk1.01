@@ -409,6 +409,38 @@ PROCEDURE com-GenTabSelect :
 END PROCEDURE.
 
 
+PROCEDURE com-GetAccountManagerList:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
+
+
+    DEFINE BUFFER b-user FOR WebUser.
+
+    FOR EACH b-user NO-LOCK 
+        WHERE CAN-DO(lc-global-internal,b-user.UserClass)
+        AND b-user.accountManager
+        AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
+
+        IF pc-loginID = ""
+            THEN ASSIGN 
+                pc-loginID = b-user.LoginID
+                pc-name    = b-user.Name.
+
+        ELSE ASSIGN 
+                pc-LoginID = pc-LoginID + '|' + 
+               b-user.LoginID
+                pc-name    = pc-name + '|' + 
+               b-user.Name.
+    END.
+
+END PROCEDURE.
+
 PROCEDURE com-GetAction :
     /*------------------------------------------------------------------------------
       Purpose:     
@@ -1178,17 +1210,17 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetUserListByClass:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pc-class       AS CHARACTER NO-UNDO.
         
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
 
-    DEFINE VARIABLE icount  AS INT      NO-UNDO.
+    DEFINE VARIABLE icount AS INT NO-UNDO.
     
     DEFINE BUFFER b-user FOR WebUser.
 
@@ -1198,14 +1230,14 @@ PROCEDURE com-GetUserListByClass:
         BY b-user.name:
         icount = icount + 1.
         IF icount = 1 
-        THEN ASSIGN
-            pc-loginid = b-user.LoginID
-            pc-name  = b-user.name.
+            THEN ASSIGN
+                pc-loginid = b-user.LoginID
+                pc-name    = b-user.name.
         ELSE   
-        ASSIGN 
-            pc-LoginID = pc-LoginID + '|' + 
+            ASSIGN 
+                pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
-            pc-name    = pc-name + '|' + 
+                pc-name    = pc-name + '|' + 
                b-user.Name.
     END.
     
@@ -1680,9 +1712,9 @@ FUNCTION com-CanDelete RETURNS LOGICAL
 
             END.
         WHEN 'sla' THEN
-        DO:
-            RETURN FALSE.
-        END.
+            DO:
+                RETURN FALSE.
+            END.
         
         OTHERWISE
         DO:
@@ -2641,7 +2673,7 @@ FUNCTION com-SystemLog RETURNS ROWID
       Purpose:  
         Notes:  
     ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE lrSysAct    AS ROWID NO-UNDO.
+    DEFINE VARIABLE lrSysAct AS ROWID NO-UNDO.
     
     DEFINE BUFFER SysAct FOR SysAct.
 
