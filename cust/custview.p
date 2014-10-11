@@ -416,8 +416,8 @@ PROCEDURE ip-CustomerMainInfo :
    
     ASSIGN
         lc-address = ""
-        lc-cam = "&nbsp"
-        lc-AMan = "&nbsp".
+        lc-cam = ""
+        lc-AMan = "".
 
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.Address1).
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.Address2).

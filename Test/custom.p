@@ -27,11 +27,13 @@ DEFINE VARIABLE ld-basedate AS DATETIME NO-UNDO.
 DEFINE VARIABLE ld-amber    AS DATETIME NO-UNDO.
 DEFINE VARIABLE li-min      AS INT      NO-UNDO.
 
-
+/*
 FOR EACH WebUser:
     ASSIGN
     WebUser.passwd = ENCODE("12345678")
     WebUser.LastPasswordChange = TODAY
     webuser.disabled = NO.
 END.
+*/
+
     
