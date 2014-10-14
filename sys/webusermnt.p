@@ -1226,7 +1226,6 @@ PROCEDURE process-web-request :
                                           b-table.surname.
                     IF lc-password <> "" THEN 
                     DO:
-                        MESSAGE "passwd changed " b-table.LoginID lc-password.
                         ASSIGN 
                             b-table.Passwd = ENCODE(lc-password)
                             b-table.LastPasswordChange = TODAY.

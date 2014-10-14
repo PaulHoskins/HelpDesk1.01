@@ -2203,7 +2203,7 @@ FUNCTION htmlib-StyleSheet RETURNS CHARACTER
     ------------------------------------------------------------------------------*/
     
     RETURN 
-        '~n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">~n~n' +
+        '~n<meta http-equiv="Content-Type" content="text/html; charset= ISO-8859-1">~n~n' +
         REPLACE(
          htmlib-GetAttr("system","stylesheet"),
          ".css",

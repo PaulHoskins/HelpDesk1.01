@@ -188,6 +188,10 @@ FUNCTION RunObjectExcludeFromCheck RETURNS LOGICAL
     
     IF pc-objname = "cust/custequiplist.p" THEN RETURN TRUE.
     
+    IF pc-objname = "cust/custequipmnt.p" THEN RETURN TRUE.
+    
+    IF pc-objname = "sys/webuserpref.p" THEN RETURN TRUE.
+    
    
        
     RETURN FALSE.
