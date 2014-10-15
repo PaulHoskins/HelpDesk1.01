@@ -23,7 +23,9 @@ DEFINE VARIABLE lc-global-cookie-name    AS CHARACTER
     INITIAL 'LoginInfo' NO-UNDO.
 DEFINE VARIABLE li-global-pass-max-retry AS INTEGER 
     INITIAL 10 NO-UNDO.
-    
+DEFINE VARIABLE lc-global-pack-key      AS CHARACTER 
+    INITIAL 'abcEFghi>'                 NO-UNDO.
+       
 
 FUNCTION syec-UserHasAcessToObject RETURNS LOGICAL 
     (pc-loginid AS CHARACTER,
@@ -74,7 +76,7 @@ FUNCTION syec-UserHasAcessToObject RETURNS LOGICAL
     INPUT  pc-ObjOther,
     OUTPUT llok
     ).
-    /*MESSAGE pc-loginid pc-ObjType pc-objInfo.*/
+   
     
     RETURN llok.
 
@@ -118,7 +120,7 @@ FUNCTION sysec-DecodeValue RETURNS CHARACTER
     
     lc-data = GET-STRING(DECRYPT (lr-data),1).
      
-    RETURN lc-data.
+        RETURN lc-data.
 
 		
 END FUNCTION.

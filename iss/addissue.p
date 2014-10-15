@@ -141,6 +141,10 @@ DEFINE VARIABLE lc-uadd-email   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-uadd-phone   AS CHARACTER NO-UNDO.
 
 
+DEFINE VARIABLE lc-inv-key       AS CHARACTER NO-UNDO.
+
+
+
 
 
 /* ********************  Preprocessor Definitions  ******************** */
@@ -939,6 +943,10 @@ PROCEDURE ip-Inventory :
         AND customer.AccountNumber = pc-AccountNumber
         NO-LOCK.
 
+     ASSIGN 
+         lc-enc-key =
+         DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+                            
     
     {&out} skip
            replace(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"').
@@ -1004,11 +1012,14 @@ PROCEDURE ip-Inventory :
                 '<div id="' lc-subobject '" style="padding-left: 15px; display: none;">' skip.
         END.
        
+         
+        ASSIGN 
+            lc-inv-key = DYNAMIC-FUNCTION("sysec-EncodeValue","Inventory",TODAY,"Inventory",STRING(ROWID(b-query))).
+        
         {&out} '<a href="'
         "javascript:ahah('" 
                     
-        appurl "/cust/custequiptable.p?rowid=" STRING(ROWID(b-query))
-
+        appurl "/cust/custequiptable.p?rowid=" url-encode(lc-inv-key,"Query") "&customer=" url-encode(lc-enc-key,"Query") "&sec=" url-encode(lc-global-secure,"Query")
         "','inventory');".
 
         

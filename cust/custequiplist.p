@@ -57,6 +57,7 @@ DEFINE VARIABLE rdpDomain        AS CHARACTER NO-UNDO.                 /* 3704 *
 DEFINE VARIABLE first-RDP        AS LOG       INITIAL TRUE NO-UNDO.    /* 3704 */ 
 DEFINE VARIABLE lc-tempAddress   AS CHARACTER NO-UNDO.                 /* 3704 */
 DEFINE VARIABLE lc-Enc-Key       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-inv-key       AS CHARACTER NO-UNDO.
 
 
 
@@ -687,9 +688,14 @@ PROCEDURE process-web-request :
           
         IF ll-htmltrue THEN {&out} ' onclick="javascript:newRDP(~'' + lc-htmlreturn + '~')"  '.
           
+        ASSIGN 
+            lc-inv-key = DYNAMIC-FUNCTION("sysec-EncodeValue","Inventory",TODAY,"Inventory",STRING(ROWID(b-query))).
+        
+        
         {&out} 'href="'
         "javascript:ahah('" 
-        appurl "/cust/custequiptable.p?rowid=" STRING(ROWID(b-query))
+        appurl "/cust/custequiptable.p?rowid=" url-encode(lc-inv-key,"Query") "&customer=" url-encode(lc-enc-key,"Query")
+        "&sec=" url-encode(lc-global-secure,"Query")
         "','inventory');".
 
         {&out}

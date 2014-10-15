@@ -29,6 +29,7 @@ DEFINE VARIABLE lc-global-seldesc             AS CHARACTER
 
 DEFINE VARIABLE lc-global-company             AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-global-user                AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-secure              AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-global-internal            AS CHARACTER 
     INITIAL "INTERNAL,CONTRACT" NO-UNDO.
 
@@ -2086,14 +2087,24 @@ FUNCTION com-InitialSetup RETURNS LOGICAL
 
     DEFINE BUFFER webuser FOR webuser.
 
+    DEFINE VARIABLE lc-temp     AS CHARACTER NO-UNDO.
+    
     ASSIGN 
         lc-global-user = pc-LoginID.
 
 
+    ASSIGN
+        lc-global-secure = DYNAMIC-FUNCTION("sysec-EncodeValue","GlobalSecure",TODAY,"GlobalSecure",lc-global-user).
+    
     FIND webuser WHERE webuser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
     IF AVAILABLE webuser THEN 
     DO:
+        lc-temp = STRING(ROWID(webuser)) + ":" + WebUser.LoginID.
+        
+        ASSIGN
+         lc-global-secure = DYNAMIC-FUNCTION("sysec-EncodeValue","GlobalSecure",TODAY,"GlobalSecure",lc-temp).
+        
         ASSIGN 
             lc-global-company = webuser.CompanyCode.
         DYNAMIC-FUNCTION('com-CheckSystemSetup':U,lc-global-company).

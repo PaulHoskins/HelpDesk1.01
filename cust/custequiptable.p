@@ -19,15 +19,21 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-DEFINE VARIABLE lc-rowid AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-value    AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE ll-customer       AS LOG       NO-UNDO.
+DEFINE VARIABLE ll-customer AS LOG       NO-UNDO.
+
+DEFINE VARIABLE lc-inv-key  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-cust-key AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sec-key  AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-part1    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-part2    AS CHARACTER NO-UNDO.
+
+
+
 DEFINE BUFFER this-user FOR WebUser.
-
-
-
-
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -139,11 +145,34 @@ PROCEDURE process-web-request :
       Notes:       
     ------------------------------------------------------------------------------*/
   
-    
-    
+    DEFINE VARIABLE lc-msg  AS CHARACTER    NO-UNDO.
+       
     ASSIGN 
         lc-rowid = get-value("rowid").
         
+    
+    ASSIGN
+        lc-rowid = DYNAMIC-FUNCTION("sysec-DecodeValue","Inventory",TODAY,"Inventory",lc-rowid).
+        
+    
+    
+    ASSIGN
+        lc-sec-key = get-value("sec").
+        
+    ASSIGN
+        lc-sec-key = DYNAMIC-FUNCTION("sysec-DecodeValue","GlobalSecure",TODAY,"GlobalSecure",lc-sec-key).
+      
+    ASSIGN
+        lc-part1 = ENTRY(1,lc-sec-key,":")  
+        lc-part2 = ENTRY(2,lc-sec-key,":") NO-ERROR.
+    
+          
+    ASSIGN
+        lc-cust-key = get-value("customer").
+        
+    ASSIGN
+        lc-cust-key = DYNAMIC-FUNCTION("sysec-DecodeValue",lc-part2,TODAY,"Customer",lc-cust-key).
+      
                
     /*
     ***
@@ -152,19 +181,46 @@ PROCEDURE process-web-request :
     ***
     */
     
+    FIND customer WHERE ROWID(customer) = to-rowid(lc-cust-key) NO-LOCK NO-ERROR.
+    FIND this-user WHERE ROWID(this-user) = to-rowid(lc-part1) NO-LOCK NO-ERROR.
+    
+    
        
     
     FIND custIv WHERE ROWID(custIv) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
 
-    IF NOT AVAILABLE custIv THEN 
+    IF NOT AVAILABLE custIv 
+        OR NOT AVAILABLE Customer
+        OR NOT AVAILABLE this-user THEN 
     DO:
-        RUN outputHeader.
-        {&out} 'bad row ' lc-rowid.
-        RETURN.
+        lc-msg = "URL Invalid - Access denied".
     END.
+    
+    IF lc-msg <> "" THEN
+    DO:
+        IF this-user.disabled THEN
+        DO:
+            lc-msg = "Account Disabled - Access denied".  
+        END.
+    
+        IF com-IsCustomer(this-user.CompanyCode
+            ,this-user.LoginID) AND this-user.accountNumber <> CustIv.AccountNumber THEN
+        DO:
+            lc-msg = "Invalid Account - Access denied".
+        END.
+    
+    END.
+    
     
         
     RUN outputHeader.
+    
+    IF lc-msg <> "" THEN
+    DO:
+        {&out} '<div class="infobox">' lc-msg '</div>'.
+        RETURN.
+    END.
+        
        
     {&out} skip
            htmlib-StartFieldSet("Inventory Details For " + 

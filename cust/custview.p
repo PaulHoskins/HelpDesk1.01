@@ -78,6 +78,8 @@ DEFINE VARIABLE first-RDP         AS LOG       INITIAL TRUE NO-UNDO. /* 3677 & 3
 
 DEFINE VARIABLE ll-Customer       AS LOG       INITIAL FALSE NO-UNDO.
 
+DEFINE VARIABLE lc-inv-key       AS CHARACTER NO-UNDO.
+
 DEFINE VARIABLE lc-Doc-TBAR       AS CHARACTER 
     INITIAL "doctb" NO-UNDO.
 DEFINE VARIABLE lc-Issue-TBAR     AS CHARACTER
@@ -1018,9 +1020,13 @@ PROCEDURE ip-Inventory :
           
         IF ll-htmltrue THEN {&out} ' onclick="javascript:newRDP(~'' + lc-htmlreturn + '~')"  '.
           
+        ASSIGN 
+        lc-inv-key = DYNAMIC-FUNCTION("sysec-EncodeValue","Inventory",TODAY,"Inventory",STRING(ROWID(b-query))).
+        
         {&out} 'href="'
         "javascript:ahah('" 
-        appurl "/cust/custequiptable.p?rowid=" STRING(ROWID(b-query))
+        appurl "/cust/custequiptable.p?rowid=" url-encode(lc-inv-key,"Query") "&customer=" url-encode(lc-enc-key,"Query")
+         "&sec=" url-encode(lc-global-secure,"Query")
         "','inventory');".
 
         IF ll-toolbar THEN
