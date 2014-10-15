@@ -23,8 +23,8 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
+&GlOBAL-DEFINE object-class INTERNAL-ONLY
 
- 
 DEFINE BUFFER b-table   FOR issue.
 DEFINE BUFFER b-cust    FOR Customer.
  
@@ -113,6 +113,8 @@ DEFINE VARIABLE ll-billing          AS LOG       NO-UNDO.
 DEFINE VARIABLE lc-ContractAccount  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Enc-Key          AS CHARACTER NO-UNDO.
 
+DEFINE VARIABLE ll-customer       AS LOG       NO-UNDO.
+DEFINE BUFFER this-user FOR WebUser.
 
 
 
@@ -1187,6 +1189,13 @@ PROCEDURE process-web-request :
 
     ASSIGN 
         ll-superuser = DYNAMIC-FUNCTION("com-IsSuperUser",lc-global-user).
+        
+    FIND this-user
+        WHERE this-user.LoginID = lc-global-user NO-LOCK NO-ERROR.
+    
+    ASSIGN
+        ll-customer = this-user.UserClass = "CUSTOMER".
+        
 
     ASSIGN 
         lc-mode          = get-value("mode")
@@ -1263,6 +1272,17 @@ PROCEDURE process-web-request :
     END CASE.
     FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
     FIND customer OF b-table NO-LOCK NO-ERROR.
+    
+    IF ll-customer AND Customer.AccountNumber <> this-user.AccountNumber THEN
+    DO:
+       com-SystemLog("ERROR:PageDeniedWrongAccount",lc-user,THIS-PROCEDURE:FILE-NAME).
+       set-user-field("ObjectName",THIS-PROCEDURE:FILE-NAME + " (Incorrect Account)").
+       RUN run-web-object IN web-utilities-hdl ("mn/secure.p").
+    RETURN.
+        
+          
+    END.
+    
     
     li-OpenActions = com-IssueActionsStatus(b-table.companyCode,b-table.issueNumbe,'Open').
 

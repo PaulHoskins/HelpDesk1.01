@@ -22,6 +22,10 @@ CREATE WIDGET-POOL.
 DEFINE VARIABLE lc-rowid AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
 
+DEFINE VARIABLE ll-customer       AS LOG       NO-UNDO.
+DEFINE BUFFER this-user FOR WebUser.
+
+
 
 
 
@@ -135,8 +139,12 @@ PROCEDURE process-web-request :
       Notes:       
     ------------------------------------------------------------------------------*/
   
+    
+    
     ASSIGN 
         lc-rowid = get-value("rowid").
+        
+               
     /*
     ***
     *** Note 
@@ -144,17 +152,20 @@ PROCEDURE process-web-request :
     ***
     */
     
-    RUN outputHeader.
-    
+       
     
     FIND custIv WHERE ROWID(custIv) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
 
     IF NOT AVAILABLE custIv THEN 
     DO:
+        RUN outputHeader.
         {&out} 'bad row ' lc-rowid.
         RETURN.
     END.
-
+    
+        
+    RUN outputHeader.
+       
     {&out} skip
            htmlib-StartFieldSet("Inventory Details For " + 
                                 custIv.Ref) 
@@ -191,10 +202,6 @@ PROCEDURE process-web-request :
             THEN ASSIGN lc-value = "".
         {&out} htmlib-MntTableField(REPLACE(html-encode(lc-value),"~n","<br>"),'left') skip.
         {&out} htmlib-MntTableField(html-encode(ivField.dPrompt),'left') skip.
-
-
-
-
 
         {&out} '</tr>' skip.
     END.
