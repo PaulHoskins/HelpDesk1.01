@@ -30,13 +30,25 @@ function actionCreated () {
 	actionTableBuild()
 	ClosePopUpWindow()
 }
+function mainPageBuild () {
+	var FieldName = "currentstatus"
+	var pvalue =  document.mainform.elements[FieldName].value
+	var callURL = ''
+	callURL = ActionBox1URL
+	callURL += "&currentstatus=" + pvalue
+	ahah(callURL,'actionbox1')
+}
+
 
 var tabberOptions = {
 	'onClick':function(argsObj) {
 		var t = argsObj.tabber; /* Tabber object */
 		var i = argsObj.index; /* Which tab was clicked (0..n) */
     		var div = this.tabs[i].div; /* The tab content div */
-    		
+
+    		if ( i == 0 ) {
+				mainPageBuild()
+			}
     		if ( i == 1 ) {
     			actionTableBuild()
     			return
@@ -52,6 +64,6 @@ var tabberOptions = {
     			customerInfo()
     			return
     		}
-    		
+
 	}
 };

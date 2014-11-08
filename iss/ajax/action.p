@@ -424,7 +424,6 @@ PROCEDURE process-web-request :
            htmlib-EndTable()
            skip.
 
-   
   
 END PROCEDURE.
 

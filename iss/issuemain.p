@@ -113,7 +113,7 @@ DEFINE VARIABLE ll-billing          AS LOG       NO-UNDO.
 DEFINE VARIABLE lc-ContractAccount  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Enc-Key          AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE ll-customer       AS LOG       NO-UNDO.
+DEFINE VARIABLE ll-customer         AS LOG       NO-UNDO.
 DEFINE BUFFER this-user FOR WebUser.
 
 
@@ -569,35 +569,37 @@ PROCEDURE ip-IssueMain :
     RUN ip-AreaCode.         
     {&out}        '</TD></TR>' skip. 
 
-    IF li-OpenActions <> 0  THEN
-    DO:
-        {&out} '<tr><td>&nbsp;</td><td><div class="infobox" style="font-size: 10px;">This issue has open actions ('
-        li-openActions 
-        ') and can not be closed.</div></td></tr>'
-            SKIP.
-    END.
-    ELSE
-        IF ll-IsOpen THEN
-        DO:
-            FIND WebAttr WHERE WebAttr.SystemID = "SYSTEM"
-                AND   WebAttr.AttrID   = "ISSCLOSEWARNING" NO-LOCK NO-ERROR.
-             
-            IF AVAILABLE webattr THEN
-                {&out} '<tr><td>&nbsp;</td><td>' SKIP
-            '<div class="infobox" style="font-size: 10px;">' webattr.attrValue 
-            '</div></td></tr>'
-            SKIP.
-        END.
-
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    {&out} '<TR><TD VALIGN="BOTTOM" ALIGN="right">' 
         (IF LOOKUP("currentstatus",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("Status")
         ELSE htmlib-SideLabel("Status"))
     '</TD>' 
-    '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-Select("currentstatus",lc-list-status,lc-list-sname,
+    '<TD VALIGN="TOP" ALIGN="left"><div id="actionbox1">'.
+    IF li-OpenActions <> 0  THEN
+    DO:
+        {&out} '<div class="infobox" style="font-size: 10px;">This issue has open actions ('
+        li-openActions 
+        ') and can not be closed.</div>'
+            SKIP.
+    END.
+    ELSE
+    IF ll-IsOpen THEN
+    DO:
+        FIND WebAttr WHERE WebAttr.SystemID = "SYSTEM"
+             AND   WebAttr.AttrID   = "ISSCLOSEWARNING" NO-LOCK NO-ERROR.
+             
+        IF AVAILABLE webattr THEN
+        DO:
+            {&out} '<div class="infobox" style="font-size: 10px;">' REPLACE(webattr.attrValue,'~n','<br/>')
+                '</div>'
+                SKIP.
+        END.
+     END.
+     
+    
+    {&out} htmlib-Select("currentstatus",lc-list-status,lc-list-sname,
         lc-currentstatus)
-    '</TD></TR>' skip. 
+    '</div></TD></TR>' skip. 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("statnote",lc-error-field,'|') > 0 
@@ -756,6 +758,122 @@ END PROCEDURE.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-NotePage) = 0 &THEN
+
+PROCEDURE ip-Javascript:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+
+    {&out}  
+    '<script>'
+           'var NoteAjax = "' appurl '/iss/ajax/note.p?rowid=' STRING(ROWID(b-table)) '"' skip
+           'var CustomerAjax = "' appurl '/cust/custequiplist.p?expand=yes&ajaxsubwindow=yes&customer=' url-encode(lc-enc-key,"Query")  '"' skip
+           'var DocumentAjax = "' appurl '/iss/ajax/document.p?rowid=' string(rowid(b-table)) 
+                    '&toolbarid=' lc-Doc-TBAR 
+                    '"' skip
+           'var ActionAjax = "' appurl '/iss/ajax/action.p?allowdelete=' if ll-SuperUser then "yes" else "no" '&rowid=' string(rowid(b-table)) 
+                    '&toolbarid=' lc-Action-TBAR 
+                    '"' skip
+           'var NoteAddURL = "' appurl '/iss/addnote.p?rowid=' + lc-rowid '"' skip
+           'var DocumentAddURL = "' appurl '/iss/adddocument.p?rowid=' + lc-rowid '"' SKIP
+           'var ActionBox1URL = "' appurl '/iss/ajax/actionbox.p?box=1&rowid=' + lc-rowid '"' SKIP
+           'var ActionBox2URL = "' appurl '/iss/ajax/actionbox.p?box=2&rowid=' + lc-rowid '"' skip
+           'var IssueROWID = "' string(rowid(b-table)) '"' SKIP
+           
+       '</script>' skip.
+
+
+
+    {&out} 
+    '<script type="text/javascript" src="/scripts/js/issue/custom.js?v=1.0.0"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/tree.js?v=1.0.0"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/prototype.js?v=1.0.0"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/scriptaculous.js?v=1.0.0"></script>' skip
+        '<script type="text/javascript" src="/scripts/js/tabber.js?v=1.0.0"></script>' skip
+        '<link rel="stylesheet" href="/style/tab.css" TYPE="text/css" MEDIA="screen">' skip
+        '<script language="JavaScript" src="/scripts/js/standard.js?v=1.0.0"></script>' skip
+         DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
+
+    
+    {&out} tbar-JavaScript(lc-Doc-TBAR) skip.
+    {&out} tbar-JavaScript(lc-Action-TBAR) skip.
+
+
+    /* 3678 ----------------------> */ 
+    {&out}  '<script type="text/javascript" >~n'
+    'var pIP =  window.location.host; ~n'
+    'function goGMAP(pCODE, pNAME, pADD) ~{~n'
+    'var pOPEN = "http://www.google.co.uk/maps/preview?q=";' SKIP
+            'pOPEN = pOPEN + pCODE;~n' SKIP
+            'window.open(pOPEN, ~'WinName~' , ~'width=645,height=720,left=0,top=0~');~n'
+            ' ~}~n'
+            '</script>'  skip.
+    /* ----------------------- 3678 */ 
+
+    /* 3677 ----------------------> */ 
+    {&out}  '<script type="text/javascript" >~n'
+    'function newRDP(rdpI, rdpU, rdpD) ~{~n'
+    'var sIP =  window.location.host; ~n'
+    'var sHTML="<div style:visibility=~'hidden~' >Connect to customer</div>";~n'
+    'var sScript="<SCRIPT DEFER>  ";~n'
+    'sScript = sScript +  "function goRDP()~{ window.open("~n'
+    'sScript = sScript +  "~'";~n'
+    'sScript = sScript + "http://";~n'
+    'sScript = sScript + sIP;~n'
+    'sScript = sScript + ":8090/TSweb.html?server=";~n'
+    'sScript = sScript + rdpI;~n'
+    'sScript = sScript + "&username=";~n'
+    'sScript = sScript + rdpU;~n'
+    'sScript = sScript + "&domain=";~n'
+    'sScript = sScript + rdpD;~n'
+    'sScript = sScript + "~'";~n'
+    'sScript = sScript + ", ~'WinName~', ~'width=655,height=420,left=0,top=0~'); ~} ";~n'
+    'sScript = sScript + " </SCRIPT" + ">";~n'
+    'ScriptDiv.innerHTML = sHTML + sScript;~n'
+    'document.getElementById(~'ScriptDiv~').style.visibility=~'hidden~';~n'
+    ' ~}~n'
+    '</script>'  skip.
+    /* ------------------------ 3677 */ 
+    {&out} 
+    '<script>' skip
+        'function ConfirmDeleteAttachment(ObjectID,DocID) ~{' skip
+        '   var DocumentAjax = "' appurl '/iss/ajax/deldocument.p?docid=" + DocID' skip
+        '   if (confirm("Are you sure you want to delete this document?")) ~{' skip
+        "       ObjectID.style.display = 'none';" skip
+        "       ahah(DocumentAjax,'placeholder');" skip
+        '       var objtoolBarOption = document.getElementById("doctbtboption");' skip
+        '       objtoolBarOption.innerHTML = doctbobjRowDefault;' skip
+        '   ~}' skip
+        '~}' skip
+        '</script>' skip.
+
+    {&out} 
+    '<script>' skip
+        'function CustomerView(ObjectID,DocID) ~{' skip
+        'var NewDocumentAjax = "' appurl '/iss/ajax/document.p?rowid=' string(rowid(b-table)) 
+                    '&toolbarid=' lc-Doc-TBAR '&toggle='
+                    '" + DocID;' skip
+        'var objtoolBarOption = document.getElementById("doctbtboption");' skip
+        'objtoolBarOption.innerHTML = doctbobjRowDefault;' skip
+        "ahah(NewDocumentAjax,'IDDocument');"
+        '~}' skip
+        '</script>' skip.
+
+    {&out} 
+    '<script>' skip
+        'function ConfirmDeleteAction(ObjectID,ActionID) ~{' skip
+        '   var DocumentAjax = "' appurl '/iss/ajax/delaction.p?actionid=" + ActionID' skip
+        '   if (confirm("Are you sure you want to delete this action?")) ~{' skip
+        "       ObjectID.style.display = 'none';" skip
+        "       ahah(DocumentAjax,'placeholder');" skip
+        '       var objtoolBarOption = document.getElementById("acttbtboption");' skip
+        '       objtoolBarOption.innerHTML = acttbobjRowDefault;' skip
+        '       actionTableBuild();' skip
+        '   ~}' skip
+        '~}' skip
+        '</script>'.
+END PROCEDURE.
 
 PROCEDURE ip-NotePage :
     /*------------------------------------------------------------------------------
@@ -1275,16 +1393,15 @@ PROCEDURE process-web-request :
     
     IF ll-customer AND Customer.AccountNumber <> this-user.AccountNumber THEN
     DO:
-       com-SystemLog("ERROR:PageDeniedWrongAccount",lc-user,THIS-PROCEDURE:FILE-NAME).
-       set-user-field("ObjectName",THIS-PROCEDURE:FILE-NAME + " (Incorrect Account)").
-       RUN run-web-object IN web-utilities-hdl ("mn/secure.p").
-    RETURN.
-        
-          
+        com-SystemLog("ERROR:PageDeniedWrongAccount",lc-user,THIS-PROCEDURE:FILE-NAME).
+        set-user-field("ObjectName",THIS-PROCEDURE:FILE-NAME + " (Incorrect Account)").
+        RUN run-web-object IN web-utilities-hdl ("mn/secure.p").
+        RETURN.
+   
     END.
     
     
-    li-OpenActions = com-IssueActionsStatus(b-table.companyCode,b-table.issueNumbe,'Open').
+    li-OpenActions = com-IssueActionsStatus(b-table.companyCode,b-table.issueNumber,'Open').
 
     IF li-OpenActions = 0 
         THEN RUN com-GetStatusIssue ( lc-global-company , OUTPUT lc-list-status, OUTPUT lc-list-sname ).
@@ -1394,129 +1511,14 @@ PROCEDURE process-web-request :
          '<TITLE>' lc-title '</TITLE>' skip
          DYNAMIC-FUNCTION('htmlib-StyleSheet':U) skip.
 
+    RUN ip-Javascript.
     
-    {&out}  
-    '<script>'
-    'var NoteAjax = "' appurl '/iss/ajax/note.p?rowid=' STRING(ROWID(b-table)) '"' skip
-           'var CustomerAjax = "' appurl '/cust/custequiplist.p?expand=yes&ajaxsubwindow=yes&customer=' url-encode(lc-enc-key,"Query")  '"' skip
-           'var DocumentAjax = "' appurl '/iss/ajax/document.p?rowid=' string(rowid(b-table)) 
-                    '&toolbarid=' lc-Doc-TBAR 
-                    '"' skip
-           'var ActionAjax = "' appurl '/iss/ajax/action.p?allowdelete=' if ll-SuperUser then "yes" else "no" '&rowid=' string(rowid(b-table)) 
-                    '&toolbarid=' lc-Action-TBAR 
-                    '"' skip
-           'var NoteAddURL = "' appurl '/iss/addnote.p?rowid=' + lc-rowid '"' skip
-           'var DocumentAddURL = "' appurl '/iss/adddocument.p?rowid=' + lc-rowid '"' skip
-           'var IssueROWID = "' string(rowid(b-table)) '"' skip
-       '</script>' skip.
-
-
-
-    {&out} 
-    '<script type="text/javascript" src="/scripts/js/issue/custom.js"></script>' skip
-        '<script language="JavaScript" src="/scripts/js/tree.js"></script>' skip
-        '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
-        '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip.
-
-
-    {&out}
-    '<script type="text/javascript" src="/scripts/js/tabber.js"></script>' skip
-         '<link rel="stylesheet" href="/style/tab.css" TYPE="text/css" MEDIA="screen">' skip
-         '<script language="JavaScript" src="/scripts/js/standard.js"></script>' skip
-         DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
-
-    
-    {&out} tbar-JavaScript(lc-Doc-TBAR) skip.
-    {&out} tbar-JavaScript(lc-Action-TBAR) skip.
-
-
-    /* 3678 ----------------------> */ 
-    {&out}  '<script type="text/javascript" >~n'
-    'var pIP =  window.location.host; ~n'
-    'function goGMAP(pCODE, pNAME, pADD) ~{~n'
-    'var pOPEN = "http://www.google.co.uk/maps/preview?q=";' SKIP
-            'pOPEN = pOPEN + pCODE;~n' SKIP
-            'window.open(pOPEN, ~'WinName~' , ~'width=645,height=720,left=0,top=0~');~n'
-            ' ~}~n'
-            '</script>'  skip.
-    /* ----------------------- 3678 */ 
-
-    /* 3677 ----------------------> */ 
-    {&out}  '<script type="text/javascript" >~n'
-    'function newRDP(rdpI, rdpU, rdpD) ~{~n'
-    'var sIP =  window.location.host; ~n'
-    'var sHTML="<div style:visibility=~'hidden~' >Connect to customer</div>";~n'
-    'var sScript="<SCRIPT DEFER>  ";~n'
-    'sScript = sScript +  "function goRDP()~{ window.open("~n'
-    'sScript = sScript +  "~'";~n'
-    'sScript = sScript + "http://";~n'
-    'sScript = sScript + sIP;~n'
-    'sScript = sScript + ":8090/TSweb.html?server=";~n'
-    'sScript = sScript + rdpI;~n'
-    'sScript = sScript + "&username=";~n'
-    'sScript = sScript + rdpU;~n'
-    'sScript = sScript + "&domain=";~n'
-    'sScript = sScript + rdpD;~n'
-    'sScript = sScript + "~'";~n'
-    'sScript = sScript + ", ~'WinName~', ~'width=655,height=420,left=0,top=0~'); ~} ";~n'
-    'sScript = sScript + " </SCRIPT" + ">";~n'
-    'ScriptDiv.innerHTML = sHTML + sScript;~n'
-    'document.getElementById(~'ScriptDiv~').style.visibility=~'hidden~';~n'
-    ' ~}~n'
-    '</script>'  skip.
-    /* ------------------------ 3677 */ 
-    {&out} 
-    '<script>' skip
-        'function ConfirmDeleteAttachment(ObjectID,DocID) ~{' skip
-        '   var DocumentAjax = "' appurl '/iss/ajax/deldocument.p?docid=" + DocID' skip
-        '   if (confirm("Are you sure you want to delete this document?")) ~{' skip
-        "       ObjectID.style.display = 'none';" skip
-        "       ahah(DocumentAjax,'placeholder');" skip
-        '       var objtoolBarOption = document.getElementById("doctbtboption");' skip
-        '       objtoolBarOption.innerHTML = doctbobjRowDefault;' skip
-        '   ~}' skip
-        '~}' skip
-        '</script>' skip.
-
-    {&out} 
-    '<script>' skip
-        'function CustomerView(ObjectID,DocID) ~{' skip
-        'var NewDocumentAjax = "' appurl '/iss/ajax/document.p?rowid=' string(rowid(b-table)) 
-                    '&toolbarid=' lc-Doc-TBAR '&toggle='
-                    '" + DocID;' skip
-        'var objtoolBarOption = document.getElementById("doctbtboption");' skip
-        'objtoolBarOption.innerHTML = doctbobjRowDefault;' skip
-        "ahah(NewDocumentAjax,'IDDocument');"
-        '~}' skip
-        '</script>' skip.
-
-    {&out} 
-    '<script>' skip
-        'function ConfirmDeleteAction(ObjectID,ActionID) ~{' skip
-        '   var DocumentAjax = "' appurl '/iss/ajax/delaction.p?actionid=" + ActionID' skip
-        '   if (confirm("Are you sure you want to delete this action?")) ~{' skip
-        "       ObjectID.style.display = 'none';" skip
-        "       ahah(DocumentAjax,'placeholder');" skip
-        '       var objtoolBarOption = document.getElementById("acttbtboption");' skip
-        '       objtoolBarOption.innerHTML = acttbobjRowDefault;' skip
-        '       actionTableBuild();' skip
-        '   ~}' skip
-        '~}' skip
-        '</script>'.
 
     {&out}
     '</HEAD>' skip
-         '<body class="normaltext" onUnload="ClosePage()">' skip
-    .
-
-
-   
-  
-
-    /* {&out} '<script type="text/javascript" src="/scripts/js/issue/tab.js"></script>' skip. */
-    {&out}
-    htmlib-StartForm("mainform","post", appurl + '/iss/issuemain.p' )
-    htmlib-ProgramTitle(lc-title).
+        '<body class="normaltext" onUnload="ClosePage()">' skip
+        htmlib-StartForm("mainform","post", appurl + '/iss/issuemain.p') skip
+        htmlib-ProgramTitle(lc-title) skip.
 
 
     {&out} htmlib-Hidden ("savemode", lc-mode) skip
