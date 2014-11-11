@@ -8,7 +8,9 @@
     
     
     When        Who         What
-    03/05/2014  phoski      Initial  cc 
+    03/05/2014  phoski      Initial  
+    09/11/2014  phoski      SLA Comment from note
+                            active customers
 ***********************************************************************/
 
 {rep/issuelogtt.i}
@@ -20,11 +22,10 @@ DEFINE INPUT PARAMETER pc-companycode          AS CHARACTER         NO-UNDO.
 DEFINE INPUT PARAMETER pc-loginid              AS CHARACTER         NO-UNDO.
 DEFINE INPUT PARAMETER pc-FromAccountNumber    AS CHARACTER         NO-UNDO.
 DEFINE INPUT PARAMETER pc-ToAccountNumber      AS CHARACTER         NO-UNDO.
-DEFINE INPUT PARAMETER pd-FromDate             AS DATE         NO-UNDO.
-DEFINE INPUT PARAMETER pd-ToDate               AS DATE         NO-UNDO.
+DEFINE INPUT PARAMETER pl-allcust              AS LOG               NO-UNDO.
+DEFINE INPUT PARAMETER pd-FromDate             AS DATE              NO-UNDO.
+DEFINE INPUT PARAMETER pd-ToDate               AS DATE              NO-UNDO.
 DEFINE INPUT PARAMETER pc-ClassList            AS CHARACTER         NO-UNDO.
-
-
 
 DEFINE OUTPUT PARAMETER table              FOR tt-ilog.
 
@@ -34,6 +35,7 @@ DEFINE VARIABLE pc-companycode       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE pc-loginid           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE pc-FromAccountNumber AS CHARACTER NO-UNDO.
 DEFINE VARIABLE pc-ToAccountNumber   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE pl-allcust           AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE pd-FromDate          AS DATE      NO-UNDO.
 DEFINE VARIABLE pd-ToDate            AS DATE      NO-UNDO.
 
@@ -42,42 +44,7 @@ DEFINE VARIABLE pd-ToDate            AS DATE      NO-UNDO.
 &ENDIF
 
 {lib/common.i}
-
 {iss/issue.i}
-
-
-
-
-/* ********************  Preprocessor Definitions  ******************** */
-
-&Scoped-define PROCEDURE-TYPE Procedure
-&Scoped-define DB-AWARE no
-
-
-
-
-
-
-/* *********************** Procedure Settings ************************ */
-
-
-
-/* *************************  Create Window  ************************** */
-
-/* DESIGN Window definition (used by the UIB) 
-  CREATE WINDOW Procedure ASSIGN
-         HEIGHT             = 15
-         WIDTH              = 60.
-/* END WINDOW DEFINITION */
-                                                                        */
-
- 
-
-
-
-
-/* ***************************  Main Block  *************************** */
-
 
 
 RUN ip-BuildData.
@@ -99,6 +66,8 @@ PROCEDURE ip-BuildData :
     DEFINE BUFFER IssStatus    FOR IssStatus.
     DEFINE BUFFER IssActivity  FOR IssActivity.
     DEFINE BUFFER issnote      FOR issnote.
+    DEFINE BUFFER customer     FOR Customer.
+    
 
     
     DEFINE VARIABLE li-seconds  AS INTEGER      NO-UNDO.
@@ -123,7 +92,11 @@ PROCEDURE ip-BuildData :
         AND CAN-DO(pc-classList,issue.iClass)
         :
 
-        IF NOT CAN-FIND(customer OF Issue NO-LOCK) THEN NEXT.
+        FIND customer OF Issue NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE Customer THEN NEXT.
+        
+        IF pl-allcust = NO
+        AND Customer.IsActive = NO THEN NEXT.
                         
         CREATE tt-ilog.
         BUFFER-COPY issue TO tt-ilog.
@@ -159,16 +132,13 @@ PROCEDURE ip-BuildData :
                     tt-ilog.ClosedBy = DYNAMIC-FUNCTION("com-UserName",issStatus.loginID).
             END.
 
-            /*
-            FIND LAST issnote OF issue 
-                WHERE issnote.notecode =  'SYS.SLAMISSED'
+            FIND FIRST issnote OF issue 
+                WHERE issnote.notecode =  'SYS.MISC'
+                USE-INDEX IssueNumber
                 NO-LOCK NO-ERROR.
-            IF NOT AVAIL issnote 
-            THEN ASSIGN tt-ilog.SLAAchieved = TRUE.
-            ELSE ASSIGN tt-ilog.SLAAchieved = FALSE
-                        tt-ilog.SLAComment = issnote.CONTENTS.
-
-            */
+            IF AVAILABLE IssNote
+                THEN ASSIGN tt-ilog.SLAComment = issnote.CONTENTS.     
+                
             IF issue.slaTrip <> ? THEN
             DO:
                 ldt-comp = ?.
@@ -183,10 +153,7 @@ PROCEDURE ip-BuildData :
 
 
                 END.
-                ASSIGN 
-                    tt-ilog.SLAComment = 
-                   /* STRING(ldt-comp,"99/99/9999 HH:MM") + " " + */
-                    STRING(issue.SLATrip,"99/99/9999 HH:MM").
+                
             END.
         END.
 

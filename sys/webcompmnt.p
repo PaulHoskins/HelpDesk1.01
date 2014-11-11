@@ -16,6 +16,7 @@
     
     07/09/2010  DJS         3704  Removed streetmap button.
     30/04/2014  phoski      Marketing Banner
+    09/11/2014  phoski      Email Stuff
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -77,6 +78,9 @@ DEFINE VARIABLE lc-issueinfo      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-TimeOut        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-PasswordExpire AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-mBanner        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-emuser         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-empass         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-emssl          AS CHARACTER NO-UNDO.
 
 
 
@@ -295,7 +299,54 @@ htmlib-InputField("smtp",40,lc-smtp)
     {&out} htmlib-TableField(html-encode(lc-smtp),'left')
            skip.
 {&out} '</TR>' skip.
+/**/
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("emuser",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("SMTP Account")
+    ELSE htmlib-SideLabel("SMTP Account"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("emuser",40,lc-emuser) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-emuser),'left')
+           skip.
+{&out} '</TR>' skip.
 
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("empass",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("SMTP Password")
+    ELSE htmlib-SideLabel("SMTP Password"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("empass",40,lc-empass) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-empass),'left')
+           skip.
+{&out} '</TR>' skip.
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("emssl",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("SMTP SSL/TLS Connection")
+    ELSE htmlib-SideLabel("SMTP SSL/TLS Connection"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-checkBox("emssl",lc-emssl = "on")
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(IF lc-emssl = "on" THEN "Yes" ELSE 'No','left')
+           skip.
+{&out} '</TR>' skip.
+
+
+/**/
 {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
     (IF LOOKUP("helpdeskemail",lc-error-field,'|') > 0 
     THEN htmlib-SideLabelError("HelpDesk Email Address")
@@ -716,6 +767,9 @@ PROCEDURE process-web-request :
                 lc-passwordexpire = get-value("passwordexpire")
                 lc-email2db       = get-value("email2db")
                 lc-mbanner        = get-value("mbanner")
+                lc-emuser         = get-value("emuser")
+                lc-empass         = get-value("empass")
+                lc-emssl          = get-value("emssl")
 
                 .
             
@@ -771,6 +825,9 @@ PROCEDURE process-web-request :
                         b-table.PasswordExpire = int(lc-passwordExpire)
                         b-table.Email2DB       = lc-Email2DB
                         b-table.mBanner        = lc-mBanner
+                        b-table.em_user        = lc-emuser
+                        b-table.em_pass        = lc-empass
+                        b-table.em_ssl         = lc-emssl = "on"
                         .
                    
                     
@@ -832,6 +889,9 @@ PROCEDURE process-web-request :
                 lc-passwordexpire = STRING(b-table.passwordExpire)
                 lc-email2db       = b-table.email2db
                 lc-mbanner        = b-table.mBanner
+                lc-emuser         = b-table.em_user
+                lc-empass         = b-table.em_pass
+                lc-emssl          = IF b-table.em_ssl THEN "on" ELSE ""
                 .
        
     END.

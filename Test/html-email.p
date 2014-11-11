@@ -34,7 +34,7 @@ DEFINE VARIABLE li-result      AS INTEGER    NO-UNDO.
 
 CREATE "EASendMailObj.Mail" oSmtp.
 
-oSmtp:LicenseCode = "TryIt".
+oSmtp:LicenseCode = "ES-B1331025340-00798-79VDBD295B4F9DD9-D6A242ECTD49UV5F".
 oSmtp:Reset().
 
 

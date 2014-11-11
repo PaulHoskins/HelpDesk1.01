@@ -10,6 +10,7 @@
     When        Who         What
     10/04/2006  phoski      Initial
     20/06/2011  DJS         Added email html format
+    09/11/2014  phoski      Replace perl with com object
 ***********************************************************************/
 
 &if defined(maillib-library-defined) = 0 &then
@@ -17,6 +18,45 @@
 &glob maillib-library-defined yes
 
 DEFINE STREAM mlib-s.
+
+DEFINE VARIABLE oSmtp          AS COM-HANDLE NO-UNDO.
+DEFINE VARIABLE li-Recipient   AS INTEGER    INITIAL 0 NO-UNDO.
+DEFINE VARIABLE li-cc          AS INTEGER    INITIAL 1 NO-UNDO.
+DEFINE VARIABLE li-bcc         AS INTEGER    INITIAL 2 NO-UNDO.
+
+DEFINE VARIABLE li-email-plain AS INTEGER    INITIAL 0 NO-UNDO.
+DEFINE VARIABLE li-email-html  AS INTEGER    INITIAL 1 NO-UNDO.
+DEFINE VARIABLE li-result      AS INTEGER    NO-UNDO.
+DEFINE VARIABLE li-footer-done AS LOG        INITIAL NO NO-UNDO.
+
+
+FUNCTION mlib-StartCom RETURNS LOG (pc-companyCode AS CHARACTER ):
+    DEFINE BUFFER company FOR company.
+    
+    FIND company 
+        WHERE company.companycode = pc-companyCode NO-LOCK NO-ERROR.
+        
+    IF NOT AVAILABLE company THEN RETURN FALSE.
+    
+    
+    CREATE "EASendMailObj.Mail" oSmtp.
+
+    oSmtp:LicenseCode = "ES-B1331025340-00798-79VDBD295B4F9DD9-D6A242ECTD49UV5F".
+    oSmtp:Reset().
+    oSmtp:ServerAddr    = Company.smtp.
+
+    IF Company.em_user <> "" THEN
+    DO:
+     
+        oSmtp:UserName = Company.em_user.
+        oSmtp:Password = Company.em_pass. 
+        IF Company.em_ssl
+            THEN oSmtp:SSL_init.   
+    
+    END.
+
+    
+END FUNCTION.
 
 FUNCTION mlib-SendAttEmail RETURNS LOG
     (pc-companyCode AS CHARACTER,
@@ -39,7 +79,9 @@ FUNCTION mlib-SendAttEmail RETURNS LOG
         WHERE company.companycode = pc-companyCode NO-LOCK NO-ERROR.
     IF NOT AVAILABLE company THEN RETURN FALSE.
     IF company.smtp = "" THEN RETURN FALSE.
-
+    
+    mlib-StartCom(pc-companyCode).
+    
     ASSIGN 
         pc-subject = REPLACE(pc-subject,"~"","").
     ASSIGN 
@@ -50,60 +92,49 @@ FUNCTION mlib-SendAttEmail RETURNS LOG
     ASSIGN 
         pc-message = REPLACE(pc-message,"'","").
     
-    IF company.EmailFooter <> ""
-        THEN ASSIGN pc-message = pc-message + "~n~n" + company.EmailFooter.
-
+    IF li-footer-done = FALSE THEN
+    DO:
+        IF company.EmailFooter <> ""
+            THEN ASSIGN pc-message = pc-message + "~n~n" + company.EmailFooter.
+    END.
+    li-footer-done = FALSE.
+   
     IF pc-Sender = ""
         THEN ASSIGN pc-Sender = company.HelpDeskEmail.
     
-    ASSIGN 
-        pc-message = pc-message + "~n~n"
-        + dynamic-function("mlib-Reader",pc-attachment).
+    IF pc-attachment <> ""
+        THEN ASSIGN 
+            pc-message = pc-message + "~n~n"
+            + dynamic-function("mlib-Reader",pc-attachment).
 
     DO li-loop = 1 TO NUM-ENTRIES(pc-message,'|'):
     
         IF li-loop = 1
             THEN ASSIGN lc-message = ENTRY(1,pc-message,'|').
-        ELSE ASSIGN lc-message = lc-message + "\n" 
+        ELSE ASSIGN lc-message = lc-message + "~n" 
                                 + entry(li-loop,pc-message,'|').
     END.
 
     ASSIGN 
         lc-address-to = DYNAMIC-FUNCTION("mlib-OutAddress",pc-to).
     
-    DO li-mail = 1 TO NUM-ENTRIES(lc-address-to):
-        ASSIGN 
-            lc-perl = DYNAMIC-FUNCTION("mlib-PerlFile").
-        OUTPUT to value(lc-perl).
-        PUT UNFORMATTED
-            "use Mail::Sender;" SKIP
-            "$sender = new Mail::Sender ~{ smtp => '" company.smtp "',"
-            " from => '" pc-Sender "'~};" SKIP.
-   
-
-        PUT UNFORMATTED
-            "$sender->MailFile(~{to =>'" ENTRY(li-mail,lc-address-to) "',"
-            " subject => '" pc-Subject "',".
-    
-        IF pc-cc <> ""
-            THEN PUT UNFORMATTED 
-                " cc => '" DYNAMIC-FUNCTION("mlib-OutAddress",pc-cc) "',".
-        
-        IF pc-bcc <> ""
-            AND pc-bcc <> ? 
-            THEN PUT UNFORMATTED
-                " bcc => '" DYNAMIC-FUNCTION("mlib-OutAddress",pc-bcc) "',".
-    
-        PUT UNFORMATTED
-            " msg => ~"" lc-message "~","
-            " file => '" pc-attachment "'" 
-            " ~});" SKIP
-            .
-    
-        OUTPUT close.
-        OS-COMMAND SILENT c:\perl\bin\perl VALUE(lc-perl).
-    /* os-delete value(lc-perl). */
+    oSmtp:FromAddr  = pc-sender.
+    oSmtp:Subject   = pc-subject.   
+    oSmtp:BodyFormat    = li-email-html.
+    IF pc-attachment <> "" THEN 
+    DO:
+        li-result = oSmtp:AddAttachment( pc-Attachment ).
     END.
+    oSmtp:BodyText = REPLACE(lc-message,"~n","<br/>").
+    
+    DO li-mail = 1 TO NUM-ENTRIES(lc-address-to):
+        oSmtp:AddRecipient( ENTRY(li-mail,lc-address-to), ENTRY(li-mail,lc-address-to), li-Recipient ).
+    END.
+    
+    li-result = oSmtp:SendMail().
+    MESSAGE "res = " li-result ' Erc = 'oSmtp:GetLastErrDescription() .
+    
+    RELEASE OBJECT oSmtp NO-ERROR.
     
     RETURN TRUE.
 END FUNCTION.     
@@ -117,62 +148,19 @@ FUNCTION mlib-SendEmail RETURNS LOG
     pc-To AS CHARACTER
     ):
 
-
-    DEFINE VARIABLE lc-perl       AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE lc-message    AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE li-loop       AS INTEGER   NO-UNDO.
-    DEFINE VARIABLE lc-address-to AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE li-mail       AS INTEGER   NO-UNDO.
-
+    mlib-SendAttEmail (
+        pc-CompanyCode ,
+        pc-sender,
+        pc-subject,
+        pc-message,
+        pc-to,
+        "",
+        "",
+        ""
+        ).
+    RETURN TRUE.
     
-    DEFINE BUFFER company FOR company.
-    FIND company 
-        WHERE company.companycode = pc-companyCode NO-LOCK NO-ERROR.
-    IF NOT AVAILABLE company THEN RETURN FALSE.
-    IF company.smtp = "" THEN RETURN FALSE.
-
-    IF pc-Sender = ""
-        THEN ASSIGN pc-Sender = company.HelpDeskEmail.
     
-    ASSIGN 
-        lc-address-to = DYNAMIC-FUNCTION("mlib-OutAddress",pc-to).
-
-    IF company.EmailFooter <> ""
-        THEN ASSIGN pc-message = pc-message + "~n~n" + company.EmailFooter.
-    /* 
-    *** 
-    *** PH - Mail::Sender can handle multiply addresss, com sep, in the 
-    *** to field but for some reason it doesn't work with our mail server
-    *** so send each email individually
-    ***
-    */
-    DO li-mail = 1 TO NUM-ENTRIES(lc-address-to):
-    
-        ASSIGN 
-            lc-perl = DYNAMIC-FUNCTION("mlib-PerlFile").
-        OUTPUT to value(lc-perl).
-        PUT UNFORMATTED
-            "use Mail::Sender;" SKIP
-            "$sender = new Mail::Sender ~{smtp => '" company.smtp "', from => '" 
-            pc-Sender "'~};" SKIP
-            "ref $sender->Open(~{to => '" 
-            ENTRY(li-mail,lc-Address-To) 
-            "', subject => '" pc-subject "'~})" SKIP
-            "or die ~"Error: $Mail::Sender::Error\n~";" SKIP
-            "my $FH = $sender->GetHandle();" SKIP
-            "print $FH <<'*END*';" SKIP.
-
-        DO li-loop = 1 TO NUM-ENTRIES(pc-message,'|'):
-            PUT UNFORMATTED ENTRY(li-loop,pc-message,'|') SKIP.
-        END.
-
-        PUT UNFORMATTED 
-            "*END*" SKIP
-            "$sender->Close;" SKIP.
-        OUTPUT close.
-        OS-COMMAND SILENT c:\perl\bin\perl VALUE(lc-perl).
-        OS-DELETE value(lc-perl).
-    END.
 
 END FUNCTION.    
 
@@ -186,78 +174,36 @@ FUNCTION mlib-SendMultipartEmail RETURNS LOG
     pc-H-Message AS CHARACTER,
     pc-To AS CHARACTER
     ):
-                
-
-    DEFINE VARIABLE lc-perl       AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE lc-message    AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE li-loop       AS INTEGER   NO-UNDO.
-    DEFINE VARIABLE lc-address-to AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE li-mail       AS INTEGER   NO-UNDO.
-    DEFINE VARIABLE lc-boundry    AS CHARACTER NO-UNDO.
-    
+        
     DEFINE BUFFER company FOR company.
 
     FIND company WHERE company.companycode = pc-companyCode NO-LOCK NO-ERROR.
     IF NOT AVAILABLE company THEN RETURN FALSE.
     IF company.smtp = "" THEN RETURN FALSE.
-
-    IF pc-Sender = "" THEN ASSIGN pc-Sender = company.HelpDeskEmail.
     
-    ASSIGN 
-        lc-address-to = DYNAMIC-FUNCTION("mlib-OutAddress",pc-to).
-
-    IF company.EmailFooter <> ""
-        THEN ASSIGN pc-Message   = pc-Message + "~n~n" + company.EmailFooter
+    IF company.EmailFooter <> "" THEN
+    DO:
+        ASSIGN pc-Message   = pc-Message + "~n~n" + Company.EmailFooter
+                    li-footer-done = TRUE
             pc-H-Message = pc-H-message + '<pre style="font-family:Verdana,Geneva,Arial,Helvetica sans-serif;font-size:12px">'
                              + company.EmailFooter + '</pre></div></body></html>'.
+    END.
     ELSE ASSIGN pc-H-Message = pc-H-message + '</div></body></html>'.
     
-    ASSIGN 
-        lc-perl = DYNAMIC-FUNCTION("mlib-PerlFile").
-
-    OUTPUT to value(lc-perl).
-
-    ASSIGN 
-        lc-boundry = "====" + string(RANDOM(11111111,99999999),"99999999") 
-                               + string(TIME,"99999999") 
-                               + string(RANDOM(11111111,99999999),"99999999")
-                               + "====".
-    PUT UNFORMATTED
-        "use MIME::QuotedPrint;" SKIP
-        "use HTML::Entities;" SKIP
-        "use Mail::Sender;" SKIP
-        "$sender = new Mail::Sender ~{smtp => '" company.smtp "', from => '" 
-        pc-Sender "'~};" SKIP
-        "ref $sender->Open(~{to => '"  lc-Address-To
-        "', subject => '" pc-subject "'  , ctype => 'multipart/alternative; boundary=~"" lc-boundry "~"' ~})" SKIP
-        "or die ~"Error: $Mail::Sender::Error\n~";" SKIP
-        "my $FH = $sender->GetHandle();" SKIP
-        "print $FH <<'*END*';" SKIP(2).
-
-    PUT UNFORMATTED
-        "--" lc-boundry SKIP
-        "Content-Type: text/plain; charset=~"iso-8859-1~"" SKIP
-        "Content-Transfer-Encoding: 8bit" SKIP(2).
-
-    PUT UNFORMATTED pc-Message SKIP(2).
-
-    PUT UNFORMATTED
-        "--" lc-boundry SKIP
-        "Content-Type: text/html; charset=~"iso-8859-1~"" SKIP
-        "Content-Transfer-Encoding: 8bit" SKIP(2).
-
-    PUT UNFORMATTED pc-H-Message SKIP(2).
-
-    PUT UNFORMATTED
-        "--" lc-boundry "--" SKIP(2).
         
-    PUT UNFORMATTED 
-        "*END*" SKIP
-        "$sender->Close;" SKIP.
-
-    OUTPUT close.
-    OS-COMMAND SILENT c:\perl\bin\perl VALUE(lc-perl).
-/*     os-delete value(lc-perl).                          */
+    mlib-SendAttEmail (
+        pc-CompanyCode ,
+        pc-sender,
+        pc-subject,
+        pc-h-message,
+        pc-to,
+        "",
+        "",
+        ""
+        ).
+    
+    
+    RETURN TRUE.
 
 END FUNCTION.     
 /* ------------------------------------------------------ */

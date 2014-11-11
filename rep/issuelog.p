@@ -10,6 +10,7 @@
     When        Who         What
     
     01/05/2014  phoski      Initial
+    09/11/2014  phoski          
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -40,16 +41,16 @@ DEFINE VARIABLE lc-list-aname AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-filename   AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lr-UUID       AS RAW       NO-UNDO.
-DEFINE VARIABLE lc-GenKey     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-CodeName   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE li-loop       AS INTEGER   NO-UNDO.
 
 DEFINE VARIABLE lc-ClassList  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
 
 
 {rep/issuelogtt.i}
-
+{lib/maillib.i}
+{lib/princexml.i}
 
 
 
@@ -152,21 +153,24 @@ PROCEDURE ip-ExportReport :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-
+    DEFINE OUTPUT PARAMETER pc-filename AS CHARACTER NO-UNDO.
+    
 
     DEFINE BUFFER customer     FOR customer.
     DEFINE BUFFER issue        FOR issue.
     
-  
-   
-    ASSIGN  
-        lr-UUID = GENERATE-UUID
-        lc-GenKey = GUID(lr-UUID).
 
-    lc-filename = SESSION:TEMP-DIR + "/" + lc-GenKey
+    DEFINE VARIABLE lc-GenKey     AS CHARACTER NO-UNDO.
+
+   
+    ASSIGN
+        lc-genkey = STRING(NEXT-VALUE(ReportNumber)).
+    
+        
+    pc-filename = SESSION:TEMP-DIR + "/IssueLog-" + lc-GenKey
         + ".csv".
 
-    OUTPUT TO VALUE(lc-filename).
+    OUTPUT TO VALUE(pc-filename).
 
     PUT UNFORMATTED
                 
@@ -179,7 +183,7 @@ PROCEDURE ip-ExportReport :
         BREAK BY tt-ilog.AccountNumber
         BY tt-ilog.IssueNumber
         :
-
+            
         FIND customer WHERE customer.CompanyCode = lc-global-company
             AND customer.AccountNumber = tt-ilog.AccountNumber
             NO-LOCK NO-ERROR.
@@ -229,28 +233,17 @@ PROCEDURE ip-InitialProcess :
     IF ll-customer THEN
     DO:
         ASSIGN 
-            lc-lo-account = this-user.AccountNumber
-            .
+            lc-lo-account = this-user.AccountNumber.
         set-user-field("loaccount",this-user.AccountNumber).
         set-user-field("hiaccount",this-user.AccountNumber).
-
-
     END.
-    ELSE
-    DO:
         
-    END.
-
-
-    
     ASSIGN
         lc-lo-account = get-value("loaccount")
         lc-hi-account = get-value("hiaccount")    
         lc-lodate      = get-value("lodate")         
         lc-hidate      = get-value("hidate")
-               
-    
- 
+        lc-output      = get-value("output")
         .
     
     RUN com-GetCustomerAccount ( lc-global-company , lc-global-user, OUTPUT lc-list-acc, OUTPUT lc-list-aname ).
@@ -288,6 +281,171 @@ END PROCEDURE.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-PrintReport) = 0 &THEN
+
+PROCEDURE ip-PDF:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-pdf AS CHARACTER NO-UNDO.
+    
+    DEFINE BUFFER customer     FOR customer.
+    DEFINE BUFFER issue        FOR issue.
+    
+    DEFINE VARIABLE lc-html         AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-pdf          AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE ll-ok           AS LOG      NO-UNDO.
+    DEFINE VARIABLE li-ReportNumber AS INTEGER      NO-UNDO.
+
+    ASSIGN    
+        li-ReportNumber = NEXT-VALUE(ReportNumber).
+    ASSIGN 
+        lc-html = SESSION:TEMP-DIR + caps(lc-global-company) + "-issueLog-" + string(li-ReportNumber).
+
+    ASSIGN 
+        lc-pdf = lc-html + ".pdf"
+        lc-html = lc-html + ".html".
+
+    OS-DELETE value(lc-pdf) no-error.
+    OS-DELETE value(lc-html) no-error.
+
+
+    DYNAMIC-FUNCTION("pxml-Initialise").
+
+    CREATE tt-pxml.
+    ASSIGN 
+        tt-pxml.PageOrientation = "LANDSCAPE".
+
+    DYNAMIC-FUNCTION("pxml-OpenStream",lc-html).
+    DYNAMIC-FUNCTION("pxml-Header", lc-global-company).
+   
+        
+    {&prince}
+    '<p style="text-align: center; font-size: 14px; font-weight: 900;">Issue Log - '
+    'From ' STRING(DATE(lc-lodate),"99/99/9999")
+    ' To ' STRING(DATE(lc-hidate),"99/99/9999") 
+      
+    '</div>'.
+
+
+    /*
+        {&prince}
+        '<table class="landrep">'
+        '<thead>'
+        '<tr>'
+         htmlib-TableHeading(
+                    "Issue Number^right|Description^left|Issue Class^left|Raised By^left|System^left|SLA Level^left|" +
+                    "Date Raised^right|Time Raised^left|Date Completed^right|Time Completed^left|Activity Duration^right|SLA Achieved^left|SLA Comment^left|" +
+                    "Closed By^left")
+                    
+        '</tr>'
+        '</thead>'
+            skip.
+    */
+
+
+    
+    FOR EACH tt-ilog NO-LOCK
+        BREAK BY tt-ilog.AccountNumber
+        BY tt-ilog.IssueNumber
+        :
+
+        IF FIRST-OF(tt-ilog.AccountNumber) THEN
+        DO:
+            FIND customer WHERE customer.CompanyCode = lc-global-company
+                AND customer.AccountNumber = tt-ilog.AccountNumber
+                NO-LOCK NO-ERROR.
+            {&prince} htmlib-BeginCriteria("Customer - " + tt-ilog.AccountNumber + " " + 
+                customer.NAME) SKIP.
+                
+            {&prince}
+            '<table class="landrep">'
+            '<thead>'
+            '<tr>'
+            htmlib-TableHeading(
+                "Issue Number^right|Description^left|Issue Class^left|Raised By^left|System^left|SLA Level^left|" +
+                "Date Raised^right|Time Raised^left|Date Completed^right|Time Completed^left|Activity Duration^right|SLA Achieved^left|SLA Comment^left|" +
+                "Closed By^left")
+                
+            '</tr>'
+            '</thead>'
+        skip.
+
+
+        END.
+
+
+        {&prince}
+            skip
+            '<tr>'
+            skip
+            htmlib-MntTableField(html-encode(string(tt-ilog.issuenumber)),'right')
+
+            htmlib-MntTableField(html-encode(string(tt-ilog.briefDescription)),'left')
+            htmlib-MntTableField(html-encode(string(tt-ilog.iType)),'left')
+
+            htmlib-MntTableField(html-encode(string(tt-ilog.RaisedLoginID)),'left')
+
+            htmlib-MntTableField(html-encode(string(tt-ilog.AreaCode)),'left')
+            htmlib-MntTableField(html-encode(string(tt-ilog.SLALevel)),'right')
+            htmlib-MntTableField(html-encode(string(tt-ilog.CreateDate,"99/99/9999")),'right')
+            htmlib-MntTableField(html-encode(string(tt-ilog.CreateTime,"hh:mm")),'right').
+        
+        IF tt-ilog.CompDate <> ? THEN
+            {&prince}
+        htmlib-MntTableField(html-encode(STRING(tt-ilog.CompDate,"99/99/9999")),'right')
+        htmlib-MntTableField(html-encode(STRING(tt-ilog.CompTime,"hh:mm")),'right').
+        ELSE
+        {&prince}
+            htmlib-MntTableField(html-encode(""),'right')
+            htmlib-MntTableField(html-encode(""),'right').    
+
+        {&prince}
+        htmlib-MntTableField(html-encode(STRING(tt-ilog.ActDuration)),'right')
+        htmlib-MntTableField(html-encode(STRING(tt-ilog.SLAAchieved)),'left')
+        htmlib-MntTableField(REPLACE(tt-ilog.SLAComment,'~n','<br/>'),'left')
+
+        htmlib-MntTableField(html-encode(STRING(tt-ilog.ClosedBy)),'left')
+
+
+
+            SKIP .
+
+        {&prince} '</tr>' SKIP.
+
+
+
+
+
+
+        IF LAST-OF(tt-ilog.AccountNumber) THEN
+        DO:
+            {&prince} skip 
+                htmlib-EndTable()
+                skip.
+
+            {&prince} htmlib-EndCriteria().
+
+
+        END.
+
+
+    END.
+       
+
+    DYNAMIC-FUNCTION("pxml-Footer",lc-global-company).
+    DYNAMIC-FUNCTION("pxml-CloseStream").
+
+
+    ll-ok = DYNAMIC-FUNCTION("pxml-Convert",lc-html,lc-pdf).
+
+    OS-DELETE value(lc-html) no-error.
+    
+    IF ll-ok
+        THEN ASSIGN pc-pdf = lc-pdf.
+    
+
+END PROCEDURE.
 
 PROCEDURE ip-PrintReport :
     /*------------------------------------------------------------------------------
@@ -352,7 +510,7 @@ PROCEDURE ip-PrintReport :
         {&out}
         htmlib-MntTableField(html-encode(STRING(tt-ilog.ActDuration)),'right')
         htmlib-MntTableField(html-encode(STRING(tt-ilog.SLAAchieved)),'left')
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.SLAComment)),'left')
+        htmlib-MntTableField(REPLACE(tt-ilog.SLAComment,'~n','<br/>'),'left')
 
         htmlib-MntTableField(html-encode(STRING(tt-ilog.ClosedBy)),'left')
 
@@ -402,14 +560,13 @@ PROCEDURE ip-ProcessReport :
         lc-global-user,
         lc-lo-Account,
         lc-hi-Account,
+        get-value("allcust") = "on",
         DATE(lc-lodate),
         DATE(lc-hidate),
         SUBSTR(TRIM(lc-classlist),2),
         OUTPUT TABLE tt-ilog
 
         ).
-
-
 
 END PROCEDURE.
 
@@ -479,6 +636,18 @@ PROCEDURE ip-Selection :
 
     {&out} '</tr>' SKIP.
 
+    IF NOT ll-customer THEN
+    DO:
+        {&out} '<tr><td valign="top" align="right">' 
+        htmlib-SideLabel("All Customers")
+        '</td>'
+        '<td valign="top" align="left">'
+        htmlib-checkBox("allcust",get-value("allcust") = "on")
+        '</td></tr>' skip.
+        
+
+    END.
+    
     DO li-loop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
         lc-codeName = "chk" + ENTRY(li-loop,lc-global-iclass-code,"|").
 
@@ -488,11 +657,16 @@ PROCEDURE ip-Selection :
         '<td valign="top" align="left">'
         htmlib-checkBox(lc-CodeName,get-value(lc-CodeName) = "on")
         '</td></tr>' skip.
-
-
-        
+    
     END.
-
+    
+    {&out}
+    '<tr><td valign="top" align="right">' 
+    htmlib-SideLabel("Report Output")
+    '</td>'
+    '<td align=left valign=top>' 
+    htmlib-Select("output","WEB|CSV|PDF","Web Page|Email CSV|Email PDF",get-value("output")) '</td></tr>'.
+    
   
     {&out} '</table>' skip.
 END PROCEDURE.
@@ -640,11 +814,13 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lc-filename AS CHARACTER NO-UNDO.
+    
   
     {lib/checkloggedin.i}
 
@@ -667,6 +843,26 @@ PROCEDURE process-web-request :
         IF lc-error-msg = "" THEN
         DO:
             RUN ip-ProcessReport.
+            
+            IF lc-output = "CSV" THEN RUN ip-ExportReport (OUTPUT lc-filename).
+            ELSE
+                IF lc-output = "PDF" THEN RUN ip-PDF (OUTPUT lc-filename).
+            
+            IF lc-output <> "WEB" THEN 
+            DO:
+                mlib-SendAttEmail 
+                    ( lc-global-company,
+                    "",
+                    "HelpDesk Issue Log Report ",
+                    "Please find attached your report covering the period "
+                    + string(DATE(lc-lodate),"99/99/9999") + " to " +
+                    string(DATE(lc-hidate),'99/99/9999'),
+                    this-user.email,
+                    "",
+                    "",
+                    lc-filename).
+                OS-DELETE value(lc-filename).
+            END.
             
         END.
     END.
@@ -707,7 +903,12 @@ PROCEDURE process-web-request :
         AND lc-error-msg = "" THEN
     DO:
        
-        RUN ip-PrintReport.   
+        IF lc-output = "WEB" THEN RUN ip-PrintReport.   
+        ELSE
+            {&out} '<div class="infobox" style="font-size: 10px;">Your report has been emailed to '
+        this-user.email
+        '</div>'.
+            
         
     END.
 

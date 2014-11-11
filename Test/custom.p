@@ -30,7 +30,7 @@ DEFINE VARIABLE li-min      AS INT      NO-UNDO.
 
 FOR EACH WebUser:
     ASSIGN
-    WebUser.Email = 'paul@127.0.0.1'.
+    WebUser.Email = 'paulanhoskins@outlook.com'.
    
 END.
 
