@@ -18,6 +18,7 @@
     13/06/2014  phoski      UX
     22/07/2014  phoski      Timeout
     04/10/2014  phoski      Account Manager 
+    13/11/2014  phoski      Customer View Inventory Flag
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -82,6 +83,8 @@ DEFINE VARIABLE lc-accountmanager AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-quickview      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DefaultUser    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DisableTimeout AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-CustInv        AS CHARACTER NO-UNDO.
+
 DEFINE VARIABLE lc-html           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE ll-check          AS LOG       NO-UNDO.
 DEFINE VARIABLE li-Count          AS INTEGER   NO-UNDO.
@@ -144,13 +147,6 @@ FUNCTION html-InputFieldMasked RETURNS CHARACTER
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 {lib/maillib.i}
-
-
-
- 
-
-
-
 
 /* ************************  Main Code Block  *********************** */
 
@@ -525,6 +521,26 @@ PROCEDURE ip-Page :
            skip.
     
     {&out} '</TR>' skip.
+    
+     
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("custinv",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Customer Can View Inventory?")
+        ELSE htmlib-SideLabel("Customer Can View Inventory?"))
+    '</TD>'.
+    
+     IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("custinv", IF lc-custinv = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(if lc-custinv = 'on'
+                                         then 'yes' else 'no'),'left')
+           skip.
+    
+    {&out} '</TR>' skip.
+    
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("disabletimeout",lc-error-field,'|') > 0 
@@ -1154,7 +1170,8 @@ PROCEDURE process-web-request :
                 lc-accountmanager  = get-value("accountmanager")
                 lc-quickview       = get-value("quickview")
                 lc-defaultuser     = get-value("defaultuser")
-                lc-disableTimeout  = get-value("disabletimeout").
+                lc-disableTimeout  = get-value("disabletimeout")
+                lc-custinv         = get-value("custinv").
             
             DO li-loop = 1 TO 7:
                 lc-HoursOnAm[li-loop]  =  get-value("hoursOnAm" + string(li-loop)).
@@ -1220,6 +1237,7 @@ PROCEDURE process-web-request :
                         b-table.quickview        = lc-quickview = "on"
                         b-table.defaultuser      = lc-defaultuser = "on"
                         b-table.disabletimeout   = lc-disabletimeout = "on"
+                        b-table.CustomerViewInventory = lc-custinv = 'on'
                         .
                     ASSIGN 
                         b-table.name = b-table.forename + ' ' + 
@@ -1354,6 +1372,8 @@ PROCEDURE process-web-request :
                 lc-defaultuser    = IF b-table.DefaultUser THEN 'on'
                                     ELSE ''
                 lc-disableTimeout  = IF b-table.disabletimeout THEN 'on'
+                                    ELSE ''
+                lc-custinv         = IF b-table.CustomerViewInventory THEN 'on'
                                     ELSE ''
                 .
             FIND FIRST WebStdTime WHERE WebStdTime.companycode = lc-global-company

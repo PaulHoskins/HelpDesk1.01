@@ -193,6 +193,13 @@ PROCEDURE process-web-request :
         OR NOT AVAILABLE Customer
         OR NOT AVAILABLE this-user THEN 
     DO:
+        MESSAGE " Avail custIv = " AVAILABLE custIv 
+                " Avail Customer = " AVAILABLE Customer
+                " avail this-user = " AVAILABLE this-user
+                " get-value(rowid) = "  get-value("rowid")
+                " get-value(Sec) = " get-value("sec").
+                
+                
         lc-msg = "URL Invalid - Access denied".
     END.
     

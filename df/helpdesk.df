@@ -361,6 +361,30 @@ ADD FIELD "mBanner" OF "Company" AS character
   MAX-WIDTH 16
   ORDER 230
 
+ADD FIELD "em_user" OF "Company" AS character 
+  FORMAT "x(80)"
+  INITIAL ""
+  LABEL "SMTP User"
+  POSITION 25
+  MAX-WIDTH 160
+  ORDER 240
+
+ADD FIELD "em_pass" OF "Company" AS character 
+  FORMAT "x(80)"
+  INITIAL ""
+  LABEL "SMTP Password"
+  POSITION 26
+  MAX-WIDTH 160
+  ORDER 250
+
+ADD FIELD "em_ssl" OF "Company" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Email SSL/TLS"
+  POSITION 27
+  MAX-WIDTH 1
+  ORDER 260
+
 ADD INDEX "CompanyCode" ON "Company" 
   AREA "Schema Area"
   UNIQUE
@@ -4381,6 +4405,14 @@ ADD FIELD "AccountManager" OF "WebUser" AS logical
   MAX-WIDTH 1
   ORDER 310
 
+ADD FIELD "CustomerViewInventory" OF "WebUser" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Customer Can View Inventory"
+  POSITION 34
+  MAX-WIDTH 1
+  ORDER 320
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -4525,4 +4557,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000089074
+0000089703

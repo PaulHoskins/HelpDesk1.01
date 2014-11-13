@@ -18,6 +18,7 @@
     28/04/2014 phoski       Customer Assets 
     14/06/2014 phoski       google maps fix
     27/09/2014 phoski       Encrypted rowid
+    13/11/2014 phoski       CustomerViewInventory flag
                           
                                 
 ***********************************************************************/
@@ -959,8 +960,6 @@ PROCEDURE ip-Inventory :
         BY ivSub.name
         BY b-query.Ref:
 
-        
-        
 
         ASSIGN 
             lc-object = "CLASS" + string(ROWID(ivClass))
@@ -1477,6 +1476,8 @@ PROCEDURE process-web-request :
     
     {lib/checkloggedin.i} 
 
+    DEFINE BUFFER this-user FOR WebUser.
+    
     ASSIGN 
         lc-mode = get-value("mode")
         lc-rowid = get-value("rowid")
@@ -1538,6 +1539,8 @@ PROCEDURE process-web-request :
     END.
 
 
+    FIND this-user WHERE this-user.LoginID = lc-user NO-LOCK NO-ERROR.
+    
     ASSIGN
         ll-customer = com-IsCustomer(lc-global-company,lc-user).
     
@@ -1646,12 +1649,9 @@ PROCEDURE process-web-request :
     {&out}
     '<div class="tabber">' skip.
 
-    /*
-    ***
-    *** 22.09.2014 Quick fix don't show inventory
-    ***
-    */
-    IF NOT ll-customer THEN
+    
+    IF NOT ll-customer 
+    OR ( ll-customer AND this-user.CustomerViewInventory )THEN
     DO:
         
         {&out}
