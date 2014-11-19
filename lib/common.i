@@ -2092,19 +2092,24 @@ FUNCTION com-InitialSetup RETURNS LOGICAL
     ASSIGN 
         lc-global-user = pc-LoginID.
 
-
+    /*
     ASSIGN
         lc-global-secure = DYNAMIC-FUNCTION("sysec-EncodeValue","GlobalSecure",TODAY,"GlobalSecure",lc-global-user).
-    
+    */
+     ASSIGN
+        lc-global-secure = "".
+        
     FIND webuser WHERE webuser.LoginID = pc-LoginID NO-LOCK NO-ERROR.
 
     IF AVAILABLE webuser THEN 
     DO:
-        lc-temp = STRING(ROWID(webuser)) + ":" + WebUser.LoginID.
+        /*lc-temp = STRING(ROWID(webuser)) + ":" + WebUser.LoginID.
         
         ASSIGN
          lc-global-secure = DYNAMIC-FUNCTION("sysec-EncodeValue","GlobalSecure",TODAY,"GlobalSecure",lc-temp).
-        
+        */
+        ASSIGN
+            lc-global-secure = STRING(ROWID(webuser)).
         ASSIGN 
             lc-global-company = webuser.CompanyCode.
         DYNAMIC-FUNCTION('com-CheckSystemSetup':U,lc-global-company).

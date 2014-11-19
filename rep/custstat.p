@@ -9,6 +9,7 @@
     
     When        Who         What
     26/07/2006  phoski      Initial
+    19/11/2014  phoski      Phase 2 changes
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -89,6 +90,10 @@ PROCEDURE ip-CustomerTable :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pl-ActiveOnly        AS LOG              NO-UNDO.
+    DEFINE INPUT PARAMETER pl-Selected          AS LOG              NO-UNDO.
+    
+    
     DEFINE BUFFER b-query FOR customer.
 
     DEFINE VARIABLE li-count        AS INTEGER              NO-UNDO.
@@ -99,15 +104,26 @@ PROCEDURE ip-CustomerTable :
    
     DEFINE VARIABLE lc-name         AS CHARACTER             NO-UNDO.
     DEFINE VARIABLE lc-value        AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE lc-allfunc      AS CHARACTER             NO-UNDO.
+    DEFINE VARIABLE lc-this         AS CHARACTER             NO-UNDO.
+    
     
     DO li-count = 1 TO li-cols:
         IF li-count = 1
             THEN lc-header = lc-default.
         ELSE lc-header = lc-header + "|" + lc-default.
     END.
+    
+    ASSIGN
+        lc-this = ""
+        lc-allfunc = IF pl-ActiveOnly THEN "SelAct" ELSE "SelInAct".
+    
 
     {&out} skip
-           htmlib-StartFieldSet("Select Customers") 
+           htmlib-StartFieldSet(if pl-ActiveOnly then "Select Active Customers"
+                                ELSE 'Select Inactive Customers') SKIP
+           '<br/><a class="tlink" href="#" onclick="' lc-allFunc '()">Select All</a>'  SKIP
+           '<a class="tlink" href="#" onclick="' lc-allFunc 'un()">UnSelect All</a>'  skip
            htmlib-StartMntTable().
 
     {&out}
@@ -118,19 +134,24 @@ PROCEDURE ip-CustomerTable :
 
     ASSIGN 
         li-count = 0
-        lc-avail = "".
+        .
 
     FOR EACH b-query NO-LOCK
         WHERE b-query.CompanyCode   = lc-Global-Company
         AND b-query.StatementEmail <> ""
+        AND b-query.IsActive = pl-ActiveOnly    
         BY b-query.name
         :
 
         ASSIGN
             lc-name = "tog" + string(ROWID(b-query)).
 
-        IF request_method = "get" THEN set-user-field(lc-name,"on").
+        IF request_method = "get" THEN set-user-field(lc-name,IF pl-Selected THEN "on" ELSE "").
 
+        IF lc-this = ""
+        THEN lc-this = lc-name.
+        ELSE lc-this = lc-this + "," + lc-name.
+        
         ASSIGN
             lc-value = get-value(lc-name).
         
@@ -170,6 +191,33 @@ PROCEDURE ip-CustomerTable :
            htmlib-EndFieldSet() 
            skip.
 
+    {&out} '<script>' SKIP
+           'function ' lc-allFunc '() ~{' SKIP.
+           
+    IF lc-this <> "" THEN
+    DO li-count = 1 TO NUM-ENTRIES(lc-this):
+        lc-name = ENTRY(li-count,lc-this).
+        
+        {&out}
+            'document.getElementById("' lc-name '").checked = true;' SKIP.
+            
+    END.
+    
+    {&out} '~}' skip
+           'function ' lc-allFunc 'un() ~{' SKIP.
+           
+    IF lc-this <> "" THEN
+    DO li-count = 1 TO NUM-ENTRIES(lc-this):
+        lc-name = ENTRY(li-count,lc-this).
+        
+        {&out}
+            'document.getElementById("' lc-name '").checked = false;' SKIP.
+            
+    END.
+    
+        
+    {&out} '~}' skip
+            '</script>' SKIP.      
 END PROCEDURE.
 
 
@@ -216,8 +264,9 @@ PROCEDURE ip-ProcessReport :
                 "",
                 "HelpDesk Statement for " + tt.name,
                 "Please find attached your statement covering the period "
-                + string(DATE(lc-lodate),"99/99/9999") + " to " +
-                string(DATE(lc-hidate),'99/99/9999'),
+                + '<b>' + string(DATE(lc-lodate),"99/99/9999") + "</b> to "
+                + '<b>' +
+                string(DATE(lc-hidate),'99/99/9999') + '</b>',
                 ( IF lc-test = "on" THEN webuser.email ELSE tt.StatementEmail),
                 "",
                 "",
@@ -412,7 +461,6 @@ PROCEDURE process-web-request :
         IF lc-error-msg = "" THEN
         DO:
             RUN ip-ProcessReport.
-            
         END.
     END.
 
@@ -473,7 +521,10 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-EndTable() skip.
 
-    RUN ip-CustomerTable.
+    ASSIGN 
+        lc-avail = "".
+    RUN ip-CustomerTable ( TRUE, FALSE ).
+    RUN ip-CustomerTable ( FALSE, FALSE ).    
 
     IF request_method = "post" AND lc-error-msg = "" THEN
     DO:

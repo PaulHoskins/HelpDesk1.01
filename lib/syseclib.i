@@ -94,11 +94,22 @@ FUNCTION sysec-DecodeValue RETURNS CHARACTER
     ------------------------------------------------------------------------------*/    
 
     DEFINE BUFFER websalt FOR websalt.  
+    DEFINE BUFFER websession FOR websession.
+     
     DEFINE VARIABLE lr-data AS MEMPTR    NO-UNDO.
     DEFINE VARIABLE lc-data AS CHARACTER NO-UNDO.
     DEFINE VARIABLE lr-mem  AS RAW       NO-UNDO.
     
-            
+    IF pc-other = "Inventory"
+    THEN 
+    DO:
+        FIND FIRST  websession
+             WHERE websession.wsKey = pc-value
+                AND websession.wsDate = pd-date NO-LOCK NO-ERROR.
+                
+        RETURN IF AVAILABLE websession THEN websession.wsValue ELSE ?.
+    END.
+        
     FIND websalt WHERE websalt.loginid = pc-loginid
         AND websalt.sdate = pd-date
         AND websalt.sother = pc-other NO-LOCK NO-ERROR.
@@ -120,7 +131,7 @@ FUNCTION sysec-DecodeValue RETURNS CHARACTER
     
     lc-data = GET-STRING(DECRYPT (lr-data),1).
      
-        RETURN lc-data.
+    RETURN lc-data.
 
 		
 END FUNCTION.
@@ -135,11 +146,26 @@ FUNCTION sysec-EncodeValue RETURNS CHARACTER
             Notes:                                                                        
     ------------------------------------------------------------------------------*/    
 
-    DEFINE BUFFER websalt FOR websalt.  
+    DEFINE BUFFER websalt FOR websalt. 
+    DEFINE BUFFER websession FOR websession.
+    
     DEFINE VARIABLE lr-data AS RAW       NO-UNDO.
     DEFINE VARIABLE lc-data AS CHARACTER NO-UNDO.
     
-            
+    IF pc-other = "Inventory" THEN 
+    DO:
+        lc-data = DYNAMIC-FUNCTION("sysec-GeneratePBE-Password",pc-loginid,pd-date,pc-other). 
+        
+        CREATE websession.
+        ASSIGN 
+            websession.wsKey = lc-data
+            websession.wsDate = pd-date
+            websession.wsValue = pc-value.
+        RELEASE websession.    
+        RETURN lc-data.
+        
+    END.
+             
     FIND websalt WHERE websalt.loginid = pc-loginid
         AND websalt.sdate = pd-date
         AND websalt.sother = pc-other NO-LOCK NO-ERROR.

@@ -181,14 +181,14 @@ PROCEDURE process-web-request :
     ***
     */
     
-    FIND customer WHERE ROWID(customer) = to-rowid(lc-cust-key) NO-LOCK NO-ERROR.
-    FIND this-user WHERE ROWID(this-user) = to-rowid(lc-part1) NO-LOCK NO-ERROR.
+    /*FIND customer WHERE ROWID(customer) = to-rowid(lc-cust-key) NO-LOCK NO-ERROR. */
     
+    FIND this-user WHERE ROWID(this-user) = to-rowid(get-value("sec")) NO-LOCK NO-ERROR.
     
-       
-    
+  
     FIND custIv WHERE ROWID(custIv) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
-
+    FIND customer WHERE Customer.companycode  = CustIv.CompanyCode
+                    AND Customer.AccountNumber = CustIv.AccountNumber NO-LOCK NO-ERROR.
     IF NOT AVAILABLE custIv 
         OR NOT AVAILABLE Customer
         OR NOT AVAILABLE this-user THEN 
@@ -197,7 +197,11 @@ PROCEDURE process-web-request :
                 " Avail Customer = " AVAILABLE Customer
                 " avail this-user = " AVAILABLE this-user
                 " get-value(rowid) = "  get-value("rowid")
-                " get-value(Sec) = " get-value("sec").
+                " trans = " DYNAMIC-FUNCTION("sysec-DecodeValue","Inventory",TODAY,"Inventory",get-value("rowid"))
+                " get-value(Sec) = " get-value("sec")
+                " lc-cust-key = " lc-cust-key
+                " get-value(customer) = " get-value("customer")
+                " sec-key = " lc-sec-key.
                 
                 
         lc-msg = "URL Invalid - Access denied".
