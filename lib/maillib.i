@@ -132,7 +132,14 @@ FUNCTION mlib-SendAttEmail RETURNS LOG
     END.
     
     li-result = oSmtp:SendMail().
-    MESSAGE "res = " li-result ' Erc = 'oSmtp:GetLastErrDescription() .
+    IF li-result <> 0 THEN
+    DO:
+        MESSAGE
+            "Email failed to " lc-address-to SKIP
+            "Subject " pc-subject SKIP
+            "Result Code = " li-result SKIP
+            "Err Desc  = " oSmtp:GetLastErrDescription() .
+    END.
     
     RELEASE OBJECT oSmtp NO-ERROR.
     
@@ -183,9 +190,10 @@ FUNCTION mlib-SendMultipartEmail RETURNS LOG
     
     IF company.EmailFooter <> "" THEN
     DO:
-        ASSIGN pc-Message   = pc-Message + "~n~n" + Company.EmailFooter
-                    li-footer-done = TRUE
-            pc-H-Message = pc-H-message + '<pre style="font-family:Verdana,Geneva,Arial,Helvetica sans-serif;font-size:12px">'
+        ASSIGN 
+            pc-Message     = pc-Message + "~n~n" + Company.EmailFooter
+            li-footer-done = TRUE
+            pc-H-Message   = pc-H-message + '<pre style="font-family:Verdana,Geneva,Arial,Helvetica sans-serif;font-size:12px">'
                              + company.EmailFooter + '</pre></div></body></html>'.
     END.
     ELSE ASSIGN pc-H-Message = pc-H-message + '</div></body></html>'.

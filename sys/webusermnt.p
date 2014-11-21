@@ -19,6 +19,7 @@
     22/07/2014  phoski      Timeout
     04/10/2014  phoski      Account Manager 
     13/11/2014  phoski      Customer View Inventory Flag
+    20/11/2014  phoski      save & Pass back 'selacc' field
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -52,7 +53,6 @@ DEFINE VARIABLE lc-firstrow       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-lastrow        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-navigation     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-parameters     AS CHARACTER NO-UNDO.
-
 
 DEFINE VARIABLE lc-link-label     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-submit-label   AS CHARACTER NO-UNDO.
@@ -1087,7 +1087,8 @@ PROCEDURE process-web-request :
     ASSIGN 
         lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
-                           "&lastrow=" + lc-lastrow.
+                           "&lastrow=" + lc-lastrow +
+                           "&selacc=" + lc-SelAcc.
 
     CASE lc-mode:
         WHEN 'add'
@@ -1123,7 +1124,7 @@ PROCEDURE process-web-request :
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
-                                   '&navigation=refresh' +
+                                  '&navigation=refresh' +
                                   '&selacc=' + lc-selacc + 
                                   '&time=' + string(TIME)
         .
@@ -1324,6 +1325,7 @@ PROCEDURE process-web-request :
             set-user-field("firstrow",lc-firstrow).
             set-user-field("search",lc-search).
             set-user-field("selacc",lc-selacc).
+            MESSAGE "sending " lc-selacc.
             RUN run-web-object IN web-utilities-hdl ("sys/webuser.p").
             RETURN.
         END.
@@ -1438,7 +1440,8 @@ PROCEDURE process-web-request :
            htmlib-Hidden ("savefirstrow", lc-firstrow) skip
            htmlib-Hidden ("savelastrow", lc-lastrow) skip
            htmlib-Hidden ("savenavigation", lc-navigation) skip
-           htmlib-Hidden ("nullfield", lc-navigation) skip.
+           htmlib-Hidden ("nullfield", lc-navigation) SKIP
+           htmlib-Hidden ("selacc", lc-selacc) SKIP.
         
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
@@ -1485,6 +1488,7 @@ PROCEDURE process-web-request :
       ' focusDisplay("hoursOnAm1"); ' skip
       '</script>' skip.
 
+   
     {&out} htmlib-EndForm() skip
           htmlib-Footer() skip.
 

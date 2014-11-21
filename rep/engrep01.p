@@ -9,6 +9,7 @@
     
     When        Who         What
     10/11/2010  DJS         Initial
+    21/11/2014  phoski      Fix it
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -39,6 +40,8 @@ DEFINE VARIABLE lc-date              AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-days              AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-pdf               AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-setrun            AS LOG       NO-UNDO.
+
+{rep/engrep01-build.i}
 
 
 
@@ -224,8 +227,6 @@ PROCEDURE ip-engineer-select :
     FOR EACH webUser NO-LOCK
         WHERE webuser.company = lc-global-company
         AND   webuser.UserClass MATCHES "*internal*"
-        AND   webuser.superuser = TRUE
-        /*        and   webuser.JobTitle matches "*engineer*" */
         BY webUser.name:
 
                 
@@ -257,24 +258,6 @@ PROCEDURE ip-ExportJavascript :
   
     {&out}
     '<script language="JavaScript">' skip
-
-
-/*         function loopSelected()                                                    */
-/*         {                                                                          */
-/*           var txtSelectedValuesObj = document.getElementById('txtSelectedValues'); */
-/*           var selectedArray = new Array();                                         */
-/*           var selObj = document.getElementById('selSeaShells');                    */
-/*           var i;                                                                   */
-/*           var count = 0;                                                           */
-/*           for (i=0; i<selObj.options.length; i++) {                                */
-/*             if (selObj.options[i].selected) {                                      */
-/*               selectedArray[count] = selObj.options[i].value;                      */
-/*               count++;                                                             */
-/*             }                                                                      */
-/*           }                                                                        */
-/*           txtSelectedValuesObj.value = selectedArray;                              */
-/*         }                                                                          */
-
 
 
 
@@ -317,8 +300,7 @@ PROCEDURE ip-ExportJavascript :
         '  ~}' skip
         '~}' skip
         '~}' skip
-
-        
+       
         '</script>' skip.              
               
               
@@ -346,14 +328,7 @@ PROCEDURE ip-month-select :
       '<span class="tableheading" >Please select period(s)</span><br>' skip .
       
       
-    /*       '<select id="selectyear" name="selectyear" class="inputfield" align="top" >' skip.                                  */
-    /*                                                                                                                           */
-    /*       do zx = 0 to 4:                                                                                                     */
-    /*         lc-year = string(year(today) - zx).                                                                               */
-    /*       {&out}                                                                                                              */
-    /*             '<option value="' lc-year '" ' if zx = 0 then "selected" else "" ' >'  html-encode(lc-year) '</option>' skip. */
-    /*         end.                                                                                                              */
-    /*            {&out} '</select>' skip                                                                                        */
+                                                                                   
 
     {&out} 
     '<select id="selectmonth" name="selectmonth" class="inputfield" ' skip
@@ -393,8 +368,6 @@ PROCEDURE ip-ProcessReport :
     DEFINE VARIABLE reportdesc  AS CHARACTER NO-UNDO.
     DEFINE VARIABLE periodDesc AS CHARACTER NO-UNDO.
 
-    /* build period string  */
-
 
     ASSIGN 
         period = IF lc-reptypeC = "week" 
@@ -419,40 +392,28 @@ PROCEDURE ip-ProcessReport :
         + entry(LOOKUP(lc-reptypeC,weekly   ) ,CAL   )  + "_" 
         + periodDesc.
 
-    /* fetch next report id  */
-    ASSIGN 
-        li-run = NEXT-VALUE(ReportNumber).
-
-    DO TRANSACTION:
 
 
-        CREATE BatchWork  no-error.
-        ASSIGN
-            BatchWork.BatchDate      = TODAY
-            BatchWork.BatchTime      = TIME
-            BatchWork.BatchID        = li-run
-            BatchWork.BatchProg      = "rep/engineerRep01.w"
-            BatchWork.BatchUser      = lc-global-user
-            BatchWork.Description    = reportdesc
-            BatchWork.BatchParams[1] = lc-global-company                     /* lc-local-company     */ 
-            BatchWork.BatchParams[2] = STRING(LOOKUP(lc-reptypeA,typedesc))  /* lc-local-view-type   1=Detailed, 2=SummaryDetail, 3=Summary */
-            BatchWork.BatchParams[3] = STRING(LOOKUP(lc-reptypeE,engcust))   /* lc-local-report-type 1=Customer, 2=Engineer, 3=Issues       */
-            BatchWork.BatchParams[4] = STRING(LOOKUP(lc-reptypeC,weekly))    /* lc-local-period-type */
-            BatchWork.BatchParams[5] = lc-selectengineer                     /* lc-local-customers   */ 
-            BatchWork.BatchParams[6] = lc-selectcustomer                     /* lc-local-engineers   */ 
-            BatchWork.BatchParams[7] = period                                /* lc-local-period      */ 
-            BatchWork.BatchParams[8] = "offline"  /* ALWAYS!! */             /* lc-local-offline     */ 
-            .
- 
+    RUN rep/engrep01-build.p
+        (
+        lc-global-company,
+        STRING(LOOKUP(lc-reptypeA,typedesc)),
+        STRING(LOOKUP(lc-reptypeE,engcust)),
+        STRING(LOOKUP(lc-reptypeC,weekly)),
+        lc-selectengineer ,
+        lc-selectcustomer ,
+        period,
+        OUTPUT TABLE tt-IssRep,
+        OUTPUT TABLE tt-IssTime,
+        OUTPUT TABLE tt-IssTotal,
+        OUTPUT TABLE tt-IssUser,
+        OUTPUT TABLE tt-IssCust,
+        OUTPUT TABLE tt-IssTable,
+        OUTPUT TABLE tt-ThisPeriod
+        ).
+        
+        
 
-        MESSAGE "Batch ID = "  BatchWork.BatchID  LC-global-helpdesk SKIP.
-        RELEASE BatchWork.
-
-    END.
-
-
-
-    OS-COMMAND SILENT VALUE("start /min " + lc-global-helpdesk + "\batchwork.bat " + string(li-run)).
 
 
  
@@ -571,23 +532,6 @@ PROCEDURE ip-week-select :
     {&out}  '<div id="weekdiv" style="display:block;">' skip
       '<span class="tableheading" >Please select period(s)</span><br>' skip .
 
-
-
-    /*       '<select id="selectyear" name="selectyear" class="inputfield" align="top" >' skip.                                  */
-    /*                                                                                                                           */
-    /*                                                                                                                           */
-    /*                                                                                                                           */
-    /*       do zx = 0 to 4:                                                                                                     */
-    /*                                                                                                                           */
-    /*         lc-year = string(year(today) - zx).                                                                               */
-    /*                                                                                                                           */
-    /*       {&out}                                                                                                              */
-    /*             '<option value="' lc-year '" ' if zx = 0 then "selected" else "" ' >'  html-encode(lc-year) '</option>' skip. */
-    /*                                                                                                                           */
-    /*         end.                                                                                                              */
-    /*     {&out} '</select>' skip                                                                                               */
-
-
     {&out} 
     '<select id="selectweek" name="selectweek" class="inputfield" ' skip
             'multiple="multiple" size=8 width="150px" style="width:150px;" >' skip.
@@ -602,12 +546,7 @@ PROCEDURE ip-week-select :
         '<option value="' STRING(zx,"99") '" ' '>Week '  html-encode(STRING(zx,"99")) '</option>' skip.
  
     END.
-  
-      
 
-
-      
- 
       
     {&out} '</select></div>'.
 
@@ -716,8 +655,8 @@ PROCEDURE process-web-request :
   Parameters:  <none>
   emails:       
 ------------------------------------------------------------------------------*/
-    
-  {lib/checkloggedin.i} 
+   
+    {lib/checkloggedin.i} 
   
     FIND webuser WHERE webuser.loginid = lc-global-user NO-LOCK NO-ERROR.
   
@@ -733,7 +672,7 @@ PROCEDURE process-web-request :
             lc-selectweek     = get-value("selectweek") 
             lc-selectyear     = ENTRY(1,get-value("selectyear")).  
 
-        OUTPUT to "C:\temp\djstest.txt" append.
+        OUTPUT to "C:\temp\djstest.txt".
 
         PUT UNFORMATTED
             "lc-reptypeA         "   lc-reptypeA        SKIP
@@ -749,7 +688,8 @@ PROCEDURE process-web-request :
 
         RUN ip-Validate(OUTPUT lc-error-field).
 
-        IF lc-error-field = "" THEN RUN ip-ProcessReport.
+        IF lc-error-field = "" 
+        THEN RUN ip-ProcessReport.
       
     END.
 
@@ -814,13 +754,13 @@ PROCEDURE process-web-request :
     {&out} '<center>' Format-Submit-Button("submitform","Report")
     '</center><br>' skip.
     
-    {&out} htmlib-Hidden("submitsource","null").
+    {&out} htmlib-Hidden("submitsource","").
   
   
     {&out} htmlib-EndForm() skip.
-
+/*
     {&out} '<div id="ajaxdiv"></div>' skip.
-
+    
     FIND webuser WHERE webuser.loginid = lc-global-user NO-LOCK NO-ERROR.
    
     IF AVAILABLE webuser AND dynamic-function("com-IsSuperUser",webuser.LoginID) THEN
@@ -839,7 +779,13 @@ PROCEDURE process-web-request :
          ' --> ' skip
          '</script>'.
     END.
-
+    */
+    IF request_method = "POST"
+    AND lc-error-field = "" THEN
+    DO:
+        
+    END.
+         
     {&out} htmlib-Footer() skip.
     
 

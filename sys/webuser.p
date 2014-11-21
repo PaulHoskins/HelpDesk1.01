@@ -13,6 +13,7 @@
     11/04/2006  phoski      Show customer for CUSTOMER type users
     13/06/2014  phoski      Various for UX
     26/09/2014  phoski      Disabled Features
+    20/11/2014  phoski      Pass thru 'selacc' field to mnt page
 
 ***********************************************************************/
 
@@ -407,7 +408,10 @@ PROCEDURE process-web-request :
         
         ASSIGN 
             lc-link-otherp = 'search=' + lc-search +
-                                '&firstrow=' + string(lr-first-row).
+                             '&firstrow=' + string(lr-first-row) +
+                             "&selacc=" + lc-selacc.
+                                
+                                
 
         IF b-query.LastDate <> ? 
             THEN ASSIGN lc-LastLogin = STRING(b-query.LastDate,'99/99/9999') + ' ' + string(b-query.LastTime,'hh:mm').
