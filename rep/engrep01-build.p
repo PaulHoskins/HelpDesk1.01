@@ -50,7 +50,7 @@ DEFINE VARIABLE lc-FileDescription   AS CHARACTER FORMAT "x(70)" NO-UNDO.
 DEFINE VARIABLE lc-FileSaveAs        AS CHARACTER FORMAT "x(170)" NO-UNDO.
 DEFINE VARIABLE lc-FilePrefix        AS CHARACTER FORMAT "x(70)" NO-UNDO.
 DEFINE VARIABLE lc-FileSuffix        AS CHARACTER FORMAT "x(70)" NO-UNDO.
-DEFINE VARIABLE lc-local-offline     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-local-offline     AS CHARACTER INITIAL 'ONLINE' NO-UNDO.
 
 DEFINE BUFFER b-issue     FOR issue.
 DEFINE BUFFER issue       FOR issue.
@@ -900,7 +900,7 @@ FOR EACH tt-IssRep BREAK BY tt-IssRep.ActivityBy BY tt-IssRep.period-of BY tt-Is
             chWorkSheet:Range(cRange):WrapText = TRUE.
             chWorkSheet:Range(cRange):NumberFormat = "General".
         END.
-    END.
+    END. 
     IF pc-rep-type = 1 THEN
     DO:
         iColumn = iColumn + 1.
@@ -1348,7 +1348,11 @@ PROCEDURE ipBuildData:
             END.
         END.
         RUN ReportC .
-    /*RUN excelReportA(viewType) . */
+        /*
+        MESSAGE "STARTING EXCEL" VIEW-AS ALERT-BOX.
+        
+        RUN excelReportA(viewType) . 
+        */
     END.
     ELSE IF reportType = 2 THEN
         DO:
@@ -1373,7 +1377,11 @@ PROCEDURE ipBuildData:
                 END.             
             END.               
             RUN ReportB.
-        /*RUN excelReportB(viewType).*/
+            /*
+            MESSAGE "STARTING EXCEL" VIEW-AS ALERT-BOX.
+            
+            RUN excelReportB(viewType).
+            */
         END.
         ELSE  
         DO:
@@ -1618,7 +1626,8 @@ FUNCTION CreateExcel RETURNS LOGICAL
     ELSE chExcelApplication:Visible = FALSE.
     chExcelApplication:ErrorCheckingOptions:NumberAsText = FALSE.
     chWorkbook = chExcelApplication:Workbooks:Add().                 /* create a new Workbook */ 
-
+    MESSAGE "bOOK STARTED" VIEW-AS ALERT-BOX.
+  chExcelApplication:Visible = TRUE. 
     RETURN TRUE.
 
 END FUNCTION.
