@@ -19,38 +19,47 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-DEFINE VARIABLE lc-global-helpdesk   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-global-reportpath AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-helpdesk         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-global-reportpath       AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-error-field       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-error-msg         AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-title             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-field             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg               AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title                   AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-reptypeA          AS CHARACTER NO-UNDO.   
-DEFINE VARIABLE lc-reptypeE          AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-reptypeC          AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-reptype-checked   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectengineer    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectcustomer    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectmonth       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectweek        AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectyear        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-reptypeA                AS CHARACTER NO-UNDO.   
+DEFINE VARIABLE lc-reptypeE                AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-reptypeC                AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-reptype-checked         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectengineer          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectcustomer          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectmonth             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectweek              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectyear              AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-date              AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-days              AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-pdf               AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-setrun            AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-date                    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-days                    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pdf                     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-setrun                  AS LOG       NO-UNDO.
 
-DEFINE VARIABLE li-run               AS INTEGER   NO-UNDO.
-DEFINE VARIABLE TYPEOF               AS CHARACTER INITIAL "Detail,Summary Detail,Summary" NO-UNDO.
-DEFINE VARIABLE ISSUE                AS CHARACTER INITIAL "Customer,Engineer,Issues" NO-UNDO.
-DEFINE VARIABLE CAL                  AS CHARACTER INITIAL "Week,Month" NO-UNDO.
-DEFINE VARIABLE typedesc             AS CHARACTER INITIAL "Detail,SumDet,Summary" NO-UNDO.
-DEFINE VARIABLE engcust              AS CHARACTER INITIAL "Cust,Eng,Iss" NO-UNDO.
-DEFINE VARIABLE weekly               AS CHARACTER INITIAL "Week,Month" NO-UNDO.
-DEFINE VARIABLE period               AS CHARACTER NO-UNDO.
-DEFINE VARIABLE reportdesc           AS CHARACTER NO-UNDO.
-DEFINE VARIABLE periodDesc           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-run                     AS INTEGER   NO-UNDO.
+DEFINE VARIABLE TYPEOF                     AS CHARACTER INITIAL "Detail,Summary Detail,Summary" NO-UNDO.
+DEFINE VARIABLE ISSUE                      AS CHARACTER INITIAL "Customer,Engineer,Issues" NO-UNDO.
+DEFINE VARIABLE CAL                        AS CHARACTER INITIAL "Week,Month" NO-UNDO.
+DEFINE VARIABLE typedesc                   AS CHARACTER INITIAL "Detail,SumDet,Summary" NO-UNDO.
+DEFINE VARIABLE engcust                    AS CHARACTER INITIAL "Cust,Eng,Iss" NO-UNDO.
+DEFINE VARIABLE weekly                     AS CHARACTER INITIAL "Week,Month" NO-UNDO.
+DEFINE VARIABLE period                     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE reportdesc                 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE periodDesc                 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-style                   AS CHARACTER NO-UNDO.
+
+
+DEFINE VARIABLE li-tot-billable            AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-tot-nonbillable         AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-tot-productivity        AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE li-tot-period-billable     AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-tot-period-nonbillable  AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-tot-period-productivity AS DECIMAL   NO-UNDO.
 
 {rep/engrep01-build.i}
 
@@ -78,6 +87,9 @@ FUNCTION Date2Wk RETURNS INTEGER
 
 &IF DEFINED(EXCLUDE-Format-Select-Period) = 0 &THEN
 
+FUNCTION fnFullName RETURNS CHARACTER 
+    (pc-loginid AS CHARACTER) FORWARD.
+
 FUNCTION Format-Select-Period RETURNS CHARACTER
     ( pc-htm AS CHARACTER)  FORWARD.
 
@@ -101,6 +113,10 @@ FUNCTION Format-Submit-Button RETURNS CHARACTER
 
 &ENDIF
 
+
+FUNCTION percentage-calc RETURNS DECIMAL 
+    (p-one AS DECIMAL,
+    p-two AS DECIMAL) FORWARD.
 
 /* *********************** Procedure Settings ************************ */
 
@@ -174,6 +190,406 @@ END PROCEDURE.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-engcust-table) = 0 &THEN
+
+PROCEDURE ip-CustomerReport:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
+    
+    DEFINE VARIABLE pc-local-period AS CHARACTER NO-UNDO. 
+    DEFINE VARIABLE std-hours       AS CHARACTER NO-UNDO.
+     
+    
+    
+    {&out} '<table width=100% class="rptable">' SKIP.
+    
+    CASE pc-rep-type:
+        WHEN 1 THEN
+            DO:
+                {&out} replib-TableHeading('Customer^left|Period^left||Billable^right|Non Billable^right|Total^right') SKIP.
+            END.
+        WHEN 2 THEN
+            DO:
+                {&out} replib-TableHeading('Customer^left|Period^left|Brief Description||Billable^right|Non Billable^right|Total^right') SKIP.
+            END.
+        WHEN 3 THEN
+            DO:
+                {&out} replib-TableHeading('Customer^left|Period^left|Billable^right|Non Billable^right|Total^right') SKIP.
+                
+            END.
+        
+    END CASE.
+    
+    FOR EACH tt-IssRep NO-LOCK 
+        BREAK BY tt-IssRep.AccountNumber
+        BY tt-IssRep.period-of 
+        BY tt-IssRep.IssueNumber:
+            
+            
+        FIND  Customer WHERE Customer.CompanyCode  = lc-global-company
+                         AND  Customer.AccountNumber = tt-IssRep.AccountNumber NO-LOCK NO-ERROR.
+        
+        FIND tt-IssTotal WHERE tt-IssTotal.AccountNumber = tt-IssRep.AccountNumber  NO-LOCK NO-ERROR.
+           
+        IF FIRST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 1 THEN
+        DO:
+            FIND  tt-issCust 
+                WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber 
+                AND tt-issCust.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
+            
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField(Customer.Name,'','font-weight:bold')
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right','font-weight:bold')
+                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right','font-weight:bold')
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right','font-weight:bold')
+                '</tr>' SKIP.
+            ASSIGN
+                li-tot-billable     = li-tot-billable + tt-IssTotal.billable
+                li-tot-nonbillable  = li-tot-nonbillable + tt-IssTotal.nonbillable
+                .
+                
+        END.
+        IF FIRST-OF(tt-IssRep.period-of) AND pc-rep-type = 2 THEN
+        DO:
+            FIND tt-issCust 
+                WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber
+                AND tt-issCust.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
+   
+            ASSIGN 
+                std-hours = com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) .
+            
+            ASSIGN
+                lc-style = 'font-weight:bold;'.
+            IF FIRST-OF(tt-IssRep.AccountNumber)
+                THEN lc-style = lc-style + "border-top:1px solid black;".
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField(IF first-of(tt-IssRep.AccountNumber) then Customer.name ELSE '','',lc-style)
+                  replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
+                  replib-RepField('','',lc-style)
+                  replib-RepField('','',lc-style)
+                  replib-RepField(com-TimeToString(tt-issCust.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
+                  
+                '</tr>' SKIP.
+            ASSIGN
+                lc-style = 'font-weight:bold;'.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','',lc-style)
+                  replib-RepField('Issue No','',lc-style)
+                  replib-RepField('','right',lc-style)
+                  replib-RepField('Contract Type','left',lc-style)
+              '</tr>' SKIP.
+                
+              
+            ASSIGN
+                li-tot-billable     = li-tot-billable + tt-issCust.billable
+                li-tot-nonbillable  = li-tot-nonbillable + tt-issCust.nonbillable
+                .
+                    
+            
+        END.
+        
+        IF FIRST-OF(tt-IssRep.period-of) AND pc-rep-type = 3 THEN
+        DO:
+            FIND tt-issCust 
+                WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber
+                AND tt-issCust.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
+
+            ASSIGN 
+                std-hours = com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) .
+            
+            ASSIGN
+                lc-style = ''.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField(IF first-of(tt-IssRep.AccountNumber) then Customer.name ELSE '','',lc-style)
+                  replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
+                  
+                  replib-RepField(com-TimeToString(tt-issCust.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
+                  
+                '</tr>' SKIP.
+             ASSIGN
+                li-tot-billable     = li-tot-billable + tt-issCust.billable
+                li-tot-nonbillable  = li-tot-nonbillable + tt-issCust.nonbillable
+                .
+                
+        END.
+        
+         
+        IF FIRST-OF(tt-IssRep.IssueNumber) AND pc-rep-type <> 3 THEN
+        DO:
+            FIND tt-IssTime 
+                WHERE tt-IssTime.IssueNumber = tt-IssRep.IssueNumber 
+                AND tt-IssTime.ActivityBy = tt-IssRep.ActivityBy 
+                AND tt-IssTime.period =  tt-IssRep.period-of  NO-LOCK NO-ERROR.
+        
+            IF pc-rep-type = 1 THEN
+            DO:
+           
+                {&out}
+                '<tr>' SKIP
+                    replib-RepField('','','')
+                    replib-RepField('Issue Number','left','font-weight:bold')
+                    replib-RepField("Contract Type          Date: " + string(tt-IssRep.IssueDate,"99/99/9999"),'left','font-weight:bold')
+                    '</tr>' SKIP 
+                               
+                '<tr>' SKIP
+                    replib-RepField('','','')
+                    replib-RepField(STRING(tt-IssRep.IssueNumber),'left','')
+                    replib-RepField(tt-IssRep.ContractType,'left','')
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
+                    
+                    
+                    '</tr>' SKIP. 
+                {&out} 
+                    '<tr>' SKIP
+                        replib-RepField('','','')
+                        replib-RepField('Brief Description','left','')
+                        replib-RepField(tt-IssRep.Description,'left','')
+                        '</tr>' SKIP
+                        '<tr>' SKIP
+                        replib-RepField('','','')
+                        replib-RepField('Action Desc','left','')
+                       
+                        replib-RepField(replace(tt-IssRep.ActionDesc,'~n','<br/>'),'left',' max-width: 100px;')
+                        
+                        '</tr>' SKIP
+                        
+                .
+     
+                                   
+            END.
+            ELSE
+                IF pc-rep-type = 2 THEN
+                DO:
+                    {&out}
+                    '<tr>' SKIP
+                    replib-RepField('','','')
+                    replib-RepField(STRING(tt-IssRep.IssueNumber),'left','')
+                    replib-RepField(replace(tt-IssRep.Description,'~n','<br/>'),'left','max-width: 400px;')
+                    replib-RepField(tt-IssRep.ContractType,'left','')
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
+                    
+                    
+                    '</tr>' SKIP. 
+                    
+                
+                END.
+            
+            
+        END.
+        
+        IF pc-rep-type = 1 THEN
+        DO:
+           
+            {&out} 
+            '<tr>' SKIP
+                replib-RepField('','','')
+                        replib-RepField('Activity','left','')
+                        replib-RepField(tt-IssRep.ActivityType + " by: " + fnFullName(tt-IssRep.ActivityBy) + " on: " + string(tt-IssRep.StartDate,"99/99/9999"),'left','')
+                        
+                '</tr>' SKIP
+                '<tr>' SKIP
+                replib-RepField('','','')
+                        replib-RepField('Billable','left','')
+                        replib-RepField(IF tt-IssRep.Billable THEN "Yes" ELSE "No",'left','')
+                        
+                '</tr>' SKIP
+                '<tr>' SKIP
+                replib-RepField('','','')
+                        replib-RepField('Time','left','')
+                        replib-RepField(com-TimeToString(tt-IssRep.Duration),'left','')
+                        
+                '</tr>' SKIP
+                
+                '<tr>' SKIP
+                replib-RepField('','','')
+                        replib-RepField('Activity Desc','left','')
+                        replib-RepField(replace(tt-IssRep.Notes,'~n','<br/>'),'left',' max-width: 100px;')
+                       
+                '</tr>' SKIP
+                
+            .
+                
+        END.
+        
+        IF LAST-OF(tt-IssRep.period-of) AND pc-rep-type = 2 THEN
+        DO:
+            FIND  tt-issCust 
+                WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber
+                AND tt-issCust.period-of  = tt-IssRep.period-of  NO-LOCK NO-ERROR.
+       
+            ASSIGN 
+                std-hours = com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) .
+                
+            ASSIGN
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+     
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Total Period - ' + string(tt-IssRep.period-of,"99"),'right',lc-style)
+               
+                  replib-RepField(com-TimeToString(tt-issCust.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
+                  
+                '</tr>' SKIP
+                 '<tr>' SKIP
+                 replib-RepField('','','')
+                 '</tr>' SKIP.
+                
+        END.
+    
+        IF LAST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 1 THEN
+        DO:
+                      
+            ASSIGN 
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Customer Total - ' +  Customer.Name ,'',lc-style)
+                                    replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                
+                
+        END.
+        IF LAST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 2 THEN
+        DO:
+                  
+            ASSIGN 
+                std-hours = com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) . 
+            
+            ASSIGN 
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  
+                  replib-RepField('Customer Total - ' + Customer.name,'',lc-style)
+                  replib-RepField('','',lc-style)
+                  
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  
+                '</tr>' SKIP
+                 '<tr>' SKIP
+                 replib-RepField('','','')
+                 '</tr>' SKIP.
+                 
+                      
+        END.
+        IF LAST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 3 THEN
+        DO:
+                       
+            ASSIGN 
+                std-hours = com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) . 
+            
+            ASSIGN 
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+            {&out}
+            '<tr>' SKIP
+                   replib-RepField('','','')
+                  replib-RepField('Customer Total - ' + Customer.name ,'',lc-style)
+                  
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  '</tr>' SKIP
+                 '<tr>' SKIP
+                 replib-RepField('','','')
+                 '</tr>' SKIP.
+                 
+                      
+        END.
+        
+        
+       
+        
+    END. /* each tt-Issrep */
+    
+    
+    IF pc-rep-type = 1 THEN
+    DO:
+        ASSIGN 
+            lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+        {&out}
+        '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Report Total','',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                    
+        
+    END.
+    IF pc-rep-type = 2 THEN
+    DO:
+        ASSIGN 
+            lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+        {&out}
+        '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Report Total','',lc-style)
+                  replib-RepField('','',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                    
+        
+    END.
+    IF pc-rep-type = 3 THEN
+    DO:
+        ASSIGN 
+            lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+        {&out}
+        '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('Report Total','',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                    
+        
+    END.
+    
+    
+     
+    {&out} '</table>' SKIP.
+
+END PROCEDURE.
 
 PROCEDURE ip-engcust-table :
     /*------------------------------------------------------------------------------
@@ -257,7 +673,9 @@ PROCEDURE ip-EngineerReport:
     ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
     
-    DEFINE VARIABLE pc-local-period AS CHARACTER NO-UNDO.  
+    DEFINE VARIABLE pc-local-period AS CHARACTER NO-UNDO. 
+    DEFINE VARIABLE std-hours       AS CHARACTER NO-UNDO.
+     
     
     
     {&out} '<table width=100% class="rptable">' SKIP.
@@ -265,13 +683,16 @@ PROCEDURE ip-EngineerReport:
     CASE pc-rep-type:
         WHEN 1 THEN
             DO:
-                {&out} replib-TableHeading('Engineer^left|Week^left||Billable^right|Non Billable^right|Total^right') SKIP.
+                {&out} replib-TableHeading('Engineer^left|Period^left||Billable^right|Non Billable^right|Total^right') SKIP.
             END.
         WHEN 2 THEN
             DO:
+                {&out} replib-TableHeading('Engineer^left|Period^left|Client|Brief Description|Contract Time^right|Billable^right|Non Billable^right|Total^right|Productivity %^right') SKIP.
             END.
         WHEN 3 THEN
             DO:
+                {&out} replib-TableHeading('Engineer^left|Period^left|Contract Time^right|Billable^right|Non Billable^right|Total^right|Productivity %^right') SKIP.
+                
             END.
         
     END CASE.
@@ -283,25 +704,124 @@ PROCEDURE ip-EngineerReport:
             
         IF FIRST-OF(tt-IssRep.ActivityBy) AND pc-rep-type = 1 THEN
         DO:
-            FIND  tt-IssUser WHERE tt-IssUser.ActivityBy = tt-IssRep.ActivityBy AND tt-IssUser.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
-            FIND tt-IssTotal WHERE tt-IssTotal.ActivityBy = tt-IssRep.ActivityBy  NO-LOCK NO-ERROR.
+            FIND  tt-IssUser 
+                WHERE tt-IssUser.ActivityBy = tt-IssRep.ActivityBy 
+                AND tt-IssUser.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
+            FIND tt-IssTotal 
+                WHERE tt-IssTotal.ActivityBy = tt-IssRep.ActivityBy  NO-LOCK NO-ERROR.
+            
+            
             {&out}
             '<tr>' SKIP
-                  replib-RepField(tt-IssUser.ActivityBy,'','font-weight:bold')
+                  replib-RepField(fnFullName(tt-IssRep.ActivityBy),'','font-weight:bold')
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField(com-TimeToString(tt-IssTotal.billable),'right','font-weight:bold')
                   replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right','font-weight:bold')
                   replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right','font-weight:bold')
                 '</tr>' SKIP.
+            ASSIGN
+                li-tot-billable     = li-tot-billable + tt-IssTotal.billable
+                li-tot-nonbillable  = li-tot-nonbillable + tt-IssTotal.nonbillable
+                .
+                
+        END.
+        IF FIRST-OF(tt-IssRep.period-of) AND pc-rep-type = 2 THEN
+        DO:
+            FIND tt-IssUser 
+                WHERE tt-IssUser.ActivityBy = tt-IssRep.ActivityBy 
+                AND tt-IssUser.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
+            FIND tt-IssTotal 
+                WHERE tt-IssTotal.ActivityBy = tt-IssRep.ActivityBy  NO-LOCK NO-ERROR.
+            ASSIGN 
+                std-hours = com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) .
+            
+            ASSIGN
+                lc-style = 'font-weight:bold;'.
+            IF FIRST-OF(tt-IssRep.ActivityBy)
+                THEN lc-style = lc-style + "border-top:1px solid black;".
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField(IF first-of(tt-IssRep.ActivityBy) then fnFullName(tt-IssRep.ActivityBy) ELSE '','',lc-style)
+                  replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
+                  replib-RepField('','',lc-style)
+                  replib-RepField('','',lc-style)
+                  replib-RepField(string(tt-IssUser.productivity,">>>>>>>>>9.99-"),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(
+                    IF tt-IssUser.productivity <> 0 then
+                    STRING(percentage-calc(dec(std-hours),tt-IssUser.productivity)
+                    ,">>>>>>>>>9.99-") ELSE '','right',lc-style)
+                '</tr>' SKIP.
+            ASSIGN
+                lc-style = 'font-weight:bold;'.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','',lc-style)
+                  replib-RepField('Issue No','',lc-style)
+                  replib-RepField('','',lc-style)
+                  replib-RepField('','',lc-style)
+                  replib-RepField('Contract Type','left',lc-style)
+                  replib-RepField('','right',lc-style)
+                  replib-RepField('','right',lc-style)
+                  replib-RepField('','right',lc-style)
+                  replib-RepField('','right',lc-style)
+                '</tr>' SKIP.
+                
+              
+            ASSIGN
+                li-tot-billable     = li-tot-billable + tt-IssUser.billable
+                li-tot-nonbillable  = li-tot-nonbillable + tt-IssUser.nonbillable
+                .
+                    
+            
+        END.
+        
+        IF FIRST-OF(tt-IssRep.period-of) AND pc-rep-type = 3 THEN
+        DO:
+            FIND tt-IssUser 
+                WHERE tt-IssUser.ActivityBy = tt-IssRep.ActivityBy 
+                AND tt-IssUser.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
+            FIND tt-IssTotal 
+                WHERE tt-IssTotal.ActivityBy = tt-IssRep.ActivityBy  NO-LOCK NO-ERROR.
+            ASSIGN 
+                std-hours = com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) .
+            
+            ASSIGN
+                lc-style = ''.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField(IF first-of(tt-IssRep.ActivityBy) then fnFullName(tt-IssRep.ActivityBy) ELSE '','',lc-style)
+                  replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
+                  replib-RepField(string(tt-IssUser.productivity,">>>>>>>>>9.99-"),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(
+                    IF tt-IssUser.productivity <> 0 then
+                    STRING(percentage-calc(dec(std-hours),tt-IssUser.productivity)
+                    ,">>>>>>>>>9.99-") ELSE '','right',lc-style)
+                '</tr>' SKIP.
+             ASSIGN
+                li-tot-billable     = li-tot-billable + tt-IssUser.billable
+                li-tot-nonbillable  = li-tot-nonbillable + tt-IssUser.nonbillable
+                .
                 
         END.
         
-        
+         
         IF FIRST-OF(tt-IssRep.IssueNumber) AND pc-rep-type <> 3 THEN
         DO:
-            FIND tt-IssTime WHERE tt-IssTime.IssueNumber = tt-IssRep.IssueNumber AND tt-IssTime.ActivityBy = tt-IssRep.ActivityBy AND tt-IssTime.period =  tt-IssRep.period-of  NO-LOCK NO-ERROR.
-            FIND Customer WHERE Customer.AccountNumber = tt-IssRep.AccountNumber 
+            FIND tt-IssTime 
+                WHERE tt-IssTime.IssueNumber = tt-IssRep.IssueNumber 
+                AND tt-IssTime.ActivityBy = tt-IssRep.ActivityBy 
+                AND tt-IssTime.period =  tt-IssRep.period-of  NO-LOCK NO-ERROR.
+            FIND Customer 
+                WHERE Customer.AccountNumber = tt-IssRep.AccountNumber 
                 AND customer.companyCode  = lc-global-company NO-LOCK NO-ERROR.
             IF pc-rep-type = 1 THEN
             DO:
@@ -346,57 +866,37 @@ PROCEDURE ip-EngineerReport:
      
                                    
             END.
+            ELSE
+                IF pc-rep-type = 2 THEN
+                DO:
+                    {&out}
+                    '<tr>' SKIP
+                    replib-RepField('','','')
+                    replib-RepField(STRING(tt-IssRep.IssueNumber),'left','')
+                    replib-RepField(Customer.name,'left','')
+                    replib-RepField(replace(tt-IssRep.Description,'~n','<br/>'),'left','max-width: 400px;')
+                    replib-RepField(tt-IssRep.ContractType,'left','')
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
+                    
+                    
+                    '</tr>' SKIP. 
+                    
+                
+                END.
             
-     
-        
-        /*
-        IF pc-rep-type = 2 THEN
-        DO:
-            cRange = "G" + cColumn.
-            chWorkSheet:Range(cRange):Value = com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0).                                                       
-            cRange = "H" + cColumn.
-            chWorkSheet:Range(cRange):Value = com-TimeToString((IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0) + (IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0)).     
-        END.
-        ELSE  chWorkSheet:Range("A" + cColumn + ":F" + cColumn):Font:Bold = TRUE.
-     */
+            
         END.
         
         IF pc-rep-type = 1 THEN
         DO:
-            /*
-            iColumn = iColumn + 1.
-            cColumn = STRING(iColumn).
-            cRange = "B" + cColumn.
-            chWorkSheet:Range(cRange):Value = "Activity".
-            cRange = "C" + cColumn.
-            chWorkSheet:Range(cRange):Value = tt-IssRep.ActivityType + " by: " + tt-IssRep.ActivityBy + " on: " + string(tt-IssRep.StartDate,"99/99/9999").
-            iColumn = iColumn + 1.
-            cColumn = STRING(iColumn).
-            cRange = "B" + cColumn.
-            chWorkSheet:Range(cRange):Value = "Billable".
-            cRange = "C" + cColumn.
-            chWorkSheet:Range(cRange):Value = IF tt-IssRep.Billable THEN "Yes" ELSE "No".
-            iColumn = iColumn + 1.
-            cColumn = STRING(iColumn).
-            cRange = "B" + cColumn.
-            chWorkSheet:Range(cRange):Value = "Time".
-            cRange = "C" + cColumn.
-            chWorkSheet:Range(cRange):Value = com-TimeToString(tt-IssRep.Duration) .
-            iColumn = iColumn + 1.
-            cColumn = STRING(iColumn).
-            cRange = "B" + cColumn.
-            chWorkSheet:Range(cRange):Value = "Activity Desc".
-            cRange = "C" + cColumn.
-            chWorkSheet:Range(cRange):Value = safe-Chars(tt-IssRep.Notes).
-            chWorkSheet:Range(cRange):WrapText = TRUE.
-            chWorkSheet:Range(cRange):NumberFormat = "General".
-            ExcelBorders("B" + cColumn,"C" + cColumn,"","","","","2","","","","1").
-            */
+           
             {&out} 
-                '<tr>' SKIP
+            '<tr>' SKIP
                 replib-RepField('','','')
                         replib-RepField('Activity','left','')
-                        replib-RepField(tt-IssRep.ActivityType + " by: " + tt-IssRep.ActivityBy + " on: " + string(tt-IssRep.StartDate,"99/99/9999"),'left','')
+                        replib-RepField(tt-IssRep.ActivityType + " by: " + fnFullName(tt-IssRep.ActivityBy) + " on: " + string(tt-IssRep.StartDate,"99/99/9999"),'left','')
                         
                 '</tr>' SKIP
                 '<tr>' SKIP
@@ -419,18 +919,185 @@ PROCEDURE ip-EngineerReport:
                        
                 '</tr>' SKIP
                 
-                
-                
-                .
+            .
                 
         END.
-      
-    
         
+        IF LAST-OF(tt-IssRep.period-of) AND pc-rep-type = 2 THEN
+        DO:
+            FIND  tt-IssUser 
+                WHERE tt-IssUser.ActivityBy = tt-IssRep.ActivityBy 
+                AND tt-IssUser.period-of  = tt-IssRep.period-of  NO-LOCK NO-ERROR.
+       
+            ASSIGN 
+                std-hours = com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) .
+                
+            ASSIGN
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+     
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Total Period - ' + string(tt-IssRep.period-of,"99"),'right',lc-style)
+                  
+                  replib-RepField(com-TimeToString(tt-IssUser.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(
+                    IF tt-IssUser.productivity <> 0 then
+                    STRING(percentage-calc(dec(std-hours),tt-IssUser.productivity)
+                    ,">>>>>>>>>9.99-") ELSE '','right',lc-style)
+                '</tr>' SKIP
+                 '<tr>' SKIP
+                 replib-RepField('','','')
+                 '</tr>' SKIP.
+                
+        END.
+    
+        IF LAST-OF(tt-IssRep.ActivityBy) AND pc-rep-type = 1 THEN
+        DO:
+            FIND tt-IssTotal 
+                WHERE tt-IssTotal.ActivityBy = tt-IssRep.ActivityBy  NO-LOCK NO-ERROR.
+            
+            ASSIGN 
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Engineer Total - ' +  fnFullName(tt-IssRep.ActivityBy),'',lc-style)
+                                    replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                
+                
+        END.
+        IF LAST-OF(tt-IssRep.ActivityBy) AND pc-rep-type = 2 THEN
+        DO:
+            FIND tt-IssTotal 
+                WHERE tt-IssTotal.ActivityBy = tt-IssRep.ActivityBy  NO-LOCK NO-ERROR.
+            
+            ASSIGN 
+                std-hours = com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) . 
+            
+            ASSIGN 
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+            {&out}
+            '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Engineer Total - ' +  fnFullName(tt-IssRep.ActivityBy) ,'',lc-style)
+                  replib-RepField(string(tt-IssTotal.productivity,">>>>>>>>>9.99-"),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(
+                    IF tt-IssTotal.productivity <> 0 then
+                    STRING(percentage-calc(dec(std-hours),tt-IssTotal.productivity)
+                    ,">>>>>>>>>9.99-") ELSE '','right',lc-style)
+                '</tr>' SKIP
+                 '<tr>' SKIP
+                 replib-RepField('','','')
+                 '</tr>' SKIP.
+                 
+                      
+        END.
+        IF LAST-OF(tt-IssRep.ActivityBy) AND pc-rep-type = 3 THEN
+        DO:
+            FIND tt-IssTotal 
+                WHERE tt-IssTotal.ActivityBy = tt-IssRep.ActivityBy  NO-LOCK NO-ERROR.
+            
+            ASSIGN 
+                std-hours = com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable)
+                std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) . 
+            
+            ASSIGN 
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+            {&out}
+            '<tr>' SKIP
+                   replib-RepField('','','')
+                  replib-RepField('Engineer Total - ' +  fnFullName(tt-IssRep.ActivityBy) ,'',lc-style)
+                  replib-RepField(string(tt-IssTotal.productivity,">>>>>>>>>9.99-"),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(
+                    IF tt-IssTotal.productivity <> 0 then
+                    STRING(percentage-calc(dec(std-hours),tt-IssTotal.productivity)
+                    ,">>>>>>>>>9.99-") ELSE '','right',lc-style)
+                '</tr>' SKIP
+                 '<tr>' SKIP
+                 replib-RepField('','','')
+                 '</tr>' SKIP.
+                 
+                      
+        END.
+        
+        
+       
         
     END. /* each tt-Issrep */
     
-
+    IF pc-rep-type = 1 THEN
+    DO:
+        ASSIGN 
+            lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+        {&out}
+        '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Report Total','',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                    
+        
+    END.
+    IF pc-rep-type = 2 THEN
+    DO:
+        ASSIGN 
+            lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+        {&out}
+        '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Report Total','',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                    
+        
+    END.
+    IF pc-rep-type = 3 THEN
+    DO:
+        ASSIGN 
+            lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
+        {&out}
+        '<tr>' SKIP
+                  replib-RepField('','','')
+                  replib-RepField('','','')
+                  replib-RepField('Report Total','',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                '</tr>' SKIP.
+                    
+        
+    END.
+    
+    
+     
     {&out} '</table>' SKIP.
 
 END PROCEDURE.
@@ -447,8 +1114,13 @@ PROCEDURE ip-ExportJavascript :
     '<script language="JavaScript">' skip
 
 
+        'function validateForm()' skip
+        '~{' SKIP
+          ' return true;' SKIP
+        '~}' SKIP
+        
 
-         
+        /* 
        'function validateForm()' skip
         '~{' skip
         'var selectengineer = document.getElementById("selectengineer").value; ' skip
@@ -487,7 +1159,7 @@ PROCEDURE ip-ExportJavascript :
         '  ~}' skip
         '~}' skip
         '~}' skip
-       
+       */
         '</script>' skip.              
               
               
@@ -510,42 +1182,8 @@ PROCEDURE ip-GenerateReport:
     DEFINE BUFFER customer      FOR Customer.
     
      
-    /*
-    lc-global-company,
-            STRING(LOOKUP(lc-reptypeA,typedesc)),
-            STRING(LOOKUP(lc-reptypeE,engcust)),
-            STRING(LOOKUP(lc-reptypeC,weekly)),
-            lc-selectengineer ,
-            lc-selectcustomer ,
-            period,
-            OUTPUT TABLE tt-IssRep,
-            OUTPUT TABLE tt-IssTime,
-            OUTPUT TABLE tt-IssTotal,
-            OUTPUT TABLE tt-IssUser,
-            OUTPUT TABLE tt-IssCust,
-            OUTPUT TABLE tt-IssTable,
-            OUTPUT TABLE tt-ThisPeriod
-       
-    DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
-    /* 1=Detailed , 2=SummaryDetail, 3=Summary */ 
-    DEFINE INPUT PARAMETER pc-ViewType    AS CHARACTER NO-UNDO.
-    /* 1=Customer, 2=Engineer, 3=Issues */  
-    DEFINE INPUT PARAMETER pc-ReportType  AS CHARACTER NO-UNDO.
-    /* 1=Week, 2=Month  */
-    DEFINE INPUT PARAMETER pc-PeriodType  AS CHARACTER NO-UNDO.
-    DEFINE INPUT PARAMETER pc-Engineers    AS CHARACTER NO-UNDO.
-    DEFINE INPUT PARAMETER pc-Customers    AS CHARACTER NO-UNDO.
-    DEFINE INPUT PARAMETER pc-Period      AS CHARACTER NO-UNDO.
-    */
 
-    {&out} 'rep params = <br>' 
-    "1= " STRING(LOOKUP(lc-reptypeA,typedesc)) '<br>'
-    "2= " STRING(LOOKUP(lc-reptypeE,engcust)) '<br>'
-    "3= " STRING(LOOKUP(lc-reptypeC,weekly)) '<br>'
-    "4= " lc-selectengineer '<br>'
-    "5= " lc-selectcustomer '<br>'
-    "6= " period '<br>'.
-    
+
     {&out} htmlib-BeginCriteria("Report Criteria").
     
     {&out} '<table align=center><tr>' skip.
@@ -610,7 +1248,7 @@ PROCEDURE ip-GenerateReport:
     CASE STRING(LOOKUP(lc-reptypeE,engcust)):
         WHEN "1" THEN /* Customer */
             DO:
-                
+                RUN ip-CustomerReport (LOOKUP(lc-reptypeA,typedesc)).  
             END.
         WHEN "2" THEN /* Engineer */
             DO:
@@ -967,19 +1605,7 @@ PROCEDURE process-web-request :
             lc-selectweek     = get-value("selectweek") 
             lc-selectyear     = ENTRY(1,get-value("selectyear")).  
 
-        OUTPUT to "C:\temp\djstest.txt".
-
-        PUT UNFORMATTED
-            "lc-reptypeA         "   lc-reptypeA        SKIP
-            "lc-reptypeE         "   lc-reptypeE        SKIP
-            "lc-reptypeC         "   lc-reptypeC        SKIP
-            "lc-selectengineer   "   lc-selectengineer  SKIP
-            "lc-selectcustomer   "   lc-selectcustomer  SKIP
-            "lc-selectmonth      "   lc-selectmonth     SKIP
-            "lc-selectweek       "   lc-selectweek      SKIP
-            "lc-selectyear       "   lc-selectyear      SKIP(2).
-
-        OUTPUT close.
+        
 
         RUN ip-Validate(OUTPUT lc-error-field).
 
@@ -994,10 +1620,8 @@ PROCEDURE process-web-request :
 
     RUN outputHeader.  
     
-    {&out} htmlib-Header(lc-title) skip
-           htmlib-StartForm("mainform","post", appurl + '/rep/engrep01.p'  )
-           htmlib-ProgramTitle("Engineers Time Report") skip.
-
+    {&out} htmlib-Header(lc-title) SKIP.
+    
     {&out}
     '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
     '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip
@@ -1005,9 +1629,15 @@ PROCEDURE process-web-request :
     .
     
     RUN ip-ExportJavascript.
+    
+    {&out}
+           htmlib-StartForm("mainform","post", appurl + '/rep/engrep01.p'  )
+           htmlib-ProgramTitle("Engineers Time Report") skip.
+
+    
     IF request_method <> "POST" OR lc-error-field <> "" THEN
     DO:
-         
+        {&out} '<div id="content">' SKIP. 
         {&out} htmlib-StartTable("mnt",
             0,
             0,
@@ -1051,7 +1681,8 @@ PROCEDURE process-web-request :
         {&out} '<center>' Format-Submit-Button("submitform","Report")
         '</center><br>' skip.
     
-        {&out} htmlib-Hidden("submitsource","").
+        {&out} htmlib-Hidden("submitsource","") SKIP
+               '</div>' skip.
   
   
     END.
@@ -1103,6 +1734,23 @@ END FUNCTION.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-Period) = 0 &THEN
+
+FUNCTION fnFullName RETURNS CHARACTER 
+    (  pc-loginid AS CHARACTER ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    DEFINE BUFFER WebUser FOR WebUser.
+		
+    FIND WebUser
+        WHERE WebUser.LoginID = pc-loginid NO-LOCK NO-ERROR.
+		  
+    RETURN IF AVAILABLE WebUser THEN WebUser.Name ELSE ''.
+
+		
+END FUNCTION.
 
 FUNCTION Format-Select-Period RETURNS CHARACTER
     ( pc-htm AS CHARACTER) :
@@ -1165,3 +1813,17 @@ END FUNCTION.
 
 &ENDIF
 
+FUNCTION percentage-calc RETURNS DECIMAL 
+    ( p-one AS DECIMAL,
+    p-two AS DECIMAL ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE p-result AS DECIMAL.
+    /*  p-one =   billable/nonbillable total      */
+    /*  p-two =   productivity / contarcted hours */
+    p-result = ROUND(( p-one * 100) / p-two , 2).
+    RETURN p-result.
+		
+END FUNCTION.
