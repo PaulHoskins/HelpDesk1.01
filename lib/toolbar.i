@@ -1,35 +1,27 @@
-/*------------------------------------------------------------------------
-    File        : 
-    Purpose     :
+/***********************************************************************
 
-    Syntax      :
-
-    Description : toolbar.i
-
-    Author(s)   :
-    Created     :
-    Notes       :
+    Program:        lib/toolbar.i
     
+    Purpose:        Toolbar library 
+    
+    Notes:
+    
+    
+    When        Who         What
+    01/01/2006  phoksi      Standard
     23/08/2010  DJS         3677 Added remote connection ability image
     23/08/2010  DJS         3678 Modified map facility to use google 
                                 maps instead of streetmaps added image
     02/09/2010  DJS         3674 - Added toolbar for Quickview toggle
     26/04/2014  phoski      Asset Toolbar
+    26/11/2014  phoski      nofind option on standard toolbar
     
-    
-  ----------------------------------------------------------------------*/
-/*          This .W file was created with the Progress AppBuilder.      */
-/*----------------------------------------------------------------------*/
+***********************************************************************/
+
 
 /* ***************************  Definitions  ************************** */
 
 
-
-
-/* ********************  Preprocessor Definitions  ******************** */
-
-&Scoped-define PROCEDURE-TYPE Procedure
-&Scoped-define DB-AWARE no
 
 
 
@@ -394,6 +386,9 @@ FUNCTION tbar-Find RETURNS CHARACTER
         Notes:  
     ------------------------------------------------------------------------------*/
 
+    IF pc-url = ""
+    OR pc-url MATCHES "*nofind*"
+    THEN RETURN "".
     RETURN
         '<input style="font-size: 12px;" name="search" size="20" value="' + dynamic-function("get-value","search") + '">'
         + '&nbsp;' 

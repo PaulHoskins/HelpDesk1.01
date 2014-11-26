@@ -1,14 +1,14 @@
 /***********************************************************************
 
-    Program:        sys/webusergen.p
+    Program:        sys/webholidaymnt.p
     
-    Purpose:        Generate User Password
+    Purpose:        Hooiday Maintenance  	 
     
     Notes:
     
     
     When        Who         What
-    10/04/2006  phoski      CompanyCode      
+    26/11/2014  phoski      Initial      
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -25,12 +25,10 @@ DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-sendmail    AS CHARACTER NO-UNDO.
 
 
-
-DEFINE BUFFER b-valid FOR webuser.
-DEFINE BUFFER b-table FOR webuser.
+DEFINE BUFFER b-valid FOR holiday.
+DEFINE BUFFER b-table FOR holiday.
 
 
 DEFINE VARIABLE lc-search       AS CHARACTER NO-UNDO.
@@ -44,12 +42,11 @@ DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-newpassword  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE li-loop         AS INTEGER   NO-UNDO.
-DEFINE VARIABLE lc-length       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE li-length       AS INTEGER   NO-UNDO.
-DEFINE VARIABLE lc-expire       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE li-expire       AS INTEGER   NO-UNDO.
+
+
+DEFINE VARIABLE lc-hdate        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-description  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-observed     AS CHARACTER NO-UNDO.
 
 
 
@@ -81,7 +78,6 @@ DEFINE VARIABLE li-expire       AS INTEGER   NO-UNDO.
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
-{lib/maillib.i}
 
 
 
@@ -98,6 +94,60 @@ RUN process-web-request.
 
 
 /* **********************  Internal Procedures  *********************** */
+
+&IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
+
+PROCEDURE ip-Validate :
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      emails:       
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
+
+    DEFINE VARIABLE ld-date     AS DATE     NO-UNDO.
+    
+    IF lc-mode = "ADD":U THEN
+    DO:
+        ld-date = DATE(lc-hdate) NO-ERROR.
+        
+             
+        
+        IF ERROR-STATUS:ERROR
+            OR ld-date = ?
+            THEN RUN htmlib-AddErrorMessage(
+                'hdate', 
+                'You must enter holiday date',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+        ELSE        
+            IF CAN-FIND(FIRST b-valid
+                WHERE b-valid.hdate = ld-date
+                AND b-valid.companycode = lc-global-company
+                NO-LOCK)
+                THEN RUN htmlib-AddErrorMessage(
+                    'hdate', 
+                    'This Holiday already exists',
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
+
+    END.
+
+    IF lc-description = ""
+        OR lc-description = ?
+        THEN RUN htmlib-AddErrorMessage(
+            'description', 
+            'You must enter the description',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+
+    
+
+END PROCEDURE.
+
+
+&ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
@@ -168,6 +218,7 @@ PROCEDURE process-web-request :
     {lib/checkloggedin.i} 
 
 
+    
     ASSIGN 
         lc-mode = get-value("mode")
         lc-rowid = get-value("rowid")
@@ -189,14 +240,37 @@ PROCEDURE process-web-request :
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow.
 
-    ASSIGN 
-        lc-title = 'Generate Password'
-        lc-link-label = 'Cancel'
-        lc-submit-label = 'Confirm New Password'.
+    CASE lc-mode:
+        WHEN 'add'
+        THEN 
+            ASSIGN 
+                lc-title = 'Add'
+                lc-link-label = "Cancel addition"
+                lc-submit-label = "Add Holiday".
+        WHEN 'view'
+        THEN 
+            ASSIGN 
+                lc-title = 'View'
+                lc-link-label = "Back"
+                lc-submit-label = "".
+        WHEN 'delete'
+        THEN 
+            ASSIGN 
+                lc-title = 'Delete'
+                lc-link-label = 'Cancel deletion'
+                lc-submit-label = 'Delete Holiday'.
+        WHEN 'Update'
+        THEN 
+            ASSIGN 
+                lc-title = 'Update'
+                lc-link-label = 'Cancel update'
+                lc-submit-label = 'Update Holiday'.
+    END CASE.
+
 
     ASSIGN 
-        lc-title = lc-title + ' User'
-        lc-link-url = appurl + '/sys/webuser.p' + 
+        lc-title = lc-title + ' Holiday'
+        lc-link-url = appurl + '/sys/webholiday.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
@@ -204,7 +278,7 @@ PROCEDURE process-web-request :
                                   '&time=' + string(TIME)
         .
 
-    IF CAN-DO("view,update,delete,genpassword",lc-mode) THEN
+    IF CAN-DO("view,update,delete",lc-mode) THEN
     DO:
         FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
             NO-LOCK NO-ERROR.
@@ -212,7 +286,7 @@ PROCEDURE process-web-request :
         DO:
             set-user-field("mode",lc-mode).
             set-user-field("title",lc-title).
-            set-user-field("nexturl",appurl + "/sys/webuser.p").
+            set-user-field("nexturl",appurl + "/sys/webholiday.p").
             RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
             RETURN.
         END.
@@ -222,65 +296,97 @@ PROCEDURE process-web-request :
 
     IF request_method = "POST" THEN
     DO:
-        ASSIGN 
-            lc-newpassword = get-value("newpass").
-        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
-            EXCLUSIVE-LOCK NO-ERROR.
 
-        IF lc-newpassword <> "" THEN
+        IF lc-mode <> "delete" THEN
         DO:
             ASSIGN 
-                b-table.passwd = ENCODE(lc-newpassword).
-            ASSIGN 
-                lc-expire = htmlib-GetAttr ('PASSWORDRULE', 'ExpireDays').
-
-            ASSIGN 
-                li-expire = int(lc-expire) no-error.
-            IF li-expire <= 0
-                THEN li-expire = ?.
+                lc-hdate   = get-value("hdate")
+                lc-description  = get-value("description")
+                lc-observed  = get-value("observed")
+                .
             
-            /*
-            ***
-            *** If theres an expiry period then force the user
-            *** to update their password next time they sign in
-            ***
-            */
-            IF li-expire <> ?
-                THEN ASSIGN b-table.expiredate = TODAY - 1.
-            ELSE ASSIGN b-table.expiredate = ?.
+               
+            RUN ip-Validate( OUTPUT lc-error-field,
+                OUTPUT lc-error-msg ).
+
+            IF lc-error-msg = "" THEN
+            DO:
+                
+                IF lc-mode = 'update' THEN
+                DO:
+                    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                        EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                    IF LOCKED b-table 
+                        THEN  RUN htmlib-AddErrorMessage(
+                            'none', 
+                            'This record is locked by another user',
+                            INPUT-OUTPUT lc-error-field,
+                            INPUT-OUTPUT lc-error-msg ).
+                END.
+                ELSE
+                DO:
+                    CREATE b-table.
+                    ASSIGN 
+                        b-table.hdate = DATE(lc-hdate)
+                        b-table.companycode = lc-global-company
+                        lc-firstrow      = STRING(ROWID(b-table))
+                        .
+                   
+                END.
+                IF lc-error-msg = "" THEN
+                DO:
+                    ASSIGN 
+                        b-table.descr    = lc-description
+                        b-table.observed = lc-observed = 'on'
+                          
+                        .
+                   
+                    
+                END.
+            END.
         END.
-        IF b-table.email <> ""
-            THEN DYNAMIC-FUNCTION("mlib-SendPassword",b-table.loginid,lc-newpassword).
-        RUN outputHeader.
-        set-user-field("navigation",'refresh').
-        set-user-field("firstrow",lc-firstrow).
-        set-user-field("search",lc-search).
-        RUN run-web-object IN web-utilities-hdl ("sys/webuser.p").
-        RETURN.
+        ELSE
+        DO:
+            FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+            IF LOCKED b-table 
+                THEN  RUN htmlib-AddErrorMessage(
+                    'none', 
+                    'This record is locked by another user',
+                    INPUT-OUTPUT lc-error-field,
+                    INPUT-OUTPUT lc-error-msg ).
+            ELSE DELETE b-table.
+        END.
+
+        IF lc-error-field = "" THEN
+        DO:
+            RUN outputHeader.
+            set-user-field("navigation",'refresh').
+            set-user-field("firstrow",lc-firstrow).
+            set-user-field("search",lc-search).
+            RUN run-web-object IN web-utilities-hdl ("sys/webholiday.p").
+            RETURN.
+        END.
     END.
 
-    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
+    IF lc-mode <> 'add' THEN
+    DO:
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
+        ASSIGN 
+            lc-hdate = STRING(b-table.hdate,"99/99/9999").
 
-
-    ASSIGN 
-        lc-length = htmlib-GetAttr ('PASSWORDRULE', 'MinLength').
-
-    ASSIGN 
-        li-length = int(lc-length) no-error.
-    IF li-length = ?
-        OR li-length <= 0 
-        THEN li-length = 8.
-
-    ASSIGN 
-        lc-newPassword = htmlib-GenPassword(li-length).
-
-
-     
+        IF CAN-DO("view,delete",lc-mode)
+            OR request_method <> "post"
+            THEN ASSIGN lc-description   = b-table.descr
+                lc-observed   = IF b-table.observed THEN 'on' ELSE ''
+                .
+       
+    END.
 
     RUN outputHeader.
     
     {&out} htmlib-Header(lc-title) skip
-           htmlib-StartForm("mainform","post", appurl + '/sys/webusergen.p')
+           htmlib-StartForm("mainform","post", appurl + '/sys/webholidaymnt.p' )
            htmlib-ProgramTitle(lc-title) skip.
 
     {&out} htmlib-Hidden ("savemode", lc-mode) skip
@@ -289,8 +395,7 @@ PROCEDURE process-web-request :
            htmlib-Hidden ("savefirstrow", lc-firstrow) skip
            htmlib-Hidden ("savelastrow", lc-lastrow) skip
            htmlib-Hidden ("savenavigation", lc-navigation) skip
-           htmlib-Hidden ("nullfield", lc-navigation) skip
-           htmlib-Hidden ("newpass",lc-newpassword) skip.
+           htmlib-Hidden ("nullfield", lc-navigation) skip.
         
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
@@ -298,26 +403,60 @@ PROCEDURE process-web-request :
 
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-    htmlib-SideLabel("Name")
+        ( IF LOOKUP("hdate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Holiday Date")
+        ELSE htmlib-SideLabel("Holiday Date"))
     '</TD>' skip
-           htmlib-TableField(html-encode(b-table.name),'left')
-           '</TR><TR><TD VALIGN="TOP" ALIGN="right">' 
-           htmlib-SideLabel("Password")
-           '</TD>' skip
-           htmlib-TableField(html-encode(lc-newpassword),'left')
+    .
+
+    IF lc-mode = "ADD" THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("hdate",10,lc-hdate) skip
+           '</TD>'.
+    else
+    {&out} htmlib-TableField(html-encode(lc-hdate),'left')
            skip.
-         
-    IF htmlib-GetAttr ('MAIL', 'SendPassword') = 'yes' 
-        AND b-table.email <> "" THEN
-    DO:
-        {&out} '<tr><td colspan=5>&nbsp&nbsp(Password will be sent to ' b-table.Email 
-        ' once confirmed.)</td></tr>' skip.
-    END.
 
 
-    DO li-loop = 1 TO 3:
-        {&out} '<TR><TD>&nbsp</TD></TR>' skip.
-    END.
+    {&out} '</TR>' skip.
+
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("description",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Description")
+        ELSE htmlib-SideLabel("Description"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("description",40,lc-description) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-description),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
+
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("observed",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Observed?")
+        ELSE htmlib-SideLabel("Observed?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("observed", IF lc-observed = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(if lc-observed = 'on'
+                                         then 'yes' else 'no'),'left')
+           skip.
+    
+    {&out} '</TR>' skip.
+
+    
+    
+
     {&out} htmlib-EndTable() skip.
 
 

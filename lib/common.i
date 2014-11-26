@@ -1716,6 +1716,10 @@ FUNCTION com-CanDelete RETURNS LOGICAL
             DO:
                 RETURN FALSE.
             END.
+        WHEN "webHoliday" THEN
+            DO:
+                RETURN TRUE.
+            END.
         
         OTHERWISE
         DO:

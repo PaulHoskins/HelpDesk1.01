@@ -1,15 +1,14 @@
 /***********************************************************************
 
-    Program:        sys/websmsqueue.p
+    Program:        sys/webholiday.p
     
-    Purpose:        SMS Queue View 
+    Purpose:        Holiday Maintenance     
     
     Notes:
     
     
     When        Who         What
-    13/05/2006  phoski      Initial
-     
+    26/11//2014 phoski      Initial      
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -41,8 +40,11 @@ DEFINE VARIABLE lc-link-otherp AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-nopass      AS CHARACTER NO-UNDO.
 
-DEFINE BUFFER b-query  FOR SMSQueue.
-DEFINE BUFFER b-search FOR SMSQueue.
+
+
+
+DEFINE BUFFER b-query  FOR holiday.
+DEFINE BUFFER b-search FOR holiday.
 
 
 DEFINE QUERY q FOR b-query SCROLLING.
@@ -189,26 +191,37 @@ PROCEDURE process-web-request :
 
     RUN outputHeader.
     
-    {&out} htmlib-Header("SMS Queue") skip.
+    {&out} htmlib-Header("Maintain Holidays") skip.
 
     {&out} htmlib-JScript-Maintenance() skip.
 
-    {&out} htmlib-StartForm("mainform","post", appurl + '/sys/websmsqueue.p' ) skip.
+    {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webholiday.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("SMS Queue") skip.
+    {&out} htmlib-ProgramTitle("Maintain Holidays") skip.
     
+
+    {&out}
+    tbar-StandardBar(
+        /* appurl + "/sys/webholiday.p" */
+        "NOFIND",
+        appurl + "/sys/webholidaymnt.p",
+        lc-link-otherp
+        ).
+
     {&out} skip
            htmlib-StartMntTable().
 
 
+    
+
     {&out}
     htmlib-TableHeading(
-        "Status^left|Date^left|From|To|Message|Sent|ID|Response"
+        "Holiday Date|Description|Observed?"
         ) skip.
 
 
     OPEN QUERY q FOR EACH b-query NO-LOCK
-        WHERE b-query.companycode = lc-global-company.
+        WHERE b-query.CompanyCode = lc-global-company.
 
     GET FIRST q NO-LOCK.
 
@@ -235,16 +248,29 @@ PROCEDURE process-web-request :
             END.
         END.
         ELSE
-            IF lc-navigation = "refresh" THEN
+            IF lc-navigation = "search" THEN
             DO:
-                REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
-                IF ERROR-STATUS:ERROR = FALSE THEN
+                FIND FIRST b-search 
+                    WHERE b-search.CompanyCode = lc-global-company
+                    AND b-search.descr >= lc-search NO-LOCK NO-ERROR.
+                IF AVAILABLE b-search THEN
                 DO:
+                    REPOSITION q TO ROWID ROWID(b-search) NO-ERROR.
                     GET NEXT q NO-LOCK.
-                    IF NOT AVAILABLE b-query THEN GET FIRST q.
-                END.  
-                ELSE GET FIRST q.
+                END.
+                ELSE ASSIGN lc-smessage = "Your search found no records, displaying all".
             END.
+            ELSE
+                IF lc-navigation = "refresh" THEN
+                DO:
+                    REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
+                    IF ERROR-STATUS:ERROR = FALSE THEN
+                    DO:
+                        GET NEXT q NO-LOCK.
+                        IF NOT AVAILABLE b-query THEN GET FIRST q.
+                    END.  
+                    ELSE GET FIRST q.
+                END.
 
     ASSIGN 
         li-count = 0
@@ -271,46 +297,23 @@ PROCEDURE process-web-request :
        
         {&out}
             skip
-            htmlib-trmouse()
+            tbar-tr(rowid(b-query))
             skip
-            htmlib-MntTableField(html-encode(
-                if b-query.QStatus = 0
-                then "Queued"
-                else "Completed"),'left')
-            htmlib-MntTableField(html-encode(
-                    string(b-query.CreateDate,'99/99/9999') + 
-                    ' ' + string(b-query.CreateTime,'hh:mm am')
-                    ),'left')
-            htmlib-MntTableField(html-encode(
-                    com-UserName(b-query.CreatedBy)
-                    ),'left').
 
-        {&out}
-        htmlib-MntTableField(html-encode(
-            TRIM(com-UserName(b-query.SendTo)
-            + ' ' + b-query.Mobile)
-            ),'left').
+            htmlib-MntTableField(string(b-query.hDate,"99/99/9999"),'left')
+            htmlib-MntTableField(html-encode(b-query.descr),'left')
+            htmlib-MntTableField(html-encode((if b-query.observed = true
+                                          then 'Yes' else 'No')),'left')
+            tbar-StandardRow(
+                rowid(b-query),
+                lc-user,
+                appurl + "/sys/webholidaymnt.p",
+                "webholiday",
+                lc-link-otherp
+                )
             
-        {&out}
-        htmlib-MntTableField(html-encode(
-            b-query.Msg
-            ),'left')
-        htmlib-MntTableField(html-encode(
-            IF b-Query.SentDate <> ? THEN
-            STRING(b-query.SentDate,'99/99/9999') + 
-            ' ' + string(b-query.SentTime,'hh:mm am')
-            ELSE 'Pending'
-            ),'left')
-        htmlib-MntTableField(html-encode(
-            b-query.SMSId
-            ),'left')
-        htmlib-MntTableField(html-encode(
-            STRING(b-query.SMSResponse)
-            ),'left').
-
-
-        {&out}
-        '</tr>' skip.
+           
+            '</tr>' skip.
 
        
 
@@ -329,9 +332,8 @@ PROCEDURE process-web-request :
            htmlib-EndTable()
            skip.
 
-    {lib/navpanel.i "sys/websmsqueue.p"}
+    {lib/navpanel.i "sys/webholiday.p"}
 
-    {&out} '<div style="display: none;"><input type="text" name="search"></div>'.
     {&out} skip
            htmlib-Hidden("firstrow", string(lr-first-row)) skip
            htmlib-Hidden("lastrow", string(lr-last-row)) skip

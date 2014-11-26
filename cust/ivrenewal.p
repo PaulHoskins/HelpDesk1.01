@@ -12,6 +12,7 @@
     
     10/09/2010  DJS         3671 amended to utilise for inventory
                               renewals - added menu item
+    26/11/2014  phoski      Ignore inactive customers                          
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -236,10 +237,7 @@ PROCEDURE process-web-request :
             IF ERROR-STATUS:ERROR 
                 OR ld-renewal = ? THEN NEXT.
 
-            IF TODAY >= ld-renewal - b-query.dWarning
-                /*             and ld-renewal >= today                           removed for 3671    */
-              
-                THEN 
+            IF TODAY >= ld-renewal - b-query.dWarning THEN 
             DO:
 
                 FIND custIv 
@@ -247,6 +245,9 @@ PROCEDURE process-web-request :
                     custField.CustIvId NO-LOCK NO-ERROR.
                             
                 FIND customer OF CustIv NO-LOCK NO-ERROR.
+                
+                IF Customer.IsActive = FALSE THEN NEXT.
+                
                 FIND ivClass  OF ivSub  NO-LOCK NO-ERROR.
 
                 ASSIGN
