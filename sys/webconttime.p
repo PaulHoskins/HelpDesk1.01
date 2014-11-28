@@ -318,7 +318,7 @@ PROCEDURE ip-ExportAccordion :
       'position: relative;' skip
       'margin-left:auto;' skip
       'margin-right:auto;' skip
-      'width: 650px; /*changeble*/' skip
+      'width: 750px; /*changeble*/' skip
       'border-bottom: 1px dotted white;' skip
       '~}' skip
 
@@ -435,17 +435,20 @@ PROCEDURE ip-ExportAccordion :
       '<script type="text/javascript" language="JavaScript">' skip
       'var ContentHeight = 0;' skip
       'var TimeToSlide = 200;' skip
-      'var openAccordion = "";' skip
+      'var openAccordion = "";' SKIP
+      'var inEdit = false;' skip
       'var totalAcc = 0 ;' skip
       'var firstTime = ' if lc-mode = 'display' or lc-mode = 'insert' then 'true' else 'false' skip
       
       'function runAccordion(index)' skip
-      '~{' skip
+      '~{' SKIP
+      /*
       'if (inEdit) ' skip
       '~{' skip
       ' alert("You have made changes to this week~'s times\n Please update or cancel before continuing" ); ' skip
       ' return; ' skip
       '~}' skip
+      */
       'var nID = "Accordion" + index + "Content";' skip
       'if(openAccordion == nID)' skip
       'nID = "";' skip
@@ -622,7 +625,7 @@ PROCEDURE ip-time-display :
                '      <td>' string(entry(6,lc-day)) ' - ' string(day(hi-date + 5)) '</td>' 
                '      <td>' string(entry(7,lc-day)) ' - ' string(day(hi-date + 6)) '</td>'  
                '      </tr>' skip
-               '      <tr><td width="50px">Contracted Hours:</td> ' skip.
+               '      <tr><td width="50px" align="right">Contracted Hours:</td> ' skip.
           
         DO vx = 1 TO 7:
 
@@ -631,7 +634,7 @@ PROCEDURE ip-time-display :
         END.
 
 
-        {&out}  '      <tr><td width="50px">Change Hours:</td> ' skip.
+        {&out}  '      <tr><td width="50px" align="right">Change Hours:</td> ' skip.
 
         DO vx = 1 TO 7:
 
@@ -655,7 +658,7 @@ PROCEDURE ip-time-display :
                 ,"font-family:verdana;font-size:10pt;width:40px;") '</td>'  skip.
         END.
 
-        {&out} '     </tr><tr><td> Reason:</td> ' skip.
+        {&out} '     </tr><tr><td align="right"> Reason:</td> ' skip.
 
         DO vx = 1 TO 7:
          
@@ -833,7 +836,7 @@ PROCEDURE process-web-request :
     ASSIGN 
         lc-title = 'Contracted Times For ' + 
            html-encode(b-table.forename + " " + b-table.surname)
-        lc-link-label = "Cancel"
+        lc-link-label = "Back"
         lc-submit-label = "Update Times".
       
     ASSIGN 
@@ -848,6 +851,7 @@ PROCEDURE process-web-request :
     IF request_method = "POST" THEN
     DO:
  
+ /*
         OUTPUT to "C:\djstext.txt" append.
         PUT UNFORMATTED  
             " lc-mode         " lc-mode  SKIP
@@ -869,7 +873,7 @@ PROCEDURE process-web-request :
             " lc-submitreason7 "   lc-submitreason[7]   SKIP                  .
 
         OUTPUT close.
-
+*/
 
         DO vx = 1 TO 7:
  
@@ -885,7 +889,7 @@ PROCEDURE process-web-request :
                     AND   WebUserTime.LoginID     = lc-loginid                             
                     AND   WebUserTime.EventDate   = date(lc-date)
                     EXCLUSIVE-LOCK NO-ERROR.
-                    
+                /*    
                 OUTPUT to "C:\djstext.txt" append.
                 PUT UNFORMATTED  "lc-mode " lc-mode  SKIP
                     "USER  " lc-loginid SKIP
@@ -894,7 +898,8 @@ PROCEDURE process-web-request :
                     "Avail?  "      AVAILABLE webUserTime    SKIP(2).
                     
                 OUTPUT close.
-  
+                */
+                 
                 IF AVAILABLE WebuserTime THEN
                 DO:
                     ASSIGN 
@@ -974,7 +979,7 @@ PROCEDURE process-web-request :
     RUN ip-build-year.
     RUN ip-time-display.
 
-    {&out} skip '</div         ></td></tr>' skip.
+    {&out} skip '</div></td></tr>' skip.
 
 
     {&out} skip 
@@ -1008,10 +1013,6 @@ PROCEDURE process-web-request :
            htmlib-Footer() skip.
 
 
-    {&out} '<script>' skip
-/*       ' forceDisplay("mainform","20") ; ' skip */
-/*       ' focusDisplay("hoursOnAm1"); ' skip */
-      '</script>' skip.
 
 
     

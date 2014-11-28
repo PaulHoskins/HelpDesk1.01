@@ -493,7 +493,7 @@ FUNCTION tbar-ImageLink RETURNS CHARACTER
 
     RETURN
         SUBSTITUTE(
-        '<a href="&1"><img border="0" src="&2" alt="&3" class="tbarimg"></a>',
+        '<a href="&1"><img border="0" src="&2" alt="&3" title="&3" class="tbarimg"></a>',
         pc-url,
         pc-image,
         pc-alt).
@@ -757,7 +757,7 @@ FUNCTION tbar-Link RETURNS CHARACTER
         WHEN "conttime" 
         THEN 
             ASSIGN 
-                lc-image    = '/images/toolbar3/time-admin.gif'
+                lc-image    = '/images/toolbar3/time-admin2.gif'
                 lc-alt-text = 'Engineers Time editor'.
         WHEN "CustAsset" 
         THEN 
@@ -774,10 +774,11 @@ FUNCTION tbar-Link RETURNS CHARACTER
             ASSIGN 
                 lc-image    = '/images/toolbar3/mailiss.gif'
                 lc-alt-text = 'Mail Open Issues'.
-
-
-
-
+        WHEN "wrk-hr" 
+        THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/wrk-hr.gif'
+                lc-alt-text = 'Working Hours'.
 
     END CASE.
     

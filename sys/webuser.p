@@ -14,6 +14,8 @@
     13/06/2014  phoski      Various for UX
     26/09/2014  phoski      Disabled Features
     20/11/2014  phoski      Pass thru 'selacc' field to mnt page
+    27/11/2014  phoski      Working Hours page
+    
 
 ***********************************************************************/
 
@@ -328,6 +330,7 @@ PROCEDURE process-web-request :
     tbar-Link("delete",?,"off",lc-link-otherp)
     tbar-Link("genpassword",?,"off",lc-link-otherp)
     tbar-Link("contaccess",?,"off",lc-link-otherp)
+    tbar-Link("wrk-hr",?,"off",lc-link-otherp)
     tbar-Link("conttime",?,"off",lc-link-otherp)
     tbar-EndOption()
     tbar-End().
@@ -457,6 +460,9 @@ PROCEDURE process-web-request :
                 tbar-Link("contaccess",rowid(b-query),
                               if b-query.UserClass = "CONTRACT"
                               then ( appurl + '/' + "sys/webcontaccess.p") else "off",lc-link-otherp)
+                tbar-Link("wrk-hr",rowid(b-query),
+                              if b-query.UserClass = "INTERNAL"
+                              then ( appurl + '/' + "sys/webwrkhour.p") else "off",lc-link-otherp)
 
                 tbar-Link("conttime",rowid(b-query),
                               if b-query.UserClass = "INTERNAL"
@@ -470,7 +476,7 @@ PROCEDURE process-web-request :
 
 
        
-        vhLQuery:GET-NEXT(NO-LOCK). /* 3933  */
+        vhLQuery:GET-NEXT(NO-LOCK). 
 
             
     END.
