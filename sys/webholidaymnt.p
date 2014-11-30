@@ -293,7 +293,20 @@ PROCEDURE process-web-request :
 
     END.
 
-
+    IF lc-mode = "WSHOL" THEN
+    DO:
+        RUN lib/holidayservice.p NO-ERROR.
+        
+        set-user-field("navigation",'refresh').
+        set-user-field("firstrow",lc-firstrow).
+        set-user-field("search",lc-search).
+        set-user-field("webservice","Public holidays loaded from www.holidaywebservice.com").
+        RUN run-web-object IN web-utilities-hdl ("sys/webholiday.p").
+        RETURN.
+            
+        
+    END.
+    
     IF request_method = "POST" THEN
     DO:
 

@@ -14,7 +14,7 @@
     13/06/2014  phoski      Various for UX
     26/09/2014  phoski      Disabled Features
     20/11/2014  phoski      Pass thru 'selacc' field to mnt page
-    27/11/2014  phoski      Working Hours page
+    27/11/2014  phoski      Working Hours page & changes
     
 
 ***********************************************************************/
@@ -79,6 +79,9 @@ FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
 
 &ENDIF
 
+
+FUNCTION fnToolbarYearSelection RETURNS CHARACTER 
+    (  ) FORWARD.
 
 /* *********************** Procedure Settings ************************ */
 
@@ -284,6 +287,10 @@ PROCEDURE process-web-request :
         lc-lastrow  = get-value("lastrow")
         lc-navigation = get-value("navigation")
         lc-selacc     = get-value("selacc").
+        
+    IF get-value("submityear") = ""
+        THEN set-user-field("submityear",STRING(YEAR(TODAY),"9999")).
+    
     
     ASSIGN 
         lc-parameters = "search=" + lc-search +
@@ -317,21 +324,24 @@ PROCEDURE process-web-request :
     {&out} htmlib-ProgramTitle("Maintain Users") skip
            htmlib-hidden("submitsource","") skip.
     
+  
     {&out}
     tbar-Begin(
+        DYNAMIC-FUNCTION('fnToolbarYearSelection')
+        + '&nbsp;' + 
         DYNAMIC-FUNCTION('fnToolbarAccountSelection':U) 
         + 
         tbar-FindLabel(appurl + "/sys/webuser.p","Find Name")
         )
     tbar-Link("add",?,appurl + '/' + "sys/webusermnt.p",lc-link-otherp)
     tbar-BeginOption()
-    tbar-Link("view",?,"off",lc-link-otherp)
-    tbar-Link("update",?,"off",lc-link-otherp)
-    tbar-Link("delete",?,"off",lc-link-otherp)
-    tbar-Link("genpassword",?,"off",lc-link-otherp)
-    tbar-Link("contaccess",?,"off",lc-link-otherp)
-    tbar-Link("wrk-hr",?,"off",lc-link-otherp)
-    tbar-Link("conttime",?,"off",lc-link-otherp)
+    tbar-Link("view",?,"off",'')
+    tbar-Link("update",?,"off",'')
+    tbar-Link("delete",?,"off",'')
+    tbar-Link("genpassword",?,"off",'')
+    tbar-Link("contaccess",?,"off",'')
+    tbar-Link("wrk-hr",?,"off",'')
+    tbar-Link("conttime",?,"off",'')
     tbar-EndOption()
     tbar-End().
 
@@ -412,7 +422,9 @@ PROCEDURE process-web-request :
         ASSIGN 
             lc-link-otherp = 'search=' + lc-search +
                              '&firstrow=' + string(lr-first-row) +
-                             "&selacc=" + lc-selacc.
+                             "&selacc=" + lc-selacc +
+                             "&submityear=" + get-value("submityear")
+            .
                                 
                                 
 
@@ -606,3 +618,40 @@ END FUNCTION.
 
 &ENDIF
 
+FUNCTION fnToolbarYearSelection RETURNS CHARACTER 
+    (  ):
+
+    DEFINE VARIABLE lc-return       AS CHARACTER     NO-UNDO.
+
+    DEFINE VARIABLE lc-codes        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-names        AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-this         AS CHARACTER     NO-UNDO.
+
+    DEFINE BUFFER customer FOR customer.
+
+    ASSIGN
+        lc-codes = STRING(YEAR(TODAY) - 1,"9999") + "|" +
+                   string(YEAR(TODAY),"9999") + "|" +
+                   string(YEAR(TODAY) + 1,"9999") 
+        lc-names = lc-codes
+        lc-this  = get-value("submityear").
+   
+    
+
+    lc-return =  htmlib-SelectJS(
+        "submityear",
+        'OptionChange(this)',
+        lc-codes,
+        lc-names,
+        lc-this
+        ).
+
+
+
+    lc-return = "<b>Year:</b>" + lc-return + "&nbsp;".
+
+    RETURN lc-return.
+
+
+		
+END FUNCTION.

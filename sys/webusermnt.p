@@ -20,6 +20,7 @@
     04/10/2014  phoski      Account Manager 
     13/11/2014  phoski      Customer View Inventory Flag
     20/11/2014  phoski      save & Pass back 'selacc' field
+    29/11/2014  phoski      remove working hours
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -96,10 +97,6 @@ DEFINE VARIABLE lc-usertitleCode  AS CHARACTER
 DEFINE VARIABLE lc-usertitleDesc  AS CHARACTER
     INITIAL '' NO-UNDO.
 
-DEFINE VARIABLE lc-HoursOnAm      AS CHARACTER EXTENT 7 INITIAL "00:00" NO-UNDO.
-DEFINE VARIABLE lc-HoursOffAm     AS CHARACTER EXTENT 7 INITIAL "00:00" NO-UNDO.
-DEFINE VARIABLE lc-HoursOnPm      AS CHARACTER EXTENT 7 INITIAL "00:00" NO-UNDO.
-DEFINE VARIABLE lc-HoursOffPm     AS CHARACTER EXTENT 7 INITIAL "00:00" NO-UNDO.
 
 
 
@@ -688,147 +685,7 @@ PROCEDURE ip-timestable :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE vx      AS INTEGER  NO-UNDO.
-    DEFINE VARIABLE lc-year AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE zx      AS INTEGER  NO-UNDO. 
-    DEFINE VARIABLE lc-var  AS CHARACTER NO-UNDO.
-
-
-        
-
-    {&out} '<script>' skip.
-
-    FOR EACH WebStdTime WHERE WebStdTime.companycode = lc-global-company     
-        AND   WebStdTime.LoginID     = b-table.loginID       
-        NO-LOCK:                             
-        lc-var = ''.
-        DO vx = 1 TO 7:
-            ASSIGN 
-                lc-var = lc-var +  string(WebStdTime.StdAMStTime[vx],"9999")   + ','
-                lc-var = lc-var +  string(WebStdTime.StdAMEndTime[vx],"9999")  + ','
-                lc-var = lc-var +  string(WebStdTime.StdPMStTime[vx],"9999")   + ','
-                lc-var = lc-var +  string(WebStdTime.StdPMEndTime[vx],"9999")  + ','  .
-        END.
-        lc-var = substr(lc-var,1,LENGTH(lc-var) - 1) . 
-
-        {&out} 'var YEAR' STRING(WebStdTime.StdWkYear) ' = ~'' lc-var '~' ;' skip.
-
- 
-    END.
-
-    {&out}  
-    'function changeThisYear(varObj)' skip
-           '~{' skip
-           '  if (inEdit)' skip
-           '  ~{' skip
-           '    alert("You may have made changes to this year~'s times\n Please update or cancel before continuing");' skip
-           '    return;' skip
-           '  ~}' skip
-
-           '  if (varObj != null)' skip
-           '  ~{' skip
-/*    '      alert(varObj.value);' skip */
-           'try ~{' skip
-           '  eval("var newyear=" + "YEAR" + varObj.value );  ' skip
-           '~}' skip
-           'catch (e) ~{' skip
-           '   ' skip
-           '~}' skip
-/*       'alert("PAST HERE")' skip */
-           '  document.mainform.elements["submityear"].value = varObj.value;' skip
-/* 'alert(newyear);' skip */
-/*       if (typeof __JSON != 'undefined') { */
-           '  if (newyear)' skip
-           ' ~{' skip
-           '  var thisyear = newyear.split(",");' skip
-/*    '     alert(thisyear);' skip */
-           '  for (i=1;i<8;i++)' skip
-           '   ~{' skip
-           '      document.getElementById("hoursOnAm" + i).value = thisyear.shift();' skip
-           '      document.getElementById("hoursOffAm" + i).value = thisyear.shift();' skip
-           '      document.getElementById("hoursOnPm" + i).value = thisyear.shift();' skip
-           '      document.getElementById("hoursOffPm" + i).value = thisyear.shift();' skip
-           '   ~}' skip
-           '   forceDisplay("mainform","60") ; ' skip
-           '   focusDisplay("hoursOnAm1"); ' skip
-           '  ~}' skip
-           '  else' skip
-           '  ~{' skip
-           '   var answer = confirm("Do you want to copy the currently displayed times?\n (Cancel for cleared display of times)");' skip
-           '   if (answer) ~{  ~};' skip
-           '   else ~{ ' skip
-           '  for (i=1;i<8;i++)' skip
-           '   ~{' skip
-           '      document.getElementById("hoursOnAm" + i).value = "0000";' skip
-           '      document.getElementById("hoursOffAm" + i).value = "0000";' skip
-           '      document.getElementById("hoursOnPm" + i).value = "0000";' skip
-           '      document.getElementById("hoursOffPm" + i).value = "0000";' skip
-           '   ~}' skip
-           '   forceDisplay("mainform","60") ; ' skip
-           '   focusDisplay("hoursOnAm1"); ' skip
-            '  ~} ' skip
-           '  ~} ' skip
-           ' ~} ' skip 
-           '~}' skip
-           '</script>' skip.
     
-    
-    {&out} '<div id="newyeardiv" style="display:block;">' skip 
-           '<select id="submityear" name="submityear" class="inputfield" ' skip
-           ' onchange="changeThisYear(this);"  >' skip
-           '<option value="" ' '>  Select Year </option>' skip.
-    DO zx = -1 TO 4:
-        lc-year = STRING(YEAR(TODAY) - zx).
-        {&out} '<option value="' lc-year '" ' 
-        IF INTEGER(lc-year) = li-curr-year THEN "selected" 
-        ELSE "" '>'  html-encode(lc-year) '</option>' skip.
-    END.
-    {&out} '</select>' skip.
-    {&out} '</div>'.
-
-
-
- 
-
-    {&out} '<div id="changethisyear" > ' skip 
-             htmlib-StartTable("mnt",
-                              0,
-                              0,
-                              2,
-                              0,
-                              "center") skip.
-    {&out}
-    htmlib-TableHeading(
-        "|Contracted Times (24 Hour Clock) for " + string(li-curr-year)
-        ) skip.
-
-
-    {&out} '<tr><td valign="top" align="right">'  skip
-          '<td valign="top" align="center">On</td><td>&nbsp;</td> ' skip
-          '<td valign="top" align="center">Off</td><td>&nbsp;</td> ' skip
-          '<td valign="top" align="center">On</td><td>&nbsp;</td> ' skip
-          '<td valign="top" align="center">Off</td><td>&nbsp;</td> ' skip.
-
- 
-    DO vx = 1 TO 7:
-      
-        {&out} '<tr><td valign="top" align="right">' ENTRY(vx,lc-day) skip
-       '<td valign="top" align="center">' html-InputFieldMasked("hoursOnAm"+ string(vx), "4","60","HH:MM",lc-HoursOnAm[vx],"font-family:verdana;font-size:10pt;width:50px;") '</td><td>&nbsp;</td>' skip     
-       '<td valign="top" align="center">' html-InputFieldMasked("hoursOffAm"+ string(vx),"4","60","HH:MM",lc-HoursOffAm[vx],"font-family:verdana;font-size:10pt;width:50px;")'</td><td>&nbsp;</td>' skip     
-       '<td valign="top" align="center">' html-InputFieldMasked("hoursOnPm"+ string(vx), "4","60","HH:MM",lc-HoursOnPm[vx],"font-family:verdana;font-size:10pt;width:50px;") '</td><td>&nbsp;</td>' skip     
-       '<td valign="top" align="center">' html-InputFieldMasked("hoursOffPm"+ string(vx),"4","60","HH:MM",lc-HoursOffPm[vx],"font-family:verdana;font-size:10pt;width:50px;")'</td>' skip                    
-       '</tr>' skip.                      
-    END.
-
- 
-
- 
-
-    {&out} skip 
-           htmlib-EndTable() skip 
-           '</div>' skip.
-   
-
 
 END PROCEDURE.
 
@@ -1088,7 +945,8 @@ PROCEDURE process-web-request :
         lc-parameters = "search=" + lc-search +
                            "&firstrow=" + lc-firstrow + 
                            "&lastrow=" + lc-lastrow +
-                           "&selacc=" + lc-SelAcc.
+                           "&selacc=" + lc-SelAcc + 
+                           "&submityear=" + string(li-curr-year).
 
     CASE lc-mode:
         WHEN 'add'
@@ -1126,6 +984,7 @@ PROCEDURE process-web-request :
                                   '&lastrow=' + lc-lastrow + 
                                   '&navigation=refresh' +
                                   '&selacc=' + lc-selacc + 
+                                  '&submityear=' + string(li-curr-year) +
                                   '&time=' + string(TIME)
         .
 
@@ -1174,13 +1033,7 @@ PROCEDURE process-web-request :
                 lc-disableTimeout  = get-value("disabletimeout")
                 lc-custinv         = get-value("custinv").
             
-            DO li-loop = 1 TO 7:
-                lc-HoursOnAm[li-loop]  =  get-value("hoursOnAm" + string(li-loop)).
-                lc-HoursOffAm[li-loop] =  get-value("hoursOffAm" + string(li-loop)).
-                lc-HoursOnPm[li-loop]  =  get-value("hoursOnPm" + string(li-loop)).
-                lc-HoursOffPm[li-loop] =  get-value("hoursOffPm" + string(li-loop)).
-            END.
-            
+           
 
             RUN ip-Validate( OUTPUT lc-error-field,
                 OUTPUT lc-error-msg ).
@@ -1276,25 +1129,7 @@ PROCEDURE process-web-request :
                             b-table.AccountNumber,
                             b-table.LoginId ).
                     END.
-                    FIND FIRST WebStdTime WHERE WebStdTime.companycode = lc-global-company
-                        AND   WebStdTime.LoginID     = b-table.loginID
-                        AND   WebStdTime.StdWkYear   = li-curr-year
-                        EXCLUSIVE-LOCK NO-ERROR.
-                    IF NOT AVAILABLE WebStdTime THEN
-                    DO:
-                        CREATE WebStdTime.
-                        ASSIGN 
-                            WebStdTime.companycode = lc-global-company
-                            WebStdTime.LoginID     = b-table.loginID
-                            WebStdTime.StdWkYear   = li-curr-year.
-                    END.
-                    DO li-loop = 1 TO 7:
-                        ASSIGN 
-                            WebStdTime.StdAMStTime[li-loop]   = INTEGER(REPLACE(lc-HoursOnAm[li-loop],":",""))
-                            WebStdTime.StdAMEndTime[li-loop]  = INTEGER(REPLACE(lc-HoursOffAm[li-loop],":",""))
-                            WebStdTime.StdPMStTime[li-loop]   = INTEGER(REPLACE(lc-HoursOnPm[li-loop],":",""))
-                            WebStdTime.StdPMEndTime[li-loop]  = INTEGER(REPLACE(lc-HoursOffPm[li-loop],":",""))  .
-                    END.
+                    
                 END.
             END.
         END.
@@ -1325,7 +1160,6 @@ PROCEDURE process-web-request :
             set-user-field("firstrow",lc-firstrow).
             set-user-field("search",lc-search).
             set-user-field("selacc",lc-selacc).
-            MESSAGE "sending " lc-selacc.
             RUN run-web-object IN web-utilities-hdl ("sys/webuser.p").
             RETURN.
         END.
@@ -1378,18 +1212,7 @@ PROCEDURE process-web-request :
                 lc-custinv         = IF b-table.CustomerViewInventory THEN 'on'
                                     ELSE ''
                 .
-            FIND FIRST WebStdTime WHERE WebStdTime.companycode = lc-global-company
-                AND   WebStdTime.LoginID     = b-table.loginID
-                AND   WebStdTime.StdWkYear   = li-curr-year
-                NO-LOCK NO-ERROR.
-            IF  AVAILABLE WebStdTime THEN
-            DO li-loop = 1 TO 7:
-                ASSIGN 
-                    lc-HoursOnAm[li-loop]  = STRING(WebStdTime.StdAMStTime[li-loop],"9999")
-                    lc-HoursOffAm[li-loop] = STRING(WebStdTime.StdAMEndTime[li-loop],"9999")
-                    lc-HoursOnPm[li-loop]  = STRING(WebStdTime.StdPMStTime[li-loop],"9999")
-                    lc-HoursOffPm[li-loop] = STRING(WebStdTime.StdPMEndTime[li-loop],"9999")   .
-            END.
+            
         END.
 
        
@@ -1430,11 +1253,12 @@ PROCEDURE process-web-request :
             '}'  skip
             '</script>' SKIP.
 
-    {&out} '<script language="JavaScript"> var debugThis         = false; </script>' skip.
+    {&out} '<script language="JavaScript"> var debugThis         = true; </script>' skip.
     {&out} '<script language="JavaScript" src="/scripts/js/validate.js"></script>' skip.
 
 
-    {&out} htmlib-Hidden ("savemode", lc-mode) skip
+    {&out} htmlib-Hidden ("savemode", lc-mode) SKIP
+           htmlib-Hidden ("submityear", string(li-curr-year)) skip
            htmlib-Hidden ("saverowid", lc-rowid) skip
            htmlib-Hidden ("savesearch", lc-search) skip
            htmlib-Hidden ("savefirstrow", lc-firstrow) skip
@@ -1445,9 +1269,7 @@ PROCEDURE process-web-request :
         
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
-    {&out} '<table><tr><td>' skip.
-
-
+    
     {&out} REPLACE(htmlib-StartInputTable(),"mnt","MainTable") skip.
 
     
@@ -1457,17 +1279,7 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-EndTable() skip.
 
-    {&out} '</td><td valign="top" >' skip.
-
-
-    {&out} htmlib-StartMntTable().
     
-    IF AVAILABLE b-table AND b-table.UserClass <> "customer" 
-        THEN RUN ip-timestable.
-    {&out} htmlib-EndTable() skip.
-    {&out} '</td></tr></table>' skip.
-
-
     IF lc-error-msg <> "" THEN
     DO:
         {&out} '<BR><BR><CENTER>' 
@@ -1482,14 +1294,7 @@ PROCEDURE process-web-request :
          
    
     
-    IF lc-mode <> 'add'  AND lc-userclass <> 'customer' THEN
-        {&out} '<script>' skip
-      ' forceDisplay("mainform","60") ; ' skip
-      ' focusDisplay("hoursOnAm1"); ' skip
-      '</script>' skip.
-
-   
-    {&out} htmlib-EndForm() skip
+   {&out} htmlib-EndForm() skip
           htmlib-Footer() skip.
 
 

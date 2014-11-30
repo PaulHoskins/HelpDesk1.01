@@ -13,16 +13,16 @@ function ClosePage() {
 }
 
 function ClosePageRefreshParent() {
-	
+
 	var ParentWindow = opener
 	var ParentLocation = ParentWindow.location
-	
+
 	ClosePage()
-	
+
 	ParentLocation += "&addnote=done"
-	
+
 	ParentWindow.location = ParentLocation
-	
+
 }
 
 function LookupWindow(URL, FieldName, Desc) {
@@ -42,15 +42,15 @@ function CloseLookupWindow () {
 
 	if (LookupWinHdl == null)
 	        return
-	
+
 	if (LookupWinHdl.closed)
 	        return
-	
+
     	LookupWinHdl.close()
 }
 
 function HelpWindow(HelpPageURL) {
-	
+
 	HlpWinHdl = window.open(HelpPageURL,"HelpWindow","width=700,height=500,scrollbars=yes,resizable")
 	HlpWinHdl.focus()
 
@@ -60,16 +60,16 @@ function CloseHelpWindow () {
 
 	if (HlpWinHdl == null)
 	        return
-	
+
 	if (HlpWinHdl.closed)
 	        return
-	
+
     	HlpWinHdl.close()
 }
 
 
 function PopUpWindow(HelpPageURL) {
-	
+
 	PopUpWinHdl = window.open(HelpPageURL,"PopupWindow","width=700,height=500,scrollbars=yes,resizable")
 	PopUpWinHdl.focus()
 
@@ -79,10 +79,10 @@ function ClosePopUpWindow () {
 
 	if (PopUpWinHdl == null)
 	        return
-	
+
 	if (PopUpWinHdl.closed)
 	        return
-	
+
     	PopUpWinHdl.close()
 }
 
@@ -90,11 +90,11 @@ function OpenNewWindow(URL) {
 	var WindowHdl = null
 	WindowHdl = window.open(URL,"NewWindow","width=600,height=400,menubar=yes,statusbar=yes,scrollbars=yes,resizable")
 	WindowHdl.focus()
-	
+
 }
 
 function RepWindow(HelpPageURL) {
-	
+
 	RepWinHdl = window.open(HelpPageURL,"ReportWindow","width=700,height=500,scrollbars=yes,resizable")
 	RepWinHdl.focus()
 
@@ -104,10 +104,10 @@ function CloseRepWindow () {
 
 	if (RepWinHdl == null)
 	        return
-	
+
 	if (RepWinHdl.closed)
 	        return
-	
+
     	RepWinHdl.close()
 }
 
@@ -115,16 +115,16 @@ function SubmitThePage(SubmitValue) {
 	var FieldName = "submitsource"
 	document.mainform.elements[FieldName].value = SubmitValue
 	document.mainform.submit()
-	
+
 }
 
 function ahahBegin(target) {
 
-   if ( document.getElementById(target).innerHTML == "" ) 
+   if ( document.getElementById(target).innerHTML == "" )
    {
    	document.getElementById(target).innerHTML = '<img src="/images/ajax/load.gif" border=0">'
-   }	
-       
+   }
+
 }
 
 function ahah(url,target) {
@@ -186,17 +186,17 @@ var objRowInit = false
 var objRowDefault = null
 
 function rowInit () {
-	
+
 	if ( objRowInit ) {
 		return
 	}
 	objRowInit = true
-	
+
 	var objtoolBarOption = document.getElementById("tboption")
-	
+
 	objRowDefault = objtoolBarOption.innerHTML
-	
-		
+
+
 	return
 
 }
@@ -205,28 +205,28 @@ function rowSelect (rowObject, rowToolIDName) {
 
 	var objRowToolBar = document.getElementById(rowToolIDName)
 	var objtoolBarOption = document.getElementById("tboption")
-	
+
 	rowInit()
-		
+
 	if ( objRowSelected != null ) {
 		objRowSelected.className = "tabrow1"
 	}
-	
+
 	if ( objRowSelected == rowObject ) {
 		objRowSelected = null
 		rowObject.className = "tabrow1"
 		// Was space
 		objtoolBarOption.innerHTML = objRowDefault
-		
+
 		return
 	}
-	
+
 	rowObject.className = "tabrowselected"
 	objRowSelected = rowObject
-				
+
 	objtoolBarOption.innerHTML = objRowToolBar.innerHTML
-	
-	
+
+
 }
 
 function rowOver (rowObject) {
@@ -235,7 +235,7 @@ function rowOver (rowObject) {
 		rowObject.className = "tabrowover"
 		return
 	}
-	rowObject.className = "tabrowselected" 
+	rowObject.className = "tabrowselected"
 }
 
 function rowOut (rowObject) {
@@ -251,28 +251,28 @@ function rowOut (rowObject) {
 function AjaxSimpleDescription ( formField, AppURL , CompanyCode, FieldType, ObjectName ) {
 
 	var fieldContent = escape(formField.value)
-		
+
 	var AjaxURL = AppURL
 	AjaxURL += "/lib/ajaxsimplevalidate.p?simple=yes"
 	AjaxURL += "&value=" + fieldContent
 	AjaxURL += "&type=" + FieldType
 	AjaxURL += "&companycode=" + CompanyCode
-	
+
 	ahah(AjaxURL,ObjectName)
-	
-	
-	
+
+
+
 }
 
 function GrowOver (rowObject) {
 
-	
-	rowObject.className = "overbargraph" 
+
+	rowObject.className = "overbargraph"
 }
 
 function GrowOut (rowObject) {
 
-	
+
 	rowObject.className = "bargraph"
 
 }
@@ -795,11 +795,7 @@ function updateHours(varObj)
 // CHANGE YEAR
 function changeYear(varObj)
 {
-	if (inEdit)
-	{
-		alert("You have made changes to this week's times\n Please update or cancel before continuing");
-		return;
-	}
+
 	if (varObj != null)
 	{
 		document.mainform.elements["mode"].value = "updateyear";

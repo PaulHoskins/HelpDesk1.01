@@ -197,17 +197,34 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webholiday.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Holidays") skip.
+    {&out} htmlib-ProgramTitle("Maintain Holidays") SKIP
+       htmlib-hidden("submitsource","") skip.
     
 
+        
+    IF get-value("webservice") <> "" THEN
+    DO:
+        {&out} '<div class="infobox" style="font-size: 10px;">' 
+        '<center>' 
+        get-value("webservice")
+        '</center></div>'skip.
+                    
+                       
+    END.
+    
     {&out}
-    tbar-StandardBar(
-        /* appurl + "/sys/webholiday.p" */
-        "NOFIND",
-        appurl + "/sys/webholidaymnt.p",
-        lc-link-otherp
-        ).
-
+ tbar-Begin(
+        tbar-Find("NOFIND")
+        ) 
+        + tbar-Link("wshol",?,appurl + "/sys/webholidaymnt.p",lc-link-otherp)
+        + tbar-Link("add",?,appurl + "/sys/webholidaymnt.p",lc-link-otherp)
+        + tbar-BeginOption()
+        + tbar-Link("view",?,"off",lc-link-otherp)
+        + tbar-Link("update",?,"off",lc-link-otherp)
+        + tbar-Link("delete",?,"off",lc-link-otherp)
+        + tbar-EndOption()
+        + tbar-End().
+        
     {&out} skip
            htmlib-StartMntTable().
 
@@ -221,56 +238,12 @@ PROCEDURE process-web-request :
 
 
     OPEN QUERY q FOR EACH b-query NO-LOCK
-        WHERE b-query.CompanyCode = lc-global-company.
+        WHERE b-query.CompanyCode = lc-global-company
+          AND b-query.hdate >= date(1,1,YEAR(TODAY) - 1).
 
     GET FIRST q NO-LOCK.
 
-    IF lc-navigation = "nextpage" THEN
-    DO:
-        REPOSITION q TO ROWID TO-ROWID(lc-lastrow) NO-ERROR.
-        IF ERROR-STATUS:ERROR = FALSE THEN
-        DO:
-            GET NEXT q NO-LOCK.
-            GET NEXT q NO-LOCK.
-            IF NOT AVAILABLE b-query THEN GET FIRST q.
-        END.
-    END.
-    ELSE
-        IF lc-navigation = "prevpage" THEN
-        DO:
-            REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
-            IF ERROR-STATUS:ERROR = FALSE THEN
-            DO:
-                GET NEXT q NO-LOCK.
-                REPOSITION q BACKWARDS li-max-lines + 1.
-                GET NEXT q NO-LOCK.
-                IF NOT AVAILABLE b-query THEN GET FIRST q.
-            END.
-        END.
-        ELSE
-            IF lc-navigation = "search" THEN
-            DO:
-                FIND FIRST b-search 
-                    WHERE b-search.CompanyCode = lc-global-company
-                    AND b-search.descr >= lc-search NO-LOCK NO-ERROR.
-                IF AVAILABLE b-search THEN
-                DO:
-                    REPOSITION q TO ROWID ROWID(b-search) NO-ERROR.
-                    GET NEXT q NO-LOCK.
-                END.
-                ELSE ASSIGN lc-smessage = "Your search found no records, displaying all".
-            END.
-            ELSE
-                IF lc-navigation = "refresh" THEN
-                DO:
-                    REPOSITION q TO ROWID TO-ROWID(lc-firstrow) NO-ERROR.
-                    IF ERROR-STATUS:ERROR = FALSE THEN
-                    DO:
-                        GET NEXT q NO-LOCK.
-                        IF NOT AVAILABLE b-query THEN GET FIRST q.
-                    END.  
-                    ELSE GET FIRST q.
-                END.
+    
 
     ASSIGN 
         li-count = 0
@@ -317,28 +290,17 @@ PROCEDURE process-web-request :
 
        
 
-        IF li-count = li-max-lines THEN LEAVE.
-
         GET NEXT q NO-LOCK.
             
     END.
 
-    IF li-count < li-max-lines THEN
-    DO:
-        {&out} skip htmlib-BlankTableLines(li-max-lines - li-count) skip.
-    END.
+
 
     {&out} skip 
            htmlib-EndTable()
            skip.
 
-    {lib/navpanel.i "sys/webholiday.p"}
-
-    {&out} skip
-           htmlib-Hidden("firstrow", string(lr-first-row)) skip
-           htmlib-Hidden("lastrow", string(lr-last-row)) skip
-           skip.
-
+    
     
     {&out} htmlib-EndForm().
 

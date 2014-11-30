@@ -16,6 +16,7 @@
     26/04/2014  phoski      Asset Toolbar
     26/11/2014  phoski      nofind option on standard toolbar
     
+    
 ***********************************************************************/
 
 
@@ -779,6 +780,13 @@ FUNCTION tbar-Link RETURNS CHARACTER
             ASSIGN 
                 lc-image    = '/images/toolbar3/wrk-hr.gif'
                 lc-alt-text = 'Working Hours'.
+        WHEN "wshol" 
+        THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/wshol.gif'
+                lc-alt-text = 'Load public holidays from webservice (www.holidaywebservice.com)'.
+         
+         
 
     END CASE.
     

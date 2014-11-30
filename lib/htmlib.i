@@ -17,7 +17,8 @@
                               toolbar buttons
                               
     13/09/2010  DJS         3708  Added Calendar Input Field Submit     
-    25/09/2014  phoski      Include security lib                         
+    25/09/2014  phoski      Include security lib   
+    30/11/2014  phoski      htmlib-SelectTime                      
     
 ***********************************************************************/
 
@@ -322,6 +323,10 @@ FUNCTION htmlib-SelectJS RETURNS CHARACTER
     pc-display AS CHARACTER,
     pc-selected AS CHARACTER )  FORWARD.
 
+
+FUNCTION htmlib-SelectTime RETURNS CHARACTER 
+    (pc-name AS CHARACTER,
+    pc-selected AS CHARACTER) FORWARD.
 
 FUNCTION htmlib-SideLabel RETURNS CHARACTER
     ( pc-Label AS CHARACTER )  FORWARD.
@@ -694,7 +699,7 @@ FUNCTION htmlib-CalendarScript RETURNS CHARACTER
         'button      : "trigger-ff' + pc-name + '",' + '~n' +
         'firstDay : 1 ,' + '~n' +
         'electric : false ' + '~n' +          /* if true (default) then given fields/date areas are updated for each move; otherwise they're updated only on close */
-                /*             'singleClick : false ' + '~n' + */ /* (true/false) wether the calendar is in single click mode or not (default: true) */
+        /*             'singleClick : false ' + '~n' + */ /* (true/false) wether the calendar is in single click mode or not (default: true) */
         '~}' + '~n' +
         ');' + '~n' +
         '</script>' + '~n'.
@@ -1977,6 +1982,69 @@ FUNCTION htmlib-SelectJS RETURNS CHARACTER
 END FUNCTION.
 
 
+FUNCTION htmlib-SelectTime RETURNS CHARACTER 
+    ( pc-name AS CHARACTER ,
+    pc-selected AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+	
+    DEFINE VARIABLE lc-data     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-loop     AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE li-hour     AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE li-min      AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-value    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-display  AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-selected AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE pc-value    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE pc-display  AS CHARACTER NO-UNDO.
+    
+    DO li-hour = 0 TO 23:
+        
+        DO li-min = 0 TO 59 BY 15:
+            lc-value = STRING(li-hour,"99")  + ":" + string(li-min,"99").
+            IF pc-display = ""
+                THEN ASSIGN pc-display = lc-value.
+            ELSE ASSIGN pc-display = pc-display + "|" + lc-value.
+        END.
+       
+    END.
+    
+    ASSIGN 
+        pc-value = REPLACE(pc-display,":","").
+    
+
+
+    ASSIGN 
+        lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name + '">'.
+
+    DO li-loop = 1 TO NUM-ENTRIES(pc-value,'|'):
+        ASSIGN 
+            lc-value   = ENTRY(li-loop,pc-value,'|')
+            lc-display = ENTRY(li-loop,pc-display,'|').
+        IF lc-value = pc-selected 
+            THEN lc-selected = 'selected'.
+        ELSE lc-selected = "".
+        ASSIGN 
+            lc-data = lc-data + 
+                       '<option ' +
+                       lc-selected + 
+                       ' value="' + 
+                       lc-value + 
+                       '">' + 
+                       lc-display +
+                       '</option>'.
+    END.
+  
+    ASSIGN 
+        lc-data = lc-data + '</select>'.
+
+    RETURN lc-data.
+                    
+		
+END FUNCTION.
+
 FUNCTION htmlib-SideLabel RETURNS CHARACTER
     ( pc-Label AS CHARACTER ) :
     /*------------------------------------------------------------------------------
@@ -2205,9 +2273,9 @@ FUNCTION htmlib-StyleSheet RETURNS CHARACTER
     RETURN 
         '~n<meta http-equiv="Content-Type" content="text/html; charset= ISO-8859-1">~n~n' +
         REPLACE(
-         htmlib-GetAttr("system","stylesheet"),
-         ".css",
-         ".css?v=1.0.0") + '~n~n'
+        htmlib-GetAttr("system","stylesheet"),
+        ".css",
+        ".css?v=1.0.0") + '~n~n'
         .
 
 

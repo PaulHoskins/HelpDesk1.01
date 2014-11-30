@@ -108,20 +108,12 @@ FUNCTION dayOfWeek RETURNS INTEGER
 
 &ENDIF
 
-&IF DEFINED(EXCLUDE-html-InputFieldMasked) = 0 &THEN
-
-FUNCTION html-InputFieldMasked RETURNS CHARACTER
-    ( pc-name AS CHARACTER,
-    pc-maxlength AS CHARACTER,
-    pc-datatype AS CHARACTER,
-    pc-mask AS CHARACTER,
-    pc-value AS CHARACTER,
-    pc-style AS CHARACTER )  FORWARD.
-
-
-&ENDIF
 
 &IF DEFINED(EXCLUDE-Wk2Date) = 0 &THEN
+
+FUNCTION htmlib-SelectDecimalTime RETURNS CHARACTER 
+	(pc-name AS CHARACTER,
+	 pc-value AS CHARACTER) FORWARD.
 
 FUNCTION Wk2Date RETURNS CHARACTER
     (cWkYrNo AS CHARACTER) FORWARD.
@@ -208,8 +200,8 @@ PROCEDURE ip-build-year :
 
         CREATE this-year.
         ASSIGN 
-            ty-week-no = vx
-            ty-hours   = std-hours.
+            this-year.ty-week-no = vx
+            this-year.ty-hours   = std-hours.
        
         FOR EACH WebUserTime WHERE WebUserTime.CompanyCode = lc-global-company                      
             AND   WebUserTime.LoginID     = lc-loginid                             
@@ -580,15 +572,14 @@ PROCEDURE ip-time-display :
     ------------------------------------------------------------------------------*/
     DEFINE VARIABLE vx      AS INTEGER  NO-UNDO.
     DEFINE VARIABLE vz      AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-h    AS CHARACTER NO-UNDO.
+    
     DEFINE VARIABLE lc-date AS CHARACTER NO-UNDO.
     DEFINE VARIABLE hi-date AS DATE NO-UNDO.
     DEFINE VARIABLE lo-date AS DATE NO-UNDO.
     DEFINE VARIABLE lc-list-reason-id AS CHARACTER INITIAL "|01|02|03|04|05|10"  NO-UNDO.
     DEFINE VARIABLE lc-list-reason    AS CHARACTER INITIAL "Select|B.Hol|A/Leave|Sick|Doctor|Dentist|Overtime"  NO-UNDO.
     DEFINE VARIABLE lc-saved-reason   AS CHARACTER INITIAL "00" NO-UNDO.
-
- 
-
     
     FOR EACH this-year :
 
@@ -602,7 +593,7 @@ PROCEDURE ip-time-display :
         '<div onclick="runAccordion(' STRING(this-year.ty-week-no) ');">' skip
           '  <div class="AccordionTitle' string(if this-year.ty-week-no modulo 2 = 0 then 1 else 2)  '"  onselectstart="return false;">' skip
           '    <span style="float:left;margin-left:20px;text-align:bottom;"><strong>Week ' string(this-year.ty-week-no,"99") '</strong> (' replace(lc-date,"|"," - ") ')'
-          '    </span><span style="float:right;margin-right:20px;text-align:bottom;">' string(ty-hours,">9.99") '</span>' skip
+          '    </span><span style="float:right;margin-right:20px;text-align:bottom;">Total Hours: ' string(ty-hours,">9.99-") '</span>' skip
           '  </div>' skip
           '</div>' skip
           '<div id="Accordion' string(this-year.ty-week-no) 'Content" class="AccordionContent">' skip
@@ -630,7 +621,7 @@ PROCEDURE ip-time-display :
         DO vx = 1 TO 7:
 
 
-            {&out} '     <td>'       STRING(ld-curr-hours[vx],"99.99") '</td>'  skip.
+            {&out} '     <td>'       STRING(ld-curr-hours[vx],"99.99-") '</td>'  skip.
         END.
 
 
@@ -642,20 +633,17 @@ PROCEDURE ip-time-display :
                 AND   this-day.td-day-no  = vx
                 NO-LOCK NO-ERROR.
 
-
+            lc-h  =   htmlib-SelectDecimalTime(
+            "weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"),
+             IF AVAILABLE this-day THEN STRING(this-day.td-hours) ELSE "0.00"
+                        ) .
             IF AVAILABLE this-day THEN
             DO:
-                IF INTEGER(this-day.td-reason) < 10 THEN
-                    {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99",  
-                    STRING(this-day.td-hours,"99.99"),"font-family:verdana;font-size:10pt;color:red;width:40px;") '</td>'  skip.
-           else
-            {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99",  
-                                             string(this-day.td-hours,"99.99"),"font-family:verdana;font-size:10pt;color:green;width:40px;") '</td>'  skip.
-
+                IF INTEGER(this-day.td-reason) < 10 
+                THEN ASSIGN lc-h = REPLACE(lc-h,'<select','<select style="color:red;"').
+                ELSE ASSIGN lc-h = REPLACE(lc-h,'<select','<select style="color:green;"').
             END.
-            ELSE
-                {&out} '      <td>'  html-InputFieldMasked("weekno" + string(this-year.ty-week-no) + "-" + string(vx,"99"), "5","20","99.99", "00.00" 
-                ,"font-family:verdana;font-size:10pt;width:40px;") '</td>'  skip.
+            {&out} '<td>' lc-h '</td>' SKIP.
         END.
 
         {&out} '     </tr><tr><td align="right"> Reason:</td> ' skip.
@@ -680,11 +668,7 @@ PROCEDURE ip-time-display :
          '<input class="submitbutton" type="button" onclick="javascript:updateHours(' string(this-year.ty-week-no) ');"  value="Update" />' skip
          '</div></td>'          
          '     </tr></table></div>' skip.
-         
- 
-                      
-
- 
+     
         {&out}
           
         ' </div>' skip
@@ -771,6 +755,8 @@ PROCEDURE process-web-request :
     DEFINE VARIABLE lc-list-reason-id AS CHARACTER INITIAL "|01|02|03|04|05|10"  NO-UNDO.
     DEFINE VARIABLE lc-list-reason    AS CHARACTER INITIAL "Select|BANK|LEAVE|SICK|DOC|DENT|OT"  NO-UNDO.
 
+    DEFINE VARIABLE lc-selacc       AS CHARACTER NO-UNDO.
+    
 
     {lib/checkloggedin.i} 
 
@@ -778,6 +764,7 @@ PROCEDURE process-web-request :
 
 
     ASSIGN 
+        lc-selacc          = get-value("selacc")
         lc-mode            = get-value("mode")
         lc-rowid           = get-value("rowid")
         lc-search          = get-value("search")
@@ -836,6 +823,7 @@ PROCEDURE process-web-request :
     ASSIGN 
         lc-title = 'Contracted Times For ' + 
            html-encode(b-table.forename + " " + b-table.surname)
+           + " - " + string(li-curr-year) + '</b>'
         lc-link-label = "Back"
         lc-submit-label = "Update Times".
       
@@ -845,35 +833,14 @@ PROCEDURE process-web-request :
                                   '&firstrow=' + lc-firstrow + 
                                   '&lastrow=' + lc-lastrow + 
                                   '&navigation=refresh' +
+                                  '&submityear=' + string(li-curr-year) +
+                                  '&selacc=' + lc-selacc +
                                   '&time=' + string(TIME).
    
 
     IF request_method = "POST" THEN
     DO:
  
- /*
-        OUTPUT to "C:\djstext.txt" append.
-        PUT UNFORMATTED  
-            " lc-mode         " lc-mode  SKIP
-            " li-curr-year  "   li-curr-year  SKIP
-            " lc-submitweek "   lc-submitweek   SKIP
-            " lc-submitday1 "   lc-submitday[1]   SKIP
-            " lc-submitday2 "   lc-submitday[2]   SKIP
-            " lc-submitday3 "   lc-submitday[3]   SKIP
-            " lc-submitday4 "   lc-submitday[4]   SKIP
-            " lc-submitday5 "   lc-submitday[5]   SKIP
-            " lc-submitday6 "   lc-submitday[6]   SKIP
-            " lc-submitday7 "   lc-submitday[7]   SKIP
-            " lc-submitreason1 "   lc-submitreason[1]   SKIP
-            " lc-submitreason2 "   lc-submitreason[2]   SKIP
-            " lc-submitreason3 "   lc-submitreason[3]   SKIP
-            " lc-submitreason4 "   lc-submitreason[4]   SKIP
-            " lc-submitreason5 "   lc-submitreason[5]   SKIP
-            " lc-submitreason6 "   lc-submitreason[6]   SKIP
-            " lc-submitreason7 "   lc-submitreason[7]   SKIP                  .
-
-        OUTPUT close.
-*/
 
         DO vx = 1 TO 7:
  
@@ -889,16 +856,7 @@ PROCEDURE process-web-request :
                     AND   WebUserTime.LoginID     = lc-loginid                             
                     AND   WebUserTime.EventDate   = date(lc-date)
                     EXCLUSIVE-LOCK NO-ERROR.
-                /*    
-                OUTPUT to "C:\djstext.txt" append.
-                PUT UNFORMATTED  "lc-mode " lc-mode  SKIP
-                    "USER  " lc-loginid SKIP
-                    "lc-object     "    lc-object  SKIP
-                    "lc-date       "    lc-date        SKIP
-                    "Avail?  "      AVAILABLE webUserTime    SKIP(2).
-                    
-                OUTPUT close.
-                */
+               
                  
                 IF AVAILABLE WebuserTime THEN
                 DO:
@@ -917,6 +875,16 @@ PROCEDURE process-web-request :
                         WebUserTime.EventType   = ENTRY(LOOKUP(lc-submitreason[vx],lc-list-reason-id,"|"),lc-list-reason,"|").      
                 END.
             END.
+            ELSE
+            DO:
+                FIND FIRST WebUserTime WHERE WebUserTime.CompanyCode = lc-global-company                      
+                    AND   WebUserTime.LoginID     = lc-loginid                             
+                    AND   WebUserTime.EventDate   = date(lc-date)
+                    EXCLUSIVE-LOCK NO-ERROR.
+                IF AVAILABLE WebUserTime
+                THEN DELETE WebUserTime.
+                
+            END.
         END.          
     END.
 
@@ -929,13 +897,15 @@ PROCEDURE process-web-request :
            htmlib-ProgramTitle(lc-title) skip.
 
     RUN ip-ExportAccordion.
-
+/*
     {&out} '<script language="JavaScript" src="/scripts/js/debug.js"></script>' skip
            '<script language="JavaScript" src="/scripts/js/validate.js"></script>' skip.
+*/           
 
     {&out} htmlib-CloseHeader("") skip.
 
-    {&out} htmlib-Hidden ("mode", lc-mode) skip
+    {&out} htmlib-Hidden ("mode", lc-mode) SKIP
+           htmlib-Hidden ("selacc", lc-selacc) skip
            htmlib-Hidden ("rowid", lc-rowid) skip
            htmlib-Hidden ("search", lc-search) skip
            htmlib-Hidden ("firstrow", lc-firstrow) skip
@@ -965,13 +935,7 @@ PROCEDURE process-web-request :
     
     {&out} skip
           htmlib-StartMntTable().
-    {&out}
-    htmlib-TableHeading(
-        "Contracted Times for " + string(li-curr-year) + 
-        "| <div id=~"chgyear~"style=~"cursor:pointer;~" onclick=~"changeYear();~" >Change Year</div>"
-        ) skip.
-
-
+   
 
     {&out}
     '<tr><td><br><div id="AccordionContainer" class="AccordionContainer">' skip.
@@ -985,30 +949,9 @@ PROCEDURE process-web-request :
     {&out} skip 
            htmlib-EndTable()
            skip.
-
-    DEFINE VARIABLE lc-year AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE zx      AS INTEGER  NO-UNDO.
-           
-    {&out} '<div id="hiddenyeardiv" style="display:none;">' skip 
-
-           '<select id="selectyear" name="selectyear" class="inputfield" ' skip
-           ' onchange="changeYear(this);"  >' skip
-           '<option value="" ' '>  Select Year </option>' skip.
-
-    DO zx = -1 TO 4:
-        lc-year = STRING(YEAR(TODAY) - zx).
-        {&out} '<option value="' lc-year '" ' '>'  html-encode(lc-year) '</option>' skip.
-    END.
-    {&out} '</select>' skip.
-      
-    {&out} '</div>'.
     
-    {&out} htmlib-StartPanel() 
-           skip.
-
-
-    {&out} htmlib-EndPanel().
-         
+    
+             
     {&out} htmlib-EndForm() skip
            htmlib-Footer() skip.
 
@@ -1076,38 +1019,69 @@ END FUNCTION.
 
 &ENDIF
 
-&IF DEFINED(EXCLUDE-html-InputFieldMasked) = 0 &THEN
-
-FUNCTION html-InputFieldMasked RETURNS CHARACTER
-    ( pc-name AS CHARACTER,
-    pc-maxlength AS CHARACTER,
-    pc-datatype AS CHARACTER,
-    pc-mask AS CHARACTER,
-    pc-value AS CHARACTER,
-    pc-style AS CHARACTER ) :
-    /*------------------------------------------------------------------------------
-      Purpose:  
-        Notes:  
-    ------------------------------------------------------------------------------*/
-
-    DEFINE VARIABLE r-htm AS CHARACTER NO-UNDO.
-   
-    r-htm = '<input type="text" id="' + pc-name + '" name="' + pc-name + '" value="' + pc-value + '"' +
-        ' maxlength="' + pc-maxlength + '" datatype="' + pc-datatype + '" mask="' + pc-mask + '"' +
-        ' onpaste="return tbPaste(this);"' +
-        ' onfocus="return tbFocus(this);"' +
-        ' onkeydown="return tbFunction(this);"' +
-        ' onkeypress="return tbMask(this);"' +
-        ' style="' + pc-style + '">'.
-        
-    RETURN r-htm.
-
-END FUNCTION.
-
-
-&ENDIF
 
 &IF DEFINED(EXCLUDE-Wk2Date) = 0 &THEN
+
+FUNCTION htmlib-SelectDecimalTime RETURNS CHARACTER 
+	           ( pc-name AS CHARACTER ,
+                 pc-selected AS CHARACTER ) :
+/*------------------------------------------------------------------------------
+        Purpose:                                                                      
+        Notes:                                                                        
+------------------------------------------------------------------------------*/    
+    DEFINE VARIABLE lc-data     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-loop     AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE li-hour     AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE li-min      AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-value    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-display  AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-selected AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE pc-value    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE pc-display  AS CHARACTER NO-UNDO.
+    
+    DO li-hour = 0 TO 23:
+        
+        DO li-min = 0 TO 59 BY 25:
+            lc-value = STRING(li-hour,"99")  + "." + string(li-min,"99").
+            IF pc-display = ""
+            THEN ASSIGN pc-display = lc-value.
+            ELSE ASSIGN pc-display = pc-display + "|" + lc-value.
+        END.
+       
+    END.
+    
+    ASSIGN pc-value = pc-display.
+    
+
+
+    ASSIGN 
+        lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name + '">'.
+
+    DO li-loop = 1 TO NUM-ENTRIES(pc-value,'|'):
+        ASSIGN 
+            lc-value   = ENTRY(li-loop,pc-value,'|')
+            lc-display = ENTRY(li-loop,pc-display,'|').
+        IF dec(lc-value) = dec(pc-selected)
+            THEN lc-selected = 'selected'.
+        ELSE lc-selected = "".
+        ASSIGN 
+            lc-data = lc-data + 
+                       '<option ' +
+                       lc-selected + 
+                       ' value="' + 
+                       lc-value + 
+                       '">' + 
+                       lc-display +
+                       '</option>'.
+    END.
+  
+    ASSIGN 
+        lc-data = lc-data + '</select>'.
+
+    RETURN lc-data.
+
+		
+END FUNCTION.
 
 FUNCTION Wk2Date RETURNS CHARACTER
     (cWkYrNo AS CHARACTER):
