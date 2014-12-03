@@ -31,6 +31,8 @@ DEFINE VARIABLE li-min      AS INT      NO-UNDO.
 FOR EACH WebUser:
     ASSIGN
     WebUser.Email = 'paulanhoskins@outlook.com'.
+    IF WebUser.UserClass = "INTERNAL"
+    THEN WebUser.engtype = "FIELD".
    
 END.
 

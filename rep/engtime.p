@@ -1,16 +1,16 @@
 /***********************************************************************
 
-    Program:        rep/issuelog.p
+    Program:        rep/engtime.p
     
-    Purpose:        Issue Log Report
+    Purpose:        Enqineer Time Management
     
     Notes:
     
     
     When        Who         What
     
-    01/05/2014  phoski      Initial
-    09/11/2014  phoski          
+    03/12/2014  phoski      Initial
+           
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -26,25 +26,20 @@ DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-lo-account  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-hi-account  AS CHARACTER NO-UNDO.
+
 
 DEFINE VARIABLE lc-lodate      AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
 DEFINE VARIABLE lc-hidate      AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
 
 DEFINE BUFFER this-user FOR WebUser.
   
-DEFINE VARIABLE ll-Customer   AS LOG       NO-UNDO.
 
-DEFINE VARIABLE lc-list-acc   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-list-aname AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-filename   AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-CodeName   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE li-loop       AS INTEGER   NO-UNDO.
 
-DEFINE VARIABLE lc-ClassList  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
 
 
@@ -155,7 +150,7 @@ PROCEDURE ip-ExportReport :
     ------------------------------------------------------------------------------*/
     DEFINE OUTPUT PARAMETER pc-filename AS CHARACTER NO-UNDO.
     
-
+/*
     DEFINE BUFFER customer     FOR customer.
     DEFINE BUFFER issue        FOR issue.
     
@@ -214,6 +209,7 @@ PROCEDURE ip-ExportReport :
     END.
 
     OUTPUT CLOSE.
+*/
 
 
 END PROCEDURE.
@@ -230,46 +226,24 @@ PROCEDURE ip-InitialProcess :
       Notes:       
     ------------------------------------------------------------------------------*/
 
-    IF ll-customer THEN
-    DO:
-        ASSIGN 
-            lc-lo-account = this-user.AccountNumber.
-        set-user-field("loaccount",this-user.AccountNumber).
-        set-user-field("hiaccount",this-user.AccountNumber).
-    END.
+    
         
     ASSIGN
-        lc-lo-account = get-value("loaccount")
-        lc-hi-account = get-value("hiaccount")    
+        
         lc-lodate      = get-value("lodate")         
         lc-hidate      = get-value("hidate")
-        lc-output      = get-value("output")
+        
         .
-    
-    RUN com-GetCustomerAccount ( lc-global-company , lc-global-user, OUTPUT lc-list-acc, OUTPUT lc-list-aname ).
-
-
-
     IF request_method = "GET" THEN
     DO:
         
         IF lc-lodate = ""
-            THEN ASSIGN lc-lodate = STRING(TODAY - 365, "99/99/9999").
+            THEN ASSIGN lc-lodate = STRING(TODAY - 7, "99/99/9999").
         
         IF lc-hidate = ""
             THEN ASSIGN lc-hidate = STRING(TODAY, "99/99/9999").
         
         
-        IF lc-lo-account = ""
-            THEN ASSIGN lc-lo-account = ENTRY(1,lc-list-acc,"|").
-    
-        IF lc-hi-account = ""
-            THEN ASSIGN lc-hi-account = ENTRY(NUM-ENTRIES(lc-list-acc,"|"),lc-list-acc,"|").
-
-        DO li-loop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
-            lc-codeName = "chk" + ENTRY(li-loop,lc-global-iclass-code,"|").
-            set-user-field(lc-codeName,"on").
-        END.
     END.
 
     
@@ -289,6 +263,7 @@ PROCEDURE ip-PDF:
     ------------------------------------------------------------------------------*/
     DEFINE OUTPUT PARAMETER pc-pdf AS CHARACTER NO-UNDO.
     
+    /*
     DEFINE BUFFER customer     FOR customer.
     DEFINE BUFFER issue        FOR issue.
     
@@ -429,7 +404,7 @@ PROCEDURE ip-PDF:
     
     IF ll-ok
         THEN ASSIGN pc-pdf = lc-pdf.
-    
+    */
 
 END PROCEDURE.
 
@@ -439,7 +414,7 @@ PROCEDURE ip-PrintReport :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-
+/*
     DEFINE BUFFER customer     FOR customer.
     DEFINE BUFFER issue        FOR issue.
     
@@ -524,6 +499,7 @@ PROCEDURE ip-PrintReport :
 
 
     END.
+    */
 
 END PROCEDURE.
 
@@ -540,7 +516,7 @@ PROCEDURE ip-ProcessReport :
     ------------------------------------------------------------------------------*/
 
 
-
+    /*
     RUN rep/issuelogbuild.p (
         lc-global-company,
         lc-global-user,
@@ -553,6 +529,7 @@ PROCEDURE ip-ProcessReport :
         OUTPUT TABLE tt-ilog
 
         ).
+     */   
 
 END PROCEDURE.
 
@@ -575,19 +552,9 @@ PROCEDURE ip-Selection :
     FIND this-user
         WHERE this-user.LoginID = lc-global-user NO-LOCK NO-ERROR.
 
-    IF NOT ll-customer
-        THEN {&out}
-    '<td align=right valign=top>' 
-        (IF LOOKUP("loaccount",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("From Customer")
-        ELSE htmlib-SideLabel("From Customer"))
-
-    '</td>'
-    '<td align=left valign=top>' 
-    htmlib-Select("loaccount",lc-list-acc,lc-list-aname,lc-lo-account) '</td>'.
-
-    
-    {&out} 
+           
+    {&out}
+    '<table align="center"><tr>' 
     '<td valign="top" align="right">' 
         (IF LOOKUP("lodate",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("From Date")
@@ -596,21 +563,8 @@ PROCEDURE ip-Selection :
     '<td valign="top" align="left">'
     htmlib-CalendarInputField("lodate",10,lc-lodate) 
     htmlib-CalendarLink("lodate")
-    '</td>' skip.
-
-    IF NOT ll-customer
-        THEN {&out}
-    '</tr><tr>' SKIP
-           '<td align=right valign=top>' 
-           (if lookup("loaccount",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("To Customer")
-            else htmlib-SideLabel("To Customer"))
-        
-        '</td>'
-           '<td align=left valign=top>' 
-                htmlib-Select("hiaccount",lc-list-acc,lc-list-aname,lc-hi-account) '</td>'.
-
-    {&out} '<td valign="top" align="right">' 
+    '</td>' SKIP
+    '<td valign="top" align="right">' 
         (IF LOOKUP("hidate",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("To Date")
         ELSE htmlib-SideLabel("To Date"))
@@ -619,39 +573,8 @@ PROCEDURE ip-Selection :
     htmlib-CalendarInputField("hidate",10,lc-hidate) 
     htmlib-CalendarLink("hidate")
     '</td>' skip.
-
-    {&out} '</tr>' SKIP.
-
-    IF NOT ll-customer THEN
-    DO:
-        {&out} '<tr><td valign="top" align="right">' 
-        htmlib-SideLabel("All Customers")
-        '</td>'
-        '<td valign="top" align="left">'
-        htmlib-checkBox("allcust",get-value("allcust") = "on")
-        '</td></tr>' skip.
-        
-
-    END.
     
-    DO li-loop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
-        lc-codeName = "chk" + ENTRY(li-loop,lc-global-iclass-code,"|").
 
-        {&out} '<tr><td valign="top" align="right">' 
-        htmlib-SideLabel("Include Class " +  SUBSTR(lc-codeName,4))
-        '</td>'
-        '<td valign="top" align="left">'
-        htmlib-checkBox(lc-CodeName,get-value(lc-CodeName) = "on")
-        '</td></tr>' skip.
-    
-    END.
-    
-    {&out}
-    '<tr><td valign="top" align="right">' 
-    htmlib-SideLabel("Report Output")
-    '</td>'
-    '<td align=left valign=top>' 
-    htmlib-Select("output","WEB|CSV|PDF","Web Page|Email CSV|Email PDF",get-value("output")) '</td></tr>'.
     
   
     {&out} '</table>' skip.
@@ -703,34 +626,6 @@ PROCEDURE ip-Validate :
             'The date range is invalid',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
-
-    IF lc-lo-account > lc-hi-account 
-        THEN RUN htmlib-AddErrorMessage(
-            'loaccount', 
-            'The customer range is invalid',
-            INPUT-OUTPUT pc-error-field,
-            INPUT-OUTPUT pc-error-msg ).
-
-
-    DO li-loop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
-        lc-codeName = "chk" + ENTRY(li-loop,lc-global-iclass-code,"|").
-    
-    
-        IF get-value(lc-CodeName) = "on" THEN
-        DO:
-            lc-classlist = lc-ClassList + "," + 
-                ENTRY(li-loop,lc-global-iclass-code,"|").
-        END.
-      
-        
-    END.
-    IF TRIM(lc-classlist ) = "" 
-        THEN RUN htmlib-AddErrorMessage(
-            'Lalal', 
-            'You must select one or more classes',
-            INPUT-OUTPUT pc-error-field,
-            INPUT-OUTPUT pc-error-msg ).
-
 
 
 
@@ -813,10 +708,7 @@ PROCEDURE process-web-request :
     
     FIND this-user
         WHERE this-user.LoginID = lc-global-user NO-LOCK NO-ERROR.
-    
-    ASSIGN
-        ll-customer = this-user.UserClass = "CUSTOMER".
-
+   
     RUN ip-InitialProcess.
 
     IF request_method = "POST" THEN
@@ -830,25 +722,7 @@ PROCEDURE process-web-request :
         DO:
             RUN ip-ProcessReport.
             
-            IF lc-output = "CSV" THEN RUN ip-ExportReport (OUTPUT lc-filename).
-            ELSE
-                IF lc-output = "PDF" THEN RUN ip-PDF (OUTPUT lc-filename).
             
-            IF lc-output <> "WEB" THEN 
-            DO:
-                mlib-SendAttEmail 
-                    ( lc-global-company,
-                    "",
-                    "HelpDesk Issue Log Report ",
-                    "Please find attached your report covering the period "
-                    + string(DATE(lc-lodate),"99/99/9999") + " to " +
-                    string(DATE(lc-hidate),'99/99/9999'),
-                    this-user.email,
-                    "",
-                    "",
-                    lc-filename).
-                OS-DELETE value(lc-filename).
-            END.
             
         END.
     END.
@@ -857,16 +731,15 @@ PROCEDURE process-web-request :
     RUN outputHeader.
 
     {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
-    {&out} htmlib-Header("Issue Log") skip.
+    {&out} htmlib-Header("Engineer Time Management") skip.
     RUN ip-ExportJScript.
     {&out} htmlib-JScript-Maintenance() skip.
-    {&out} htmlib-StartForm("mainform","post", appurl + '/rep/issuelog.p' ) skip.
-    {&out} htmlib-ProgramTitle("Issue Log") 
+    {&out} htmlib-StartForm("mainform","post", appurl + '/rep/engtime.p' ) skip.
+    {&out} htmlib-ProgramTitle("Engineer Time Management") 
     htmlib-hidden("submitsource","") skip.
     {&out} htmlib-BeginCriteria("Report Criteria").
     
-    {&out} '<table align=center><tr>' skip.
-
+    
     RUN ip-Selection.
 
     {&out} htmlib-EndCriteria().
@@ -889,12 +762,7 @@ PROCEDURE process-web-request :
         AND lc-error-msg = "" THEN
     DO:
        
-        IF lc-output = "WEB" THEN RUN ip-PrintReport.   
-        ELSE
-            {&out} '<div class="infobox" style="font-size: 10px;">Your report has been emailed to '
-        this-user.email
-        '</div>'.
-            
+        
         
     END.
 

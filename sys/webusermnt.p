@@ -21,6 +21,7 @@
     13/11/2014  phoski      Customer View Inventory Flag
     20/11/2014  phoski      save & Pass back 'selacc' field
     29/11/2014  phoski      remove working hours
+    03/12/20114 phoski      Engineer Type 
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -31,37 +32,27 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-field    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg      AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE li-curr-year   AS INTEGER   FORMAT "9999" NO-UNDO.
-DEFINE VARIABLE li-end-week    AS INTEGER   FORMAT "99" NO-UNDO.
-DEFINE VARIABLE ld-curr-hours  AS DECIMAL   FORMAT "99.99" EXTENT 7 NO-UNDO.
-DEFINE VARIABLE lc-day         AS CHARACTER INITIAL "Mon,Tue,Wed,Thu,Fri,Sat,Sun" NO-UNDO.
+DEFINE VARIABLE li-curr-year      AS INTEGER   FORMAT "9999" NO-UNDO.
+DEFINE VARIABLE li-end-week       AS INTEGER   FORMAT "99" NO-UNDO.
+DEFINE VARIABLE ld-curr-hours     AS DECIMAL   FORMAT "99.99" EXTENT 7 NO-UNDO.
+DEFINE VARIABLE lc-day            AS CHARACTER INITIAL "Mon,Tue,Wed,Thu,Fri,Sat,Sun" NO-UNDO.
 
-DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
-
-
-DEFINE BUFFER b-valid   FOR webuser.
-DEFINE BUFFER b-table   FOR webuser.
-DEFINE BUFFER webuSteam FOR webuSteam.
-DEFINE BUFFER steam     FOR steam.
+DEFINE VARIABLE lc-mode           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title          AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-search         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-firstrow       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-lastrow        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-navigation     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-parameters     AS CHARACTER NO-UNDO.
-
 DEFINE VARIABLE lc-link-label     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-submit-label   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-url       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-selacc         AS CHARACTER NO-UNDO.
-
-
-
 DEFINE VARIABLE lc-loginid        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-forename       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-surname        AS CHARACTER NO-UNDO.
@@ -85,6 +76,8 @@ DEFINE VARIABLE lc-quickview      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DefaultUser    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DisableTimeout AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-CustInv        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-engType        AS CHARACTER NO-UNDO.
+
 
 DEFINE VARIABLE lc-html           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE ll-check          AS LOG       NO-UNDO.
@@ -99,7 +92,10 @@ DEFINE VARIABLE lc-usertitleDesc  AS CHARACTER
 
 
 
-
+DEFINE BUFFER b-valid   FOR webuser.
+DEFINE BUFFER b-table   FOR webuser.
+DEFINE BUFFER webuSteam FOR webuSteam.
+DEFINE BUFFER steam     FOR steam.
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -398,6 +394,27 @@ PROCEDURE ip-Page :
         ),'left')
            skip.
     {&out} '</TR>' skip.
+   
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("engtype",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Engineer Type")
+        ELSE htmlib-SideLabel("Engineer Type"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("engtype",lc-global-engType-Code,lc-global-engType-desc,lc-engtype) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(
+        lc-engtype
+        ),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
+    /**/
+    
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("superuser",lc-error-field,'|') > 0 
@@ -526,7 +543,7 @@ PROCEDURE ip-Page :
         ELSE htmlib-SideLabel("Customer Can View Inventory?"))
     '</TD>'.
     
-     IF NOT CAN-DO("view,delete",lc-mode) THEN
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
     htmlib-CheckBox("custinv", IF lc-custinv = 'on'
         THEN TRUE ELSE FALSE) 
@@ -677,20 +694,6 @@ END PROCEDURE.
 
 &ENDIF
 
-&IF DEFINED(EXCLUDE-ip-timestable) = 0 &THEN
-
-PROCEDURE ip-timestable :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-    
-
-END PROCEDURE.
-
-
-&ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
@@ -796,6 +799,16 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-msg ).
     END.
 
+    IF lc-userClass = "CUSTOMER"
+    AND lc-engtype <> "" THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
+            'engtype', 
+            'Only Internal users should have an engineer type',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    END.
+    
     IF lc-userclass <> "CUSTOMER"
         AND lc-accountnumber <> "" THEN
     DO:
@@ -1031,7 +1044,9 @@ PROCEDURE process-web-request :
                 lc-quickview       = get-value("quickview")
                 lc-defaultuser     = get-value("defaultuser")
                 lc-disableTimeout  = get-value("disabletimeout")
-                lc-custinv         = get-value("custinv").
+                lc-custinv         = get-value("custinv")
+                lc-engtype         = get-value("engtype")
+                .
             
            
 
@@ -1065,10 +1080,10 @@ PROCEDURE process-web-request :
                 IF lc-error-msg = "" THEN
                 DO:
                     IF lc-disabled = "on" AND b-table.disabled = FALSE 
-                    THEN com-SystemLog("OK:AccountDisabled",b-table.loginid,"By " + lc-global-user).
+                        THEN com-SystemLog("OK:AccountDisabled",b-table.loginid,"By " + lc-global-user).
                         
                     IF lc-disabled <> "on" AND b-table.disabled = TRUE 
-                    THEN com-SystemLog("OK:AccountEnabled",b-table.loginid,"By " + lc-global-user).
+                        THEN com-SystemLog("OK:AccountEnabled",b-table.loginid,"By " + lc-global-user).
                             
                     ASSIGN 
                         b-table.forename         = lc-forename
@@ -1092,6 +1107,7 @@ PROCEDURE process-web-request :
                         b-table.defaultuser      = lc-defaultuser = "on"
                         b-table.disabletimeout   = lc-disabletimeout = "on"
                         b-table.CustomerViewInventory = lc-custinv = 'on'
+                        b-table.engtype               = lc-engtype
                         .
                     ASSIGN 
                         b-table.name = b-table.forename + ' ' + 
@@ -1211,6 +1227,7 @@ PROCEDURE process-web-request :
                                     ELSE ''
                 lc-custinv         = IF b-table.CustomerViewInventory THEN 'on'
                                     ELSE ''
+                lc-engtype         = b-table.engtype
                 .
             
         END.
@@ -1245,7 +1262,7 @@ PROCEDURE process-web-request :
     */
     IF lc-mode = "ADD"
     OR lc-mode = "UPDATE" THEN
-    {&out} '<script language="javascript">' SKIP
+        {&out} '<script language="javascript">' SKIP
             'window.onload = pgload;' SKIP
             'function pgload() ~{' SKIP
             'var FieldName = "password"' SKIP
@@ -1294,7 +1311,7 @@ PROCEDURE process-web-request :
          
    
     
-   {&out} htmlib-EndForm() skip
+    {&out} htmlib-EndForm() skip
           htmlib-Footer() skip.
 
 

@@ -12,7 +12,8 @@
     
     03/08/2010  DJS         Clarified ambiguous buffer names.
     01/05/2014  phoski      New functions
-    
+    03/12/2014  phoski      Eng Type 
+   
 ***********************************************************************/
 
 {lib/attrib.i}
@@ -81,11 +82,8 @@ DEFINE VARIABLE lc-System-Note-Desc           AS CHARACTER
 DEFINE VARIABLE lc-global-GT-Code             AS CHARACTER INITIAL
     'Asset.Type,Asset.Manu,Asset.Status' NO-UNDO.
 
-
 DEFINE VARIABLE lc-global-iclass-code         AS CHARACTER INITIAL
     'Issue|Admin|Project' NO-UNDO.
-
-
 
 DEFINE VARIABLE lc-global-SupportTicket-Code  AS CHARACTER
     INITIAL 'NONE|YES|BOTH' NO-UNDO.
@@ -104,7 +102,13 @@ DEFINE VARIABLE lc-global-excludeType         AS CHARACTER
     INITIAL "exe,vbs" NO-UNDO.
 DEFINE VARIABLE lc-global-teamassign          AS CHARACTER 
     INITIAL '[TeamAssign]' NO-UNDO.
-        
+
+DEFINE VARIABLE lc-global-engType-Code        AS CHARACTER 
+    INITIAL '|FIELD|REMOTE|Project' NO-UNDO.
+
+DEFINE VARIABLE lc-global-engType-desc        AS CHARACTER 
+    INITIAL 'Not Applicable|Field|Remote|Project' NO-UNDO.
+                
 
 DEFINE VARIABLE li-global-sla-fail            AS INTEGER   INITIAL 10 NO-UNDO.
 DEFINE VARIABLE li-global-sla-amber           AS INTEGER   INITIAL 20 NO-UNDO.
