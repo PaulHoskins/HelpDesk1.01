@@ -442,6 +442,10 @@ PROCEDURE ip-PrintReport :
 
     DEFINE BUFFER customer     FOR customer.
     DEFINE BUFFER issue        FOR issue.
+    DEFINE VARIABLE li-count        AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-tr           AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE li-eng          AS INTEGER          NO-UNDO.
+    
     
     FOR EACH tt-ilog NO-LOCK
         BREAK BY tt-ilog.AccountNumber
@@ -457,20 +461,26 @@ PROCEDURE ip-PrintReport :
                 customer.NAME) SKIP.
                 
             {&out} skip
-                replace(htmlib-StartMntTable(),'width="100%"','width="100%"') skip
+                htmlib-StartMntTable() skip
                 htmlib-TableHeading(
                 "Issue Number^right|Description^left|Issue Class^left|Raised By^left|System^left|SLA Level^left|" +
                 "Date Raised^right|Time Raised^left|Date Completed^right|Time Completed^left|Activity Duration^right|SLA Achieved^left|SLA Comment^left|" +
                 "Closed By^left"
             ) skip.
 
+            li-count = 0.
 
         END.
 
+        li-count = li-count + 1.
+        IF li-count MOD 2 = 0
+        THEN lc-tr = '<tr style="background: #EBEBE6;">'.
+        ELSE lc-tr = '<tr style="background: white;">'.          
+            
 
         {&out}
             skip
-            '<tr>'
+            lc-tr
             skip
             htmlib-MntTableField(html-encode(string(tt-ilog.issuenumber)),'right')
 

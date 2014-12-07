@@ -1731,21 +1731,6 @@ FUNCTION ExcelBorders RETURNS LOGICAL
     IF lineB  <> "" THEN objRange:Borders({&xlEdgeBottom}):linestyle = {&xlContinuous}.  
  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     RETURN TRUE.   /* Function return value. */
 
 END FUNCTION.

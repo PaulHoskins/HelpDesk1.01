@@ -22,28 +22,19 @@ CREATE WIDGET-POOL.
 
 DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
-
 DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
-
-
-
-DEFINE VARIABLE lc-lodate      AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
-DEFINE VARIABLE lc-hidate      AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
+DEFINE VARIABLE lc-lodate      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-hidate      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-loeng       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-hieng       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-RepType     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-engType     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-eng-code    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-eng-desc    AS CHARACTER NO-UNDO.
 
 DEFINE BUFFER this-user FOR WebUser.
-  
-
-
-DEFINE VARIABLE lc-filename   AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-CodeName   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE li-loop       AS INTEGER   NO-UNDO.
-
-DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
-
-
-{rep/issuelogtt.i}
+{rep/engtimett.i}
 {lib/maillib.i}
 {lib/princexml.i}
 
@@ -60,13 +51,10 @@ DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
 
 /* ************************  Function Prototypes ********************** */
 
-&IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
+FUNCTION percentage-calc RETURNS DECIMAL 
+    (p-one AS INTEGER,
+    p-two AS INTEGER) FORWARD.
 
-FUNCTION Format-Select-Account RETURNS CHARACTER
-    ( pc-htm AS CHARACTER )  FORWARD.
-
-
-&ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
@@ -86,6 +74,7 @@ FUNCTION Format-Select-Account RETURNS CHARACTER
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
+{lib/replib.i}
 
 
 
@@ -140,82 +129,6 @@ END PROCEDURE.
 
 &ENDIF
 
-&IF DEFINED(EXCLUDE-ip-ExportReport) = 0 &THEN
-
-PROCEDURE ip-ExportReport :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-    DEFINE OUTPUT PARAMETER pc-filename AS CHARACTER NO-UNDO.
-    
-/*
-    DEFINE BUFFER customer     FOR customer.
-    DEFINE BUFFER issue        FOR issue.
-    
-
-    DEFINE VARIABLE lc-GenKey     AS CHARACTER NO-UNDO.
-
-   
-    ASSIGN
-        lc-genkey = STRING(NEXT-VALUE(ReportNumber)).
-    
-        
-    pc-filename = SESSION:TEMP-DIR + "/IssueLog-" + lc-GenKey
-        + ".csv".
-
-    OUTPUT TO VALUE(pc-filename).
-
-    PUT UNFORMATTED
-                
-        '"Customer","Issue Number","Description","Issue Type","Raised By","System","SLA Level","' +
-        'Date Raised","Time Raised","Date Completed","Time Completed","Activity Duration","SLA Achieved","SLA Comment","' +
-        '"Closed By' SKIP.
-
-
-    FOR EACH tt-ilog NO-LOCK
-        BREAK BY tt-ilog.AccountNumber
-        BY tt-ilog.IssueNumber
-        :
-            
-        FIND customer WHERE customer.CompanyCode = lc-global-company
-            AND customer.AccountNumber = tt-ilog.AccountNumber
-            NO-LOCK NO-ERROR.
-
-
-        EXPORT DELIMITER ','
-            ( customer.AccountNumber + " " + customer.NAME )
-            tt-ilog.issuenumber
-            tt-ilog.briefDescription
-            tt-ilog.iType
-            tt-ilog.RaisedLoginID
-            tt-ilog.AreaCode
-            tt-ilog.SLALevel
-            tt-ilog.CreateDate
-            STRING(tt-ilog.CreateTime,"hh:mm")
-      
-            IF tt-ilog.CompDate = ? THEN "" ELSE STRING(tt-ilog.CompDate,"99/99/9999")
-
-            IF tt-ilog.CompTime = 0 THEN "" ELSE STRING(tt-ilog.CompTime,"hh:mm")
-       
-            tt-ilog.ActDuration
-            tt-ilog.SLAAchieved
-            tt-ilog.SLAComment
-            tt-ilog.ClosedBy
-
-            . 
-           
-    END.
-
-    OUTPUT CLOSE.
-*/
-
-
-END PROCEDURE.
-
-
-&ENDIF
 
 &IF DEFINED(EXCLUDE-ip-InitialProcess) = 0 &THEN
 
@@ -226,12 +139,16 @@ PROCEDURE ip-InitialProcess :
       Notes:       
     ------------------------------------------------------------------------------*/
 
-    
+    RUN com-GetEngineerList ( lc-global-company , "", OUTPUT lc-eng-code , OUTPUT lc-eng-desc ).
         
     ASSIGN
-        
-        lc-lodate      = get-value("lodate")         
-        lc-hidate      = get-value("hidate")
+        ENTRY(1,lc-global-engType-Desc,"|") = "All"
+        lc-lodate                           = get-value("lodate")         
+        lc-hidate                           = get-value("hidate")
+        lc-engType                          = get-value("engtype")
+        lc-loeng                            = get-value("loeng")
+        lc-hieng                            = get-value("hieng")
+        lc-repType                          = get-value("reptype")
         
         .
     IF request_method = "GET" THEN
@@ -243,6 +160,10 @@ PROCEDURE ip-InitialProcess :
         IF lc-hidate = ""
             THEN ASSIGN lc-hidate = STRING(TODAY, "99/99/9999").
         
+        ASSIGN
+            lc-loeng = ENTRY(1,lc-eng-code,"|")
+            lc-hieng = ENTRY(NUM-ENTRIES(lc-eng-code,"|"),lc-eng-code,"|")
+            .
         
     END.
 
@@ -253,260 +174,6 @@ END PROCEDURE.
 
 
 &ENDIF
-
-&IF DEFINED(EXCLUDE-ip-PrintReport) = 0 &THEN
-
-PROCEDURE ip-PDF:
-    /*------------------------------------------------------------------------------
-            Purpose:  																	  
-            Notes:  																	  
-    ------------------------------------------------------------------------------*/
-    DEFINE OUTPUT PARAMETER pc-pdf AS CHARACTER NO-UNDO.
-    
-    /*
-    DEFINE BUFFER customer     FOR customer.
-    DEFINE BUFFER issue        FOR issue.
-    
-    DEFINE VARIABLE lc-html         AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE lc-pdf          AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE ll-ok           AS LOG      NO-UNDO.
-    DEFINE VARIABLE li-ReportNumber AS INTEGER      NO-UNDO.
-
-    ASSIGN    
-        li-ReportNumber = NEXT-VALUE(ReportNumber).
-    ASSIGN 
-        lc-html = SESSION:TEMP-DIR + caps(lc-global-company) + "-issueLog-" + string(li-ReportNumber).
-
-    ASSIGN 
-        lc-pdf = lc-html + ".pdf"
-        lc-html = lc-html + ".html".
-
-    OS-DELETE value(lc-pdf) no-error.
-    OS-DELETE value(lc-html) no-error.
-
-
-    DYNAMIC-FUNCTION("pxml-Initialise").
-
-    CREATE tt-pxml.
-    ASSIGN 
-        tt-pxml.PageOrientation = "LANDSCAPE".
-
-    DYNAMIC-FUNCTION("pxml-OpenStream",lc-html).
-    DYNAMIC-FUNCTION("pxml-Header", lc-global-company).
-   
-        
-    {&prince}
-    '<p style="text-align: center; font-size: 14px; font-weight: 900;">Issue Log - '
-    'From ' STRING(DATE(lc-lodate),"99/99/9999")
-    ' To ' STRING(DATE(lc-hidate),"99/99/9999") 
-      
-    '</div>'.
-
-
-   
-
-    
-    FOR EACH tt-ilog NO-LOCK
-        BREAK BY tt-ilog.AccountNumber
-        BY tt-ilog.IssueNumber
-        :
-
-        IF FIRST-OF(tt-ilog.AccountNumber) THEN
-        DO:
-            FIND customer WHERE customer.CompanyCode = lc-global-company
-                AND customer.AccountNumber = tt-ilog.AccountNumber
-                NO-LOCK NO-ERROR.
-            {&prince} htmlib-BeginCriteria("Customer - " + tt-ilog.AccountNumber + " " + 
-                customer.NAME) SKIP.
-                
-            {&prince}
-            '<table class="landrep">'
-            '<thead>'
-            '<tr>'
-            htmlib-TableHeading(
-                "Issue Number^right|Description^left|Issue Class^left|Raised By^left|System^left|SLA Level^left|" +
-                "Date Raised^right|Time Raised^left|Date Completed^right|Time Completed^left|Activity Duration^right|SLA Achieved^left|SLA Comment^left|" +
-                "Closed By^left")
-                
-            '</tr>'
-            '</thead>'
-        skip.
-
-
-        END.
-
-
-        {&prince}
-            skip
-            '<tr>'
-            skip
-            htmlib-MntTableField(html-encode(string(tt-ilog.issuenumber)),'right')
-
-            htmlib-MntTableField(html-encode(string(tt-ilog.briefDescription)),'left')
-            htmlib-MntTableField(html-encode(string(tt-ilog.iType)),'left')
-
-            htmlib-MntTableField(html-encode(string(tt-ilog.RaisedLoginID)),'left')
-
-            htmlib-MntTableField(html-encode(string(tt-ilog.AreaCode)),'left')
-            htmlib-MntTableField(html-encode(string(tt-ilog.SLALevel)),'right')
-            htmlib-MntTableField(html-encode(string(tt-ilog.CreateDate,"99/99/9999")),'right')
-            htmlib-MntTableField(html-encode(string(tt-ilog.CreateTime,"hh:mm")),'right').
-        
-        IF tt-ilog.CompDate <> ? THEN
-            {&prince}
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.CompDate,"99/99/9999")),'right')
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.CompTime,"hh:mm")),'right').
-        ELSE
-        {&prince}
-            htmlib-MntTableField(html-encode(""),'right')
-            htmlib-MntTableField(html-encode(""),'right').    
-
-        {&prince}
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.ActDuration)),'right')
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.SLAAchieved)),'left')
-        htmlib-MntTableField(REPLACE(tt-ilog.SLAComment,'~n','<br/>'),'left')
-
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.ClosedBy)),'left')
-
-
-
-            SKIP .
-
-        {&prince} '</tr>' SKIP.
-
-
-
-
-
-
-        IF LAST-OF(tt-ilog.AccountNumber) THEN
-        DO:
-            {&prince} skip 
-                htmlib-EndTable()
-                skip.
-
-            {&prince} htmlib-EndCriteria().
-
-
-        END.
-
-
-    END.
-       
-
-    DYNAMIC-FUNCTION("pxml-Footer",lc-global-company).
-    DYNAMIC-FUNCTION("pxml-CloseStream").
-
-
-    ll-ok = DYNAMIC-FUNCTION("pxml-Convert",lc-html,lc-pdf).
-
-    OS-DELETE value(lc-html) no-error.
-    
-    IF ll-ok
-        THEN ASSIGN pc-pdf = lc-pdf.
-    */
-
-END PROCEDURE.
-
-PROCEDURE ip-PrintReport :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-/*
-    DEFINE BUFFER customer     FOR customer.
-    DEFINE BUFFER issue        FOR issue.
-    
-    FOR EACH tt-ilog NO-LOCK
-        BREAK BY tt-ilog.AccountNumber
-        BY tt-ilog.IssueNumber
-        :
-
-        IF FIRST-OF(tt-ilog.AccountNumber) THEN
-        DO:
-            FIND customer WHERE customer.CompanyCode = lc-global-company
-                AND customer.AccountNumber = tt-ilog.AccountNumber
-                NO-LOCK NO-ERROR.
-            {&out} htmlib-BeginCriteria("Customer - " + tt-ilog.AccountNumber + " " + 
-                customer.NAME) SKIP.
-                
-            {&out} skip
-                replace(htmlib-StartMntTable(),'width="100%"','width="100%"') skip
-                htmlib-TableHeading(
-                "Issue Number^right|Description^left|Issue Class^left|Raised By^left|System^left|SLA Level^left|" +
-                "Date Raised^right|Time Raised^left|Date Completed^right|Time Completed^left|Activity Duration^right|SLA Achieved^left|SLA Comment^left|" +
-                "Closed By^left"
-            ) skip.
-
-
-        END.
-
-
-        {&out}
-            skip
-            '<tr>'
-            skip
-            htmlib-MntTableField(html-encode(string(tt-ilog.issuenumber)),'right')
-
-            htmlib-MntTableField(html-encode(string(tt-ilog.briefDescription)),'left')
-            htmlib-MntTableField(html-encode(string(tt-ilog.iType)),'left')
-
-            htmlib-MntTableField(html-encode(string(tt-ilog.RaisedLoginID)),'left')
-
-            htmlib-MntTableField(html-encode(string(tt-ilog.AreaCode)),'left')
-            htmlib-MntTableField(html-encode(string(tt-ilog.SLALevel)),'right')
-            htmlib-MntTableField(html-encode(string(tt-ilog.CreateDate,"99/99/9999")),'right')
-            htmlib-MntTableField(html-encode(string(tt-ilog.CreateTime,"hh:mm")),'right').
-        
-        IF tt-ilog.CompDate <> ? THEN
-            {&out} 
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.CompDate,"99/99/9999")),'right')
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.CompTime,"hh:mm")),'right').
-        ELSE
-        {&out} 
-            htmlib-MntTableField(html-encode(""),'right')
-            htmlib-MntTableField(html-encode(""),'right').    
-
-        {&out}
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.ActDuration)),'right')
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.SLAAchieved)),'left')
-        htmlib-MntTableField(REPLACE(tt-ilog.SLAComment,'~n','<br/>'),'left')
-
-        htmlib-MntTableField(html-encode(STRING(tt-ilog.ClosedBy)),'left')
-
-
-
-            SKIP .
-
-        {&out} '</tr>' SKIP.
-
-
-
-
-
-
-        IF LAST-OF(tt-ilog.AccountNumber) THEN
-        DO:
-            {&out} skip 
-                htmlib-EndTable()
-                skip.
-
-            {&out} htmlib-EndCriteria().
-
-
-        END.
-
-
-    END.
-    */
-
-END PROCEDURE.
-
-
-&ENDIF
-
-&IF DEFINED(EXCLUDE-ip-ProcessReport) = 0 &THEN
 
 PROCEDURE ip-ProcessReport :
     /*------------------------------------------------------------------------------
@@ -516,27 +183,23 @@ PROCEDURE ip-ProcessReport :
     ------------------------------------------------------------------------------*/
 
 
-    /*
-    RUN rep/issuelogbuild.p (
+    RUN rep/engtimebuild.p (
         lc-global-company,
         lc-global-user,
-        lc-lo-Account,
-        lc-hi-Account,
-        get-value("allcust") = "on",
         DATE(lc-lodate),
         DATE(lc-hidate),
-        SUBSTR(TRIM(lc-classlist),2),
-        OUTPUT TABLE tt-ilog
+        lc-loeng,
+        lc-hieng,
+        lc-engtype,
+        OUTPUT TABLE tt-engtime
 
         ).
-     */   
+
 
 END PROCEDURE.
 
 
-&ENDIF
 
-&IF DEFINED(EXCLUDE-ip-Selection) = 0 &THEN
 
 PROCEDURE ip-Selection :
     /*------------------------------------------------------------------------------
@@ -544,10 +207,10 @@ PROCEDURE ip-Selection :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE iloop       AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE cPart       AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE cCode       AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE cDesc       AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE iloop AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE cPart AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cCode AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cDesc AS CHARACTER NO-UNDO.
     
     FIND this-user
         WHERE this-user.LoginID = lc-global-user NO-LOCK NO-ERROR.
@@ -574,16 +237,48 @@ PROCEDURE ip-Selection :
     htmlib-CalendarLink("hidate")
     '</td>' skip.
     
-
+    {&out} '<TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("engtype",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Engineer Type")
+        ELSE htmlib-SideLabel("Engineer Type"))    '</TD>'.
     
-  
-    {&out} '</table>' skip.
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("engtype",lc-global-engType-Code,lc-global-engType-desc,lc-engtype) 
+    '</TD>' skip.
+    
+    {&out} '<TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("reptype",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Report Type")
+        ELSE htmlib-SideLabel("Report Type"))    '</TD>'.
+    
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("reptype","DET|SUM","Detailed|Summary",lc-reptype) 
+    '</TD></tr><tr>' skip.
+    
+    {&out} '<TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("loeng",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("From Engineer")
+        ELSE htmlib-SideLabel("From Engineer"))    '</TD>'.
+    
+    {&out} '<TD COLSPAN=6 VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("loeng",lc-eng-Code,lc-eng-desc,lc-loeng) 
+    '</TD></tr><tr>' skip.
+    
+    {&out} '<TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("hieng",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("To Engineer")
+        ELSE htmlib-SideLabel("To Engineer"))    '</TD>'.
+    
+    {&out} '<TD COLSPAN=6 VALIGN="TOP" ALIGN="left">'
+    htmlib-Select("hieng",lc-eng-Code,lc-eng-desc,lc-hieng) 
+    '</TD>' skip.
+   
+    {&out} '</tr></table>' skip.
 END PROCEDURE.
 
 
-&ENDIF
 
-&IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
+
 
 PROCEDURE ip-Validate :
     /*------------------------------------------------------------------------------
@@ -595,10 +290,10 @@ PROCEDURE ip-Validate :
     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    DEFINE VARIABLE ld-lodate   AS DATE     NO-UNDO.
-    DEFINE VARIABLE ld-hidate   AS DATE     NO-UNDO.
-    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE lc-rowid    AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE ld-lodate AS DATE      NO-UNDO.
+    DEFINE VARIABLE ld-hidate AS DATE      NO-UNDO.
+    DEFINE VARIABLE li-loop   AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-rowid  AS CHARACTER NO-UNDO.
 
     ASSIGN
         ld-lodate = DATE(lc-lodate) no-error.
@@ -627,15 +322,266 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
-
+    IF lc-loeng > lc-hieng THEN
+        RUN htmlib-AddErrorMessage(
+            'loeng', 
+            'The Engineer range is invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
 
 
 END PROCEDURE.
 
 
-&ENDIF
-
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
+
+PROCEDURE ip-Web:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lc-info         AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-style        AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lf-paid%        AS DECIMAL          NO-UNDO.
+    DEFINE VARIABLE lf-prod%        AS DECIMAL          NO-UNDO.
+    DEFINE VARIABLE li-stdmins      AS INTEGER EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE li-adjtime      AS INTEGER EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE li-availtime    AS INTEGER EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE li-billable     AS INTEGER EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE li-nonbillable  AS INTEGER EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE li-loop         AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-count        AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-tr           AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE li-eng          AS INTEGER          NO-UNDO.
+    
+        
+    
+
+    {&out} htmlib-StartMntTable() SKIP.
+
+    IF lc-RepType = "DET"
+        THEN {&out} htmlib-TableHeading('Engineer^left|Date^left|Standard<br/>Hours^right|Adjustment<br/>Hours^right|Reason^left|Total<br/>Available^right|Billable^right|Non Billable^right|Total<br/>Worked^right|Paid<br/>%^right|Productivity<br/>%^right') SKIP.
+    ELSE {&out} htmlib-TableHeading('Engineer^left|Standard<br/>Hours^right|Adjustment<br/>Hours^right|Total<br/>Available^right|Billable^right|Non Billable^right|Total<br/>Worked^right|Paid<br/>%^right|Productivity<br/>%^right') SKIP.
+    
+
+    
+    
+    FOR EACH tt-engtime NO-LOCK
+        BREAK BY tt-engtime.loginid
+        BY tt-engtime.startdate
+        :
+   
+        IF FIRST-OF(tt-engtime.loginid) THEN
+        DO:
+            ASSIGN
+                lc-info = com-userName(tt-engtime.loginid)
+                lc-style = 'font-weight:bold'
+                li-stdmins[1] = 0
+                li-adjtime[1] = 0
+                li-availtime[1] = 0
+                li-billable[1] = 0
+                li-nonbillable[1] = 0
+                li-count = 0
+                .
+        END.
+        ELSE ASSIGN lc-info = ""
+                lc-style = ""
+                li-count = li-count + 1.
+        
+        
+        DO li-loop = 1 TO 2:
+        
+            ASSIGN
+                li-stdmins[li-loop] = li-stdmins[li-loop] + tt-engtime.StdMins
+                li-adjtime[li-loop] = li-adjtime[li-loop] + tt-engtime.AdjTime
+                li-availtime[li-loop] = li-availtime[li-loop] + tt-engtime.AvailTime
+                li-billable[li-loop] = li-billable[li-loop] + tt-engtime.BillAble
+                li-nonbillable[li-loop] = li-nonbillable[li-loop] + tt-engtime.nonBillAble
+                .
+                
+        END.
+        
+          
+        ASSIGN
+            lf-paid% = 0
+            lf-prod% = 0.
+            
+        IF tt-engtime.AvailTime <> 0 THEN
+        DO:
+            ASSIGN
+                lf-paid% = percentage-calc(tt-engtime.BillAble,tt-engtime.AvailTime)
+                lf-prod% = percentage-calc(tt-engtime.BillAble +  tt-engtime.NonBillAble,tt-engtime.AvailTime)
+                .
+        END.
+         
+        IF lc-RepType = "DET" THEN
+        DO:    
+            IF li-count MOD 2 = 0
+                THEN lc-tr = '<tr style="background: #EBEBE6;">'.
+            ELSE lc-tr = '<tr style="background: white;">'.            
+            {&out}
+            lc-tr SKIP
+                  replib-RepField(lc-info,'',lc-style)
+                  replib-RepField( string(tt-engtime.startdate,"99/99/9999")  + ' ' +
+                                    com-DayName(tt-engtime.startdate,"S")
+                                  ,'left','')
+                  replib-RepField(com-TimeToString(tt-engtime.StdMins),'right','')
+                  replib-RepField(com-TimeToString(tt-engtime.AdjTime),'right','')
+                  replib-RepField(tt-engtime.AdjReason,'left','')
+                  replib-RepField(com-TimeToString(tt-engtime.AvailTime),'right','')
+                  replib-RepField(com-TimeToString(tt-engtime.billable),'right','')
+                  replib-RepField(com-TimeToString(tt-engtime.nonbillable),'right','')
+                  replib-RepField(com-TimeToString(tt-engtime.billable + tt-engtime.nonbillable),'right','')
+                  replib-RepField(String(lf-paid%,"->>>>>>>>>>>9.99"),'right','')
+                  replib-RepField(String(lf-prod%,"->>>>>>>>>>>9.99"),'right','')
+                  
+                '</tr>' SKIP.
+        END.
+                
+        IF LAST-OF(tt-engtime.loginid) THEN
+        DO:
+            ASSIGN
+                lc-info = (IF lc-repType = 'DET' THEN 'Total ' ELSE '' ) + com-userName(tt-engtime.loginid)
+                lc-style = IF lc-repType = 'DET' THEN
+                           'font-weight:bold;border-top:1px solid black;border-bottom:1px solid black;'
+                           ELSE ''
+                li-loop = 1.
+            IF li-availtime[li-loop] <> 0 THEN
+            DO:
+                ASSIGN
+                    lf-paid% = percentage-calc(li-billable[li-loop],li-availtime[li-loop])
+                    lf-prod% = percentage-calc(li-billable[li-loop]+  li-nonbillable[li-loop],li-availtime[li-loop])
+                    .
+            END.
+              
+            IF lc-reptype = 'DET'
+                THEN lc-tr = '<tr>'.
+            ELSE
+            DO:
+                ASSIGN
+                    li-eng = li-eng + 1.
+              
+                IF li-eng MOD 2 <> 0
+                    THEN lc-tr = '<tr style="background: #EBEBE6;">'.
+                ELSE lc-tr = '<tr style="background: white;">'.       
+            END.    
+            IF lc-repType = "DET" THEN
+            DO:         
+                {&out}
+                lc-tr SKIP
+                  replace(replib-RepField(lc-info,'right','font-weight:bold;'),'<td','<td colspan=2 ')
+                                         
+                  replib-RepField(com-TimeToString(li-stdmins[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-adjtime[li-loop]),'right',lc-style)
+                  
+                  replib-RepField('','left','')
+                  
+                  replib-RepField(com-TimeToString(li-availtime[li-loop]),'right',lc-style)
+                  
+                  replib-RepField(com-TimeToString(li-billable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-billable[li-loop] + li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(String(lf-paid%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  replib-RepField(String(lf-prod%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  
+                '</tr>' SKIP
+                '<tr>'
+                replib-RepField('','left','')
+                '</tr>' SKIP
+                .
+            END.
+            ELSE
+            DO:
+                {&out}
+                lc-tr SKIP
+                  replib-RepField(lc-info,'left','')
+                                         
+                  replib-RepField(com-TimeToString(li-stdmins[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-adjtime[li-loop]),'right',lc-style)
+                  
+                           
+                  replib-RepField(com-TimeToString(li-availtime[li-loop]),'right',lc-style)
+                  
+                  replib-RepField(com-TimeToString(li-billable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-billable[li-loop] + li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(String(lf-paid%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  replib-RepField(String(lf-prod%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  
+                '</tr>' SKIP
+                .
+            END.
+              
+        END.
+        IF LAST(tt-engtime.loginid) THEN
+        DO:
+            ASSIGN
+                lc-info = 'Report Total'
+                lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:1px solid black;'
+                li-loop = 2.
+            IF li-availtime[li-loop] <> 0 THEN
+            DO:
+                ASSIGN
+                    lf-paid% = percentage-calc(li-billable[li-loop],li-availtime[li-loop])
+                    lf-prod% = percentage-calc(li-billable[li-loop]+  li-nonbillable[li-loop],li-availtime[li-loop])
+                    .
+            END.
+                 
+            IF lc-repType = 'DET' THEN
+            DO:             
+                {&out}
+                '<tr>' SKIP
+                  replace(replib-RepField(lc-info,'right','font-weight:bold;'),'<td','<td colspan=2 ')
+               
+                                 
+                  replib-RepField(com-TimeToString(li-stdmins[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-adjtime[li-loop]),'right',lc-style)
+                  
+                  replib-RepField('','left','')
+                  
+                  replib-RepField(com-TimeToString(li-availtime[li-loop]),'right',lc-style)
+                  
+                  replib-RepField(com-TimeToString(li-billable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-billable[li-loop] + li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(String(lf-paid%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  replib-RepField(String(lf-prod%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  
+                '</tr>' SKIP.
+            END.
+            ELSE
+            DO:
+                {&out}
+                '<tr>' SKIP
+                  replib-RepField(lc-info,'right','font-weight:bold;')
+                                   
+                  replib-RepField(com-TimeToString(li-stdmins[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-adjtime[li-loop]),'right',lc-style)
+                  
+          
+                  
+                  replib-RepField(com-TimeToString(li-availtime[li-loop]),'right',lc-style)
+                  
+                  replib-RepField(com-TimeToString(li-billable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(com-TimeToString(li-billable[li-loop] + li-nonbillable[li-loop]),'right',lc-style)
+                  replib-RepField(String(lf-paid%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  replib-RepField(String(lf-prod%,"->>>>>>>>>>>9.99"),'right',lc-style)
+                  
+                '</tr>' SKIP.
+                    
+            END.    
+                    
+                    
+        END.
+        
+                    
+                
+    END.
+    {&out} '</table>' SKIP.
+    
+            
+END PROCEDURE.
 
 PROCEDURE outputHeader :
     /*------------------------------------------------------------------------------
@@ -762,7 +708,10 @@ PROCEDURE process-web-request :
         AND lc-error-msg = "" THEN
     DO:
        
+        {&out} htmlib-BeginCriteria("Report") '<div id="repdata">' SKIP.
         
+        RUN ip-Web. 
+        {&out} '</div>' htmlib-EndCriteria() SKIP.               
         
     END.
 
@@ -784,27 +733,21 @@ END PROCEDURE.
 
 /* ************************  Function Implementations ***************** */
 
-&IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
-
-FUNCTION Format-Select-Account RETURNS CHARACTER
-    ( pc-htm AS CHARACTER ) :
+FUNCTION percentage-calc RETURNS DECIMAL 
+    ( p-one AS INTEGER ,
+    p-two AS INTEGER  ) :
     /*------------------------------------------------------------------------------
       Purpose:  
         Notes:  
     ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE p-result AS DECIMAL.
+    /*  p-one =   billable/nonbillable total      */
+    /*  p-two =   productivity / contarcted hours */
+    p-result = ROUND(( p-one * 100) / p-two , 2).
+    RETURN p-result.
 
-    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
-
-    lc-htm = REPLACE(pc-htm,'<select',
-        '<select onChange="ChangeAccount()"')
-        . 
-
-
-    RETURN lc-htm.
-
-
+		
 END FUNCTION.
 
 
-&ENDIF
 

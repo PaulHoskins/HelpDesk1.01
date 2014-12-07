@@ -30,7 +30,9 @@ DEFINE VARIABLE li-min      AS INT      NO-UNDO.
 
 FOR EACH WebUser:
     ASSIGN
-    WebUser.Email = 'paulanhoskins@outlook.com'.
+       WebUser.Email = 'paulanhoskins@outlook.com'
+       WebUser.Passwd = ENCODE("12345678")
+       WebUser.LastPasswordChange = TODAY.
     IF WebUser.UserClass = "INTERNAL"
     THEN WebUser.engtype = "FIELD".
    

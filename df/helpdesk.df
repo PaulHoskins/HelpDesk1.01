@@ -1429,6 +1429,50 @@ ADD INDEX "prim-key" ON "GenTab"
   INDEX-FIELD "gType" ASCENDING 
   INDEX-FIELD "gCode" ASCENDING 
 
+ADD TABLE "Holiday"
+  AREA "Schema Area"
+  DUMP-NAME "holiday"
+
+ADD FIELD "CompanyCode" OF "Holiday" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Co"
+  ORDER 10
+
+ADD FIELD "hDate" OF "Holiday" AS date 
+  FORMAT "99/99/9999"
+  INITIAL ?
+  LABEL "Date"
+  POSITION 3
+  MAX-WIDTH 4
+  ORDER 20
+
+ADD FIELD "descr" OF "Holiday" AS character 
+  FORMAT "x(40)"
+  INITIAL ""
+  LABEL "Details"
+  POSITION 4
+  MAX-WIDTH 80
+  ORDER 30
+
+ADD FIELD "observed" OF "Holiday" AS logical 
+  FORMAT "yes/no"
+  INITIAL "yes"
+  LABEL "Observed?"
+  POSITION 5
+  MAX-WIDTH 1
+  ORDER 40
+
+ADD INDEX "PrimKey" ON "Holiday" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "hDate" ASCENDING 
+
 ADD TABLE "iemailtmp"
   AREA "Schema Area"
   LABEL "Issue email templates"
@@ -3980,6 +4024,38 @@ ADD INDEX "prim-key" ON "websalt"
   INDEX-FIELD "sdate" ASCENDING 
   INDEX-FIELD "sother" ASCENDING 
 
+ADD TABLE "WebSession"
+  AREA "Schema Area"
+  DUMP-NAME "websession"
+
+ADD FIELD "wsKey" OF "WebSession" AS character 
+  FORMAT "x(80)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 160
+  ORDER 10
+
+ADD FIELD "wsDate" OF "WebSession" AS date 
+  FORMAT "99/99/99"
+  INITIAL ?
+  POSITION 3
+  MAX-WIDTH 4
+  ORDER 20
+
+ADD FIELD "wsValue" OF "WebSession" AS character 
+  FORMAT "x(40)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 80
+  ORDER 30
+
+ADD INDEX "wskey" ON "WebSession" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "wsKey" ASCENDING 
+  INDEX-FIELD "wsDate" ASCENDING 
+
 ADD TABLE "WebStatus"
   AREA "Schema Area"
   DUMP-NAME "webstatu"
@@ -4413,6 +4489,14 @@ ADD FIELD "CustomerViewInventory" OF "WebUser" AS logical
   MAX-WIDTH 1
   ORDER 320
 
+ADD FIELD "engType" OF "WebUser" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Engineer Type"
+  POSITION 35
+  MAX-WIDTH 16
+  ORDER 330
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -4557,4 +4641,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000089703
+0000091265

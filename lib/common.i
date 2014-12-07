@@ -193,6 +193,14 @@ FUNCTION com-CustomerOpenIssues RETURNS INTEGER
     pc-accountNumber AS CHARACTER )  FORWARD.
 
 
+FUNCTION com-DayName RETURNS CHARACTER 
+	(pd-Date AS DATE,
+	 pc-Format AS CHAR) FORWARD.
+
+FUNCTION com-DayOfWeek RETURNS INTEGER 
+	(INPUT pd-Date AS DATE,
+	 INPUT pi-base AS INT) FORWARD.
+
 FUNCTION com-DecodeLookup RETURNS CHARACTER
     ( pc-code AS CHARACTER,
     pc-code-list AS CHARACTER,
@@ -202,6 +210,9 @@ FUNCTION com-DecodeLookup RETURNS CHARACTER
 FUNCTION com-DescribeTicket RETURNS CHARACTER
     ( pc-TxnType AS CHARACTER )  FORWARD.
 
+
+FUNCTION com-EngineerSelection RETURNS CHARACTER 
+	(  ) FORWARD.
 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
     ( pc-CompanyCode AS CHARACTER,
@@ -905,6 +916,42 @@ PROCEDURE com-GetCustomerAccount :
 
 END PROCEDURE.
 
+
+PROCEDURE com-GetEngineerList:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pc-EngType     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
+
+
+    DEFINE BUFFER b-user FOR WebUser.
+
+   
+    FOR EACH b-user NO-LOCK 
+        WHERE CAN-DO(lc-global-internal,b-user.UserClass)
+        AND b-user.EngType <> ""
+        AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
+
+        IF pc-engType <> ""
+        AND pc-engTYpe <> b-user.engType 
+        THEN NEXT.
+        
+        IF pc-loginID = ""
+            THEN ASSIGN pc-LoginID = b-user.LoginID
+                pc-name    = b-user.name.
+        ELSE ASSIGN pc-LoginID = pc-LoginID + '|' + 
+                      b-user.LoginID
+                pc-name    = pc-name + '|' + 
+                        b-user.Name.
+    END.
+    
+
+END PROCEDURE.
 
 PROCEDURE com-GetInternalUser :
     /*------------------------------------------------------------------------------
@@ -1947,6 +1994,47 @@ FUNCTION com-CustomerOpenIssues RETURNS INTEGER
 END FUNCTION.
 
 
+FUNCTION com-DayName RETURNS CHARACTER 
+	    ( pd-Date AS DATE ,
+	      pc-Format AS CHAR):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+
+    DEFINE VARIABLE lc-day         AS CHARACTER INITIAL "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday" NO-UNDO.
+    
+
+
+
+    
+    RETURN TRIM(substr(ENTRY(WEEKDAY(pd-date),lc-day),1,( IF pc-format = "S" THEN 3 ELSE 10))).
+    
+		
+END FUNCTION.
+
+FUNCTION com-DayOfWeek RETURNS INTEGER 
+	(INPUT pd-Date AS DATE,
+	 INPUT pi-base AS INT) :
+/*------------------------------------------------------------------------------
+  Purpose:  
+    Notes:  
+------------------------------------------------------------------------------*/
+
+    DEFINE VARIABLE iDay   AS INTEGER   NO-UNDO.
+    
+    DEFINE VARIABLE DayList AS CHARACTER NO-UNDO.
+    IF pi-base = 1 THEN DayList = "1,2,3,4,5,6,7".
+    ELSE DayList = "7,1,2,3,4,5,6". /* Based on wk Starting on a monday */
+
+    iDay = WEEKDAY(pd-Date).
+    iDay = INTEGER(ENTRY(iDay,DayList)).
+    RETURN  iDay.
+    
+
+		
+END FUNCTION.
+
 FUNCTION com-DecodeLookup RETURNS CHARACTER
     ( pc-code AS CHARACTER,
     pc-code-list AS CHARACTER,
@@ -1987,6 +2075,7 @@ FUNCTION com-DescribeTicket RETURNS CHARACTER
     RETURN pc-txntype.
 
 END FUNCTION.
+
 
 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
