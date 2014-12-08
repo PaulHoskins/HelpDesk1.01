@@ -9,7 +9,8 @@
     
     When        Who         What
     09/04/2006  phoski      Initial
-    10/05/2015  phoski      last activity on issue
+    10/05/2014  phoski      last activity on issue
+    08/12/2014  phoski      Fix Timer
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -651,8 +652,13 @@ PROCEDURE ip-ExportJScript :
       'curMinuteOption = document.getElementById(tFEM + ((minutes < 10) ? "0" : "") + minutes)' skip
       'curMinuteOption.selected = true' skip
       'if ( timeSecondSet >= 60 ) ~{ timeSecondSet = 0 ; timeMinuteSet = timeMinuteSet + 1; ~}' skip
-      'if ( timeMinuteSet >= 60 ) ~{ timeMinuteSet = 0 ; timeHourSet = timeHourSet + 1; ~}' skip
-      'if ( defaultTime <= timeMinuteSet || defaultTime == 0 )' skip
+      'if ( timeMinuteSet >= 60 ) ' SKIP
+      '~{ ' SKIP 
+      '     timeMinuteSet = 0 ; ' SKIP
+      '     timeHourSet = timeHourSet + 1; ' SKIP
+      '~}' SKIP
+      
+      'if ( defaultTime <= timeMinuteSet || defaultTime == 0 || timeHourSet > 0)' skip
       '  ~{' skip
       '     document.getElementById(tFH).value = ((timeHourSet  < 10) ? "0" : "") + timeHourSet' skip
       '     document.getElementById(tFM).value  = ((timeMinuteSet < 10) ? "0" : "") + timeMinuteSet ' skip

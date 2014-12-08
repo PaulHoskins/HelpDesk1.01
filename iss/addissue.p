@@ -17,7 +17,8 @@
     09/08/2010  DJS         3667 - view only active co's & users
     24/04/2014  Phoski      Timer problem when customer is creating
                             & various
-    23/07/2014  phoski      Telphone on add user default's to customer                        
+    23/07/2014  phoski      Telephone on add user default's to customer  
+    08/12/2014  phoski      Fix timer                       
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -529,9 +530,12 @@ PROCEDURE ip-ExportJScript :
       'document.getElementById("clockface").innerHTML =  "00" +   ((defaultTime < 10) ? ":0" : ":") + defaultTime  + ":00" ' skip
       'document.mainform.ffmins.value = ((defaultTime < 10) ? "0" : "") + defaultTime ' skip
       'showtime();' skip
-      '~}' skip
-
-
+      '~}' SKIP
+      .
+      
+     
+   {&out}
+    
       'function showtime()~{' skip
       'var curMinuteOption;' skip
       'var curHourOption;' skip
@@ -551,8 +555,14 @@ PROCEDURE ip-ExportJScript :
       'curMinuteOption = document.getElementById("endmin" + ((minutes < 10) ? "0" : "") + minutes)' skip
       'curMinuteOption.selected = true' skip
       'if ( timeSecondSet >= 60 ) ~{ timeSecondSet = 0 ; timeMinuteSet = timeMinuteSet + 1; ~}' skip
-      'if ( timeMinuteSet >= 60 ) ~{ timeMinuteSet = 0 ; timeHourSet = timeHourSet + 1; ~}' skip
-      'if ( defaultTime <= timeMinuteSet || defaultTime == 0 )' skip
+      'if ( timeMinuteSet >= 60 ) ' SKIP
+      '~{ ' SKIP 
+     /* '     alert("timehour= " + timeHourSet);' */
+      '     timeMinuteSet = 0 ; ' SKIP
+      '     timeHourSet = timeHourSet + 1; ' SKIP
+      '~}' SKIP
+      
+      'if ( defaultTime <= timeMinuteSet || defaultTime == 0 || timeHourSet > 0)' skip
       '  ~{' skip
       '     document.mainform.ffhours.value = ((timeHourSet  < 10) ? "0" : "") + timeHourSet' skip
       '     document.mainform.ffmins.value = ((timeMinuteSet < 10) ? "0" : "") + timeMinuteSet ' skip
@@ -563,11 +573,10 @@ PROCEDURE ip-ExportJScript :
       'document.getElementById("timeSecondSet").value = timeSecondSet ;' skip
       'document.getElementById("timeMinuteSet").value = timeMinuteSet ;' skip
       'timerRunning = true;' skip
-      'timerID = setTimeout("showtime()",1000);' skip
+      'timerID = setTimeout("showtime()",1000);' SKIP /* 1000=1second */
       '~}' skip
-      '</script>' skip
-    .
-
+      '</script>' SKIP.
+      
     {&out} 
     '<script language="JavaScript" src="/scripts/js/tree.js"></script>' skip
         '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
@@ -596,7 +605,7 @@ PROCEDURE ip-GenHTML :
         {&out} htmlib-StartInputTable() skip
                     '<tr><td>&nbsp;</td><td  align="right" width="50%">' skip
                     '<span id="clockface" class="clockface">' skip
-                    '0:00:00' skip
+                    '00:00:00' skip
                     '</span><img id="throbber" src="/images/ajax/ajax-loader-red.gif"></td></tr>' skip
                     '<tr><td valign="top"><fieldset><legend>Main Issue Entry</legend>' skip                 .
     END.
@@ -1674,7 +1683,8 @@ PROCEDURE ip-QuickUpdate :
             ELSE ASSIGN IssActivity.EndDate = ?
                     IssActivity.EndTime = 0.
         
-        
+            /*MESSAGE "Set Dur H= " lc-hours " m= " lc-mins.
+            */
             ASSIGN 
                 IssActivity.Duration = ( ( int(lc-hours) * 60 ) * 60 ) + 
                 ( int(lc-mins) * 60 ).
