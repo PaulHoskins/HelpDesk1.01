@@ -301,7 +301,7 @@ PROCEDURE process-web-request :
     DO:
         ASSIGN 
             request_method = "GET".
-        RUN run-web-object IN web-utilities-hdl ("iss/adddocument.p").
+        RUN run-web-object IN web-utilities-hdl ("cust/cadddocument.p").
         RETURN.
     END.
 

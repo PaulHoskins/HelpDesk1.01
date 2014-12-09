@@ -11,6 +11,8 @@
     10/04/2006  phoski      CompanyCode    
     
     02/09/2010  DJS         3674 - Added Quickview facility
+    09/12/2014  phoski      local host then just copy 
+    
       
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -170,25 +172,38 @@ PROCEDURE process-web-request :
     ASSIGN 
         lc-thefile = REPLACE(lc-thefile," ","").
     
-    ASSIGN
+   ASSIGN
         lc-dest   = "c:/helpdeskupload"
-        lc-source = "https://" + server_name + "/hdupload/" + lc-thefile.
+        /* lc-source = "https://" + server_name + "/hdupload/" + lc-thefile
+        */
+        lc-source = HostURL + "/hdupload/" + lc-thefile
+        .
 
-
-    lc-source = HostURL + "/hdupload/" + lc-thefile.
 
     OS-CREATE-DIR value(lc-dest).
 
-    ASSIGN 
-        lc-command = "c:/wget/wget --directory-prefix=" + lc-dest +
+    IF HostURL MATCHES "*LocalHost*" THEN
+    DO:
+        ASSIGN lc-source =  "c:/hdupload/" + lc-thefile
+               lc-thefile = lc-dest + "/" + lc-thefile.
+               
+        OS-COPY value(lc-source) value(lc-thefile).
+        
+    END.
+    ELSE
+    DO:
+        ASSIGN 
+            lc-command = "c:/wget/wget --directory-prefix=" + lc-dest +
                         " " + lc-source + " --no-check-certificate".
 
     
-    OS-COMMAND SILENT VALUE(lc-command).
-
+        OS-COMMAND SILENT VALUE(lc-command).
     
-    ASSIGN 
-        lc-thefile = lc-dest + "/" + lc-thefile.
+     
+        ASSIGN 
+            lc-thefile = lc-dest + "/" + lc-thefile.
+    END.
+       
        
     CASE lc-type:
         WHEN "customer" THEN

@@ -19,6 +19,7 @@
     14/06/2014 phoski       google maps fix
     27/09/2014 phoski       Encrypted rowid
     13/11/2014 phoski       CustomerViewInventory flag
+    09/12/2014 phoski       Add documents
                           
                                 
 ***********************************************************************/
@@ -325,14 +326,38 @@ PROCEDURE ip-CustomerDocuments :
     DEFINE BUFFER doch     FOR doch.
     DEFINE VARIABLE lc-type         AS CHARACTER 
         INITIAL "CUSTOMER"  NO-UNDO.
-
+    DEFINE VARIABLE lc-back AS CHARACTER NO-UNDO.
+    
     FIND customer 
         WHERE customer.CompanyCode = pc-CompanyCode
         AND customer.AccountNumber = pc-AccountNumber
         NO-LOCK.
 
+    ASSIGN
+        lc-back = selfurl + "?source=" + get-value("source") + "&rowid=" + url-encode(lc-enc-key,"Query") + "&showtab=document".    
+    {&out} SKIP
+        '<script>' skip
+        'var DocumentAddURL = "' appurl '/cust/cadddocument.p?rowid=' + string(rowid(customer)) '";' SKIP
+        'var DocumentBack = "' lc-back '";' skip
+        
+        'function documentAdd () ~{' SKIP
+        '    PopUpWindow(DocumentAddURL)' SKIP
+        '~}' SKIP
+        
+       
+        'function documentCreated () ~{' SKIP
+        'ClosePopUpWindow();' SKIP
+        'self.location = DocumentBack;' skip
+        '~}' skip 
+        '</script>'
+        SKIP.
     {&out}
-    tbar-BeginID(pc-ToolBarID,"")
+    tbar-BeginID(pc-ToolBarID,"").
+    
+    IF NOT ll-customer
+    THEN {&out} tbar-Link("add",?,'javascript:documentAdd();',"") SKIP.
+    
+    {&out}
     tbar-BeginOptionID(pc-ToolBarID)
     tbar-Link("documentview",?,"off","")
     tbar-EndOption()
@@ -1669,7 +1694,11 @@ PROCEDURE process-web-request :
     {&out} 
     '</div>'.
 
-
+     IF get-value("showtab") = "document" THEN
+        {&out}
+        '<div class="tabbertab tabbertabdefault" title="Documents">' skip
+    .
+    ELSE
     {&out}
     '<div class="tabbertab" title="Documents">' skip
     .
