@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!c:/Perl/bin/perl.exe
 ########################################################
 # A simple script to upload a binary file to a server
 # place in the cgi-bin directory of the web server
