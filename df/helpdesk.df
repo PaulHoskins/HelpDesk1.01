@@ -385,6 +385,14 @@ ADD FIELD "em_ssl" OF "Company" AS logical
   MAX-WIDTH 1
   ORDER 260
 
+ADD FIELD "renewal-Login" OF "Company" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "Renewal Login User"
+  POSITION 28
+  MAX-WIDTH 30
+  ORDER 270
+
 ADD INDEX "CompanyCode" ON "Company" 
   AREA "Schema Area"
   UNIQUE
@@ -4641,4 +4649,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000091265
+0000091427

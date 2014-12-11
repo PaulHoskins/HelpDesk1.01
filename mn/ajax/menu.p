@@ -14,7 +14,8 @@
                             run through issues table
     10/09/2010  DJS         3671 Amended to remove inventory renewals 
                               from 'alert' box.
-    30/04/2014  phoski      Custview link for customers          
+    30/04/2014  phoski      Custview link for customers   
+    11/12/2014  phoski      Renewal user       
                               
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -40,6 +41,8 @@ DEFINE VARIABLE cGUID          AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-unq         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Enc-Key     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-renew       AS CHARACTER NO-UNDO.
+
 
 
 DEFINE TEMP-TABLE tt-menu NO-UNDO
@@ -439,19 +442,23 @@ PROCEDURE ip-SuperUserFinal :
 
         {&out} '<table style="font-size: 10px;">'.
 
-        FIND FIRST tt WHERE tt.ACode = "Renewals" NO-LOCK NO-ERROR.
-        {&out} 
-        '<tr><td>'
-        '<a title="View Issues" target="mainwindow" class="tlink" style="border:none;' 
-        IF AVAILABLE tt THEN 'color: red;' 
-        ELSE ''
-        '" href="' appurl '/iss/issue.p?frommenu=yes&status=allopen&assign=Renewals">'
-        html-encode("Renewals")
-        '</a></td><td align=right class="menuinfo">' 
-        IF AVAILABLE tt THEN tt.ACount 
-        ELSE 0 '</td></tr>'.
+        IF lc-renew <> "" THEN
+        DO:
+            FIND FIRST tt WHERE tt.ACode = lc-renew NO-LOCK NO-ERROR.
+            {&out} 
+            '<tr><td nowrap  style="vertical-align:top">'
+            '<a title="Inventory Renewals" target="mainwindow" class="tlink" style="border:none;' 
+            IF AVAILABLE tt THEN 'color: red;' 
+            ELSE ''
+            '" href="' appurl '/iss/issue.p?frommenu=yes&status=allopen&assign=' lc-renew '">'
+            html-encode("Renewals")
+            '</a></td><td align=right class="menuinfo">' 
+            IF AVAILABLE tt THEN tt.ACount 
+            ELSE 0 '&nbsp;</td></tr>'.
+        END.
+        
 
-        FOR EACH tt NO-LOCK WHERE tt.ACode <> "Renewals" USE-INDEX i-ACount :
+        FOR EACH tt NO-LOCK WHERE tt.ACode <> lc-renew USE-INDEX i-ACount :
             lc-Class = TRIM(SUBSTR(tt.ADescription,1,15)).
             {&out} 
             '<tr><td nowrap  style="vertical-align:top">'
@@ -828,6 +835,8 @@ PROCEDURE process-web-request :
     DO:
         ASSIGN
             lc-global-company = webuser.Company.
+        FIND Company WHERE Company.companycode = lc-global-company NO-LOCK NO-ERROR.
+        lc-renew = Company.renewal-login.
 
         {&out} '<div class="inform"><fieldset>'
         '<span class="menuinfo">'.

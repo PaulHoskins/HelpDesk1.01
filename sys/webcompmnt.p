@@ -17,6 +17,7 @@
     07/09/2010  DJS         3704  Removed streetmap button.
     30/04/2014  phoski      Marketing Banner
     09/11/2014  phoski      Email Stuff
+    11/12/20124 phoski      Renewal user
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -81,6 +82,8 @@ DEFINE VARIABLE lc-mBanner        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-emuser         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-empass         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-emssl          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-renew          AS CHARACTER NO-UNDO.
+
 
 
 
@@ -338,7 +341,7 @@ htmlib-InputField("empass",40,lc-empass)
     
 IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-checkBox("emssl",lc-emssl = "on")
+htmlib-checkBox("emssl",lc-emssl = "on")
 '</TD>' skip.
     else 
     {&out} htmlib-TableField(IF lc-emssl = "on" THEN "Yes" ELSE 'No','left')
@@ -420,6 +423,21 @@ htmlib-InputField("passwordexpire",2,lc-passwordexpire)
 '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-passwordexpire),'left')
+           skip.
+{&out} '</TR>' skip.
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("renew",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Inventory Renewal User")
+    ELSE htmlib-SideLabel("Inventory Renewal User"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("renew",15,lc-renew) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-renew),'left')
            skip.
 {&out} '</TR>' skip.
 
@@ -586,6 +604,26 @@ PROCEDURE ip-Validate :
             'The password expiry period must be 0 or greater',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
+            
+    IF lc-renew <> "" THEN
+    DO:
+        FIND FIRST WebUser WHERE WebUser.LoginID = lc-renew NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE WebUser 
+        THEN RUN htmlib-AddErrorMessage(
+                'renew', 
+                'The renewal user does not exist' ,
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+        ELSE
+        IF WebUser.CompanyCode <> lc-companyCode
+        THEN RUN htmlib-AddErrorMessage(
+                'renew', 
+                'The renewal user is not in this company' ,
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+                
+ 
+    END.          
 
 
 END PROCEDURE.
@@ -743,6 +781,8 @@ PROCEDURE process-web-request :
 
         IF lc-mode <> "delete" THEN
         DO:
+             
+                        
             ASSIGN 
                 lc-companycode   = get-value("companycode")
                 lc-name          = get-value("name")
@@ -770,9 +810,15 @@ PROCEDURE process-web-request :
                 lc-emuser         = get-value("emuser")
                 lc-empass         = get-value("empass")
                 lc-emssl          = get-value("emssl")
+                lc-renew          = get-value("renew")
 
                 .
-            
+            IF lc-mode = 'update' THEN
+            DO:
+                FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                    NO-LOCK NO-ERROR.
+                lc-companycode = b-table.companyCode.
+            END.       
                
             RUN ip-Validate( OUTPUT lc-error-field,
                 OUTPUT lc-error-msg ).
@@ -828,6 +874,7 @@ PROCEDURE process-web-request :
                         b-table.em_user        = lc-emuser
                         b-table.em_pass        = lc-empass
                         b-table.em_ssl         = lc-emssl = "on"
+                        b-table.renewal-login  = lc-renew
                         .
                    
                     
@@ -867,6 +914,7 @@ PROCEDURE process-web-request :
         IF CAN-DO("view,delete",lc-mode)
             OR request_method <> "post"
             THEN ASSIGN 
+                lc-companycode = b-table.companycode
                 lc-name             = b-table.name
                 lc-address1  = b-table.address1
                 lc-address2  = b-table.address2
@@ -892,6 +940,7 @@ PROCEDURE process-web-request :
                 lc-emuser         = b-table.em_user
                 lc-empass         = b-table.em_pass
                 lc-emssl          = IF b-table.em_ssl THEN "on" ELSE ""
+                lc-renew          = b-table.renewal-login
                 .
        
     END.
