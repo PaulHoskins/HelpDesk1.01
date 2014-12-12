@@ -528,9 +528,9 @@ PROCEDURE process-web-request :
 
     IF request_method = "post" AND lc-error-msg = "" THEN
     DO:
-        {&out} '<p style="font-size: 12px;">Statements have been emailed to ' 
+        {&out} '<div class="infobox" style="font-size: 10px;">Statements have been emailed to ' 
             (IF lc-test = "on" THEN webuser.email ELSE " the customers" )
-        '</p>'.
+        '</div>'.
     END.
 
     IF lc-error-msg <> "" THEN
