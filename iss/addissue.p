@@ -18,7 +18,8 @@
     24/04/2014  Phoski      Timer problem when customer is creating
                             & various
     23/07/2014  phoski      Telephone on add user default's to customer  
-    08/12/2014  phoski      Fix timer                       
+    08/12/2014  phoski      Fix timer  
+    16/12/2014  phoski      Timer hour and page submit                     
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -129,6 +130,7 @@ DEFINE VARIABLE lc-billable-flag    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE ll-billing          AS LOG       NO-UNDO.
 DEFINE VARIABLE lc-timeSecondSet    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-timeMinuteSet    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-timehourset      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DefaultTimeSet   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-manChecked       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Enc-Key          AS CHARACTER NO-UNDO.
@@ -509,7 +511,7 @@ PROCEDURE ip-ExportJScript :
       'var defaultTime = parseInt(' lc-DefaultTimeSet ',10);' skip
       'var timeSecondSet = parseInt(' lc-timeSecondSet ',10);' skip
       'var timeMinuteSet = parseInt(' lc-timeMinuteSet ',10);' skip
-      'var timeHourSet = 0;' skip
+      'var timeHourSet =  ' string(integer(lc-timeHourSet)) ';' SKIP
       'var timerStartseconds = 0;' skip
       
       'function manualTimeSet()~{' skip
@@ -526,7 +528,7 @@ PROCEDURE ip-ExportJScript :
 
       'function startclock()~{' skip
       'stopclock();' skip
-      'timeHourSet = 0;' skip
+      /*'timeHourSet = 0;' skip */
       'document.getElementById("clockface").innerHTML =  "00" +   ((defaultTime < 10) ? ":0" : ":") + defaultTime  + ":00" ' skip
       'document.mainform.ffmins.value = ((defaultTime < 10) ? "0" : "") + defaultTime ' skip
       'showtime();' skip
@@ -544,12 +546,13 @@ PROCEDURE ip-ExportJScript :
       'var minutes = now.getMinutes()' skip
       'var seconds = now.getSeconds()' skip
       'var millisec = now.getMilliseconds()' skip
-      'var timeValue = "" +   hours' skip
+      'var timeValue = "" +   hours' skip 
       'timeSecondSet = timeSecondSet + 1' skip
       'if (!manualTime)' skip
-      '~{'
+      '~{' SKIP
       'timeValue  += ((minutes < 10) ? ":0" : ":") + minutes' skip
-      'timeValue  += ((seconds < 10) ? ":0" : ":") + seconds' skip
+      'timeValue  += ((seconds < 10) ? ":0" : ":") + seconds' SKIP
+       
       'curHourOption = document.getElementById("endhour"  + ((hours == 0) ? "0" : "") + hours) ' skip
       'curHourOption.selected = true' skip
       'curMinuteOption = document.getElementById("endmin" + ((minutes < 10) ? "0" : "") + minutes)' skip
@@ -557,7 +560,6 @@ PROCEDURE ip-ExportJScript :
       'if ( timeSecondSet >= 60 ) ~{ timeSecondSet = 0 ; timeMinuteSet = timeMinuteSet + 1; ~}' skip
       'if ( timeMinuteSet >= 60 ) ' SKIP
       '~{ ' SKIP 
-     /* '     alert("timehour= " + timeHourSet);' */
       '     timeMinuteSet = 0 ; ' SKIP
       '     timeHourSet = timeHourSet + 1; ' SKIP
       '~}' SKIP
@@ -569,7 +571,8 @@ PROCEDURE ip-ExportJScript :
       '     document.getElementById("clockface").innerHTML = ((timeHourSet < 10) ? "0" : "") + timeHourSet '
       '       +   ((timeMinuteSet < 10) ? ":0" : ":") + timeMinuteSet  + ((timeSecondSet < 10) ? ":0" : ":") + timeSecondSet ' skip
       '  ~}'  skip
-      '~}' skip
+      '~}' SKIP
+      'document.getElementById("timeHourSet").value = timeHourSet ;' skip
       'document.getElementById("timeSecondSet").value = timeSecondSet ;' skip
       'document.getElementById("timeMinuteSet").value = timeMinuteSet ;' skip
       'timerRunning = true;' skip
@@ -603,7 +606,7 @@ PROCEDURE ip-GenHTML :
     IF NOT ll-Customer THEN
     DO:
         {&out} htmlib-StartInputTable() skip
-                    '<tr><td>&nbsp;</td><td  align="right" width="50%">' skip
+                    '<tr><td>&nbsp;</td><td  align="right" width="50%">' SKIP
                     '<span id="clockface" class="clockface">' skip
                     '00:00:00' skip
                     '</span><img id="throbber" src="/images/ajax/ajax-loader-red.gif"></td></tr>' skip
@@ -636,7 +639,8 @@ PROCEDURE ip-GenHTML :
          htmlib-Hidden("emailid",lc-emailid) skip
          htmlib-Hidden("issuesource",lc-issuesource) skip
          htmlib-Hidden("timeSecondSet",lc-timeSecondSet) skip
-         htmlib-Hidden("timeMinuteSet",lc-timeMinuteSet) skip
+         htmlib-Hidden("timeMinuteSet",lc-timeMinuteSet) SKIP
+         htmlib-Hidden("timeHourSet",lc-timeHourSet) skip
          htmlib-Hidden("defaultTime",lc-DefaultTimeSet) skip
          htmlib-Hidden("contract",lc-contract-type) skip
          htmlib-Hidden("billable",lc-billable-flag) skip
@@ -1537,13 +1541,6 @@ PROCEDURE ip-QuickFinish :
     '</td></tr>' skip.
 
 
-    /*     {&out} '<tr><td valign="top" align="right">'                          */
-    /*             htmlib-SideLabel("Charge for Activity?")                      */
-    /*             '</td><td valign="top" align="left">'                         */
-    /*             htmlib-CheckBox("activitycharge", if lc-activitycharge = 'on' */
-    /*                                         then true else false)             */
-    /*             '</td></tr>' skip.                                            */
-
 
 
     
@@ -1786,6 +1783,7 @@ PROCEDURE ip-SetUpQuick :
         lc-currentassign  = lc-global-user
         lc-timeSecondSet  = IF lc-timeSecondSet <> "" THEN lc-timeSecondSet ELSE lc-secs 
         lc-timeMinuteSet  = IF lc-timeMinuteSet <> "" THEN lc-timeMinuteSet ELSE lc-mins
+        lc-timeHourSet    = IF lc-timeHourSet <> "" THEN lc-timeHourSet ELSE "0"
         lc-DefaultTimeSet = ENTRY(1,lc-list-activtime,"|")
         lc-saved-activity = "0"
       
@@ -2352,6 +2350,7 @@ PROCEDURE process-web-request :
                 lc-actdescription = get-value("actdescription")
                 lc-timeSecondSet  = get-value("timeSecondSet")
                 lc-timeMinuteSet  = get-value("timeMinuteSet")
+                lc-timeHourSet    = get-value("timeHourSet")
                 lc-DefaultTimeSet = get-value("defaultTime")
                 lc-contract-type  = get-value("selectcontract")
                 lc-billable-flag  = get-value("billcheck")
@@ -2360,6 +2359,7 @@ PROCEDURE process-web-request :
                 lc-saved-billable = lc-billable-flag.
             IF lc-manChecked <> "checked"  THEN
                 lc-mins             = STRING(INTEGER(lc-mins) + 1).
+            
         END.
         IF ll-customer
             THEN ASSIGN lc-date    = STRING(TODAY,"99/99/9999")

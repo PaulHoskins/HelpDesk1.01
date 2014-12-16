@@ -95,6 +95,7 @@ DEFINE VARIABLE lc-saved-activity      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-SiteVisit           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-timeSecondSet       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-timeMinuteSet       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-timeHourSet         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DefaultTimeSet      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-manChecked          AS CHARACTER NO-UNDO.
 
@@ -120,6 +121,7 @@ DEFINE VARIABLE lc-save-actdescription AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-save-billing-charge AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-save-timeSecondSet  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-save-timeMinuteSet  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-save-timeHourSet    AS CHARACTER NO-UNDO.
 
 
 
@@ -605,7 +607,7 @@ PROCEDURE ip-ExportJScript :
       'var defaultTime = parseInt(' lc-DefaultTimeSet ',10);' skip
       'var timeSecondSet = parseInt(' lc-timeSecondSet ',10);' skip
       'var timeMinuteSet = parseInt(' lc-timeMinuteSet ',10);' skip
-      'var timeHourSet = 0;' skip
+      'var timeHourSet =  ' string(integer(lc-timeHourSet)) ';' SKIP
       'var timerStartseconds = 0;' skip(2)
       
       'function manualTimeSet()~{' skip
@@ -622,7 +624,8 @@ PROCEDURE ip-ExportJScript :
 
       'function startclock(levelx)~{' skip
       'stopclock(levelx);' skip
-      'timeHourSet = 0;' skip
+      /*'timeHourSet = 0;' skip */
+      
       'document.getElementById("clockface").innerHTML =  "00" +   ((defaultTime < 10) ? ":0" : ":") + defaultTime  + ":00" ' skip
       'var tF = "ff" + levelx + "mins";' skip
       'document.getElementById(tF).value = ((defaultTime < 10) ? "0" : "") + defaultTime ' skip
@@ -665,7 +668,8 @@ PROCEDURE ip-ExportJScript :
       '     document.getElementById("clockface").innerHTML = ((timeHourSet < 10) ? "0" : "") + timeHourSet ' skip
       '       +   ((timeMinuteSet < 10) ? ":0" : ":") + timeMinuteSet  + ((timeSecondSet < 10) ? ":0" : ":") + timeSecondSet ' skip
       '  ~}'  skip
-      '~}' skip
+      '~}' SKIP
+      'document.getElementById("timeHourSet").value = timeHourSet ;' skip 
       'document.getElementById("timeSecondSet").value = timeSecondSet' skip
       'document.getElementById("timeMinuteSet").value = timeMinuteSet' skip
       'timerRunning = true' skip
@@ -1259,6 +1263,7 @@ PROCEDURE process-web-request :
         lc-timeSecondSet  = "1"
         lc-timeMinuteSet  = "0" /*    entry(1,lc-list-activtime,"|")  */
         lc-DefaultTimeSet = ENTRY(1,lc-list-activtime,"|")
+        lc-TimeHourSet = "0"
         lc-saved-activity = "0".
 
 
@@ -1407,6 +1412,7 @@ PROCEDURE process-web-request :
                 lc-billing-charge = IF issue.Billable THEN "on" ELSE ""
                 lc-timeSecondSet  = "1"  
                 lc-timeMinuteSet  = "0" 
+                lc-TimeHourSet    = "0"
                 lc-saved-activity = "0"
                 zx                = zx + 1
                 li-opener         = 2 .
@@ -1440,6 +1446,7 @@ PROCEDURE process-web-request :
                 lc-billing-charge = lc-save-billing-charge   
                 lc-timeSecondSet  = lc-save-timeSecondSet    
                 lc-timeMinuteSet  = lc-save-timeMinuteSet
+                lc-timeHourSet    = lc-save-timeHourSet
                 lc-DefaultTimeSet = lc-save-DefaultTimeSet   
                 zx                = zx + 1
                 li-opener         = 2 .                 
@@ -1476,7 +1483,8 @@ PROCEDURE process-web-request :
 
         {&out} 
         htmlib-Hidden("timeSecondSet",lc-timeSecondSet) skip
-            htmlib-Hidden("timeMinuteSet",lc-timeMinuteSet) skip
+            htmlib-Hidden("timeMinuteSet",lc-timeMinuteSet) SKIP
+            htmlib-Hidden("timeHourSet",lc-timeHourSet) skip
             htmlib-Hidden("defaultTime",lc-DefaultTimeSet) skip
             htmlib-Hidden(string(zx) + "savedactivetype",lc-saved-activity) skip   
             htmlib-Hidden("actDesc",lc-list-activdesc) skip     
@@ -1578,6 +1586,7 @@ PROCEDURE process-web-request2 :
                 lc-save-billing-charge = get-value(pc-action-index + "billingcharge")
                 lc-save-timeSecondSet  = get-value("timeSecondSet")
                 lc-save-timeMinuteSet  = get-value("timeMinuteSet")
+                lc-save-timeHourSet    = get-value("timeHourSet")
                 lc-save-DefaultTimeSet = get-value("defaultTime")
                 . 
             IF lc-save-manChecked <> "checked"  AND
@@ -1607,6 +1616,7 @@ PROCEDURE process-web-request2 :
                 lc-billing-charge = lc-save-billing-charge 
                 lc-timeSecondSet  = lc-save-timeSecondSet  
                 lc-timeMinuteSet  = lc-save-timeMinuteSet  
+                lc-timeHourSet    = lc-save-timeHourSet  
                 lc-DefaultTimeSet = lc-save-DefaultTimeSet 
                 .
 

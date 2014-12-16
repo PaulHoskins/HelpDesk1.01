@@ -23,6 +23,7 @@
     24/04/2014  phoski      Various from specifications & fixes
     24/07/2014  phoski      Team Stuff
     01/10/2014  phoski      Account Manager (TAM/CAM)
+    16/12/2014  phoski      TAM/CAM problem if not allowed ( paging problems in JS )
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1415,11 +1416,21 @@ PROCEDURE process-web-request :
             '<div style="display: none;">'
                 format-Select-Account(htmlib-Select("account",lc-sel-account,lc-sel-account,lc-sel-account)) 
                 format-Select-Account(htmlib-Select("assign",htmlib-Null(),htmlib-Null(),htmlib-Null())) 
-                htmlib-Hidden("accountmanager", "") skip
-                
+                               
             '</div>'
             skip.
     END.
+    /*
+    *** Dummy field as chk box is required in JS 
+    */
+    IF  ll-customer
+    OR this-user.accountManager = FALSE
+    THEN {&out} skip
+            '<div style="display: none;">'
+                REPLACE(htmlib-CheckBox("accountmanager",false),
+        '>',' onclick="ChangeAccount()">') '</div>' SKIP.
+        
+        
 
     IF ll-customer THEN
     DO:
