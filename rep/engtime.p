@@ -119,7 +119,7 @@ PROCEDURE ip-ExportJScript :
         '~}' skip
 
             'function ChangeDates() ~{' skip
-        '   SubmitThePage("DatesChange")' skip
+       /* '   SubmitThePage("DatesChange")' skip */
         '~}' skip.
 
     {&out} skip

@@ -13,6 +13,7 @@
     
     30/08/2010  DJS         3704 Amended to include new gmap & rdp buttons
     27/09/2014  phoski      Encrpyted link to custequip
+    24/01/2015  phoski      Dont allow close of issue if open actions
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -1162,7 +1163,8 @@ PROCEDURE ip-Validate :
     DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
-
+    DEFINE VARIABLE li-OpenActions AS INTEGER NO-UNDO.
+    
     DEFINE VARIABLE ld-date AS DATE    NO-UNDO.
     DEFINE VARIABLE lf-dec  AS DECIMAL NO-UNDO.
     
@@ -1211,6 +1213,24 @@ PROCEDURE ip-Validate :
                 INPUT-OUTPUT pc-error-field,
                 INPUT-OUTPUT pc-error-msg ).    
     END.
+    
+    li-OpenActions = com-IssueActionsStatus(b-table.companyCode,b-table.issueNumber,'Open').
+    
+    IF li-openActions > 0 THEN
+    DO:
+        FIND b-status WHERE b-status.CompanyCode = lc-global-company
+            AND b-status.StatusCode = lc-currentstatus
+            NO-LOCK NO-ERROR.
+        IF b-status.CompletedStatus = YES
+        THEN
+            RUN htmlib-AddErrorMessage(
+                'currentstatus', 
+                'There are open actions, you can not close the issue',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+                
+    END.
+    
 
     IF lc-planned <> "" THEN
     DO:

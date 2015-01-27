@@ -1,16 +1,16 @@
 /***********************************************************************
 
-    Program:        rep/issuelog.p
+    Program:        rep/englog.p
     
-    Purpose:        Issue Log Report
+    Purpose:        Engineer Log Report
     
     Notes:
     
     
     When        Who         What
     
-    01/05/2014  phoski      Initial
-    09/11/2014  phoski          
+    24/01/2015  phoski      Initial
+           
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -26,8 +26,8 @@ DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-lo-account  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-hi-account  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-loeng  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-hieng AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-lodate      AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
 DEFINE VARIABLE lc-hidate      AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
@@ -47,8 +47,11 @@ DEFINE VARIABLE li-loop       AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-ClassList  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
 
+DEFINE VARIABLE lc-eng-code    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-eng-desc    AS CHARACTER NO-UNDO.
 
-{rep/issuelogtt.i}
+
+{rep/englogtt.i}
 {lib/maillib.i}
 {lib/princexml.i}
 
@@ -135,7 +138,7 @@ PROCEDURE ip-ExportJScript :
         '~}' skip
 
             'function ChangeDates() ~{' skip
-       /* '   SubmitThePage("DatesChange")' skip */
+        /* '   SubmitThePage("DatesChange")' skip */
         '~}' skip.
 
     {&out} skip
@@ -167,20 +170,20 @@ PROCEDURE ip-ExportReport :
         lc-genkey = STRING(NEXT-VALUE(ReportNumber)).
     
         
-    pc-filename = SESSION:TEMP-DIR + "/IssueLog-" + lc-GenKey
+    pc-filename = SESSION:TEMP-DIR + "/EngLog-" + lc-GenKey
         + ".csv".
 
     OUTPUT TO VALUE(pc-filename).
 
     PUT UNFORMATTED
                 
-        '"Customer","Issue Number","Description","Issue Type","Raised By","System","SLA Level","' +
+        '"Engineer","Customer","Issue Number","Description","Issue Type","Raised By","System","SLA Level","' +
         'Date Raised","Time Raised","Date Completed","Time Completed","Activity Duration","SLA Achieved","SLA Comment","' +
         '"Closed By' SKIP.
 
 
     FOR EACH tt-ilog NO-LOCK
-        BREAK BY tt-ilog.AccountNumber
+        BREAK BY tt-ilog.Eng
         BY tt-ilog.IssueNumber
         :
             
@@ -190,6 +193,7 @@ PROCEDURE ip-ExportReport :
 
 
         EXPORT DELIMITER ','
+            ( DYNAMIC-FUNCTION("com-UserName",tt-ilog.eng))
             ( customer.AccountNumber + " " + customer.NAME )
             tt-ilog.issuenumber
             tt-ilog.briefDescription
@@ -230,23 +234,18 @@ PROCEDURE ip-InitialProcess :
       Notes:       
     ------------------------------------------------------------------------------*/
 
-    IF ll-customer THEN
-    DO:
-        ASSIGN 
-            lc-lo-account = this-user.AccountNumber.
-        set-user-field("loaccount",this-user.AccountNumber).
-        set-user-field("hiaccount",this-user.AccountNumber).
-    END.
-        
-    ASSIGN
-        lc-lo-account = get-value("loaccount")
-        lc-hi-account = get-value("hiaccount")    
-        lc-lodate      = get-value("lodate")         
-        lc-hidate      = get-value("hidate")
-        lc-output      = get-value("output")
-        .
+
     
-    RUN com-GetCustomerAccount ( lc-global-company , lc-global-user, OUTPUT lc-list-acc, OUTPUT lc-list-aname ).
+    ASSIGN
+        lc-loeng    = get-value("loeng")
+        lc-hieng    = get-value("hieng")    
+        lc-lodate   = get-value("lodate")         
+        lc-hidate   = get-value("hidate")
+        lc-output   = get-value("output")
+        .
+  
+    RUN com-GetEngineerList ( lc-global-company , "", OUTPUT lc-eng-code , OUTPUT lc-eng-desc ).
+    
 
 
 
@@ -260,12 +259,11 @@ PROCEDURE ip-InitialProcess :
             THEN ASSIGN lc-hidate = STRING(TODAY, "99/99/9999").
         
         
-        IF lc-lo-account = ""
-            THEN ASSIGN lc-lo-account = ENTRY(1,lc-list-acc,"|").
-    
-        IF lc-hi-account = ""
-            THEN ASSIGN lc-hi-account = ENTRY(NUM-ENTRIES(lc-list-acc,"|"),lc-list-acc,"|").
-
+        ASSIGN
+            lc-loeng = ENTRY(1,lc-eng-code,"|")
+            lc-hieng = ENTRY(NUM-ENTRIES(lc-eng-code,"|"),lc-eng-code,"|").
+            
+            
         DO li-loop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
             lc-codeName = "chk" + ENTRY(li-loop,lc-global-iclass-code,"|").
             set-user-field(lc-codeName,"on").
@@ -300,7 +298,7 @@ PROCEDURE ip-PDF:
     ASSIGN    
         li-ReportNumber = NEXT-VALUE(ReportNumber).
     ASSIGN 
-        lc-html = SESSION:TEMP-DIR + caps(lc-global-company) + "-issueLog-" + string(li-ReportNumber).
+        lc-html = SESSION:TEMP-DIR + caps(lc-global-company) + "-EngineerLog-" + string(li-ReportNumber).
 
     ASSIGN 
         lc-pdf = lc-html + ".pdf"
@@ -321,7 +319,7 @@ PROCEDURE ip-PDF:
    
         
     {&prince}
-    '<p style="text-align: center; font-size: 14px; font-weight: 900;">Issue Log - '
+    '<p style="text-align: center; font-size: 14px; font-weight: 900;">Engineer Log - '
     'From ' STRING(DATE(lc-lodate),"99/99/9999")
     ' To ' STRING(DATE(lc-hidate),"99/99/9999") 
       
@@ -332,17 +330,15 @@ PROCEDURE ip-PDF:
 
     
     FOR EACH tt-ilog NO-LOCK
-        BREAK BY tt-ilog.AccountNumber
+        BREAK BY tt-ilog.Eng
         BY tt-ilog.IssueNumber
         :
 
-        IF FIRST-OF(tt-ilog.AccountNumber) THEN
+        IF FIRST-OF(tt-ilog.Eng) THEN
         DO:
-            FIND customer WHERE customer.CompanyCode = lc-global-company
-                AND customer.AccountNumber = tt-ilog.AccountNumber
-                NO-LOCK NO-ERROR.
-            {&prince} htmlib-BeginCriteria("Customer - " + tt-ilog.AccountNumber + " " + 
-                customer.NAME) SKIP.
+            
+            {&prince} htmlib-BeginCriteria("Engineer - "  + 
+                DYNAMIC-FUNCTION("com-UserName",tt-ilog.eng)) SKIP.
                 
             {&prince}
             '<table class="landrep">'
@@ -404,7 +400,7 @@ PROCEDURE ip-PDF:
 
 
 
-        IF LAST-OF(tt-ilog.AccountNumber) THEN
+        IF LAST-OF(tt-ilog.Eng) THEN
         DO:
             {&prince} skip 
                 htmlib-EndTable()
@@ -448,17 +444,16 @@ PROCEDURE ip-PrintReport :
     
     
     FOR EACH tt-ilog NO-LOCK
-        BREAK BY tt-ilog.AccountNumber
+        BREAK BY tt-ilog.Eng
         BY tt-ilog.IssueNumber
         :
 
-        IF FIRST-OF(tt-ilog.AccountNumber) THEN
+        IF FIRST-OF(tt-ilog.Eng) THEN
         DO:
-            FIND customer WHERE customer.CompanyCode = lc-global-company
-                AND customer.AccountNumber = tt-ilog.AccountNumber
-                NO-LOCK NO-ERROR.
-            {&out} htmlib-BeginCriteria("Customer - " + tt-ilog.AccountNumber + " " + 
-                customer.NAME) SKIP.
+           
+          
+            {&out} htmlib-BeginCriteria("Engineer - "  + 
+                DYNAMIC-FUNCTION("com-UserName",tt-ilog.eng)) SKIP.
                 
             {&out} skip
                 htmlib-StartMntTable() skip
@@ -521,7 +516,7 @@ PROCEDURE ip-PrintReport :
 
 
 
-        IF LAST-OF(tt-ilog.AccountNumber) THEN
+        IF LAST-OF(tt-ilog.eng) THEN
         DO:
             {&out} skip 
                 htmlib-EndTable()
@@ -551,11 +546,11 @@ PROCEDURE ip-ProcessReport :
 
 
 
-    RUN rep/issuelogbuild.p (
+    RUN rep/englogbuild.p (
         lc-global-company,
         lc-global-user,
-        lc-lo-Account,
-        lc-hi-Account,
+        lc-loeng,
+        lc-hieng,
         get-value("allcust") = "on",
         DATE(lc-lodate),
         DATE(lc-hidate),
@@ -589,12 +584,12 @@ PROCEDURE ip-Selection :
         THEN {&out}
     '<td align=right valign=top>' 
         (IF LOOKUP("loaccount",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("From Customer")
-        ELSE htmlib-SideLabel("From Customer"))
+        THEN htmlib-SideLabelError("From Engineer")
+        ELSE htmlib-SideLabel("From Engineer"))
 
     '</td>'
     '<td align=left valign=top>' 
-    htmlib-Select("loaccount",lc-list-acc,lc-list-aname,lc-lo-account) '</td>'.
+    htmlib-Select("loeng",lc-eng-Code,lc-eng-desc,lc-loeng)  '</td>'.
 
     
     {&out} 
@@ -613,12 +608,12 @@ PROCEDURE ip-Selection :
     '</tr><tr>' SKIP
            '<td align=right valign=top>' 
            (if lookup("loaccount",lc-error-field,'|') > 0 
-            then htmlib-SideLabelError("To Customer")
-            else htmlib-SideLabel("To Customer"))
+            then htmlib-SideLabelError("To Engineer")
+            else htmlib-SideLabel("To Engineer"))
         
         '</td>'
            '<td align=left valign=top>' 
-                htmlib-Select("hiaccount",lc-list-acc,lc-list-aname,lc-hi-account) '</td>'.
+                htmlib-Select("hieng",lc-eng-Code,lc-eng-desc,lc-hieng)  '</td>'.
 
     {&out} '<td valign="top" align="right">' 
         (IF LOOKUP("hidate",lc-error-field,'|') > 0 
@@ -714,7 +709,7 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
-    IF lc-lo-account > lc-hi-account 
+    IF lc-loeng > lc-hieng
         THEN RUN htmlib-AddErrorMessage(
             'loaccount', 
             'The customer range is invalid',
@@ -849,7 +844,7 @@ PROCEDURE process-web-request :
                 mlib-SendAttEmail 
                     ( lc-global-company,
                     "",
-                    "HelpDesk Issue Log Report ",
+                    "HelpDesk Engineer Log Report ",
                     "Please find attached your report covering the period "
                     + string(DATE(lc-lodate),"99/99/9999") + " to " +
                     string(DATE(lc-hidate),'99/99/9999'),
@@ -867,11 +862,11 @@ PROCEDURE process-web-request :
     RUN outputHeader.
 
     {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
-    {&out} htmlib-Header("Issue Log") skip.
+    {&out} htmlib-Header("Engineer Log") skip.
     RUN ip-ExportJScript.
     {&out} htmlib-JScript-Maintenance() skip.
-    {&out} htmlib-StartForm("mainform","post", appurl + '/rep/issuelog.p' ) skip.
-    {&out} htmlib-ProgramTitle("Issue Log") 
+    {&out} htmlib-StartForm("mainform","post", appurl + '/rep/englog.p' ) skip.
+    {&out} htmlib-ProgramTitle("Engineer Log") 
     htmlib-hidden("submitsource","") skip.
     {&out} htmlib-BeginCriteria("Report Criteria").
     

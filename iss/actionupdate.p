@@ -9,6 +9,7 @@
     
     When        Who         What
     09/04/2006  phoski      Initial
+    24/01/2015  phoski      stop 'open' actions if the issue is closed
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -35,6 +36,8 @@ DEFINE BUFFER b-table  FOR IssAction.
 DEFINE BUFFER issue    FOR Issue.
 DEFINE BUFFER b-user   FOR WebUser.
 DEFINE BUFFER customer FOR Customer.
+DEFINE BUFFER b-status  FOR WebStatus.
+
 
 DEFINE VARIABLE lc-list-action  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-list-aname   AS CHARACTER NO-UNDO.
@@ -53,6 +56,7 @@ DEFINE VARIABLE lf-Audit        AS DECIMAL   NO-UNDO.
 DEFINE VARIABLE lc-temp         AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lr-temp         AS ROWID     NO-UNDO.
+DEFINE VARIABLE ll-IsOpen       AS LOG       NO-UNDO.
 
 
 {iss/issue.i}
@@ -276,7 +280,16 @@ PROCEDURE ip-Validate :
             'The date is invalid',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
-
+    IF NOT ll-isOpen AND lc-status = "OPEN" THEN
+    DO:
+        RUN htmlib-AddErrorMessage(
+            'status', 
+            'The issue is closed, an open action is not allowed',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+            
+    END.
+    
 
 
 END PROCEDURE.
@@ -363,6 +376,14 @@ PROCEDURE process-web-request :
     FIND customer WHERE Customer.CompanyCode = Issue.CompanyCode
         AND Customer.AccountNumber = Issue.AccountNumber
         NO-LOCK NO-ERROR.
+
+            
+    IF DYNAMIC-FUNCTION("islib-StatusIsClosed",
+        issue.CompanyCode,
+        Issue.StatusCode) 
+    THEN ll-IsOpen = FALSE.
+    ELSE ll-isOpen = TRUE.
+              
 
 
     RUN com-GetAction ( lc-global-company , OUTPUT lc-list-action, OUTPUT lc-list-aname ).

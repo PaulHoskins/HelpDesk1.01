@@ -19,7 +19,8 @@
                             & various
     23/07/2014  phoski      Telephone on add user default's to customer  
     08/12/2014  phoski      Fix timer  
-    16/12/2014  phoski      Timer hour and page submit                     
+    16/12/2014  phoski      Timer hour and page submit 
+    24/01/2015  phoski      Default to correct contract                    
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -328,6 +329,7 @@ PROCEDURE ip-ContractSelect :
     .
  
 
+
     IF lc-accountnumber <> "" THEN
     DO:
 
@@ -338,6 +340,25 @@ PROCEDURE ip-ContractSelect :
                 ll-billing       = lc-saved-billable = "on"
                 lc-billable-flag = lc-saved-billable.
         END.
+        
+        /*
+        *** 
+        *** Default contract for client
+        ***
+        */
+        IF lc-submitsource = "AccountChange" THEN
+        DO:
+            FIND FIRST WebIssCont                           
+                 WHERE WebIssCont.CompanyCode     = lc-global-company     
+                   AND WebIssCont.Customer        = lc-accountnumber            
+                   AND WebIssCont.ConActive       = TRUE
+                   AND WebissCont.defcon          = TRUE NO-LOCK NO-ERROR.
+            IF AVAILABLE WebissCont
+            THEN ASSIGN lc-contract-type = WebissCont.ContractCode
+                        ll-billing       = WebissCont.Billable
+                        lc-billable-flag = IF ll-billing THEN "on" ELSE "".
+        END.
+        
 
         IF CAN-FIND (FIRST WebIssCont                           
             WHERE WebIssCont.CompanyCode     = lc-global-company     

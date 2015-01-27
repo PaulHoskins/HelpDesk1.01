@@ -9,6 +9,7 @@
     
     When        Who         What
     07/06/2014  phoski      Initial
+    24/01/2015  phoski      email default always 'no email'
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -169,8 +170,9 @@ PROCEDURE ip-EmailHTML :
     ASSIGN 
         lc-IField = lc-iPref + 'tmpsel'.
 
-
-    ASSIGN
+    IF request_method = "GET"
+    THEN ASSIGN lc-tmpCode = "".
+    ELSE ASSIGN
         lc-TmpCode = get-value(lc-IField).
    
     
