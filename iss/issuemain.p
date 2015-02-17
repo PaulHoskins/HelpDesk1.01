@@ -14,6 +14,7 @@
     30/08/2010  DJS         3704 Amended to include new gmap & rdp buttons
     27/09/2014  phoski      Encrpyted link to custequip
     24/01/2015  phoski      Dont allow close of issue if open actions
+    17/02/2015  phoski      Contract default problem
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -361,6 +362,8 @@ PROCEDURE ip-ContractSelect :
     '<option value="ADHOC|yes" >Ad Hoc</option>' skip
     .
 
+    
+    
     IF lc-ContractAccount <> ""  THEN
     DO:
 
@@ -382,22 +385,23 @@ PROCEDURE ip-ContractSelect :
 
                 IF WebIssCont.DefCon AND lc-contract-type = "" THEN
                     ASSIGN lc-contract-type = WebIssCont.ContractCode
-                        ll-billing       = WebissCont.Billable
-                        lc-billable-flag = IF ll-billing  THEN "yes" ELSE "".
-                ELSE
+                           ll-billing       = WebissCont.Billable
+                           lc-billable-flag = IF ll-billing  THEN "yes" ELSE "".
+               /* ELSE
                     ASSIGN lc-contract-type = lc-contract-type
                         ll-billing       = lc-billable-flag = "yes".
-                   
+                */   
 
                 {&out}
                 '<option value="' WebIssCont.ContractCode "|" STRING(WebissCont.Billable) '" ' .
 
-                IF b-table.ContractType = WebIssCont.ContractCode THEN
+                IF  ENTRY(1,lc-contract-type,"|") = WebIssCont.ContractCode THEN
                 DO:   
                     {&out}      " selected " .
                 END.
 
-                {&out}  '>'  html-encode(IF AVAILABLE ContractType THEN ContractType.Description ELSE "Unknown")
+                {&out}  '>'  html-encode(IF AVAILABLE ContractType THEN ContractType.Description ELSE "Unknown") 
+                   
 
 
                 '</option>' skip.
@@ -998,7 +1002,7 @@ PROCEDURE ip-Update :
         Issue.CatCode          = lc-CatCode
         Issue.StatusCode       = lc-currentstatus
         Issue.Ticket           = lc-ticket = "on"
-        Issue.ContractType     = lc-contract-type  
+        Issue.ContractType     = ENTRY(1,lc-contract-type,"|")  
         Issue.Billable         = lc-billable-flag  = "on"
         Issue.SearchField      = Issue.briefdescription + " " + 
                                       Issue.LongDescription
