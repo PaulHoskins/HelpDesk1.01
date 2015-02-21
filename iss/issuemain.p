@@ -15,6 +15,7 @@
     27/09/2014  phoski      Encrpyted link to custequip
     24/01/2015  phoski      Dont allow close of issue if open actions
     17/02/2015  phoski      Contract default problem
+    21/02/2015  phoski      Billing flag problem and finally remove all DJS 
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -111,7 +112,7 @@ DEFINE VARIABLE lc-list-cdesc       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-contract-type    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-ContractCode     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-billable-flag    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE ll-billing          AS LOG       NO-UNDO.
+DEFINE VARIABLE ll-isBillable          AS LOG       NO-UNDO.
 DEFINE VARIABLE lc-ContractAccount  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Enc-Key          AS CHARACTER NO-UNDO.
 
@@ -359,7 +360,7 @@ PROCEDURE ip-ContractSelect :
     {&out}  skip
             '<select id="selectcontract" name="selectcontract" class="inputfield"  onchange=~"javascript:ChangeContract();~">' skip.
     {&out}
-    '<option value="ADHOC|yes" >Ad Hoc</option>' skip
+    '<option value="ADHOC|yes" >Ad Hoc (Billable)</option>' skip
     .
 
     
@@ -383,14 +384,9 @@ PROCEDURE ip-ContractSelect :
                     AND  ContractType.ContractNumber = WebissCont.ContractCode 
                     NO-LOCK NO-ERROR. 
 
-                IF WebIssCont.DefCon AND lc-contract-type = "" THEN
-                    ASSIGN lc-contract-type = WebIssCont.ContractCode
-                           ll-billing       = WebissCont.Billable
-                           lc-billable-flag = IF ll-billing  THEN "yes" ELSE "".
-               /* ELSE
-                    ASSIGN lc-contract-type = lc-contract-type
-                        ll-billing       = lc-billable-flag = "yes".
-                */   
+                IF WebIssCont.DefCon AND lc-contract-type = ""
+                THEN ASSIGN lc-contract-type = WebIssCont.ContractCode.
+                  
 
                 {&out}
                 '<option value="' WebIssCont.ContractCode "|" STRING(WebissCont.Billable) '" ' .
@@ -400,7 +396,8 @@ PROCEDURE ip-ContractSelect :
                     {&out}      " selected " .
                 END.
 
-                {&out}  '>'  html-encode(IF AVAILABLE ContractType THEN ContractType.Description ELSE "Unknown") 
+                {&out}  '>'  html-encode(IF AVAILABLE ContractType THEN ContractType.Description + (
+                        IF WebissCont.Billable THEN " (Billable)" ELSE "") ELSE "Unknown") 
                    
 
 
@@ -530,7 +527,7 @@ PROCEDURE ip-IssueMain :
     {&out} '<tr><td valign="top" align="right">' 
     htmlib-SideLabel("Billable?")
     '</td><td valign="top" align="left">'
-    REPLACE(htmlib-CheckBox("billcheck", IF ll-billing THEN TRUE ELSE FALSE),
+    REPLACE(htmlib-CheckBox("billcheck", IF ll-isBillable THEN TRUE ELSE FALSE),
         '>',' onClick="ChangeBilling(this);">')
     '</td></tr>' skip.
 
@@ -1004,6 +1001,7 @@ PROCEDURE ip-Update :
         Issue.Ticket           = lc-ticket = "on"
         Issue.ContractType     = ENTRY(1,lc-contract-type,"|")  
         Issue.Billable         = lc-billable-flag  = "on"
+        ll-isBillable            = Issue.Billable
         Issue.SearchField      = Issue.briefdescription + " " + 
                                       Issue.LongDescription
         issue.iClass           = lc-iclass
@@ -1355,6 +1353,7 @@ PROCEDURE process-web-request :
         lc-submitsource  = get-value("submitsource")
         lc-contract-type = get-value("contract")
         lc-billable-flag = get-value("billcheck")
+        ll-isBillable      = NO
         lc-iclass        = get-value("iclass").
 
     .
@@ -1377,7 +1376,8 @@ PROCEDURE process-web-request :
             lc-area          = get-value("savearea")
             lc-category      = get-value("savecategory")
             lc-contract-type = get-value("savecontract")  
-            lc-billable-flag = get-value("savebillable") 
+            /*lc-billable-flag = get-value("savebillable") 
+            */
             .
 
     ASSIGN 
@@ -1470,6 +1470,7 @@ PROCEDURE process-web-request :
             lc-ticket           = get-value("ticket")
             lc-contract-type    = get-value("selectcontract")
             lc-billable-flag    = get-value("billcheck")
+            ll-isBillable         = lc-billable-flag = "on"
             lc-iclass           = get-value("iclass").
           
           
@@ -1501,7 +1502,8 @@ PROCEDURE process-web-request :
             lc-catcode          = b-table.CatCode
             lc-ticket           = IF b-table.Ticket THEN "on" ELSE ""
             lc-contract-type    = b-table.ContractType   
-            lc-billable-flag    = IF b-table.Billable THEN "yes" ELSE ""
+            lc-billable-flag    = IF b-table.Billable THEN "on" ELSE ""
+            ll-isBillable       = b-table.Billable
             lc-iclass           = b-table.iclass
             .
 
