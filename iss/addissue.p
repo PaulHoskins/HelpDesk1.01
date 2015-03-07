@@ -20,7 +20,10 @@
     23/07/2014  phoski      Telephone on add user default's to customer  
     08/12/2014  phoski      Fix timer  
     16/12/2014  phoski      Timer hour and page submit 
-    24/01/2015  phoski      Default to correct contract                    
+    24/01/2015  phoski      Default to correct contract       
+    07/03/2015  phoski      Send email to support when client add's an 
+                            issue ( unassigned issue so this lets them 
+                            know )             
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -145,10 +148,11 @@ DEFINE VARIABLE lc-uadd-email   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-uadd-phone   AS CHARACTER NO-UNDO.
 
 
-DEFINE VARIABLE lc-inv-key       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-inv-key      AS CHARACTER NO-UNDO.
 
-
-
+DEFINE VARIABLE lc-mail         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-subject      AS CHARACTER NO-UNDO.
+                    
 
 
 /* ********************  Preprocessor Definitions  ******************** */
@@ -349,14 +353,14 @@ PROCEDURE ip-ContractSelect :
         IF lc-submitsource = "AccountChange" THEN
         DO:
             FIND FIRST WebIssCont                           
-                 WHERE WebIssCont.CompanyCode     = lc-global-company     
-                   AND WebIssCont.Customer        = lc-accountnumber            
-                   AND WebIssCont.ConActive       = TRUE
-                   AND WebissCont.defcon          = TRUE NO-LOCK NO-ERROR.
+                WHERE WebIssCont.CompanyCode     = lc-global-company     
+                AND WebIssCont.Customer        = lc-accountnumber            
+                AND WebIssCont.ConActive       = TRUE
+                AND WebissCont.defcon          = TRUE NO-LOCK NO-ERROR.
             IF AVAILABLE WebissCont
-            THEN ASSIGN lc-contract-type = WebissCont.ContractCode
-                        ll-billing       = WebissCont.Billable
-                        lc-billable-flag = IF ll-billing THEN "on" ELSE "".
+                THEN ASSIGN lc-contract-type = WebissCont.ContractCode
+                    ll-billing       = WebissCont.Billable
+                    lc-billable-flag = IF ll-billing THEN "on" ELSE "".
         END.
         
 
@@ -554,12 +558,12 @@ PROCEDURE ip-ExportJScript :
       'document.mainform.ffmins.value = ((defaultTime < 10) ? "0" : "") + defaultTime ' skip
       'showtime();' skip
       '~}' SKIP
-      .
+    .
       
      
-   {&out}
+    {&out}
     
-      'function showtime()~{' skip
+    'function showtime()~{' skip
       'var curMinuteOption;' skip
       'var curHourOption;' skip
       'var now = new Date()' skip
@@ -891,26 +895,38 @@ PROCEDURE ip-GetOwner :
     DEFINE BUFFER b-user FOR WebUser.
 
     IF pc-Account <> "" THEN
-    DO:                                                          /* 3667 */  
-        FIND FIRST b-user NO-LOCK                                  /* 3667 */
-            WHERE b-user.CompanyCode   = lc-global-company      /* 3667 */
-            AND b-user.AccountNumber = pc-Account             /* 3667 */  
-            AND b-user.Disabled      = FALSE                  /* 3667 */  
-            AND b-user.DefaultUser   = TRUE                   /* 3667 */  
-            NO-ERROR.                  /* 3667 */  
-                                                                 
-        IF AVAILABLE b-user THEN                                       /* 3667 */  
-            ASSIGN pc-login = b-user.loginid  + '|'                 /* 3667 */  
+    DO:                                                            
+        FIND FIRST b-user NO-LOCK                                  
+            WHERE b-user.CompanyCode   = lc-global-company      
+            AND b-user.AccountNumber = pc-Account             
+            AND b-user.Disabled      = FALSE                  
+            AND b-user.DefaultUser   = TRUE                   
+            NO-ERROR.                  
+           
+        IF ll-Customer THEN
+        DO:                                                        
+            IF AVAILABLE b-user THEN                                       
+            ASSIGN pc-login = b-user.loginid                   
+                   pc-Name  = b-user.name     .  
+            ELSE
+            ASSIGN pc-login = htmlib-Null() 
+                pc-Name  = "Select Person".
+        END.
+        ELSE
+        DO:                                                        
+        IF AVAILABLE b-user THEN                                       
+            ASSIGN pc-login = b-user.loginid  + '|'                 
                 pc-Name  = b-user.name     + '|Add New'.  
         ELSE
             ASSIGN pc-login = htmlib-Null() + '|'
                 pc-Name  = "Select Person|Add New".
-
+        END.
+         
         FOR EACH b-user NO-LOCK
             WHERE b-user.CompanyCode   = lc-global-company
             AND b-user.AccountNumber = pc-Account
-            AND b-user.Disabled      = FALSE               /* 3667 */  
-            AND b-user.DefaultUser   = FALSE               /* 3667 */  
+            AND b-user.Disabled      = FALSE               
+            AND b-user.DefaultUser   = FALSE               
             BY b-user.name:
   
             ASSIGN 
@@ -977,9 +993,8 @@ PROCEDURE ip-Inventory :
         AND customer.AccountNumber = pc-AccountNumber
         NO-LOCK.
 
-     ASSIGN 
-         lc-enc-key =
-         DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+    ASSIGN 
+        lc-enc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
                             
     
     {&out} skip
@@ -2510,9 +2525,38 @@ PROCEDURE process-web-request :
                     END.
                 END.
                 islib-DefaultActions(lc-global-company,Issue.IssueNumber).
-                IF NOT ll-Customer 
-                    THEN RUN ip-QuickUpdate.
+                IF NOT ll-Customer THEN 
+                DO:
+                    RUN ip-QuickUpdate.
+                END.
+                ELSE
+                DO:
+                    
+                    FIND Company WHERE Company.CompanyCode = lc-global-company NO-LOCK NO-ERROR.
+                   
+                    
+                    ASSIGN 
+                        lc-mail = "Issue: " + string(Issue.IssueNumber) 
+                                + ' ' + Issue.BriefDescription + "~n" + 
+                                "Customer: " + customer.name.
+                    IF Issue.LongDescription <> "" 
+                        THEN lc-mail = lc-mail + "~n" + Issue.LongDescription.
+    
+  
+                        .
+                    ASSIGN 
+                        lc-subject = "New Issue Raised By Customer " + string(Issue.IssueNumber) +
+                   ' - Customer ' + Customer.Name + ' - ' +  string(NOW,"99/99/9999 hh:mm").
 
+                    DYNAMIC-FUNCTION("mlib-SendEmail",
+                        Issue.Company,
+                        "",
+                        lc-Subject,
+                        lc-mail,
+                        Company.HelpDeskEmail).
+                
+                END.
+                    
                 IF lc-gotomaint = "" THEN
                 DO:
                     FIND customer WHERE customer.CompanyCode = issue.CompanyCode
@@ -2523,8 +2567,7 @@ PROCEDURE process-web-request :
                     IF lc-issueSource = "custenq" AND NOT ll-customer THEN
                     DO:
                         ASSIGN 
-                            lc-enc-key =
-                            DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
+                            lc-enc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"customer",STRING(ROWID(customer))).
                  
                         set-user-field("mode","view").
                         set-user-field("source","menu").

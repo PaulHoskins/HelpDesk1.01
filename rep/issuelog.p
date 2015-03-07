@@ -10,7 +10,8 @@
     When        Who         What
     
     01/05/2014  phoski      Initial
-    09/11/2014  phoski          
+    09/11/2014  phoski    
+    07/03/2015  phoski      Summary page      
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -48,6 +49,15 @@ DEFINE VARIABLE lc-ClassList  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
 
 
+DEFINE TEMP-TABLE  ttc      NO-UNDO
+    FIELD id        AS CHARACTER 
+    .
+DEFINE TEMP-TABLE  ttd      NO-UNDO
+    FIELD id        AS CHARACTER     
+    FIELD lbl       AS CHARACTER
+    FIELD val       AS DECIMAL
+    
+    .
 {rep/issuelogtt.i}
 {lib/maillib.i}
 {lib/princexml.i}
@@ -66,6 +76,9 @@ DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
+
+FUNCTION fnTimeString RETURNS CHARACTER 
+    (pi-Seconds AS INTEGER) FORWARD.
 
 FUNCTION Format-Select-Account RETURNS CHARACTER
     ( pc-htm AS CHARACTER )  FORWARD.
@@ -120,7 +133,8 @@ PROCEDURE ip-ExportJScript :
     ------------------------------------------------------------------------------*/
 
     {&out} skip
-            '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' skip.
+            '<script language="JavaScript" src="/scripts/js/hidedisplay.js"></script>' SKIP
+            '<script language="JavaScript" src="/asset/chart/Chart.js"></script>'.
 
     {&out} skip 
           '<script language="JavaScript">' skip.
@@ -446,6 +460,8 @@ PROCEDURE ip-PrintReport :
     DEFINE VARIABLE lc-tr           AS CHARACTER        NO-UNDO.
     DEFINE VARIABLE li-eng          AS INTEGER          NO-UNDO.
     
+    DEFINE BUFFER tt-ilog   FOR tt-ilog.
+    
     
     FOR EACH tt-ilog NO-LOCK
         BREAK BY tt-ilog.AccountNumber
@@ -459,7 +475,11 @@ PROCEDURE ip-PrintReport :
                 NO-LOCK NO-ERROR.
             {&out} htmlib-BeginCriteria("Customer - " + tt-ilog.AccountNumber + " " + 
                 customer.NAME) SKIP.
-                
+            IF get-value("summary") = "on" THEN
+            DO:
+                RUN ip-SummaryPage (tt-ilog.AccountNumber).
+                    
+            END.  
             {&out} skip
                 htmlib-StartMntTable() skip
                 htmlib-TableHeading(
@@ -474,7 +494,7 @@ PROCEDURE ip-PrintReport :
 
         li-count = li-count + 1.
         IF li-count MOD 2 = 0
-        THEN lc-tr = '<tr style="background: #EBEBE6;">'.
+            THEN lc-tr = '<tr style="background: #EBEBE6;">'.
         ELSE lc-tr = '<tr style="background: white;">'.          
             
 
@@ -533,6 +553,32 @@ PROCEDURE ip-PrintReport :
         END.
 
 
+    END.
+    
+    FIND FIRST ttc NO-LOCK NO-ERROR.
+    
+       
+    IF AVAILABLE ttc THEN
+    DO:
+        {&out} SKIP
+            '<script>' SKIP
+            
+          'window.onload = function()~{' SKIP
+          .
+          FOR EACH ttc NO-LOCK:
+             
+              
+            {&out}      
+            'var ctx = document.getElementById("' ttc.id '").getContext("2d");' SKIP
+            'window.myPie = new Chart(ctx).Pie(pd' ttc.id ');' SKIP.
+            
+         END.
+         
+        {&out}    
+         '~};' SKIP
+         '</script>' SKIP.
+          
+         
     END.
 
 END PROCEDURE.
@@ -655,6 +701,14 @@ PROCEDURE ip-Selection :
         '</td></tr>' skip.
     
     END.
+    {&out} '<tr><td valign="top" align="right">' 
+    htmlib-SideLabel("Summary Details On Web Output")
+    '</td>'
+    '<td valign="top" align="left">'
+    htmlib-checkBox("summary",get-value("summary") = "on")
+    '</td></tr>' skip.
+        
+        
     
     {&out}
     '<tr><td valign="top" align="right">' 
@@ -671,6 +725,354 @@ END PROCEDURE.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
+
+PROCEDURE ip-SummaryPage:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pc-account   AS CHARACTER NO-UNDO.
+    
+
+    DEFINE BUFFER customer     FOR customer.
+    DEFINE BUFFER issue        FOR issue.
+    DEFINE VARIABLE li-count        AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-sla          AS INTEGER EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE ld-sla          AS DECIMAL EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE li-loop         AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-time         AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-Tot-Time     AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-temp         AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE ld-temp         AS DECIMAL          NO-UNDO.
+    DEFINE VARIABLE lc-id           AS CHARACTER EXTENT 2 NO-UNDO.
+    
+        
+    DEFINE VARIABLE lc-tr           AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE li-eng          AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE lc-Co           AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-hi           AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE li-tCol         AS INT              NO-UNDO.
+    
+    
+    ASSIGN
+        lc-co = "#F7464A,#46BFBD,#FDB45C,#949FB1,#4D5360"
+        lc-hi  = "#FF5A5E,#5AD3D1,#FFC870,#A8B3C5,#616774".
+        
+    
+    DEFINE BUFFER tt-ilog   FOR tt-ilog.
+    
+    FIND customer WHERE customer.CompanyCode = lc-global-company
+        AND customer.AccountNumber = pc-Account
+        NO-LOCK NO-ERROR.
+                
+     
+    FOR EACH tt-ilog NO-LOCK
+        WHERE tt-ilog.AccountNumber = pc-account
+        :
+       
+        ASSIGN 
+            li-count = li-count + 1
+            li-Tot-Time  = li-Tot-Time + tt-ilog.iActDuration
+            li-sla[1] = li-sla[1] + IF tt-ilog.SLAAchieved THEN 1 ELSE 0 
+            li-sla[2] = li-sla[2] + IF tt-ilog.SLAAchieved THEN 0 ELSE 1
+            .
+              
+    END.
+    
+    DO li-loop = 1 TO 2:
+        IF li-sla[li-loop] <> 0 THEN
+            ASSIGN ld-sla[li-loop] = ROUND( li-sla[li-loop] / ( li-count / 100 ),2).
+    END.
+    
+    {&out} SKIP
+           '<div style="padding: 15px;">' skip
+                replace(htmlib-StartMntTable(),"100%","35%") SKIP.
+                
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("Reporting Period")
+       
+       '</td><td valign="top" align="left" colspan=2>'
+        (lc-lodate) ' - '
+        (lc-hidate)
+       '</td></tr>' SKIP.
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("Technical Account Manager")
+       
+       '</td><td valign="top" align="left" colspan=2>'
+        dynamic-function('com-UserName',Customer.AccountManager)
+       '</td></tr>' SKIP.
+       
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("Total Activity Duration")
+       
+       '</td><td valign="top" align="left" colspan=2>'
+         /*li-time ' - ' */
+         fnTimeString(li-Tot-Time)
+       '</td></tr>' SKIP.
+             
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("Number Of Issues")
+       
+       '</td><td valign="top" align="left" colspan=2>'
+         li-count
+       '</td></tr>' SKIP.
+     
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("SLA Achieved")
+       '</td></tr>' SKIP.
+       
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       "Yes"
+       
+       '</td><td valign="top" align="right">'
+         li-sla[1] 
+          '</td><td valign="top" align="right">'
+           string(ld-sla[1],"zzzz9.99-") '%'
+       '</td></tr>' SKIP.
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+      "No"
+       
+       '</td><td valign="top" align="right">'
+         li-sla[2]
+          '</td><td valign="top" align="right">'
+           string(ld-sla[2],"zzzz9.99-") '%'
+       '</td></tr>' SKIP.
+         
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("Number Of Issues By SLA Level")
+       '</td></tr>' SKIP.
+    
+    ASSIGN
+        li-Temp = 0.
+         
+    FOR EACH tt-ilog NO-LOCK
+        WHERE tt-ilog.AccountNumber = pc-account
+        BREAK BY tt-ilog.SLALevel:
+        
+        ASSIGN
+            li-temp = li-temp + 1.
+            
+        IF NOT LAST-OF(tt-ilog.SLALevel) THEN NEXT.
+        
+        ld-temp = ROUND( li-temp / ( li-count / 100 ),2).
+        
+        {&out} SKIP
+            '<tr>'
+            '<td valign="top" align="right">'
+            tt-ilog.SLALevel
+       
+       '</td><td valign="top" align="right">'
+         li-temp 
+        '</td><td valign="top" align="right">'
+          string(ld-temp,">>>>9.99-") '%'
+       '</td></tr>' SKIP.
+       
+        
+        ASSIGN 
+            li-temp = 0.
+          
+    END.    
+    
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("Number Of Issues By Class")
+       '</td></tr>' SKIP.
+    
+    ASSIGN
+        li-Temp = 0.
+         
+    FOR EACH tt-ilog NO-LOCK
+        WHERE tt-ilog.AccountNumber = pc-account
+        BREAK BY tt-ilog.iType:
+        
+        ASSIGN
+            li-temp = li-temp + 1.
+            
+        IF NOT LAST-OF(tt-ilog.iType) THEN NEXT.
+        
+        ld-temp = ROUND( li-temp / ( li-count / 100 ),2).
+        
+        {&out} SKIP
+            '<tr>'
+            '<td valign="top" align="right">'
+            tt-ilog.iType
+       
+       '</td><td valign="top" align="right">'
+         li-temp 
+        '</td><td valign="top" align="right">'
+          string(ld-temp,">>>>9.99-") '%'
+       '</td></tr>' SKIP.
+       
+        
+        ASSIGN 
+            li-temp = 0.
+          
+    END.  
+    {&out} SKIP
+        '<tr>'
+        '<td valign="top" align="right">'
+       htmlib-SideLabel("Issues By System Area")
+       '</td></tr>' SKIP.
+    
+    ASSIGN
+        li-Temp = 0
+        li-Time = 0
+        lc-id[1] = "C" + string(ROWID(Customer))
+        lc-id[2] = "T" + string(ROWID(Customer))
+        
+        .
+         
+    DO li-loop = 1 TO 2:
+        CREATE ttc.
+        ASSIGN ttc.id = lc-id[li-loop].
+        
+    END.
+    FOR EACH tt-ilog NO-LOCK
+        WHERE tt-ilog.AccountNumber = pc-account
+        BREAK BY tt-ilog.AreaCode:
+        
+        ASSIGN
+            li-temp = li-temp + 1
+            li-time = li-time + tt-ilog.iActDuration.
+            
+        IF NOT LAST-OF(tt-ilog.AreaCode) THEN NEXT.
+        
+        CREATE ttd.
+        ASSIGN ttd.id = lc-id[1]
+               ttd.lbl = tt-ilog.AreaCode
+               ttd.val = li-temp.
+               
+        CREATE ttd.
+        ASSIGN ttd.id = lc-id[2]
+               ttd.lbl = tt-ilog.AreaCode
+               ttd.val = ROUND(li-time / 60,2).
+               
+        {&out} SKIP
+            '<tr>'
+            '<td valign="top" align="right">'
+            STRING(tt-ilog.AreaCode)
+       
+       '</td><td valign="top" align="right">'
+         li-temp 
+        '</td><td valign="top" align="right">'
+          /*li-time ' - ' */
+         fnTimeString(li-Time)
+         
+       '</td></tr>' SKIP.
+       
+        
+        ASSIGN 
+            li-temp = 0
+            li-time = 0.
+          
+    END.      
+               
+    {&out} skip 
+                htmlib-EndTable() SKIP.
+                
+    {&out} '<table width="100%" border="0">' SKIP
+            '<TR>'
+            '<td valign="top" align="CENTER">'
+       replace(htmlib-SideLabel("Number of Issues By System Area"),":","")
+       '</td>'
+       '<td valign="top" align="CENTER">'
+       replace(htmlib-SideLabel("Time By System Area In Minutes"),":","")
+       '</td></tr>'
+       
+            '<tr><td align="CENTER">' SKIP.            
+    {&out} 
+        '<div id="canvas-holder1">' SKIP
+        
+        '<canvas id="' lc-id[1] '" width="300" height="300"/>' SKIP
+        
+        '</div>' SKIP.
+        
+     {&out} '</td><td align="CENTER">'.
+     
+     {&out} 
+        '<div id="canvas-holder2">' skip
+        '<canvas id="' lc-id[2] '" width="300" height="300"/>' SKIP
+        
+        '</div>' SKIP.
+     
+    {&out} '</td></tr></table>'     SKIP.
+      
+    {&out} '<script>' SKIP.
+    
+    DO li-loop = 1 TO 2:
+        
+        {&out} SKIP
+               'var pd' lc-id[li-loop] ' = [' SKIP.
+               
+         li-tcol = 0.
+         FOR EACH ttd NO-LOCK 
+            WHERE ttd.id = lc-id[li-loop]
+            AND ttd.val > 0
+              BREAK BY  ttd.id:
+                  
+              li-tCol = li-tCol + 1.
+              IF li-tCol > num-entries(lc-co)
+              THEN li-tCol = 1.
+              
+              {&out} '~{' SKIP
+                    ' value: ' ttd.val ',' SKIP
+                    ' color: ~"' entry(li-tCol,lc-co) '",' SKIP
+                    ' highlight: ~"' entry(li-tCol,lc-hi) '",' SKIP
+                    ' label: ~"' ttd.lbl '"' SKIP
+                    '~}'.
+                    
+               IF NOT LAST-OF(ttd.id)
+               THEN {&out} ',' SKIP.
+               ELSE {&out} SKIP.     
+                    
+                    .
+              
+                  
+                 
+         END.       
+         {&out} '];' SKIP.
+                
+          
+            
+                   
+    END. 
+     
+    {&out} SKIP
+    /*
+         'window.onload = function()~{' SKIP
+         'var ctx = document.getElementById("' lc-id[1] '").getContext("2d");' SKIP
+         'window.myPie = new Chart(ctx).Pie(pd' lc-id[1] ');' SKIP
+         'var ctx1 = document.getElementById("' lc-id[2] '").getContext("2d");' SKIP
+         'window.myPie1 = new Chart(ctx1).Pie(pd' lc-id[2] ');' SKIP
+         '~};' skip 
+         */  
+         '</script>'.
+    
+               
+                
+    {&out} '</div>'
+                skip.
+                
+        
+        
+END PROCEDURE.
 
 PROCEDURE ip-Validate :
     /*------------------------------------------------------------------------------
@@ -927,6 +1329,42 @@ END PROCEDURE.
 /* ************************  Function Implementations ***************** */
 
 &IF DEFINED(EXCLUDE-Format-Select-Account) = 0 &THEN
+
+FUNCTION fnTimeString RETURNS CHARACTER 
+    ( pi-Seconds AS INTEGER  ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    DEFINE VARIABLE result AS CHARACTER NO-UNDO.
+
+    DEFINE VARIABLE li-min      AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-hr       AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-work     AS INTEGER      NO-UNDO.
+    
+    IF pi-seconds > 0 THEN
+    DO:
+        pi-seconds = ROUND(pi-seconds / 60,0).
+
+        li-min = pi-seconds MOD 60.
+
+        IF pi-seconds - li-min >= 60 THEN
+            ASSIGN
+                li-hr = ROUND( (pi-seconds - li-min) / 60 , 0 ).
+        ELSE li-hr = 0.
+
+        ASSIGN
+            result = STRING(li-hr) + ":" + STRING(li-min,'99')
+            .
+
+    END.
+        
+    RETURN result.
+
+
+		
+END FUNCTION.
 
 FUNCTION Format-Select-Account RETURNS CHARACTER
     ( pc-htm AS CHARACTER ) :

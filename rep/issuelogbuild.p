@@ -11,6 +11,7 @@
     03/05/2014  phoski      Initial  
     09/11/2014  phoski      SLA Comment from note
                             active customers
+    07/03/2015  phoski      Put activity seconds on tt
 ***********************************************************************/
 
 {rep/issuelogtt.i}
@@ -178,6 +179,8 @@ PROCEDURE ip-BuildData :
 
         END.
         li-work = li-seconds.
+        ASSIGN
+            tt-ilog.iActDuration = li-Seconds.
 
         IF li-seconds > 0 THEN
         DO:

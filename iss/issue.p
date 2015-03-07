@@ -24,6 +24,7 @@
     24/07/2014  phoski      Team Stuff
     01/10/2014  phoski      Account Manager (TAM/CAM)
     16/12/2014  phoski      TAM/CAM problem if not allowed ( paging problems in JS )
+    07/03/2015  phoski      Default dates for customers today & today - 30
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -604,10 +605,10 @@ PROCEDURE ip-InitialProcess :
     ELSE
     DO:
         IF lc-lodate = ""
-            THEN ASSIGN lc-lodate = "01/01/2001".
+            THEN ASSIGN lc-lodate = STRING(TODAY - 30 , "99/99/9999").
 
         IF lc-hidate = ""
-            THEN ASSIGN lc-hidate = "31/12/2999".
+            THEN ASSIGN lc-hidate = STRING(TODAY, "99/99/9999").
 
 
     END.

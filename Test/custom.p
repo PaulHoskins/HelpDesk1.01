@@ -33,8 +33,7 @@ FOR EACH WebUser:
        WebUser.Email = 'paulanhoskins@outlook.com'
        WebUser.Passwd = ENCODE("12345678")
        WebUser.LastPasswordChange = TODAY.
-    IF WebUser.UserClass = "INTERNAL"
-    THEN WebUser.engtype = "FIELD".
+    
    
 END.
 

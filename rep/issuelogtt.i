@@ -29,7 +29,11 @@ DEFINE TEMP-TABLE tt-ilog NO-UNDO
     FIELD SLAComment       AS CHARACTER LABEL 'SLA Comment'
     FIELD ClosedBy         AS CHARACTER LABEL 'Closed By'
     FIELD isClosed         AS LOG       LABEL 'Is Closed'
-
+    FIELD iActDuration     AS INTEGER 
+    
+    
+    INDEX MainKey IS PRIMARY 
+        AccountNumber IssueNumber       
     .
 
 
