@@ -15,7 +15,8 @@
     10/09/2010  DJS         3671 Amended to remove inventory renewals 
                               from 'alert' box.
     30/04/2014  phoski      Custview link for customers   
-    11/12/2014  phoski      Renewal user       
+    11/12/2014  phoski      Renewal user 
+    08/03/2015  phoski      Issue log for customer users      
                               
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -958,6 +959,24 @@ PROCEDURE process-web-request :
             IF li-cust-open > 0 
                 THEN ASSIGN tt-menu.description = tt-menu.description + ' (' + 
                         string(li-cust-open) + ' open)'.
+            
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN 
+                li-item = IF AVAILABLE tt-menu THEN tt-menu.itemno + 1 
+                        ELSE 1.
+
+            CREATE tt-menu.
+            ASSIGN 
+                tt-menu.itemno      = li-item
+                tt-menu.Level       = 1
+                tt-menu.Description = "Issue Log"
+                tt-menu.ObjType     = "WS"
+                tt-menu.ObjTarget   = "mainwindow"
+                tt-menu.ObjURL      = 'rep/issuelog.p'
+                tt-menu.AltInfo     = "Issue Log"
+                .
+            
+                                     
         END.
 
         RUN mnlib-BuildIssueMenu ( webuser.pagename, 1 ).

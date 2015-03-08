@@ -11,7 +11,7 @@
     
     01/05/2014  phoski      Initial
     09/11/2014  phoski    
-    07/03/2015  phoski      Summary page      
+    07/03/2015  phoski      Summary page with graphics     
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -49,13 +49,18 @@ DEFINE VARIABLE lc-ClassList  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
 
 
-DEFINE TEMP-TABLE  ttc      NO-UNDO
-    FIELD id        AS CHARACTER 
-    .
-DEFINE TEMP-TABLE  ttd      NO-UNDO
-    FIELD id        AS CHARACTER     
-    FIELD lbl       AS CHARACTER
-    FIELD val       AS DECIMAL
+DEFINE TEMP-TABLE ttc NO-UNDO
+    FIELD id AS CHARACTER 
+    INDEX MainKey IS UNIQUE
+    id.
+DEFINE TEMP-TABLE ttd NO-UNDO
+    FIELD id     AS CHARACTER     
+    FIELD lbl    AS CHARACTER
+    FIELD val    AS DECIMAL
+    FIELD setVal AS DECIMAL   EXTENT 2
+    INDEX MainKey IS UNIQUE
+    id lbl.
+        
     
     .
 {rep/issuelogtt.i}
@@ -564,18 +569,27 @@ PROCEDURE ip-PrintReport :
             '<script>' SKIP
             
           'window.onload = function()~{' SKIP
-          .
-          FOR EACH ttc NO-LOCK:
-             
-              
+        .
+        FOR EACH ttc NO-LOCK:
+                
             {&out}      
-            'var ctx = document.getElementById("' ttc.id '").getContext("2d");' SKIP
+            'var ctx = document.getElementById("' ttc.id '").getContext("2d");' SKIP.
+            
+            IF  ttc.id BEGINS "B" THEN 
+            DO:
+              {&out}
+            'window.myPie = new Chart(ctx).Bar(pd' ttc.id ', ~{' SKIP
+            '  responsive : true ' SKIP
+            '~});' SKIP.
+               
+            END.
+            ELSE {&out}
             'window.myPie = new Chart(ctx).Pie(pd' ttc.id ');' SKIP.
             
-         END.
+        END.
          
         {&out}    
-         '~};' SKIP
+        '~};' SKIP
          '</script>' SKIP.
           
          
@@ -736,29 +750,35 @@ PROCEDURE ip-SummaryPage:
 
     DEFINE BUFFER customer     FOR customer.
     DEFINE BUFFER issue        FOR issue.
-    DEFINE VARIABLE li-count        AS INTEGER          NO-UNDO.
-    DEFINE VARIABLE li-sla          AS INTEGER EXTENT 2 NO-UNDO.
-    DEFINE VARIABLE ld-sla          AS DECIMAL EXTENT 2 NO-UNDO.
-    DEFINE VARIABLE li-loop         AS INTEGER          NO-UNDO.
-    DEFINE VARIABLE li-time         AS INTEGER          NO-UNDO.
-    DEFINE VARIABLE li-Tot-Time     AS INTEGER          NO-UNDO.
-    DEFINE VARIABLE li-temp         AS INTEGER          NO-UNDO.
-    DEFINE VARIABLE ld-temp         AS DECIMAL          NO-UNDO.
-    DEFINE VARIABLE lc-id           AS CHARACTER EXTENT 2 NO-UNDO.
+    DEFINE VARIABLE li-count        AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE li-sla          AS INTEGER EXTENT 2     NO-UNDO.
+    DEFINE VARIABLE ld-sla          AS DECIMAL EXTENT 2     NO-UNDO.
+    DEFINE VARIABLE li-loop         AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE li-time         AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE li-Tot-Time     AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE li-temp         AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE ld-temp         AS DECIMAL              NO-UNDO.
+    DEFINE VARIABLE lc-id           AS CHARACTER EXTENT 3   NO-UNDO.
     
         
-    DEFINE VARIABLE lc-tr           AS CHARACTER        NO-UNDO.
-    DEFINE VARIABLE li-eng          AS INTEGER          NO-UNDO.
-    DEFINE VARIABLE lc-Co           AS CHARACTER        NO-UNDO.
-    DEFINE VARIABLE lc-hi           AS CHARACTER        NO-UNDO.
-    DEFINE VARIABLE li-tCol         AS INT              NO-UNDO.
+    DEFINE VARIABLE lc-tr           AS CHARACTER            NO-UNDO.
+    DEFINE VARIABLE li-eng          AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE lc-Co           AS CHARACTER            NO-UNDO.
+    DEFINE VARIABLE lc-hi           AS CHARACTER            NO-UNDO.
+    DEFINE VARIABLE li-tCol         AS INT                  NO-UNDO.
+    DEFINE VARIABLE lc-lb           AS CHARACTER            NO-UNDO.
+    DEFINE VARIABLE li-set          AS INTEGER              NO-UNDO.
+      
+    
     
     
     ASSIGN
-        lc-co = "#F7464A,#46BFBD,#FDB45C,#949FB1,#4D5360"
-        lc-hi  = "#FF5A5E,#5AD3D1,#FFC870,#A8B3C5,#616774".
-        
-    
+        lc-co = "#F7464A,#46BFBD,#FDB45C,#949FB1,#4D5360,#FF5A5E,#5AD3D1,#FFC870,#A8B3C5,#616774" 
+        lc-hi  = lc-co.
+    /*
+    ASSIGN lc-co = "aqua,black,blue,gray,green,lime,maroon,navy,olive,orange,purple,red,silver,teal,yellow"
+           lc-hi = lc-co.  
+    */ 
     DEFINE BUFFER tt-ilog   FOR tt-ilog.
     
     FIND customer WHERE customer.CompanyCode = lc-global-company
@@ -934,14 +954,17 @@ PROCEDURE ip-SummaryPage:
     ASSIGN
         li-Temp = 0
         li-Time = 0
-        lc-id[1] = "C" + string(ROWID(Customer))
-        lc-id[2] = "T" + string(ROWID(Customer))
+        lc-id[1] = "N" + string(ROWID(Customer)) /* Number of issues */
+        lc-id[2] = "T" + string(ROWID(Customer)) /* Time */
+        lc-id[3] = "B" + string(ROWID(Customer)) /* Bar Graph */
+        
         
         .
          
-    DO li-loop = 1 TO 2:
+    DO li-loop = 1 TO 3:
         CREATE ttc.
-        ASSIGN ttc.id = lc-id[li-loop].
+        ASSIGN 
+            ttc.id = lc-id[li-loop].
         
     END.
     FOR EACH tt-ilog NO-LOCK
@@ -954,16 +977,29 @@ PROCEDURE ip-SummaryPage:
             
         IF NOT LAST-OF(tt-ilog.AreaCode) THEN NEXT.
         
+        IF lc-lb = ""
+        THEN lc-lb = tt-ilog.AreaCode.
+        ELSE lc-lb = lc-lb + "," + tt-ilog.AreaCode.
+        
         CREATE ttd.
-        ASSIGN ttd.id = lc-id[1]
-               ttd.lbl = tt-ilog.AreaCode
-               ttd.val = li-temp.
+        ASSIGN 
+            ttd.id = lc-id[1]
+            ttd.lbl = tt-ilog.AreaCode
+            ttd.val = li-temp.
                
         CREATE ttd.
-        ASSIGN ttd.id = lc-id[2]
-               ttd.lbl = tt-ilog.AreaCode
-               ttd.val = ROUND(li-time / 60,2).
+        ASSIGN 
+            ttd.id = lc-id[2]
+            ttd.lbl = tt-ilog.AreaCode
+            ttd.val = ROUND(ROUND(li-time / 60,2) / 60,2).
                
+        CREATE ttd.
+        ASSIGN 
+            ttd.id = lc-id[3]
+            ttd.lbl = tt-ilog.AreaCode
+            ttd.SetVal[1] = li-temp.
+        ttd.SetVal[2] = ROUND(ROUND(li-time / 60,2) / 60,2).
+                      
         {&out} SKIP
             '<tr>'
             '<td valign="top" align="right">'
@@ -993,77 +1029,130 @@ PROCEDURE ip-SummaryPage:
        replace(htmlib-SideLabel("Number of Issues By System Area"),":","")
        '</td>'
        '<td valign="top" align="CENTER">'
-       replace(htmlib-SideLabel("Time By System Area In Minutes"),":","")
+       replace(htmlib-SideLabel("Time By System Area In Hours"),":","")
        '</td></tr>'
        
             '<tr><td align="CENTER">' SKIP.            
     {&out} 
-        '<div id="canvas-holder1">' SKIP
+    '<div id="canvas-holder1">' SKIP
         
         '<canvas id="' lc-id[1] '" width="300" height="300"/>' SKIP
         
         '</div>' SKIP.
         
-     {&out} '</td><td align="CENTER">'.
+    {&out} '</td><td align="CENTER">'.
      
-     {&out} 
-        '<div id="canvas-holder2">' skip
+    {&out} 
+    '<div id="canvas-holder2">' skip
         '<canvas id="' lc-id[2] '" width="300" height="300"/>' SKIP
-        
-        '</div>' SKIP.
+         '</div>' SKIP.
      
+    {&out} '</td></tr><tr><td colspan="2" align="CENTER">'.
+     
+    {&out} 
+    '<div id="canvas-holder3">' skip
+        '<canvas id="' lc-id[3] '" width="500" height="300"/>' SKIP
+         '</div>' SKIP.
+         
     {&out} '</td></tr></table>'     SKIP.
       
     {&out} '<script>' SKIP.
     
+    /*
+    ***
+    *** Array object for pie graphs 
+    ***
+    */
     DO li-loop = 1 TO 2:
         
         {&out} SKIP
                'var pd' lc-id[li-loop] ' = [' SKIP.
                
-         li-tcol = 0.
-         FOR EACH ttd NO-LOCK 
+        li-tcol = 0.
+        FOR EACH ttd NO-LOCK 
             WHERE ttd.id = lc-id[li-loop]
             AND ttd.val > 0
-              BREAK BY  ttd.id:
+            BREAK BY  ttd.id:
                   
-              li-tCol = li-tCol + 1.
-              IF li-tCol > num-entries(lc-co)
-              THEN li-tCol = 1.
+            li-tCol = li-tCol + 1.
+            IF li-tCol > num-entries(lc-co)
+                THEN li-tCol = 1.
               
-              {&out} '~{' SKIP
+            {&out} '~{' SKIP
                     ' value: ' ttd.val ',' SKIP
                     ' color: ~"' entry(li-tCol,lc-co) '",' SKIP
                     ' highlight: ~"' entry(li-tCol,lc-hi) '",' SKIP
                     ' label: ~"' ttd.lbl '"' SKIP
                     '~}'.
                     
-               IF NOT LAST-OF(ttd.id)
-               THEN {&out} ',' SKIP.
+            IF NOT LAST-OF(ttd.id)
+                THEN {&out} ',' SKIP.
                ELSE {&out} SKIP.     
                     
-                    .
+            .
               
                   
                  
-         END.       
-         {&out} '];' SKIP.
+        END.       
+        {&out} '];' SKIP.
                 
           
             
                    
-    END. 
-     
+    END.  
+    /* Array Object for Bar */
+    
+    {&out} SKIP(2)
+               'var pd' lc-id[3] ' = ~{' SKIP
+               ' labels : [ ' .
+    DO li-loop = 1 TO NUM-ENTRIES(lc-lb):
+        IF li-loop > 1
+        THEN {&out} ','.
+        
+        {&out} '"' ENTRY(li-loop,lc-lb) '"'.
+    END.
+    
+    {&out} "]," SKIP /* end of 'labels' array */
+           " datasets : [" SKIP.
+              
+    DO li-set = 1 TO 2:
+        IF li-set = 1
+        THEN {&out} 
+                ' ~{' skip
+                '   fillColor : "rgba(220,220,220,0.5)",' skip
+                '   strokeColor : "rgba(220,220,220,0.8)",' skip
+                '   highlightFill: "rgba(220,220,220,0.75)",' skip
+                '   highlightStroke: "rgba(220,220,220,1)",' skip
+                '   data :' SKIP
+                '   ['. 
+        ELSE {&out}
+                ' ~{' skip
+                '   fillColor : "rgba(151,187,205,0.5)",' skip
+                '   strokeColor : "rgba(151,187,205,0.8)",' skip
+                '   highlightFill : "rgba(151,187,205,0.75)",' skip
+                '   highlightStroke : "rgba(151,187,205,1)",' skip            
+                '   data :' SKIP
+                '   ['.
+        DO li-loop = 1 TO NUM-ENTRIES(lc-lb):
+            FIND ttd WHERE ttd.id = lc-id[3]
+              AND ttd.lbl = entry(li-loop,lc-lb) NO-LOCK.
+             {&out} ttd.setVal[li-set].
+             IF li-loop <  NUM-ENTRIES(lc-lb)
+             THEN {&out} ','.
+             else {&out} ']' SKIP.
+        END. 
+        IF li-set = 1
+        THEN {&out} '~},' SKIP.
+        ELSE {&out} '~}' SKIP.     
+                           
+    END.
+               
+    {&out} "]" SKIP. /* end of 'datasets' array */
+    
+    {&out} SKIP '~};' SKIP. /* End bar obj */
+    
     {&out} SKIP
-    /*
-         'window.onload = function()~{' SKIP
-         'var ctx = document.getElementById("' lc-id[1] '").getContext("2d");' SKIP
-         'window.myPie = new Chart(ctx).Pie(pd' lc-id[1] ');' SKIP
-         'var ctx1 = document.getElementById("' lc-id[2] '").getContext("2d");' SKIP
-         'window.myPie1 = new Chart(ctx1).Pie(pd' lc-id[2] ');' SKIP
-         '~};' skip 
-         */  
-         '</script>'.
+           '</script>'.
     
                
                 

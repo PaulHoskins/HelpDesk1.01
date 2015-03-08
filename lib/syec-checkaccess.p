@@ -9,7 +9,7 @@
     
     When        Who         What
     27/09/2014  phoski      initial
-
+    08/03/2015  phoski      Allow access to issuelog.p
 ***********************************************************************/
 
 /* ***************************  Definitions  ************************** */
@@ -193,7 +193,9 @@ FUNCTION RunObjectExcludeFromCheck RETURNS LOGICAL
     IF pc-objname = "sys/webuserpref.p" THEN RETURN TRUE.
     
    
-       
+    IF pc-objname = "rep/issuelog.p" 
+    AND WebUser.UserClass = "CUSTOMER" THEN RETURN TRUE.
+        
     RETURN FALSE.
 		
 

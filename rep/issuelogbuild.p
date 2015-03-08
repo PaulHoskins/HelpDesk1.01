@@ -161,7 +161,9 @@ PROCEDURE ip-BuildData :
         ASSIGN 
             tt-ilog.AreaCode = DYNAMIC-FUNCTION("com-AreaName",pc-companyCode,issue.AreaCode)
             tt-ilog.RaisedLoginID = DYNAMIC-FUNCTION("com-UserName",tt-ilog.RaisedLoginID).
-
+        IF tt-ilog.AreaCode = ""
+        THEN tt-ilog.AreaCode = "Not defined".
+        
 
         /*
         ***
