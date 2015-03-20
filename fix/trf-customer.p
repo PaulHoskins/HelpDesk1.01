@@ -183,7 +183,7 @@ PROCEDURE ipProcess:
             ASSIGN 
             tocust.AccountNumber = cNewAccount
             tocust.CompanyCode = cToCompany
-            tocust.old-AccountNumber = tocust.AccountNumber.
+            tocust.old-AccountNumber = frCust.AccountNumber.
         /*
         ***
         *** SLA 

@@ -9,6 +9,7 @@
     
     When        Who         What
     21/11/2014  phoski      Initial
+    18/03/2015  phoski      index on tt-isstime
 ***********************************************************************/
 
 DEFINE TEMP-TABLE tt-IssRep NO-UNDO LIKE issActivity
@@ -27,7 +28,8 @@ DEFINE TEMP-TABLE tt-IssTime NO-UNDO
     FIELD period-of     AS INTEGER
     FIELD billable      AS INTEGER
     FIELD nonbillable   AS INTEGER
-    INDEX i-num IssueNumber period-of.
+    INDEX i-num IssueNumber period-of
+    INDEX i-by  ActivityBy  period-of.
 
 DEFINE TEMP-TABLE tt-IssTotal NO-UNDO
     FIELD AccountNumber LIKE issue.AccountNumber

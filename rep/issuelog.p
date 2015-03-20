@@ -1032,22 +1032,22 @@ PROCEDURE ip-SummaryPage:
        replace(htmlib-SideLabel("Time By System Area In Hours"),":","")
        '</td></tr>'
        
-            '<tr><td align="CENTER">' SKIP.            
+            '<tr><td align="CENTER" style="border: 1px solid #E4ECF0;">' SKIP.            
     {&out} 
-    '<div id="canvas-holder1">' SKIP
+    '<div id="canvas-holder1" >' SKIP
         
         '<canvas id="' lc-id[1] '" width="300" height="300"/>' SKIP
         
         '</div>' SKIP.
         
-    {&out} '</td><td align="CENTER">'.
+    {&out} '</td><td align="CENTER" style="border: 1px solid #E4ECF0;">'.
      
     {&out} 
     '<div id="canvas-holder2">' skip
         '<canvas id="' lc-id[2] '" width="300" height="300"/>' SKIP
          '</div>' SKIP.
      
-    {&out} '</td></tr><tr><td colspan="2" align="CENTER">'.
+    {&out} '</td></tr><tr><td colspan="2" align="CENTER" style="border: 1px solid #E4ECF0;">'.
      
     {&out} 
     '<div id="canvas-holder3">' skip

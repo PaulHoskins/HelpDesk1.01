@@ -13,6 +13,7 @@
     03/08/2010  DJS         Clarified ambiguous buffer names.
     01/05/2014  phoski      New functions
     03/12/2014  phoski      Eng Type 
+    20/03/2015  phoski      com-EndTimeCalc
    
 ***********************************************************************/
 
@@ -384,6 +385,47 @@ DYNAMIC-FUNCTION('com-Initialise':U).
 
 
 /* **********************  Internal Procedures  *********************** */
+
+PROCEDURE com-EndTimeCalc:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pd-start AS DATE         NO-UNDO.
+    DEFINE INPUT PARAMETER pi-start AS INT          NO-UNDO.
+    DEFINE INPUT PARAMETER pi-duration AS INTEGER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER pd-end  AS DATE         NO-UNDO.
+    DEFINE OUTPUT PARAMETER pi-end  AS INTEGER      NO-UNDO.
+    
+    DEFINE VARIABLE lc-dt   AS CHARACTER            NO-UNDO.
+    DEFINE VARIABLE ldt     LIKE issue.lastactivity NO-UNDO.
+    DEFINE VARIABLE ldt2    LIKE issue.lastactivity NO-UNDO.
+    DEFINE VARIABLE li-hour AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE li-min  AS INTEGER              NO-UNDO.
+    
+    
+
+    ASSIGN
+        pd-end = ?
+        pi-end = 0.
+           
+    lc-dt = STRING(pd-Start,"99/99/9999") + " " + STRING(pi-Start,"HH:MM").
+    ldt = DATETIME(lc-dt) NO-ERROR.
+    IF ERROR-STATUS:ERROR THEN RETURN.
+    
+    ldt2 = ldt + (pi-Duration * 1000 ).         
+    
+    pd-end = DATE(ldt2).
+    lc-dt = TRIM(ENTRY(2,STRING(ldt2)," ")).
+    
+    ASSIGN 
+        li-hour = int(ENTRY(1,lc-dt,":"))
+        li-min  = int(ENTRY(2,lc-dt,":")) 
+        li-min  = li-min + ( li-hour * 60 )
+        pi-end = li-min * 60.
+           
+        
+END PROCEDURE.
 
 PROCEDURE com-GenTabSelect :
     /*------------------------------------------------------------------------------

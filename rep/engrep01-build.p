@@ -11,6 +11,7 @@
     10/11/2010  DJS         Initial
     14/06/2014  phoski      fix customer read
     21/11/2014  phoski      re-write all code
+    17/03/2015  phoski      fix problem with totals
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -260,7 +261,41 @@ FUNCTION Wk2Date RETURNS CHARACTER
 /* Process the latest Web event. */
 RUN ipBuildData NO-ERROR.
 
+/**
+OUTPUT TO c:\temp\report.txt PAGED.
 
+FOR EACH tt-isscust NO-LOCK WITH DOWN STREAM-IO:
+    
+    DISPLAY tt-isscust.AccountNumber
+            tt-isscust.period-of 
+            tt-isscust.billable ( TOTAL )
+            tt-isscust.nonbillable ( TOTAL )
+            tt-isscust.billable + tt-isscust.nonbillable (total)
+            .
+    
+    
+END.
+
+
+FOR EACH tt-issrep NO-LOCK WITH DOWN STREAM-IO:
+    
+    DISPLAY tt-issrep.period-of tt-IssRep.Duration (total).
+END.
+
+FOR EACH tt-isstime NO-LOCK WITH DOWN STREAM-IO:
+ DISPLAY tt-isstime.AccountNumber
+            tt-isstime.period-of 
+            tt-isstime.billable ( TOTAL )
+            tt-isstime.nonbillable ( TOTAL )
+            tt-isstime.billable + tt-isstime.nonbillable (total)
+            .
+                
+END.
+    
+OUTPUT CLOSE.
+**/
+
+    
 
 
 /* **********************  Internal Procedures  *********************** */
@@ -1450,17 +1485,32 @@ PROCEDURE ReportA :
     END.
     ASSIGN 
         tt-IssRep.AccountNumber = issue.AccountNumber
-        tt-IssRep.ActionDesc    = issAction.Notes
+        tt-IssRep.ActionDesc    = /*issAction.Notes */ ""
         tt-IssRep.ActivityType  = IssActivity.ActDescription
         tt-IssRep.ContractType  = IF AVAILABLE ContractType THEN ContractType.Description ELSE "Ad Hoc" 
         tt-IssRep.IssueDate     = issue.IssueDate
         tt-IssRep.period-of     = pi-period-of.
     /* TIME RECORDS */
+    /*
     FIND FIRST tt-IssTime WHERE tt-IssTime.IssueNumber   = IssActivity.IssueNumber 
         AND   tt-IssTime.period-of     = pi-period-of  
         AND  (IF reportType = 1 THEN tt-IssTime.AccountNumber = issue.AccountNumber 
         ELSE tt-IssTime.ActivityBy    = IssActivity.ActivityBy )
         NO-ERROR.
+        */
+    IF reportType = 1 THEN 
+    FIND FIRST tt-isstime WHERE tt-IssTime.IssueNumber   = IssActivity.IssueNumber 
+        AND   tt-IssTime.period-of     = pi-period-of  
+        AND   tt-IssTime.AccountNumber = issue.AccountNumber 
+        NO-ERROR.
+    ELSE
+    FIND FIRST tt-isstime WHERE tt-IssTime.IssueNumber   = IssActivity.IssueNumber 
+        AND   tt-IssTime.period-of     = pi-period-of  
+        AND   tt-IssTime.ActivityBy    = IssActivity.ActivityBy 
+        NO-ERROR.
+        
+        
+        
     IF NOT AVAILABLE tt-IssTime THEN
     DO: 
         CREATE tt-IssTime.                    
@@ -1494,7 +1544,7 @@ PROCEDURE ReportA :
     END.
     ELSE
         ASSIGN tt-IssTotal.billable    = IF IssActivity.Billable THEN tt-IssTotal.billable + IssActivity.Duration ELSE tt-IssTotal.billable
-            tt-IssTotal.nonbillable = IF NOT IssActivity.Billable THEN tt-IssTotal.nonbillable + IssActivity.Duration ELSE tt-IssTotal.nonbillable.    
+              tt-IssTotal.nonbillable = IF NOT IssActivity.Billable THEN tt-IssTotal.nonbillable + IssActivity.Duration ELSE tt-IssTotal.nonbillable.    
 
     /* USER RECORDS */
     FIND tt-IssUser WHERE tt-IssUser.ActivityBy = IssActivity.ActivityBy 

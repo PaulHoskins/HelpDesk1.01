@@ -76,9 +76,7 @@ PROCEDURE ip-BuildData :
     DEFINE VARIABLE li-work     AS INTEGER      NO-UNDO.
     DEFINE VARIABLE ldt-Comp    AS DATETIME NO-UNDO.
 
-    
-    MESSAGE "range " pc-FromEng pc-ToEng pd-fromDate pd-toDate.
-
+  
     /*
     ***
     *** All issues created before the hi date

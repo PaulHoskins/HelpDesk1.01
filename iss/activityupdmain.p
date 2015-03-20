@@ -11,6 +11,7 @@
     09/04/2006  phoski      Initial
     10/05/2014  phoski      last activity on issue
     08/12/2014  phoski      Fix Timer
+    19/03/2015  phoski      Various DJS issues
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -717,10 +718,10 @@ PROCEDURE ip-Page :
 
 
     {&out} '<tr><td valign="top" align="right">'
-           ( IF LOOKUP("activityby",lc-error-field,'|') > 0 AND li-error = zx
-           THEN htmlib-SideLabelError("Activity By")
-           ELSE htmlib-SideLabel("Activity By"))
-           '</td>' skip
+        ( IF LOOKUP("activityby",lc-error-field,'|') > 0 AND li-error = zx
+        THEN htmlib-SideLabelError("Activity By")
+        ELSE htmlib-SideLabel("Activity By"))
+    '</td>' skip
     .
 
     IF lc-mode = "ADD" THEN
@@ -786,10 +787,13 @@ PROCEDURE ip-Page :
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<td valign="top" align="left">'
-    htmlib-InputField(STRING(zx) + "enddate",10,lc-enddate) 
-    htmlib-CalendarLink(STRING(zx) + "enddate")
+    REPLACE(htmlib-InputField(STRING(zx) + "enddate",10,lc-enddate),">"," disabled>") 
+    REPLACE(htmlib-CalendarLink(STRING(zx) + "enddate"),">",' disabled>')  
+
     "&nbsp;@&nbsp;"
-    htmlib-TimeSelect-By-Id(STRING(zx) + "endhour",lc-endhour,STRING(zx) + "endmin",lc-endmin)
+     
+      
+    REPLACE(htmlib-TimeSelect-By-Id(STRING(zx) + "endhour",lc-endhour,STRING(zx) + "endmin",lc-endmin),">"," disabled>") 
     '</td>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-enddate),'left')
@@ -943,8 +947,10 @@ PROCEDURE ip-Page :
     DO:
         {&out}
         htmlib-CalendarScript(STRING(zx) + "actdate") skip
-            htmlib-CalendarScript(string(zx) + "startdate") skip
-            htmlib-CalendarScript(string(zx) + "enddate") skip.
+            htmlib-CalendarScript(string(zx) + "startdate") SKIP
+        /*
+        htmlib-CalendarScript(string(zx) + "enddate") skip
+        */.
            
     END.
 
@@ -1074,7 +1080,7 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
-  
+    /**  
     ASSIGN 
         li-int = int(lc-hours + lc-mins) no-error.
     IF NOT ERROR-STATUS:ERROR 
@@ -1084,7 +1090,8 @@ PROCEDURE ip-Validate :
             'You must enter the duration',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
-
+    **/
+    
     IF lc-actdescription = "" 
         THEN RUN htmlib-AddErrorMessage(
             'actdescription', 
@@ -1123,7 +1130,7 @@ PROCEDURE ipResetLastActivity :
     DEFINE BUFFER IssActivity FOR IssActivity.
 
     DEFINE VARIABLE ldt LIKE issue.lastactivity NO-UNDO.
-    DEFINE VARIABLE LC  AS CHARACTER FORMAT 'x(20)'.
+    DEFINE VARIABLE LC  AS CHARACTER FORMAT 'x(20)' NO-UNDO.
 
     DO TRANSACTION:
     
@@ -1320,7 +1327,8 @@ PROCEDURE process-web-request :
 
         ASSIGN
             lc-acc-title-left  = issActivity.Description 
-            lc-acc-title-right = "(" + string(issActivity.Duration,"HH:MM") + ")"
+            lc-acc-title-right = /*"(" + string(issActivity.Duration,"HH:MM") + ")" */
+                                 "(" + com-TimeToString(issActivity.Duration) + ")"
             lc-activityby      = issActivity.ActivityBy 
             lc-actdate         = STRING(issActivity.ActDate )
             lc-StartDate       = STRING(issActivity.StartDate )
@@ -1589,9 +1597,11 @@ PROCEDURE process-web-request2 :
                 lc-save-timeHourSet    = get-value("timeHourSet")
                 lc-save-DefaultTimeSet = get-value("defaultTime")
                 . 
+            /*  why ??   
             IF lc-save-manChecked <> "checked"  AND
                 lc-mode = 'add' THEN
                 lc-save-mins = STRING(INTEGER(lc-save-mins) + 1).
+            */
 
  
             ASSIGN 
@@ -1619,8 +1629,7 @@ PROCEDURE process-web-request2 :
                 lc-timeHourSet    = lc-save-timeHourSet  
                 lc-DefaultTimeSet = lc-save-DefaultTimeSet 
                 .
-
-
+          
             FIND issue WHERE ROWID(issue) = to-rowid(lc-issue-rowid) NO-LOCK.
             FIND customer WHERE Customer.CompanyCode = Issue.CompanyCode
                 AND Customer.AccountNumber = Issue.AccountNumber
@@ -1696,9 +1705,13 @@ PROCEDURE process-web-request2 :
                                          int(lc-startmin)
                                          ).
                     END.
-                    ELSE ASSIGN b-table.StartDate = ?
+                    ELSE 
+                    DO:
+                        ASSIGN 
+                            b-table.StartDate = ?
                             b-table.StartTime = 0.
-
+                    END.
+                    /** for now 20/3/15 - will calc these
                     IF lc-enddate <> "" THEN
                     DO:
                         ASSIGN 
@@ -1711,14 +1724,26 @@ PROCEDURE process-web-request2 :
                                         ).
                         
                     END.
-                    ELSE ASSIGN b-table.EndDate = ?
+                    ELSE 
+                    DO:
+                        ASSIGN 
+                            b-table.EndDate = ?
                             b-table.EndTime = 0.
-
-
+                    END.
+                    **/
                     ASSIGN 
                         b-table.Duration = ( ( int(lc-hours) * 60 ) * 60 ) + 
                         ( int(lc-mins) * 60 ).
 
+                    RUN com-EndTimeCalc
+                        (
+                        b-table.StartDate,
+                        b-table.StartTime,
+                        b-table.Duration,
+                        OUTPUT b-table.EndDate,
+                        OUTPUT b-table.EndTime
+                        ).
+        
                     IF Issue.Ticket THEN
                     DO:
                         ASSIGN 

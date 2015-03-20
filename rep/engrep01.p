@@ -10,6 +10,7 @@
     When        Who         What
     10/11/2010  DJS         Initial
     21/11/2014  phoski      Fix it
+    18/03/2015  phoski      debug info
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -114,6 +115,9 @@ FUNCTION Format-Submit-Button RETURNS CHARACTER
 &ENDIF
 
 
+FUNCTION lcom-ts RETURNS CHARACTER 
+	(pi-time AS INTEGER) FORWARD.
+
 FUNCTION percentage-calc RETURNS DECIMAL 
     (p-one AS DECIMAL,
     p-two AS DECIMAL) FORWARD.
@@ -138,17 +142,7 @@ FUNCTION percentage-calc RETURNS DECIMAL
 {lib/maillib.i}
 {lib/replib.i}
 
-
-
-
- 
-
-
-
-
 /* ************************  Main Code Block  *********************** */
-
-
 
 
 /* Process the latest Web event. */
@@ -200,6 +194,8 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
     
     DEFINE VARIABLE pc-local-period AS CHARACTER NO-UNDO. 
     DEFINE VARIABLE std-hours       AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE i-Fuck          AS INT       EXTENT 3 NO-UNDO.
+    
      
     
     
@@ -244,9 +240,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField(Customer.Name,'','font-weight:bold')
                   replib-RepField('','','')
                   replib-RepField('','','')
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right','font-weight:bold')
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right','font-weight:bold')
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right','font-weight:bold')
+                  replib-RepField(lcom-ts(tt-IssTotal.billable),'right','font-weight:bold')
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right','font-weight:bold')
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right','font-weight:bold')
                 '</tr>' SKIP.
             ASSIGN
                 li-tot-billable     = li-tot-billable + tt-IssTotal.billable
@@ -256,6 +252,8 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
         END.
         IF FIRST-OF(tt-IssRep.period-of) AND pc-rep-type = 2 THEN
         DO:
+            ASSIGN i-fuck = 0.
+            
             FIND tt-issCust 
                 WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber
                 AND tt-issCust.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
@@ -274,9 +272,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
                   replib-RepField('','',lc-style)
                   replib-RepField('','',lc-style)
-                  replib-RepField(com-TimeToString(tt-issCust.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-issCust.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
                   
                 '</tr>' SKIP.
             ASSIGN
@@ -315,9 +313,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField(IF first-of(tt-IssRep.AccountNumber) then Customer.name ELSE '','',lc-style)
                   replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
                   
-                  replib-RepField(com-TimeToString(tt-issCust.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-issCust.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
                   
                 '</tr>' SKIP.
              ASSIGN
@@ -349,9 +347,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                     replib-RepField('','','')
                     replib-RepField(STRING(tt-IssRep.IssueNumber),'left','')
                     replib-RepField(tt-IssRep.ContractType,'left','')
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
                     
                     
                     '</tr>' SKIP. 
@@ -382,19 +380,24 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                     replib-RepField(STRING(tt-IssRep.IssueNumber),'left','')
                     replib-RepField(replace(tt-IssRep.Description,'~n','<br/>'),'left','max-width: 400px;')
                     replib-RepField(tt-IssRep.ContractType,'left','')
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
                     
                     
                     '</tr>' SKIP. 
-                    
+                    ASSIGN
+                        i-fuck[1] = i-fuck[1] + IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0      
+                        i-fuck[2] = i-fuck[2] + IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0
+                        i-fuck[3] = i-fuck[3] + IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0 
+                        .             
                 
                 END.
             
             
         END.
         
+        /* Main info */
         IF pc-rep-type = 1 THEN
         DO:
            
@@ -414,7 +417,7 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                 '<tr>' SKIP
                 replib-RepField('','','')
                         replib-RepField('Time','left','')
-                        replib-RepField(com-TimeToString(tt-IssRep.Duration),'left','')
+                        replib-RepField(lcom-ts(tt-IssRep.Duration),'left','')
                         
                 '</tr>' SKIP
                 
@@ -444,17 +447,24 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
      
             {&out}
             '<tr>' SKIP
+            
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField('','','')
+                  /*
+                  replib-RepField(lcom-ts(i-fuck[1]),'right',lc-style)
+                  replib-RepField(lcom-ts(i-fuck[2]),'right',lc-style)
+                  replib-RepField(lcom-ts(i-fuck[3]),'right',lc-style)
+                  */
+                  
                   replib-RepField('Total Period - ' + string(tt-IssRep.period-of,"99"),'right',lc-style)
                
-                  replib-RepField(com-TimeToString(tt-issCust.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-issCust.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
                   
                 '</tr>' SKIP
-                 '<tr>' SKIP
+                '<tr>' SKIP
                  replib-RepField('','','')
                  '</tr>' SKIP.
                 
@@ -470,9 +480,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField('Customer Total - ' +  Customer.Name ,'',lc-style)
-                                    replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                                    replib-RepField(lcom-ts(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                 
                 
@@ -494,9 +504,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField('Customer Total - ' + Customer.name,'',lc-style)
                   replib-RepField('','',lc-style)
                   
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
                   
                 '</tr>' SKIP
                  '<tr>' SKIP
@@ -507,10 +517,11 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
         END.
         IF LAST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 3 THEN
         DO:
-                       
+            /*           
             ASSIGN 
-                std-hours = com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable)
+                std-hours = lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable)
                 std-hours = STRING(dec(INTEGER( ENTRY(1,std-hours,":")) + truncate(INTEGER(ENTRY(2,std-hours,":")) / 60,2))) . 
+           */
             
             ASSIGN 
                 lc-style = 'font-weight:bold;border-top:1px solid black;border-bottom:2px solid black;'.
@@ -519,9 +530,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                    replib-RepField('','','')
                   replib-RepField('Customer Total - ' + Customer.name ,'',lc-style)
                   
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
                   '</tr>' SKIP
                  '<tr>' SKIP
                  replib-RepField('','','')
@@ -545,9 +556,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField('Report Total','',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable + li-tot-nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                     
         
@@ -562,9 +573,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField('','','')
                   replib-RepField('Report Total','',lc-style)
                   replib-RepField('','',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable + li-tot-nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                     
         
@@ -577,9 +588,9 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
         '<tr>' SKIP
                   replib-RepField('','','')
                   replib-RepField('Report Total','',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable + li-tot-nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                     
         
@@ -716,9 +727,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField(fnFullName(tt-IssRep.ActivityBy),'','font-weight:bold')
                   replib-RepField('','','')
                   replib-RepField('','','')
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right','font-weight:bold')
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right','font-weight:bold')
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right','font-weight:bold')
+                  replib-RepField(lcom-ts(tt-IssTotal.billable),'right','font-weight:bold')
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right','font-weight:bold')
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right','font-weight:bold')
                 '</tr>' SKIP.
             ASSIGN
                 li-tot-billable     = li-tot-billable + tt-IssTotal.billable
@@ -748,9 +759,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField('','',lc-style)
                   replib-RepField('','',lc-style)
                   replib-RepField(string(tt-IssUser.productivity,">>>>>>>>>9.99-"),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
                   replib-RepField(
                     IF tt-IssUser.productivity <> 0 then
                     STRING(percentage-calc(dec(std-hours),tt-IssUser.productivity)
@@ -798,9 +809,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField(IF first-of(tt-IssRep.ActivityBy) then fnFullName(tt-IssRep.ActivityBy) ELSE '','',lc-style)
                   replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
                   replib-RepField(string(tt-IssUser.productivity,">>>>>>>>>9.99-"),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
                   replib-RepField(
                     IF tt-IssUser.productivity <> 0 then
                     STRING(percentage-calc(dec(std-hours),tt-IssUser.productivity)
@@ -837,9 +848,9 @@ PROCEDURE ip-EngineerReport:
                     replib-RepField('','','')
                     replib-RepField(STRING(tt-IssRep.IssueNumber),'left','')
                     replib-RepField(tt-IssRep.ContractType,'left','')
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
                     
                     
                     '</tr>' SKIP. 
@@ -876,9 +887,9 @@ PROCEDURE ip-EngineerReport:
                     replib-RepField(Customer.name,'left','')
                     replib-RepField(replace(tt-IssRep.Description,'~n','<br/>'),'left','max-width: 400px;')
                     replib-RepField(tt-IssRep.ContractType,'left','')
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
-                    replib-RepField(com-TimeToString(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.nonbillable ELSE 0),"right","")
+                    replib-RepField(lcom-ts(IF AVAILABLE tt-IssTime THEN tt-IssTime.billable + tt-IssTime.nonbillable ELSE 0),"right","")
                     
                     
                     '</tr>' SKIP. 
@@ -908,7 +919,7 @@ PROCEDURE ip-EngineerReport:
                 '<tr>' SKIP
                 replib-RepField('','','')
                         replib-RepField('Time','left','')
-                        replib-RepField(com-TimeToString(tt-IssRep.Duration),'left','')
+                        replib-RepField(lcom-ts(tt-IssRep.Duration),'left','')
                         
                 '</tr>' SKIP
                 
@@ -944,9 +955,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField('','','')
                   replib-RepField('Total Period - ' + string(tt-IssRep.period-of,"99"),'right',lc-style)
                   
-                  replib-RepField(com-TimeToString(tt-IssUser.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssUser.billable + tt-IssUser.nonbillable),'right',lc-style)
                   replib-RepField(
                     IF tt-IssUser.productivity <> 0 then
                     STRING(percentage-calc(dec(std-hours),tt-IssUser.productivity)
@@ -970,9 +981,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField('Engineer Total - ' +  fnFullName(tt-IssRep.ActivityBy),'',lc-style)
-                                    replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                                    replib-RepField(lcom-ts(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                 
                 
@@ -995,9 +1006,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField('','','')
                   replib-RepField('Engineer Total - ' +  fnFullName(tt-IssRep.ActivityBy) ,'',lc-style)
                   replib-RepField(string(tt-IssTotal.productivity,">>>>>>>>>9.99-"),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
                   replib-RepField(
                     IF tt-IssTotal.productivity <> 0 then
                     STRING(percentage-calc(dec(std-hours),tt-IssTotal.productivity)
@@ -1025,9 +1036,9 @@ PROCEDURE ip-EngineerReport:
                    replib-RepField('','','')
                   replib-RepField('Engineer Total - ' +  fnFullName(tt-IssRep.ActivityBy) ,'',lc-style)
                   replib-RepField(string(tt-IssTotal.productivity,">>>>>>>>>9.99-"),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(tt-IssTotal.billable + tt-IssTotal.nonbillable),'right',lc-style)
                   replib-RepField(
                     IF tt-IssTotal.productivity <> 0 then
                     STRING(percentage-calc(dec(std-hours),tt-IssTotal.productivity)
@@ -1054,9 +1065,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField('Report Total','',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable + li-tot-nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                     
         
@@ -1072,9 +1083,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField('Report Total','',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable + li-tot-nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                     
         
@@ -1088,9 +1099,9 @@ PROCEDURE ip-EngineerReport:
                   replib-RepField('','','')
                   replib-RepField('','','')
                   replib-RepField('Report Total','',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-nonbillable),'right',lc-style)
-                  replib-RepField(com-TimeToString(li-tot-billable + li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-nonbillable),'right',lc-style)
+                  replib-RepField(lcom-ts(li-tot-billable + li-tot-nonbillable),'right',lc-style)
                 '</tr>' SKIP.
                     
         
@@ -1812,6 +1823,41 @@ END FUNCTION.
 
 
 &ENDIF
+
+FUNCTION lcom-ts RETURNS CHARACTER 
+( pi-time AS INTEGER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE li-sec-hours AS INTEGER INITIAL 3600 NO-UNDO.
+    DEFINE VARIABLE li-seconds   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-mins      AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-hours     AS INTEGER NO-UNDO.
+    DEFINE VARIABLE ll-neg       AS LOG     NO-UNDO.
+
+/*
+    IF 1 = 1 THEN RETURN STRING(pi-time) /*+ " = " + com-TimeToString(pi-time) */.
+  */
+    
+    IF pi-time < 0 THEN ASSIGN ll-neg  = TRUE
+            pi-time = pi-time * -1.
+
+    ASSIGN 
+        li-seconds = pi-time MOD li-sec-hours
+        li-mins    = TRUNCATE(li-seconds / 60,0).
+        
+    ASSIGN
+        pi-time = pi-time - li-seconds.
+        
+    ASSIGN
+        li-hours = TRUNCATE(pi-time / li-sec-hours,0).
+
+    RETURN TRIM( ( IF ll-neg THEN "-" ELSE "" ) + string(li-hours) + ":" + string(li-mins,'99')).
+    
+
+		
+END FUNCTION.
 
 FUNCTION percentage-calc RETURNS DECIMAL 
     ( p-one AS DECIMAL,
