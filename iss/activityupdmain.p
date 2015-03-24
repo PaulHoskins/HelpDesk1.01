@@ -12,6 +12,7 @@
     10/05/2014  phoski      last activity on issue
     08/12/2014  phoski      Fix Timer
     19/03/2015  phoski      Various DJS issues
+    24/03/2015  phoski      No more js prompt on time start/end diffs
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -584,7 +585,9 @@ PROCEDURE ip-ExportJScript :
       '  var startMinuteOption = parseInt(document.getElementById(tFH).value,10);' skip
       '  var startTime         =  internalTime(startHourOption,startMinuteOption) ; '  skip
       '  var endTime           =  internalTime(endHourOption,endMinuteOption) ; '  skip
-      '  var durationTime      =  internalTime(curHourDuration,curMinDuration) ; '  skip
+      '  var durationTime      =  internalTime(curHourDuration,curMinDuration) ; '  SKIP
+      '  document.forms[tFX].submit();  ' skip
+      /*** 24/03/2015 - removed 
       '  if (  (endTime - startTime) != 0  && (endTime - startTime) != durationTime )' skip
       '  ~{' skip
       '     var answer = confirm("The duration entered does not match with the Start and End time! ~\n ~\n      Press Cancel if you want to update the times before posting"); ' skip
@@ -592,6 +595,7 @@ PROCEDURE ip-ExportJScript :
       '     else  ~{ return false;  ~} ' skip
       '  ~}' skip
       '  else ~{ document.forms[tFX].submit();  ~} ' skip
+      **/
       '~}' skip
 
       'function internalTime(piHours,piMins) ' skip

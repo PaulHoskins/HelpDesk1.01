@@ -23,7 +23,8 @@
     24/01/2015  phoski      Default to correct contract       
     07/03/2015  phoski      Send email to support when client add's an 
                             issue ( unassigned issue so this lets them 
-                            know )             
+                            know )   
+     25/04/2015 phoski      End date/end time is calculated now                                  
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -471,7 +472,9 @@ PROCEDURE ip-ExportJScript :
        '  var startMinuteOption = parseInt(document.getElementById("startmin").value,10);' skip
        '  var startTime         = internalTime(startHourOption,startMinuteOption) ; '  skip
        '  var endTime           = internalTime(endHourOption,endMinuteOption) ; '  skip
-       '  var durationTime      = internalTime(curHourDuration,curMinDuration) ; '  skip
+       '  var durationTime      = internalTime(curHourDuration,curMinDuration) ; '  SKIP
+       '  document.forms["mainform"].submit();' SKIP
+       /**
       '  if ( (endTime - startTime) != 0  && (endTime - startTime) != durationTime )' skip
       '  ~{' skip
       '     var answer = confirm("The duration entered does not match with the Start and End time! ~\n ~\n      Press Cancel if you want to update the times before posting"); ' skip
@@ -479,6 +482,7 @@ PROCEDURE ip-ExportJScript :
       '     else  ~{ return false;  ~} ' skip
       '  ~}' skip
       '  else ~{ document.forms["mainform"].submit();  ~} ' skip
+      **/
       '~}' skip.
     ELSE
     {&out}
@@ -676,8 +680,8 @@ PROCEDURE ip-GenHTML :
          htmlib-EndForm() skip.
     IF NOT ll-customer THEN
         {&out}  htmlib-CalendarScript("date") skip
-                                    htmlib-CalendarScript("startdate") skip
-                                    htmlib-CalendarScript("enddate") skip.
+                                    htmlib-CalendarScript("startdate") SKIP
+                                    .
     {&out}
     '<script type="text/javascript">' skip
     'startclock();' skip
@@ -1495,15 +1499,6 @@ PROCEDURE ip-QuickFinish :
     Format-Select-Activity(htmlib-Select("activitytype",lc-list-actid,lc-list-activtype,lc-saved-activity)) skip
              '</td></tr>' skip. 
 
-                   
-                    
-    /*     {&out} '<tr><td colspan="2">'                                                                                    */
-    /*                                                                                                                      */
-    /*                 '<div class="infobox" style="font-size: 10px;">'                                                     */
-    /*                         'Activity Details<br>An activity will only be recorded if you enter an Activity Description' */
-    /*                 '</div>'                                                                                             */
-    /*                                                                                                                      */
-    /*             '</td></tr>'.                                                                                            */
 
     {&out} '<tr><td valign="top" align="right">' 
         (IF LOOKUP("startdate",lc-error-field,'|') > 0 
@@ -1529,10 +1524,10 @@ PROCEDURE ip-QuickFinish :
     '</td>'.
     
     {&out} '<td valign="top" align="left">'
-    htmlib-InputField("enddate",10,lc-enddate) 
-    htmlib-CalendarLink("enddate")
+    REPLACE(htmlib-InputField("enddate",10,lc-enddate),">"," disabled>") 
+    REPLACE(htmlib-CalendarLink("enddate"),">"," disabled>") 
     "&nbsp;@&nbsp;"
-    htmlib-TimeSelect-By-Id("endhour",lc-endhour,"endmin",lc-endmin)
+    REPLACE(htmlib-TimeSelect-By-Id("endhour",lc-endhour,"endmin",lc-endmin),">"," disabled>") 
     '</td>' skip.
     
     {&out} '</tr>' skip.
@@ -1700,29 +1695,22 @@ PROCEDURE ip-QuickUpdate :
             END.
             ELSE ASSIGN IssActivity.StartDate = ?
                     IssActivity.StartTime = 0.
-        
-            IF lc-enddate <> "" THEN
-            DO:
-                ASSIGN 
-                    IssActivity.EndDate = DATE(lc-endDate).
-        
-                ASSIGN 
-                    IssActivity.Endtime = DYNAMIC-FUNCTION("com-InternalTime",
-                                int(lc-endhour),
-                                int(lc-endmin)
-                                ).
-                
-            END.
-            ELSE ASSIGN IssActivity.EndDate = ?
-                    IssActivity.EndTime = 0.
-        
-            /*MESSAGE "Set Dur H= " lc-hours " m= " lc-mins.
-            */
+            
+            
+            
             ASSIGN 
                 IssActivity.Duration = ( ( int(lc-hours) * 60 ) * 60 ) + 
                 ( int(lc-mins) * 60 ).
         
-        
+            RUN com-EndTimeCalc
+                        (
+                        IssActivity.StartDate,
+                        IssActivity.StartTime,
+                        IssActivity.Duration,
+                        OUTPUT IssActivity.EndDate,
+                        OUTPUT IssActivity.EndTime
+                        ).
+                        
             IF Issue.Ticket THEN
             DO:
                 ASSIGN
@@ -2054,62 +2042,7 @@ PROCEDURE ip-Validate :
             END.
             ELSE ASSIGN ld-startd = ?.
         
-            IF lc-enddate <> "" THEN
-            DO:
-                ASSIGN 
-                    ld-endd = DATE(lc-enddate) no-error.
-                IF ERROR-STATUS:ERROR
-                    OR ld-endd = ? THEN
-                DO:
-                    RUN htmlib-AddErrorMessage(
-                        'enddate', 
-                        'The end date is invalid',
-                        INPUT-OUTPUT pc-error-field,
-                        INPUT-OUTPUT pc-error-msg ).
-        
-                END.
-            END.
-            ELSE ASSIGN ld-endd = ?.
-
-            IF ld-endd <> ?
-                AND ld-startd = ? THEN
-            DO:
-                RUN htmlib-AddErrorMessage(
-                    'enddate', 
-                    'You must enter a start date if you enter an end date',
-                    INPUT-OUTPUT pc-error-field,
-                    INPUT-OUTPUT pc-error-msg ).
-            END.
-        
-            IF ( ld-endd <> ? AND ld-startd <> ? ) THEN
-            DO:
-                IF ( ld-startd > ld-endd ) 
-                    THEN RUN htmlib-AddErrorMessage(
-                        'enddate', 
-                        'The end date can not be before the start date',
-                        INPUT-OUTPUT pc-error-field,
-                        INPUT-OUTPUT pc-error-msg ).
-                ASSIGN
-                    li-startt = DYNAMIC-FUNCTION("com-InternalTime",
-                                                 int(lc-starthour),
-                                                 int(lc-startmin)
-                                                 ).
-                li-endt = DYNAMIC-FUNCTION("com-InternalTime",
-                    int(lc-endhour),
-                    int(lc-endmin)
-                    ).
-                IF ld-endd = ld-startd
-                    AND li-endt < li-startt THEN
-                DO:
-                    RUN htmlib-AddErrorMessage(
-                        'enddate', 
-                        'The end time can not be before the start time',
-                        INPUT-OUTPUT pc-error-field,
-                        INPUT-OUTPUT pc-error-msg ).
-        
-                END.
-            END.
-
+            
             ASSIGN 
                 li-int = int(lc-hours) no-error.
             IF ERROR-STATUS:ERROR OR li-int < 0
