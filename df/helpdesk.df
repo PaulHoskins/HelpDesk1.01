@@ -33,6 +33,12 @@ ADD SEQUENCE "ReportNumber"
   MIN-VAL 1
   MAX-VAL 999999
 
+ADD SEQUENCE "ProjPhase"
+  INITIAL 1
+  INCREMENT 1
+  CYCLE-ON-LIMIT no
+  MAX-VAL 99999999999
+
 ADD TABLE "AdHocWork"
   AREA "Schema Area"
   LABEL "AdHocWork"
@@ -2929,6 +2935,252 @@ ADD INDEX "knbCode" ON "knbText"
   AREA "Schema Area"
   INDEX-FIELD "knbCode" ASCENDING 
 
+ADD TABLE "ptp_phase"
+  AREA "Schema Area"
+  LABEL "Project Template - Phase"
+  DUMP-NAME "ptp_phase"
+
+ADD FIELD "CompanyCode" OF "ptp_phase" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Co"
+  ORDER 10
+
+ADD FIELD "ProjCode" OF "ptp_phase" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Project Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "Descr" OF "ptp_phase" AS character 
+  FORMAT "x(60)"
+  INITIAL ""
+  LABEL "Description"
+  POSITION 4
+  MAX-WIDTH 120
+  ORDER 45
+
+ADD FIELD "PhaseID" OF "ptp_phase" AS int64 
+  DESCRIPTION "System Generated "
+  FORMAT "->,>>>,>>>,>>9"
+  INITIAL "0"
+  POSITION 5
+  MAX-WIDTH 8
+  ORDER 40
+
+ADD FIELD "DisplayOrder" OF "ptp_phase" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Dsiplay Order"
+  POSITION 6
+  MAX-WIDTH 4
+  ORDER 55
+
+ADD INDEX "prim" ON "ptp_phase" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ProjCode" ASCENDING 
+  INDEX-FIELD "PhaseID" ASCENDING 
+
+ADD INDEX "displayOrder" ON "ptp_phase" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ProjCode" ASCENDING 
+  INDEX-FIELD "DisplayOrder" ASCENDING 
+
+ADD TABLE "ptp_proj"
+  AREA "Schema Area"
+  LABEL "Project Template - Project Def"
+  DUMP-NAME "ptp_proj"
+
+ADD FIELD "CompanyCode" OF "ptp_proj" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Co"
+  ORDER 10
+
+ADD FIELD "ProjCode" OF "ptp_proj" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Project Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "Descr" OF "ptp_proj" AS character 
+  FORMAT "x(60)"
+  INITIAL ""
+  LABEL "Description"
+  POSITION 4
+  MAX-WIDTH 120
+  ORDER 30
+
+ADD INDEX "prim-key" ON "ptp_proj" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ProjCode" ASCENDING 
+
+ADD TABLE "ptp_task"
+  AREA "Schema Area"
+  LABEL "Project Template - Tasks"
+  DUMP-NAME "ptp_task"
+
+ADD FIELD "CompanyCode" OF "ptp_task" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Co"
+  ORDER 10
+
+ADD FIELD "ProjCode" OF "ptp_task" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Project Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "PhaseID" OF "ptp_task" AS int64 
+  DESCRIPTION "System Generated "
+  FORMAT "->,>>>,>>>,>>9"
+  INITIAL "0"
+  POSITION 4
+  MAX-WIDTH 8
+  ORDER 40
+
+ADD FIELD "TaskID" OF "ptp_task" AS int64 
+  FORMAT "->,>>>,>>>,>>9"
+  INITIAL "0"
+  POSITION 5
+  MAX-WIDTH 8
+  ORDER 50
+
+ADD FIELD "DisplayOrder" OF "ptp_task" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Dsiplay Order"
+  POSITION 6
+  MAX-WIDTH 4
+  ORDER 60
+
+ADD FIELD "TaskCode" OF "ptp_task" AS character 
+  DESCRIPTION "Only for reference - not important after iniitial setup"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Task Code"
+  POSITION 7
+  MAX-WIDTH 16
+  ORDER 70
+
+ADD FIELD "Descr" OF "ptp_task" AS character 
+  FORMAT "x(60)"
+  INITIAL ""
+  LABEL "Description"
+  POSITION 8
+  MAX-WIDTH 120
+  ORDER 80
+
+ADD FIELD "EstimatedHours" OF "ptp_task" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Estimated Hours"
+  POSITION 9
+  MAX-WIDTH 4
+  ORDER 90
+
+ADD FIELD "CompletionDay" OF "ptp_task" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Day Completion Due"
+  POSITION 10
+  MAX-WIDTH 4
+  ORDER 100
+
+ADD FIELD "Billable" OF "ptp_task" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Billable?"
+  POSITION 11
+  MAX-WIDTH 1
+  COLUMN-LABEL "Billable"
+  ORDER 110
+
+ADD FIELD "Responsibility" OF "ptp_task" AS character 
+  DESCRIPTION "Engineer/Customer/3rd Party"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Responsibility"
+  POSITION 12
+  MAX-WIDTH 16
+  ORDER 120
+
+ADD INDEX "primkey" ON "ptp_task" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ProjCode" ASCENDING 
+  INDEX-FIELD "PhaseID" ASCENDING 
+  INDEX-FIELD "TaskID" ASCENDING 
+
+ADD INDEX "displayOrder" ON "ptp_task" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ProjCode" ASCENDING 
+  INDEX-FIELD "PhaseID" ASCENDING 
+  INDEX-FIELD "DisplayOrder" ASCENDING 
+
+ADD TABLE "ptt_def"
+  AREA "Schema Area"
+  LABEL "Project Template - Task Def"
+  DUMP-NAME "ptt_def"
+
+ADD FIELD "CompanyCode" OF "ptt_def" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Co"
+  ORDER 10
+
+ADD FIELD "TaskCode" OF "ptt_def" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Task Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "Descr" OF "ptt_def" AS character 
+  FORMAT "x(60)"
+  INITIAL ""
+  LABEL "Description"
+  POSITION 4
+  MAX-WIDTH 120
+  ORDER 30
+
+ADD INDEX "prim-key" ON "ptt_def" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "TaskCode" ASCENDING 
+
 ADD TABLE "slahead"
   AREA "Schema Area"
   LABEL "SLA Header"
@@ -4649,4 +4901,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000091427
+0000096658

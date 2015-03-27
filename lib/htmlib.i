@@ -18,7 +18,8 @@
                               
     13/09/2010  DJS         3708  Added Calendar Input Field Submit     
     25/09/2014  phoski      Include security lib   
-    30/11/2014  phoski      htmlib-SelectTime                      
+    30/11/2014  phoski      htmlib-SelectTime       
+    26/03/2015  phoski      MntNoLines down max is 30               
     
 ***********************************************************************/
 
@@ -1131,7 +1132,7 @@ FUNCTION htmlib-GetAttr RETURNS CHARACTER
         FIND webuser WHERE webuser.loginid = lc-global-user NO-LOCK NO-ERROR.
 
         IF webuser.recordsperpage > 0 
-            THEN RETURN STRING(webuser.recordsperpage).
+            THEN RETURN STRING(max(30,webuser.recordsperpage)).
     END.
 
     FIND b-attr WHERE b-attr.systemid = pc-systemid

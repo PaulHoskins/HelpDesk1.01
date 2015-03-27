@@ -14,6 +14,7 @@
     01/05/2014  phoski      New functions
     03/12/2014  phoski      Eng Type 
     20/03/2015  phoski      com-EndTimeCalc
+    27/03/2015  phoski      project stuff
    
 ***********************************************************************/
 
@@ -1813,6 +1814,10 @@ FUNCTION com-CanDelete RETURNS LOGICAL
             DO:
                 RETURN TRUE.
             END.
+        WHEN "webprojtask" THEN RETURN TRUE.
+        WHEN "webprojtemp" THEN RETURN TRUE.
+        WHEN "webprojphase" THEN RETURN TRUE.
+        WHEN "webprojptask" THEN RETURN TRUE.
         
         OTHERWISE
         DO:

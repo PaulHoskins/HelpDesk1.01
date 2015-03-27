@@ -15,6 +15,7 @@
     02/09/2010  DJS         3674 - Added toolbar for Quickview toggle
     26/04/2014  phoski      Asset Toolbar
     26/11/2014  phoski      nofind option on standard toolbar
+    27/03/2015  phoski      project related link
     
     
 ***********************************************************************/
@@ -785,6 +786,28 @@ FUNCTION tbar-Link RETURNS CHARACTER
             ASSIGN 
                 lc-image    = '/images/toolbar3/wshol.gif'
                 lc-alt-text = 'Load public holidays from webservice (www.holidaywebservice.com)'.
+         WHEN "phase"   THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/phase.gif'
+                lc-alt-text = 'Project Phases'.
+         WHEN "ptask"   THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/phase.gif'
+                lc-alt-text = 'Project Tasks'.
+         WHEN "recdown"   THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/recdown.gif'
+                lc-alt-text = 'Move Down Order'.
+                
+         WHEN "recup"   THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/recup.gif'
+                lc-alt-text = 'Move Up Order'.
+                
+                
+                       
+                       
+                
          
          
 
