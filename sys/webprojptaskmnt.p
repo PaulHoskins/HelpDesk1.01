@@ -45,11 +45,16 @@ DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-field        AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-groupid      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-description  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-projcode     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE li-phaseid      AS INT64     NO-UNDO.
 DEFINE VARIABLE li-loop         AS INTEGER   NO-UNDO.
+
+DEFINE VARIABLE lc-description  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-CompDay      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-hours        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-resp         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-billable     AS CHARACTER NO-UNDO.
+
 
 
 
@@ -75,6 +80,141 @@ RUN process-web-request.
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
+PROCEDURE ip-HTM-Header:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-return       AS CHARACTER NO-UNDO.
+    
+    
+    pc-return = '~n<script language="JavaScript" src="/asset/page/webprojptaskmnt.js?v=1.0.0"></script>~n'.
+    
+
+END PROCEDURE.
+
+PROCEDURE ip-Page:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE BUFFER ptt_def FOR ptt_def.
+    
+    {&out} htmlib-StartInputTable() skip.
+
+
+    IF lc-mode = "ADD" THEN
+    DO:
+       {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("copytask",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Copy From Default Task")
+            ELSE htmlib-SideLabel("Copy From Default Task"))
+        '</TD>'
+         '<TD VALIGN="TOP" ALIGN="left">' SKIP
+         '<select id="copytask" name="copytask" class="inputfield"  onchange=~"javascript:changeSelectTask();~">' SKIP
+         '<option value="" selected>No Copy</option>' SKIP.
+         
+         FOR EACH ptt_def NO-LOCK
+            WHERE ptt_def.CompanyCode = lc-global-company:
+            {&out}
+            '<option value="' ptt_def.TaskCode '">' ptt_def.Descr '</option>' SKIP.
+            
+         END.
+         
+         {&out} '</select></td></tr>' skip.
+          
+         
+        
+    END.
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("description",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Description")
+        ELSE htmlib-SideLabel("Description"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("description",40,lc-description) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-description),'left')
+           skip.
+    {&out} '</TR>' skip.
+    /**/
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("compday",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Completion Day")
+        ELSE htmlib-SideLabel("Completion Day"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("compday",3,lc-compday) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-compday),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
+    /**/
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("hours",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Estimated Hours")
+        ELSE htmlib-SideLabel("Estimated Hours"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("hours",3,lc-hours) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-hours),'left')
+           skip.
+    {&out} '</TR>' SKIP.
+    
+     /**/
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("resp",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Responsibility")
+        ELSE htmlib-SideLabel("Repsonsibility"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+        htmlib-Select("resp",lc-global-taskResp-code,lc-global-taskResp-desc,
+            lc-resp)
+            
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(
+      com-DecodeLookup(lc-resp,lc-global-taskResp-code,lc-global-taskResp-desc)
+    ),'left')
+           skip.
+    {&out} '</TR>' SKIP.
+    
+    /**/
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("billable",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Billable?")
+        ELSE htmlib-SideLabel("Billable?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+     htmlib-CheckBox("billable", IF lc-billable = 'on'
+            THEN TRUE ELSE FALSE) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(IF lc-billable = 'on' THEN "Yes" ELSE "No",'left')
+           skip.
+    {&out} '</TR>' SKIP.
+         
+     
+    {&out} htmlib-EndTable() skip.
+    
+END PROCEDURE.
+
 PROCEDURE ip-Validate :
     /*------------------------------------------------------------------------------
       Purpose:     
@@ -84,6 +224,8 @@ PROCEDURE ip-Validate :
     DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
+    DEFINE VARIABLE li-int      AS INT      NO-UNDO.
+    
 
   
 
@@ -95,6 +237,27 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
+    li-int = int(lc-compDay) NO-ERROR.
+    
+    IF ERROR-STATUS:ERROR
+    OR li-int < 0
+    THEN RUN htmlib-AddErrorMessage(
+            'compday', 
+            'The completion day must be 0 or greater',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+     
+    li-int = int(lc-hours) NO-ERROR.
+    
+    IF ERROR-STATUS:ERROR
+    OR li-int < 0
+    THEN RUN htmlib-AddErrorMessage(
+            'hours', 
+            'The estimated hours must be 0 or greater',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+            
+            
 END PROCEDURE.
 
 
@@ -311,6 +474,10 @@ PROCEDURE process-web-request :
         DO:
             ASSIGN 
                 lc-description  = get-value("description")
+                lc-compDay      = get-value("compday")
+                lc-hours        = get-value("hours")
+                lc-resp         = get-value("resp")
+                lc-billable     = get-value("billable")
                 .
 
             
@@ -355,6 +522,10 @@ PROCEDURE process-web-request :
                 DO:
                     ASSIGN 
                         b-table.Descr     = lc-description
+                        b-table.CompletionDay = int(lc-compDay)
+                        b-table.EstimatedHours = int(lc-hours)
+                        b-table.Responsibility = lc-resp
+                        b-table.Billable = lc-billable = "on"
                         .
                     
                 END.
@@ -409,11 +580,14 @@ PROCEDURE process-web-request :
     DO:
         FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
       
-        IF CAN-DO("view,delete",lc-mode) OR request_method <> "post"
-            THEN 
+        IF CAN-DO("view,delete",lc-mode) OR request_method <> "post" THEN 
         DO:
             ASSIGN 
-                lc-description   = b-table.descr.
+                lc-description   = b-table.descr
+                lc-compday       = STRING(b-table.CompletionDay)
+                lc-hours         = STRING(b-table.EstimatedHours)
+                lc-resp          = b-table.Responsibility
+                lc-billable      = IF b-table.Billable THEN "on" ELSE "".
                     
            
         END.
@@ -438,29 +612,9 @@ PROCEDURE process-web-request :
         
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
-    {&out} htmlib-StartInputTable() skip.
 
-
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (IF LOOKUP("description",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Description")
-        ELSE htmlib-SideLabel("Description"))
-    '</TD>'.
+    RUN ip-Page.
     
-    IF NOT CAN-DO("view,delete",lc-mode) THEN
-        {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-InputField("description",40,lc-description) 
-    '</TD>' skip.
-    else 
-    {&out} htmlib-TableField(html-encode(lc-description),'left')
-           skip.
-    {&out} '</TR>' skip.
-    
-
-    
-    {&out} htmlib-EndTable() skip.
-
-
     IF lc-error-msg <> "" THEN
     DO:
         {&out} '<BR><BR><CENTER>' 

@@ -84,9 +84,23 @@ DEFINE VARIABLE lc-System-Note-Desc           AS CHARACTER
 DEFINE VARIABLE lc-global-GT-Code             AS CHARACTER INITIAL
     'Asset.Type,Asset.Manu,Asset.Status' NO-UNDO.
 
+DEFINE VARIABLE lc-global-iclass-complex      AS CHARACTER INITIAL
+    'ComplexProject' NO-UNDO.   
 DEFINE VARIABLE lc-global-iclass-code         AS CHARACTER INITIAL
-    'Issue|Admin|Project' NO-UNDO.
+    'Issue|Admin|Project|ComplexProject' NO-UNDO.
+DEFINE VARIABLE lc-global-iclass-desc         AS CHARACTER INITIAL
+    'Issue|Administration|Simple Project|Complex Project' NO-UNDO.    
+/*
+*** 
+*** Minus complex porjects as you can't add or amend these as part of issue add/amend
+***
+*/
 
+DEFINE VARIABLE lc-global-iclass-Add-code         AS CHARACTER INITIAL
+    'Issue|Admin|Project' NO-UNDO.
+DEFINE VARIABLE lc-global-iclass-Add-desc         AS CHARACTER INITIAL
+    'Issue|Administration|Simple Project' NO-UNDO. 
+    
 DEFINE VARIABLE lc-global-SupportTicket-Code  AS CHARACTER
     INITIAL 'NONE|YES|BOTH' NO-UNDO.
 DEFINE VARIABLE lc-global-SupportTicket-Desc  AS CHARACTER
@@ -110,7 +124,11 @@ DEFINE VARIABLE lc-global-engType-Code        AS CHARACTER
 
 DEFINE VARIABLE lc-global-engType-desc        AS CHARACTER 
     INITIAL 'Not Applicable|Field|Remote|Project' NO-UNDO.
-                
+DEFINE VARIABLE lc-global-taskResp-code       AS CHARACTER 
+    INITIAL 'E|C|3' NO-UNDO.
+DEFINE VARIABLE lc-global-taskResp-desc       AS CHARACTER 
+    INITIAL 'Engineer|Customer|3rd Party' NO-UNDO.
+                        
 
 DEFINE VARIABLE li-global-sla-fail            AS INTEGER   INITIAL 10 NO-UNDO.
 DEFINE VARIABLE li-global-sla-amber           AS INTEGER   INITIAL 20 NO-UNDO.
@@ -196,12 +214,12 @@ FUNCTION com-CustomerOpenIssues RETURNS INTEGER
 
 
 FUNCTION com-DayName RETURNS CHARACTER 
-	(pd-Date AS DATE,
-	 pc-Format AS CHAR) FORWARD.
+    (pd-Date AS DATE,
+    pc-Format AS CHAR) FORWARD.
 
 FUNCTION com-DayOfWeek RETURNS INTEGER 
-	(INPUT pd-Date AS DATE,
-	 INPUT pi-base AS INT) FORWARD.
+    (INPUT pd-Date AS DATE,
+    INPUT pi-base AS INT) FORWARD.
 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
     ( pc-code AS CHARACTER,
@@ -214,7 +232,7 @@ FUNCTION com-DescribeTicket RETURNS CHARACTER
 
 
 FUNCTION com-EngineerSelection RETURNS CHARACTER 
-	(  ) FORWARD.
+    (  ) FORWARD.
 
 FUNCTION com-GenTabDesc RETURNS CHARACTER
     ( pc-CompanyCode AS CHARACTER,
@@ -388,21 +406,21 @@ DYNAMIC-FUNCTION('com-Initialise':U).
 /* **********************  Internal Procedures  *********************** */
 
 PROCEDURE com-EndTimeCalc:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pd-start AS DATE         NO-UNDO.
     DEFINE INPUT PARAMETER pi-start AS INT          NO-UNDO.
     DEFINE INPUT PARAMETER pi-duration AS INTEGER   NO-UNDO.
     DEFINE OUTPUT PARAMETER pd-end  AS DATE         NO-UNDO.
     DEFINE OUTPUT PARAMETER pi-end  AS INTEGER      NO-UNDO.
     
-    DEFINE VARIABLE lc-dt   AS CHARACTER            NO-UNDO.
+    DEFINE VARIABLE lc-dt   AS CHARACTER NO-UNDO.
     DEFINE VARIABLE ldt     LIKE issue.lastactivity NO-UNDO.
     DEFINE VARIABLE ldt2    LIKE issue.lastactivity NO-UNDO.
-    DEFINE VARIABLE li-hour AS INTEGER              NO-UNDO.
-    DEFINE VARIABLE li-min  AS INTEGER              NO-UNDO.
+    DEFINE VARIABLE li-hour AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE li-min  AS INTEGER   NO-UNDO.
     
     
 
@@ -423,7 +441,7 @@ PROCEDURE com-EndTimeCalc:
         li-hour = int(ENTRY(1,lc-dt,":"))
         li-min  = int(ENTRY(2,lc-dt,":")) 
         li-min  = li-min + ( li-hour * 60 )
-        pi-end = li-min * 60.
+        pi-end  = li-min * 60.
            
         
 END PROCEDURE.
@@ -961,10 +979,10 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetEngineerList:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pc-EngType     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
@@ -981,8 +999,8 @@ PROCEDURE com-GetEngineerList:
         BY b-user.name:
 
         IF pc-engType <> ""
-        AND pc-engTYpe <> b-user.engType 
-        THEN NEXT.
+            AND pc-engTYpe <> b-user.engType 
+            THEN NEXT.
         
         IF pc-loginID = ""
             THEN ASSIGN pc-LoginID = b-user.LoginID
@@ -1589,6 +1607,12 @@ FUNCTION com-CanDelete RETURNS LOGICAL
     DEFINE BUFFER knbItem    FOR knbItem.
     DEFINE BUFFER webissagrp FOR webissagrp.
     DEFINE BUFFER steam      FOR steam.
+    DEFINE BUFFER ptp_proj   FOR ptp_proj.
+    DEFINE BUFFER ptp_phase  FOR ptp_phase.
+    DEFINE BUFFER ptp_task   FOR ptp_task.
+      
+    
+ 
 
     CASE pc-table:
         WHEN "webissagrp" THEN
@@ -1814,10 +1838,31 @@ FUNCTION com-CanDelete RETURNS LOGICAL
             DO:
                 RETURN TRUE.
             END.
-        WHEN "webprojtask" THEN RETURN TRUE.
-        WHEN "webprojtemp" THEN RETURN TRUE.
-        WHEN "webprojphase" THEN RETURN TRUE.
-        WHEN "webprojptask" THEN RETURN TRUE.
+        WHEN "webprojtask" THEN 
+            RETURN TRUE.
+        WHEN "webprojtemp" THEN 
+            DO:
+                FIND ptp_proj WHERE ROWID(ptp_proj) = pr-rowid NO-LOCK NO-ERROR.
+                
+                RETURN NOT CAN-FIND(FIRST ptp_phase WHERE ptp_phase.companyCode = ptp_proj.CompanyCode
+                            AND ptp_phase.ProjCode = ptp_proj.projCode NO-LOCK).
+                
+                 
+            END.
+                
+        WHEN "webprojphase" THEN 
+            DO:
+                FIND ptp_phase WHERE ROWID(ptp_phase) = pr-rowid NO-LOCK NO-ERROR.
+                
+                RETURN NOT CAN-FIND(FIRST ptp_task WHERE ptp_task.companyCode = ptp_phase.CompanyCode
+                            AND ptp_task.ProjCode = ptp_phase.projCode 
+                            AND ptp_task.PhaseID = ptp_phase.PhaseID NO-LOCK).
+                
+                 
+            END.
+            
+        WHEN "webprojptask" THEN 
+            RETURN TRUE.
         
         OTHERWISE
         DO:
@@ -2042,14 +2087,14 @@ END FUNCTION.
 
 
 FUNCTION com-DayName RETURNS CHARACTER 
-	    ( pd-Date AS DATE ,
-	      pc-Format AS CHAR):
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/	
+    ( pd-Date AS DATE ,
+    pc-Format AS CHAR):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
 
-    DEFINE VARIABLE lc-day         AS CHARACTER INITIAL "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday" NO-UNDO.
+    DEFINE VARIABLE lc-day AS CHARACTER INITIAL "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday" NO-UNDO.
     
 
 
@@ -2061,14 +2106,14 @@ FUNCTION com-DayName RETURNS CHARACTER
 END FUNCTION.
 
 FUNCTION com-DayOfWeek RETURNS INTEGER 
-	(INPUT pd-Date AS DATE,
-	 INPUT pi-base AS INT) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    (INPUT pd-Date AS DATE,
+    INPUT pi-base AS INT) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    DEFINE VARIABLE iDay   AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE iDay    AS INTEGER   NO-UNDO.
     
     DEFINE VARIABLE DayList AS CHARACTER NO-UNDO.
     IF pi-base = 1 THEN DayList = "1,2,3,4,5,6,7".
@@ -2231,7 +2276,7 @@ FUNCTION com-InitialSetup RETURNS LOGICAL
 
     DEFINE BUFFER webuser FOR webuser.
 
-    DEFINE VARIABLE lc-temp     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-temp AS CHARACTER NO-UNDO.
     
     ASSIGN 
         lc-global-user = pc-LoginID.
@@ -2240,7 +2285,7 @@ FUNCTION com-InitialSetup RETURNS LOGICAL
     ASSIGN
         lc-global-secure = DYNAMIC-FUNCTION("sysec-EncodeValue","GlobalSecure",TODAY,"GlobalSecure",lc-global-user).
     */
-     ASSIGN
+    ASSIGN
         lc-global-secure = "".
         
     FIND webuser WHERE webuser.LoginID = pc-LoginID NO-LOCK NO-ERROR.

@@ -222,7 +222,7 @@ PROCEDURE process-web-request :
         
     {&out}
     tbar-Begin(
-                "" /* no search option */
+                 "<br>Project: <b>" + this-proj.descr + '</b>' /* no search option */
         )
     tbar-Link("add",?,appurl + "/sys/webprojphasemnt.p",lc-link-otherp)
     tbar-BeginOption()

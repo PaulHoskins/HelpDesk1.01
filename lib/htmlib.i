@@ -1346,23 +1346,7 @@ FUNCTION htmlib-Lookup RETURNS CHARACTER
         pc-field-name,
         pc-desc-name,
         pc-program).
-/*
-    def var lc-htm as char no-undo.
 
-    assign lc-htm = "<input class=~"actionbutton~" type=~"button~" name=~"Submit2~" value=~"&4~" "
-                    + " onclick=~"javascript:window.open(~'" 
-                    + "&3" + "?FieldName=" + "&1"
-                    + '£Description=' + "&2"
-                    + "~',"
-                    + "~'LookupWindow~',~'scrollbars=yes,width=700,height=500~')~">".
-
-    return replace(substitute(lc-htm,
-                      pc-field-name,
-                      pc-desc-name,
-                      pc-program ,
-                      pc-label),'£','&').
-  
-*/
 END FUNCTION.
 
 

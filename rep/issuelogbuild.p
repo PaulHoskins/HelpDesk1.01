@@ -12,6 +12,8 @@
     09/11/2014  phoski      SLA Comment from note
                             active customers
     07/03/2015  phoski      Put activity seconds on tt
+    29/03/2015  phoski      Class Code/Desc
+    
 ***********************************************************************/
 
 {rep/issuelogtt.i}
@@ -102,13 +104,9 @@ PROCEDURE ip-BuildData :
         CREATE tt-ilog.
         BUFFER-COPY issue TO tt-ilog.
 
-        /*
-        ***
-        *** If the job is completed then ignore if outside period
-        ***
-        */
+      
         ASSIGN 
-            tt-ilog.iType = issue.IClass.
+            tt-ilog.iType = com-DecodeLookup(Issue.iClass,lc-global-iclass-code,lc-global-iclass-desc).
 
 
         ASSIGN

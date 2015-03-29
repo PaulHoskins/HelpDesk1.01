@@ -9,6 +9,8 @@
     
     When        Who         What
     24/01/2015  phoski      Initial  
+    29/03/2015  phoski      Class Code/Desc
+    
     
 ***********************************************************************/
 
@@ -113,7 +115,7 @@ PROCEDURE ip-BuildData :
        
         ASSIGN  
             tt-ilog.eng = bact.ActivityBy
-            tt-ilog.iType = issue.IClass.
+            tt-ilog.iType = com-DecodeLookup(Issue.iClass,lc-global-iclass-code,lc-global-iclass-desc).
 
 
         ASSIGN

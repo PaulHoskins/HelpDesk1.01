@@ -24,7 +24,8 @@
     07/03/2015  phoski      Send email to support when client add's an 
                             issue ( unassigned issue so this lets them 
                             know )   
-     25/04/2015 phoski      End date/end time is calculated now                                  
+    25/04/2015  phoski      End date/end time is calculated now  
+    29/03/2015  phoski      Complex Project Class                                
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -1257,7 +1258,7 @@ PROCEDURE ip-MainEntry :
             ELSE htmlib-SideLabel("Class"))
         '</TD>' 
         '<TD VALIGN="TOP" ALIGN="left">'
-        htmlib-Select("iclass",lc-global-iclass-code,lc-global-iclass-code,lc-iclass)
+        htmlib-Select("iclass",lc-global-iclass-Add-code,lc-global-iclass-Add-desc,lc-iclass)
         '</TD></TR>' skip. 
 
     END.

@@ -12,6 +12,8 @@
     01/05/2014  phoski      Initial
     09/11/2014  phoski    
     07/03/2015  phoski      Summary page with graphics     
+    29/03/2015  phoski      Class Code/Desc
+    
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -706,9 +708,13 @@ PROCEDURE ip-Selection :
     
     DO li-loop = 1 TO NUM-ENTRIES(lc-global-iclass-code,"|"):
         lc-codeName = "chk" + ENTRY(li-loop,lc-global-iclass-code,"|").
+        
+        cCode = ENTRY(li-loop,lc-global-iclass-code,"|").
+        cDesc = com-DecodeLookup(cCode,lc-global-iclass-code,lc-global-iclass-desc).
+        
 
         {&out} '<tr><td valign="top" align="right">' 
-        htmlib-SideLabel("Include Class " +  SUBSTR(lc-codeName,4))
+        htmlib-SideLabel("Include Class " +  cDesc)
         '</td>'
         '<td valign="top" align="left">'
         htmlib-checkBox(lc-CodeName,get-value(lc-CodeName) = "on")

@@ -16,6 +16,7 @@
     24/01/2015  phoski      Dont allow close of issue if open actions
     17/02/2015  phoski      Contract default problem
     21/02/2015  phoski      Billing flag problem and finally remove all DJS 
+    29/03/2015  phoski      Complex Project Class 
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -629,7 +630,7 @@ PROCEDURE ip-IssueMain :
         ELSE htmlib-SideLabel("Class"))
     '</TD>' 
     '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-Select("iclass",lc-global-iclass-code,lc-global-iclass-code,
+    htmlib-Select("iclass",lc-global-iclass-add-code,lc-global-iclass-add-desc,
         lc-iclass)
     '</TD></TR>' skip. 
 

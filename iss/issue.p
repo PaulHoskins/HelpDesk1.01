@@ -25,6 +25,7 @@
     01/10/2014  phoski      Account Manager (TAM/CAM)
     16/12/2014  phoski      TAM/CAM problem if not allowed ( paging problems in JS )
     07/03/2015  phoski      Default dates for customers today & today - 30
+    29/03/2015  phoski      Complex Project Class 
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -325,7 +326,9 @@ PROCEDURE ip-BuildIssueTable:
         {&out}
         htmlib-MntTableField(html-encode(lc-status),'left')
         htmlib-MntTableField(html-encode(lc-area),'left')
-        htmlib-MntTableField(html-encode(b-query.iclass),'left').
+        htmlib-MntTableField(/*html-encode(b-query.iclass)*/
+        com-DecodeLookup(b-query.iClass,lc-global-iclass-code,lc-global-iclass-desc)
+        ,'left').
         IF NOT ll-customer THEN
         DO:
             IF b-query.lastActivity = ?
@@ -873,7 +876,7 @@ PROCEDURE ip-Selection :
     {&out} /*'</tr><tr>' */
     '<td align=right valign=top>' htmlib-SideLabel("Class") '</td>'
     '<td align=left valign=top>' 
-    format-Select-Account(htmlib-Select("iclass","All|" + lc-global-iclass-code,"All|" + lc-global-iclass-code,lc-iclass)) '</td>' skip.
+    format-Select-Account(htmlib-Select("iclass","All|" + lc-global-iclass-code,"All|" + lc-global-iclass-desc,lc-iclass)) '</td>' skip.
 
     /*
     ** SortField

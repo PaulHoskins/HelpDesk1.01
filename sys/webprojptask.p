@@ -230,7 +230,7 @@ PROCEDURE process-web-request :
         
     {&out}
     tbar-Begin(
-                "" /* no search option */
+                "<br>Phase: <b>" + this-phase.descr + '</b>'  /* no search option */
         )
     tbar-Link("add",?,appurl + "/sys/webprojptaskmnt.p",lc-link-otherp)
     tbar-BeginOption()
@@ -249,7 +249,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Order^right|Description^left"
+        "Order^right|Description^left|Completion Day^right|Estimated Hours^right|Responsibility|Billable"
         ) skip.
 
 
@@ -314,6 +314,14 @@ PROCEDURE process-web-request :
             skip
             htmlib-MntTableField(string(b-query.DisplayOrder),'right')
             htmlib-MntTableField(html-encode(b-query.Descr),'left')
+            htmlib-MntTableField(string(b-query.CompletionDay),'right')
+            htmlib-MntTableField(string(b-query.EstimatedHours),'right') 
+            htmlib-MntTableField(html-encode(
+            com-DecodeLookup(b-query.Responsibility,lc-global-taskResp-code,lc-global-taskResp-desc)
+            ),'left')
+            htmlib-MntTableField(IF b-query.Billable THEN "Yes" ELSE "No",'left')
+            
+            
               tbar-BeginHidden(rowid(b-query))
                 tbar-Link("view",rowid(b-query),appurl + "/sys/webprojptaskmnt.p",lc-link-otherp)
                 tbar-Link("update",rowid(b-query),appurl + "/sys/webprojptaskmnt.p",lc-link-otherp)

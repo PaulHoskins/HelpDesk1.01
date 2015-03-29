@@ -73,6 +73,111 @@ RUN process-web-request.
 
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
+PROCEDURE ip-Details:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+
+    DEFINE BUFFER b-phase FOR ptp_phase.
+    DEFINE BUFFER b-task  FOR ptp_task.
+    DEFINE VARIABLE li-last  LIKE ptp_phase.PhaseID NO-UNDO.
+    
+    
+    
+    {&out}
+           skip
+           htmlib-StartMntTable()
+            htmlib-TableHeading(
+            "Phase^left|Task^left|Completion Day^right|Estimated Hours^right|Responsibility|Billable"
+            ) skip.
+        
+     
+    FOR EACH b-phase NO-LOCK
+        WHERE b-phase.ProjCode = lc-groupid
+        ,
+        EACH b-task NO-LOCK 
+            WHERE b-task.projCode = b-phase.projCode
+              AND b-task.PhaseID = b-phase.PhaseID
+        BY b-phase.DisplayOrder
+        BY b-task.displayOrder
+         :
+    
+        {&out}
+            skip
+            tbar-tr(rowid(b-phase))
+            skip
+            htmlib-MntTableField(html-encode(IF li-last = b-phase.phaseid THEN "" ELSE b-phase.descr),'left')
+            htmlib-MntTableField(html-encode(b-task.descr),'left')
+            htmlib-MntTableField(string(b-task.CompletionDay),'right')
+            htmlib-MntTableField(string(b-task.EstimatedHours),'right') 
+            htmlib-MntTableField(html-encode(
+            com-DecodeLookup(b-task.Responsibility,lc-global-taskResp-code,lc-global-taskResp-desc)
+            ),'left')
+            htmlib-MntTableField(IF b-task.Billable THEN "Yes" ELSE "No",'left')
+                    
+            '</tr>' SKIP.
+         ASSIGN
+            li-last = b-phase.phaseid.
+            
+     END.         
+    {&out} 
+    skip 
+           htmlib-EndTable()
+           skip.
+                
+
+END PROCEDURE.
+
+PROCEDURE ip-Page:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+
+    {&out} htmlib-StartInputTable() skip.
+
+
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        ( IF LOOKUP("groupid",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Template Code")
+        ELSE htmlib-SideLabel("Template Code"))
+    '</TD>' skip
+    .
+
+    IF lc-mode = "ADD" THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("groupid",20,lc-groupid) skip
+           '</TD>'.
+    else
+    {&out} htmlib-TableField(html-encode(lc-groupid),'left')
+           skip.
+
+
+    {&out} '</TR>' skip.
+
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("description",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Description")
+        ELSE htmlib-SideLabel("Description"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("description",40,lc-description) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-description),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
+
+    
+    {&out} htmlib-EndTable() skip.
+    
+
+END PROCEDURE.
+
 PROCEDURE ip-Validate :
     /*------------------------------------------------------------------------------
       Purpose:     
@@ -368,46 +473,11 @@ PROCEDURE process-web-request :
         
     {&out} htmlib-TextLink(lc-link-label,lc-link-url) '<BR><BR>' skip.
 
-    {&out} htmlib-StartInputTable() skip.
-
-
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        ( IF LOOKUP("groupid",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Template Code")
-        ELSE htmlib-SideLabel("Template Code"))
-    '</TD>' skip
-    .
-
-    IF lc-mode = "ADD" THEN
-        {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-InputField("groupid",20,lc-groupid) skip
-           '</TD>'.
-    else
-    {&out} htmlib-TableField(html-encode(lc-groupid),'left')
-           skip.
-
-
-    {&out} '</TR>' skip.
-
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (IF LOOKUP("description",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Description")
-        ELSE htmlib-SideLabel("Description"))
-    '</TD>'.
+    RUN ip-Page.
     
-    IF NOT CAN-DO("view,delete",lc-mode) THEN
-        {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-InputField("description",40,lc-description) 
-    '</TD>' skip.
-    else 
-    {&out} htmlib-TableField(html-encode(lc-description),'left')
-           skip.
-    {&out} '</TR>' skip.
+    IF lc-mode = "VIEW" THEN
+    RUN ip-Details.
     
-
-    
-    {&out} htmlib-EndTable() skip.
-
 
     IF lc-error-msg <> "" THEN
     DO:
