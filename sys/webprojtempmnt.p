@@ -9,6 +9,7 @@
     
     When        Who         What
     27/03/2015  phoski      Initial
+    31/03/2015  phoski      Renamed 'task' to 'action'
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -89,7 +90,7 @@ PROCEDURE ip-Details:
            skip
            htmlib-StartMntTable()
             htmlib-TableHeading(
-            "Phase^left|Task^left|Completion Day^right|Estimated Hours^right|Responsibility|Billable"
+            "Phase^left|Action^left|Start Day^right|Estimated Duration^right|Ignore Weekend|Action Group^right|Responsibility|Billable"
             ) skip.
         
      
@@ -109,8 +110,10 @@ PROCEDURE ip-Details:
             skip
             htmlib-MntTableField(html-encode(IF li-last = b-phase.phaseid THEN "" ELSE b-phase.descr),'left')
             htmlib-MntTableField(html-encode(b-task.descr),'left')
-            htmlib-MntTableField(string(b-task.CompletionDay),'right')
-            htmlib-MntTableField(string(b-task.EstimatedHours),'right') 
+            htmlib-MntTableField(string(b-task.StartDay),'right')
+              htmlib-MntTableField(com-TimeToString(b-task.EstDuration),'right') 
+            htmlib-MntTableField(IF b-task.IgnoreWeekend THEN "Yes" ELSE "No",'left')
+            htmlib-MntTableField(string(b-task.ActionGroup),'right') 
             htmlib-MntTableField(html-encode(
             com-DecodeLookup(b-task.Responsibility,lc-global-taskResp-code,lc-global-taskResp-desc)
             ),'left')

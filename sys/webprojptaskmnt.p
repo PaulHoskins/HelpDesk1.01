@@ -2,13 +2,14 @@
 
     Program:        sys/webprojptaskmnt.p
     
-    Purpose:        Project Template Task Maintenance     
+    Purpose:        Project Template Action Maintenance     
     
     Notes:
     
     
     When        Who         What
     27/03/2015  phoski      Initial
+    31/03/2015  phoski      Renamed 'task' to 'action'
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -50,10 +51,14 @@ DEFINE VARIABLE li-phaseid      AS INT64     NO-UNDO.
 DEFINE VARIABLE li-loop         AS INTEGER   NO-UNDO.
 
 DEFINE VARIABLE lc-description  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-CompDay      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-hours        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-StartDay     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-hour         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-min          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-temp         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-resp         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-billable     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-weekend      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-group        AS CHARACTER NO-UNDO.
 
 
 
@@ -81,10 +86,10 @@ RUN process-web-request.
 &IF DEFINED(EXCLUDE-ip-Validate) = 0 &THEN
 
 PROCEDURE ip-HTM-Header:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     DEFINE OUTPUT PARAMETER pc-return       AS CHARACTER NO-UNDO.
     
     
@@ -105,23 +110,23 @@ PROCEDURE ip-Page:
 
     IF lc-mode = "ADD" THEN
     DO:
-       {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
             (IF LOOKUP("copytask",lc-error-field,'|') > 0 
-            THEN htmlib-SideLabelError("Copy From Default Task")
-            ELSE htmlib-SideLabel("Copy From Default Task"))
+            THEN htmlib-SideLabelError("Copy From Default Action")
+            ELSE htmlib-SideLabel("Copy From Default Action"))
         '</TD>'
-         '<TD VALIGN="TOP" ALIGN="left">' SKIP
+        '<TD VALIGN="TOP" ALIGN="left">' SKIP
          '<select id="copytask" name="copytask" class="inputfield"  onchange=~"javascript:changeSelectTask();~">' SKIP
          '<option value="" selected>No Copy</option>' SKIP.
          
-         FOR EACH ptt_def NO-LOCK
+        FOR EACH ptt_def NO-LOCK
             WHERE ptt_def.CompanyCode = lc-global-company:
             {&out}
             '<option value="' ptt_def.TaskCode '">' ptt_def.Descr '</option>' SKIP.
             
-         END.
+        END.
          
-         {&out} '</select></td></tr>' skip.
+        {&out} '</select></td></tr>' skip.
           
          
         
@@ -143,37 +148,72 @@ PROCEDURE ip-Page:
     {&out} '</TR>' skip.
     /**/
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (IF LOOKUP("compday",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Completion Day")
-        ELSE htmlib-SideLabel("Completion Day"))
+        (IF LOOKUP("startday",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Start Day")
+        ELSE htmlib-SideLabel("Start Day"))
     '</TD>'.
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-InputField("compday",3,lc-compday) 
+    htmlib-InputField("startday",3,lc-StartDay) 
     '</TD>' skip.
     else 
-    {&out} htmlib-TableField(html-encode(lc-compday),'left')
+    {&out} htmlib-TableField(html-encode(lc-StartDay),'left')
            skip.
     {&out} '</TR>' skip.
     
     /**/
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("hours",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Estimated Hours")
-        ELSE htmlib-SideLabel("Estimated Hours"))
+        THEN htmlib-SideLabelError("Estimated Duration (H:MM)")
+        ELSE htmlib-SideLabel("Estimated Duration (H:MM)"))
     '</TD>'.
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-InputField("hours",3,lc-hours) 
+    htmlib-InputField("hours",4,lc-hour) 
+    ":"
+    htmlib-InputField("min",2,lc-min) 
     '</TD>' skip.
     else 
-    {&out} htmlib-TableField(html-encode(lc-hours),'left')
-           skip.
+    {&out} htmlib-TableField(html-encode(lc-temp),'left')
+                   skip.
     {&out} '</TR>' SKIP.
     
-     /**/
+    /**/
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("weekend",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Ignore Weekend?")
+        ELSE htmlib-SideLabel("Ignore Weekend?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("weekend", IF lc-weekend = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(IF lc-weekend = 'on' THEN "Yes" ELSE "No",'left')
+           skip.
+    {&out} '</TR>' SKIP.
+         
+    /**/
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("group",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Action Group")
+        ELSE htmlib-SideLabel("Action Group"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("group",3,lc-group) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-group),'left')
+           skip.
+    {&out} '</TR>' skip.
+         
+         
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("resp",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("Responsibility")
@@ -182,8 +222,8 @@ PROCEDURE ip-Page:
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-        htmlib-Select("resp",lc-global-taskResp-code,lc-global-taskResp-desc,
-            lc-resp)
+    htmlib-Select("resp",lc-global-taskResp-code,lc-global-taskResp-desc,
+        lc-resp)
             
     '</TD>' skip.
     else 
@@ -202,8 +242,8 @@ PROCEDURE ip-Page:
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-     htmlib-CheckBox("billable", IF lc-billable = 'on'
-            THEN TRUE ELSE FALSE) 
+    htmlib-CheckBox("billable", IF lc-billable = 'on'
+        THEN TRUE ELSE FALSE) 
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(IF lc-billable = 'on' THEN "Yes" ELSE "No",'left')
@@ -224,7 +264,7 @@ PROCEDURE ip-Validate :
     DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
-    DEFINE VARIABLE li-int      AS INT      NO-UNDO.
+    DEFINE VARIABLE li-int AS INT NO-UNDO.
     
 
   
@@ -237,26 +277,66 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
-    li-int = int(lc-compDay) NO-ERROR.
+    li-int = int(lc-StartDay) NO-ERROR.
     
     IF ERROR-STATUS:ERROR
-    OR li-int < 0
-    THEN RUN htmlib-AddErrorMessage(
-            'compday', 
-            'The completion day must be 0 or greater',
+        OR li-int < 1
+        THEN RUN htmlib-AddErrorMessage(
+            'startday', 
+            'The starting day must be 1 or greater',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
      
-    li-int = int(lc-hours) NO-ERROR.
+    li-int = int(lc-hour) NO-ERROR.
     
     IF ERROR-STATUS:ERROR
-    OR li-int < 0
-    THEN RUN htmlib-AddErrorMessage(
+        OR li-int < 0
+        THEN 
+    DO:
+        RUN htmlib-AddErrorMessage(
             'hours', 
             'The estimated hours must be 0 or greater',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
+    END.
+    
+    li-int = int(lc-min) NO-ERROR.
+    
+    IF ERROR-STATUS:ERROR
+    OR li-int < 0
+    OR li-int > 59 THEN 
+    DO:
+        RUN htmlib-AddErrorMessage(
+            'hours', 
+            'The estimated minutes must be 0-59',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    END.
+    
+    li-int = int(lc-hour) + int(lc-min) NO-ERROR.
+    IF ERROR-STATUS:ERROR
+    OR li-int = 0 THEN
+    
+    DO:
+        RUN htmlib-AddErrorMessage(
+            'hours', 
+            'The estimated duration must be over 0',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    END.
+     
+    
             
+    li-int = int(lc-group) NO-ERROR.
+    
+    IF ERROR-STATUS:ERROR
+        OR li-int < 1
+        THEN RUN htmlib-AddErrorMessage(
+            'group', 
+            'The action group must be 0 or greater',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+                     
             
 END PROCEDURE.
 
@@ -328,27 +408,27 @@ PROCEDURE process-web-request :
       Parameters:  <none>
       emails:       
     ------------------------------------------------------------------------------*/
-    DEFINE BUFFER this-proj     FOR ptp_proj.
-    DEFINE BUFFER this-phase    FOR ptp_phase.
+    DEFINE BUFFER this-proj  FOR ptp_proj.
+    DEFINE BUFFER this-phase FOR ptp_phase.
          
     {lib/checkloggedin.i} 
 
     ASSIGN 
-        lc-ProjCode  = get-value("projectcode")
+        lc-ProjCode   = get-value("projectcode")
         li-phaseid    = INT64(get-value("phaseid"))
-        lc-mode = get-value("mode")
-        lc-rowid = get-value("rowid")
-        lc-search = get-value("search")
-        lc-firstrow = get-value("firstrow")
-        lc-lastrow  = get-value("lastrow")
+        lc-mode       = get-value("mode")
+        lc-rowid      = get-value("rowid")
+        lc-search     = get-value("search")
+        lc-firstrow   = get-value("firstrow")
+        lc-lastrow    = get-value("lastrow")
         lc-navigation = get-value("navigation").
 
     IF lc-mode = "" 
-        THEN ASSIGN lc-mode = get-field("savemode")
-            lc-rowid = get-field("saverowid")
-            lc-search = get-value("savesearch")
-            lc-firstrow = get-value("savefirstrow")
-            lc-lastrow  = get-value("savelastrow")
+        THEN ASSIGN lc-mode       = get-field("savemode")
+            lc-rowid      = get-field("saverowid")
+            lc-search     = get-value("savesearch")
+            lc-firstrow   = get-value("savefirstrow")
+            lc-lastrow    = get-value("savelastrow")
             lc-navigation = get-value("savenavigation").
 
     ASSIGN 
@@ -360,27 +440,27 @@ PROCEDURE process-web-request :
         WHEN 'add'
         THEN 
             ASSIGN 
-                lc-title = 'Add'
-                lc-link-label = "Cancel addition"
-                lc-submit-label = "Add Task".
+                lc-title        = 'Add'
+                lc-link-label   = "Cancel addition"
+                lc-submit-label = "Add Action".
         WHEN 'view'
         THEN 
             ASSIGN 
-                lc-title = 'View'
-                lc-link-label = "Back"
+                lc-title        = 'View'
+                lc-link-label   = "Back"
                 lc-submit-label = "".
         WHEN 'delete'
         THEN 
             ASSIGN 
-                lc-title = 'Delete'
-                lc-link-label = 'Cancel deletion'
-                lc-submit-label = 'Delete Task'.
+                lc-title        = 'Delete'
+                lc-link-label   = 'Cancel deletion'
+                lc-submit-label = 'Delete Action'.
         WHEN 'Update'
         THEN 
             ASSIGN 
-                lc-title = 'Update'
-                lc-link-label = 'Cancel update'
-                lc-submit-label = 'Update Task'.
+                lc-title        = 'Update'
+                lc-link-label   = 'Cancel update'
+                lc-submit-label = 'Update Action'.
     END CASE.
 
     FIND this-proj WHERE this-proj.CompanyCode = lc-global-company
@@ -394,7 +474,7 @@ PROCEDURE process-web-request :
                      
 
     ASSIGN 
-        lc-title = lc-title + ' Project Phase -<i> ' + lc-ProjCode + " " + this-proj.descr + 
+        lc-title    = lc-title + ' Project Action -<i> ' + lc-ProjCode + " " + this-proj.descr + 
          ' - Phase ' + this-phase.descr + '</i>'
         lc-link-url = appurl + '/sys/webprojptask.p' + 
                                   '?search=' + lc-search + 
@@ -473,11 +553,15 @@ PROCEDURE process-web-request :
         IF lc-mode <> "delete" THEN
         DO:
             ASSIGN 
-                lc-description  = get-value("description")
-                lc-compDay      = get-value("compday")
-                lc-hours        = get-value("hours")
-                lc-resp         = get-value("resp")
-                lc-billable     = get-value("billable")
+                lc-description = get-value("description")
+                lc-StartDay    = get-value("startday")
+                lc-hour        = get-value("hours")
+                lc-min         = get-value("min")
+                lc-resp        = get-value("resp")
+                lc-billable    = get-value("billable")
+                lc-weekend     = get-value("weekend")
+                lc-group       = get-value("group")
+                
                 .
 
             
@@ -508,12 +592,12 @@ PROCEDURE process-web-request :
                         NO-LOCK NO-ERROR.
                     CREATE b-table.
                     ASSIGN 
-                        b-table.ProjCode = lc-ProjCode
-                        b-table.Phaseid = li-phaseid
-                        b-table.Taskid =  NEXT-VALUE(projphase) 
-                        b-table.companycode = lc-global-company
+                        b-table.ProjCode     = lc-ProjCode
+                        b-table.Phaseid      = li-phaseid
+                        b-table.Taskid       = NEXT-VALUE(projphase) 
+                        b-table.companycode  = lc-global-company
                         b-table.displayOrder = IF AVAILABLE b-valid THEN b-valid.displayOrder + 1 ELSE 1
-                        lc-firstrow      = STRING(ROWID(b-table))
+                        lc-firstrow          = STRING(ROWID(b-table))
                         .
                     
                    
@@ -521,11 +605,14 @@ PROCEDURE process-web-request :
                 IF lc-error-msg = "" THEN
                 DO:
                     ASSIGN 
-                        b-table.Descr     = lc-description
-                        b-table.CompletionDay = int(lc-compDay)
-                        b-table.EstimatedHours = int(lc-hours)
+                        b-table.Descr          = lc-description
+                        b-table.StartDay       = int(lc-StartDay)
+                        b-table.EstDuration    = ( ( int(lc-hour) * 60 ) + int(lc-min) ) * 60
+                        b-table.actionGroup    = int(lc-group)
                         b-table.Responsibility = lc-resp
-                        b-table.Billable = lc-billable = "on"
+                        b-table.Billable       = lc-billable = "on"
+                        b-table.ignoreWeekend  = lc-weekend = "on"
+                        
                         .
                     
                 END.
@@ -553,7 +640,7 @@ PROCEDURE process-web-request :
                     EXCLUSIVE-LOCK:
                     
                     ASSIGN
-                        li-loop = li-loop + 1
+                        li-loop              = li-loop + 1
                         b-valid.displayOrder = li-loop.
                                          
                 END.
@@ -583,11 +670,16 @@ PROCEDURE process-web-request :
         IF CAN-DO("view,delete",lc-mode) OR request_method <> "post" THEN 
         DO:
             ASSIGN 
-                lc-description   = b-table.descr
-                lc-compday       = STRING(b-table.CompletionDay)
-                lc-hours         = STRING(b-table.EstimatedHours)
-                lc-resp          = b-table.Responsibility
-                lc-billable      = IF b-table.Billable THEN "on" ELSE "".
+                lc-temp        = com-TimeToString(b-table.EstDuration)
+                lc-description = b-table.descr
+                lc-StartDay    = STRING(b-table.StartDay)
+                lc-hour        = ENTRY(1,lc-temp,":")
+                lc-min         = ENTRY(2,lc-temp,":")
+                lc-group       = STRING(b-table.ActionGroup)
+                lc-resp        = b-table.Responsibility
+                lc-billable    = IF b-table.Billable THEN "on" ELSE ""
+                lc-weekend     = IF b-table.ignoreWeekend THEN "on" ELSE "".
+                
                     
            
         END.

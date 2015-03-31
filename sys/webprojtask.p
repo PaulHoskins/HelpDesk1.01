@@ -2,13 +2,14 @@
 
     Program:        sys/webprojtask.p
     
-    Purpose:        Project Task Maintenance 
+    Purpose:        Project Action Maintenance 
     
     Notes:
     
     
     When        Who         What
     26/03/2015  phoski      Initial
+    31/03/2015  phoski      Renamed 'task' to 'action'
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -188,13 +189,13 @@ PROCEDURE process-web-request :
 
     RUN outputHeader.
     
-    {&out} htmlib-Header("Maintain Project Tasks") skip.
+    {&out} htmlib-Header("Maintain Project Actions") skip.
 
     {&out} htmlib-JScript-Maintenance() skip.
 
     {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webprojtask.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Project Tasks") skip.
+    {&out} htmlib-ProgramTitle("Maintain Project Actions") skip.
     
     {&out}
     tbar-StandardBar(
@@ -209,7 +210,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Task^left|Description^left"
+        "Action^left|Description^left"
         ) skip.
 
 

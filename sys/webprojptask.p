@@ -2,13 +2,14 @@
 
     Program:        sys/webprojptask.p
     
-    Purpose:        Project Template Task Maintenance 
+    Purpose:        Project Template Action Maintenance 
     
     Notes:
     
     
     When        Who         What
     27/03/2015  phoski      Initial
+    31/03/2015  phoski      Renamed 'task' to 'action'
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -209,13 +210,13 @@ PROCEDURE process-web-request :
         AND this-phase.phaseid = li-phaseid
         NO-LOCK NO-ERROR.
                         
-    {&out} htmlib-Header("Maintain Project Template Task") skip.
+    {&out} htmlib-Header("Maintain Project Template Action") skip.
 
     {&out} htmlib-JScript-Maintenance() skip.
 
     {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webprojptask.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Project Template Tasks -<i> " + lc-ProjCode + " " + this-proj.descr  
+    {&out} htmlib-ProgramTitle("Maintain Project Template Actions -<i> " + lc-ProjCode + " " + this-proj.descr  
             + " - Phase " + this-phase.descr + "</i>") skip.
     
     ASSIGN 
@@ -249,7 +250,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Order^right|Description^left|Completion Day^right|Estimated Hours^right|Responsibility|Billable"
+        "Order^right|Description^left|Start Day^right|Estimated Duration^right|Ignore Weekend|Action Group^right|Responsibility|Billable"
         ) skip.
 
 
@@ -314,8 +315,11 @@ PROCEDURE process-web-request :
             skip
             htmlib-MntTableField(string(b-query.DisplayOrder),'right')
             htmlib-MntTableField(html-encode(b-query.Descr),'left')
-            htmlib-MntTableField(string(b-query.CompletionDay),'right')
-            htmlib-MntTableField(string(b-query.EstimatedHours),'right') 
+            htmlib-MntTableField(string(b-query.StartDay),'right')
+            htmlib-MntTableField(com-TimeToString(b-query.EstDuration),'right') 
+            htmlib-MntTableField(IF b-query.IgnoreWeekend THEN "Yes" ELSE "No",'left')
+            htmlib-MntTableField(string(b-query.ActionGroup),'right') 
+            
             htmlib-MntTableField(html-encode(
             com-DecodeLookup(b-query.Responsibility,lc-global-taskResp-code,lc-global-taskResp-desc)
             ),'left')

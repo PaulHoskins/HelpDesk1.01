@@ -2452,6 +2452,15 @@ ADD FIELD "LastTmpCode" OF "Issue" AS character
   MAX-WIDTH 16
   ORDER 400
 
+ADD FIELD "isProject" OF "Issue" AS logical 
+  DESCRIPTION "Complex Project flag "
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Project?"
+  POSITION 43
+  MAX-WIDTH 1
+  ORDER 410
+
 ADD INDEX "IssueNumber" ON "Issue" 
   AREA "Schema Area"
   UNIQUE
@@ -3077,15 +3086,6 @@ ADD FIELD "DisplayOrder" OF "ptp_task" AS integer
   MAX-WIDTH 4
   ORDER 60
 
-ADD FIELD "TaskCode" OF "ptp_task" AS character 
-  DESCRIPTION "Only for reference - not important after iniitial setup"
-  FORMAT "x(8)"
-  INITIAL ""
-  LABEL "Task Code"
-  POSITION 7
-  MAX-WIDTH 16
-  ORDER 70
-
 ADD FIELD "Descr" OF "ptp_task" AS character 
   FORMAT "x(60)"
   INITIAL ""
@@ -3093,22 +3093,6 @@ ADD FIELD "Descr" OF "ptp_task" AS character
   POSITION 8
   MAX-WIDTH 120
   ORDER 80
-
-ADD FIELD "EstimatedHours" OF "ptp_task" AS integer 
-  FORMAT "->,>>>,>>9"
-  INITIAL "0"
-  LABEL "Estimated Hours"
-  POSITION 9
-  MAX-WIDTH 4
-  ORDER 90
-
-ADD FIELD "CompletionDay" OF "ptp_task" AS integer 
-  FORMAT "->,>>>,>>9"
-  INITIAL "0"
-  LABEL "Day Completion Due"
-  POSITION 10
-  MAX-WIDTH 4
-  ORDER 100
 
 ADD FIELD "Billable" OF "ptp_task" AS logical 
   FORMAT "yes/no"
@@ -3127,6 +3111,39 @@ ADD FIELD "Responsibility" OF "ptp_task" AS character
   POSITION 12
   MAX-WIDTH 16
   ORDER 120
+
+ADD FIELD "StartDay" OF "ptp_task" AS integer 
+  FORMAT "zzz9"
+  INITIAL "0"
+  LABEL "Start Day"
+  POSITION 13
+  MAX-WIDTH 4
+  ORDER 130
+
+ADD FIELD "EstDuration" OF "ptp_task" AS integer 
+  DESCRIPTION "in seconds although always rounded to mins"
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Estimated Duration"
+  POSITION 14
+  MAX-WIDTH 4
+  ORDER 140
+
+ADD FIELD "IgnoreWeekend" OF "ptp_task" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Ignore Weekend?"
+  POSITION 15
+  MAX-WIDTH 1
+  ORDER 150
+
+ADD FIELD "ActionGroup" OF "ptp_task" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Action Group"
+  POSITION 16
+  MAX-WIDTH 4
+  ORDER 160
 
 ADD INDEX "primkey" ON "ptp_task" 
   AREA "Schema Area"
@@ -4901,4 +4918,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000096658
+0000096984

@@ -2,13 +2,14 @@
 
     Program:        sys/webprojtaskmnt.p
     
-    Purpose:        Project Task Maintenance     
+    Purpose:        Project Action Maintenance     
     
     Notes:
     
     
     When        Who         What
     26/03/2015  phoski      Initial
+    31/03/2015  phoski      Renamed 'task' to 'action'
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -89,7 +90,7 @@ PROCEDURE ip-Validate :
             OR lc-groupid = ?
             THEN RUN htmlib-AddErrorMessage(
                 'groupid', 
-                'You must enter the task code',
+                'You must enter the action code',
                 INPUT-OUTPUT pc-error-field,
                 INPUT-OUTPUT pc-error-msg ).
         
@@ -100,7 +101,7 @@ PROCEDURE ip-Validate :
             NO-LOCK)
             THEN RUN htmlib-AddErrorMessage(
                 'groupid', 
-                'This task already exists',
+                'This action already exists',
                 INPUT-OUTPUT pc-error-field,
                 INPUT-OUTPUT pc-error-msg ).
 
@@ -214,7 +215,7 @@ PROCEDURE process-web-request :
             ASSIGN 
                 lc-title = 'Add'
                 lc-link-label = "Cancel addition"
-                lc-submit-label = "Add Task".
+                lc-submit-label = "Add Action".
         WHEN 'view'
         THEN 
             ASSIGN 
@@ -226,18 +227,18 @@ PROCEDURE process-web-request :
             ASSIGN 
                 lc-title = 'Delete'
                 lc-link-label = 'Cancel deletion'
-                lc-submit-label = 'Delete Task'.
+                lc-submit-label = 'Delete Action'.
         WHEN 'Update'
         THEN 
             ASSIGN 
                 lc-title = 'Update'
                 lc-link-label = 'Cancel update'
-                lc-submit-label = 'Update Task'.
+                lc-submit-label = 'Update Action'.
     END CASE.
 
 
     ASSIGN 
-        lc-title = lc-title + ' Project Task'
+        lc-title = lc-title + ' Project Action'
         lc-link-url = appurl + '/sys/webprojtask.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
@@ -373,8 +374,8 @@ PROCEDURE process-web-request :
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         ( IF LOOKUP("groupid",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Task Code")
-        ELSE htmlib-SideLabel("Task Code"))
+        THEN htmlib-SideLabelError("Action Code")
+        ELSE htmlib-SideLabel("Action Code"))
     '</TD>' skip
     .
 

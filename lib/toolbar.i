@@ -793,7 +793,7 @@ FUNCTION tbar-Link RETURNS CHARACTER
          WHEN "ptask"   THEN 
             ASSIGN 
                 lc-image    = '/images/toolbar3/phase.gif'
-                lc-alt-text = 'Project Tasks'.
+                lc-alt-text = 'Project Actions'.
          WHEN "recdown"   THEN 
             ASSIGN 
                 lc-image    = '/images/toolbar3/recdown.gif'
