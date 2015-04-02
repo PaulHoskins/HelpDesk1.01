@@ -1071,6 +1071,32 @@ PROCEDURE com-GetKBSection :
 END PROCEDURE.
 
 
+PROCEDURE com-GetProjectTemplateList:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
+
+
+    DEFINE BUFFER b-buffer FOR ptp_proj.
+
+    FOR EACH b-buffer NO-LOCK 
+        WHERE b-buffer.CompanyCode = pc-CompanyCode
+        BY b-buffer.Descr:
+
+        IF pc-codes = ""
+            THEN ASSIGN pc-Codes = b-buffer.ProjCode
+                pc-Desc  = b-buffer.Descr.
+        ELSE ASSIGN pc-Codes = pc-Codes + '|' + b-buffer.ProjCode
+                pc-Desc  = pc-Desc + '|' + b-buffer.Descr.
+    END.
+    
+
+END PROCEDURE.
+
 PROCEDURE com-GetStatus :
     /*------------------------------------------------------------------------------
       Purpose:     

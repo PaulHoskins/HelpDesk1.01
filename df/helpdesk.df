@@ -1676,6 +1676,64 @@ ADD FIELD "ActDescription" OF "IssAction" AS character
   MAX-WIDTH 80
   ORDER 180
 
+ADD FIELD "Responsibility" OF "IssAction" AS character 
+  DESCRIPTION "Engineer/Customer/3rd Party"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Responsibility"
+  POSITION 20
+  MAX-WIDTH 16
+  ORDER 190
+
+ADD FIELD "StartDay" OF "IssAction" AS integer 
+  FORMAT "zzz9"
+  INITIAL "0"
+  LABEL "Start Day"
+  POSITION 21
+  MAX-WIDTH 4
+  ORDER 200
+
+ADD FIELD "EstDuration" OF "IssAction" AS integer 
+  DESCRIPTION "in seconds although always rounded to mins"
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Estimated Duration"
+  POSITION 22
+  MAX-WIDTH 4
+  ORDER 210
+
+ADD FIELD "IgnoreWeekend" OF "IssAction" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Ignore Weekend?"
+  POSITION 23
+  MAX-WIDTH 1
+  ORDER 220
+
+ADD FIELD "ActionGroup" OF "IssAction" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Action Group"
+  POSITION 24
+  MAX-WIDTH 4
+  ORDER 230
+
+ADD FIELD "TaskID" OF "IssAction" AS int64 
+  DESCRIPTION "if > 0 then its a Complex project action"
+  FORMAT "->,>>>,>>>,>>9"
+  INITIAL "0"
+  POSITION 25
+  MAX-WIDTH 8
+  ORDER 240
+
+ADD FIELD "DisplayOrder" OF "IssAction" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Dsiplay Order"
+  POSITION 26
+  MAX-WIDTH 4
+  ORDER 250
+
 ADD INDEX "IssueNumber" ON "IssAction" 
   AREA "Schema Area"
   PRIMARY
@@ -2039,6 +2097,66 @@ ADD INDEX "NoteCode" ON "IssNote"
   AREA "Schema Area"
   INDEX-FIELD "CompanyCode" ASCENDING 
   INDEX-FIELD "NoteCode" ASCENDING 
+
+ADD TABLE "issPhase"
+  AREA "Schema Area"
+  LABEL "Issue Project Phases"
+  DESCRIPTION "Only applicable for complex project "
+  DUMP-NAME "issphase"
+
+ADD FIELD "CompanyCode" OF "issPhase" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company Code"
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "IssueNumber" OF "issPhase" AS integer 
+  FORMAT "99999999"
+  INITIAL "0"
+  LABEL "Issue No"
+  POSITION 3
+  MAX-WIDTH 4
+  ORDER 20
+
+ADD FIELD "PhaseID" OF "issPhase" AS int64 
+  DESCRIPTION "System Generated "
+  FORMAT "->,>>>,>>>,>>9"
+  INITIAL "0"
+  POSITION 4
+  MAX-WIDTH 8
+  ORDER 30
+
+ADD FIELD "Descr" OF "issPhase" AS character 
+  FORMAT "x(60)"
+  INITIAL ""
+  LABEL "Description"
+  POSITION 5
+  MAX-WIDTH 120
+  ORDER 40
+
+ADD FIELD "DisplayOrder" OF "issPhase" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Dsiplay Order"
+  POSITION 6
+  MAX-WIDTH 4
+  ORDER 50
+
+ADD INDEX "prim" ON "issPhase" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "IssueNumber" ASCENDING 
+  INDEX-FIELD "PhaseID" ASCENDING 
+
+ADD INDEX "displayOrder" ON "issPhase" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "IssueNumber" ASCENDING 
+  INDEX-FIELD "DisplayOrder" ASCENDING 
 
 ADD TABLE "IssStatus"
   AREA "Schema Area"
@@ -2461,6 +2579,34 @@ ADD FIELD "isProject" OF "Issue" AS logical
   MAX-WIDTH 1
   ORDER 410
 
+ADD FIELD "prj-eng" OF "Issue" AS character 
+  DESCRIPTION "complex project - manager of Projects
+"
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "Project Engineer"
+  POSITION 44
+  MAX-WIDTH 30
+  ORDER 430
+
+ADD FIELD "ProjCode" OF "Issue" AS character 
+  DESCRIPTION "complex project"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Project Code"
+  POSITION 45
+  MAX-WIDTH 16
+  ORDER 440
+
+ADD FIELD "prj-Start" OF "Issue" AS date 
+  DESCRIPTION "complex project"
+  FORMAT "99/99/9999"
+  INITIAL ?
+  LABEL "Project Start"
+  POSITION 46
+  MAX-WIDTH 4
+  ORDER 450
+
 ADD INDEX "IssueNumber" ON "Issue" 
   AREA "Schema Area"
   UNIQUE
@@ -2507,6 +2653,13 @@ ADD INDEX "link-SLAID" ON "Issue"
   AREA "Schema Area"
   INDEX-FIELD "link-SLAID" ASCENDING 
   INDEX-FIELD "IssueDate" DESCENDING 
+
+ADD INDEX "project" ON "Issue" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "isProject" ASCENDING 
+  INDEX-FIELD "prj-eng" ASCENDING 
+  INDEX-FIELD "IssueNumber" ASCENDING 
 
 ADD INDEX "Raised_Login" ON "Issue" 
   AREA "Schema Area"
@@ -3004,6 +3157,11 @@ ADD INDEX "displayOrder" ON "ptp_phase"
   INDEX-FIELD "ProjCode" ASCENDING 
   INDEX-FIELD "DisplayOrder" ASCENDING 
 
+ADD INDEX "phase" ON "ptp_phase" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "PhaseID" ASCENDING 
+
 ADD TABLE "ptp_proj"
   AREA "Schema Area"
   LABEL "Project Template - Project Def"
@@ -3160,6 +3318,11 @@ ADD INDEX "displayOrder" ON "ptp_task"
   INDEX-FIELD "ProjCode" ASCENDING 
   INDEX-FIELD "PhaseID" ASCENDING 
   INDEX-FIELD "DisplayOrder" ASCENDING 
+
+ADD INDEX "task" ON "ptp_task" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "TaskID" ASCENDING 
 
 ADD TABLE "ptt_def"
   AREA "Schema Area"
@@ -4918,4 +5081,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000096984
+0000100530
