@@ -10,6 +10,8 @@
     When        Who         What
     03/05/2006  phoski      Initial
     21/03/2007  phoski      Sort Activity by DATE/CREATE TIME desc
+    03/04/2015  phoski      ActionID = ? - its from a project task so 
+                            use actDescription
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -148,7 +150,9 @@ PROCEDURE process-web-request :
     DEFINE VARIABLE lc-start        AS CHARACTER     NO-UNDO.
     DEFINE VARIABLE lc-Action       AS CHARACTER     NO-UNDO.
     DEFINE VARIABLE lc-Audit        AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE ll-HasClosed    AS LOG      NO-UNDO.
+    DEFINE VARIABLE ll-HasClosed    AS LOGICAL      NO-UNDO.
+    DEFINE VARIABLE lc-descr        AS CHARACTER    NO-UNDO.
+     
 
     ASSIGN
         lc-rowid = get-value("rowid")
@@ -179,9 +183,16 @@ PROCEDURE process-web-request :
         BY b-Query.CreateTime DESCENDING
         :
 
+        IF b-query.ActionID <> ?
+        THEN 
+        DO:
         FIND WebAction 
             WHERE WebAction.ActionID = b-query.ActionID
             NO-LOCK NO-ERROR.
+            ASSIGN lc-descr = WebAction.Description.
+        END.
+        ELSE  ASSIGN lc-descr = b-query.ActDescription.
+        
 
         ASSIGN
             li-duration = 0.
@@ -225,7 +236,7 @@ PROCEDURE process-web-request :
         
             ASSIGN 
                 lc-info = 
-                REPLACE(htmlib-MntTableField(html-encode(WebAction.Description),'left'),'</td>','')
+                REPLACE(htmlib-MntTableField(html-encode(lc-descr),'left'),'</td>','')
                 lc-object = "hdobj" + string(b-query.issActionID).
         
             lc-info = REPLACE(lc-info,"<td","<td colspan=6 ").
@@ -248,7 +259,7 @@ PROCEDURE process-web-request :
             {&out} '</td>' skip.
         END.
         ELSE {&out}
-        REPLACE(htmlib-MntTableField(WebAction.Description,'left'),
+        REPLACE(htmlib-MntTableField(lc-descr,'left'),
             "<td","<td colspan=6 ").
         {&out}
             

@@ -251,7 +251,7 @@ PROCEDURE ip-CreateProject:
             Notes:  																	  
     ------------------------------------------------------------------------------*/
     
-    DO TRANSACTION:
+    DO TRANSACTION ON ERROR UNDO, LEAVE:
          
         REPEAT:
             FIND LAST issue 
@@ -526,14 +526,14 @@ PROCEDURE ip-Validate:
     IF lc-briefdescription = ""
         THEN RUN htmlib-AddErrorMessage(
             'briefdescription', 
-            'You must enter a brief description for the issue',
+            'You must enter a brief description for the project',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
     IF lc-longdescription = ""
         THEN RUN htmlib-AddErrorMessage(
             'longdescription', 
-            'You must enter the details for the issue',
+            'You must enter the details for the project',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
      
@@ -590,9 +590,18 @@ PROCEDURE process-web-request:
         
         RUN ip-Validate( OUTPUT lc-error-field,OUTPUT lc-error-msg ).
         
-        IF lc-error-msg <> "" THEN
+        IF lc-error-msg = "" THEN
         DO:
+            REQUEST_method = "GET".
             
+            RUN ip-CreateProject.
+                       
+            set-user-field("mode","view").
+            set-user-field("source","addproject").
+            set-user-field("issue",STRING(li-issue)).
+            RUN run-web-object IN web-utilities-hdl ("iss/viewproject.p").
+            RETURN.
+           
         END.
         
         

@@ -115,6 +115,12 @@ PROCEDURE prjlib-ProcessTask:
     DEFINE BUFFER ptp_proj  FOR ptp_proj.
     DEFINE BUFFER ptp_phase FOR ptp_phase.
     DEFINE BUFFER ptp_task  FOR ptp_task.
+    DEFINE BUFFER IssAction FOR IssAction.
+    
+    DEFINE VARIABLE lf-Audit    AS DECIMAL NO-UNDO.
+    DEFINE VARIABLE lr-Action   AS ROWID   NO-UNDO.
+    
+    
     
     
     this_block:
@@ -137,7 +143,45 @@ PROCEDURE prjlib-ProcessTask:
         
         FIND ptp_task WHERE ptp_task.taskID = pi-taskid NO-LOCK.
                    
+       /**/
+        
+        CREATE IssAction.
+        ASSIGN 
+            IssAction.actionID     = ? /* There's no action */
+            IssAction.CompanyCode  = Issue.companyCode
+            IssAction.IssueNumber  = issue.IssueNumber
+            IssAction.CreateDate   = TODAY
+            IssAction.CreateTime   = TIME
+            IssAction.CreatedBy    = pc-user
+            IssAction.customerview = NO
+            .
     
+        DO WHILE TRUE:
+            RUN lib/makeaudit.p (
+                "",
+                OUTPUT lf-audit
+                ).
+            IF CAN-FIND(FIRST IssAction
+                WHERE IssAction.IssActionID = lf-audit NO-LOCK)
+                THEN NEXT.
+            ASSIGN
+                IssAction.IssActionID = lf-audit.
+            LEAVE.
+        END.
+        ASSIGN 
+            IssAction.notes        = ptp_task.descr
+            IssAction.ActionStatus = "OPEN"
+            IssAction.ActionDate   = ( Issue.prj-Start + ptp_task.StartDay ) - 1 
+            IssAction.AssignTo     = Issue.AssignTo
+            IssAction.AssignDate   = TODAY
+            IssAction.AssignTime   = TIME.
+       
+        BUFFER-COPY ptp_task TO IssAction.
+         
+        ASSIGN
+            IssAction.ActDescription = ptp_task.Descr
+            IssAction.phaseid = ptp_task.phaseid.
+            
         LEAVE this_block.
     END.
     

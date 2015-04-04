@@ -74,7 +74,7 @@ DEFINE TEMP-TABLE tt NO-UNDO
     FIELD ACode        AS CHARACTER
     FIELD ADescription AS CHARACTER
     FIELD ACount       AS INTEGER
-    FIELD CCount       AS INTEGER   EXTENT 3
+    FIELD CCount       AS INTEGER   EXTENT 4
     INDEX i-ACode IS PRIMARY ACode 
     INDEX i-ACount           ACount DESCENDING ADescription.
 

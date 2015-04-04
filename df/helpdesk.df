@@ -1734,6 +1734,14 @@ ADD FIELD "DisplayOrder" OF "IssAction" AS integer
   MAX-WIDTH 4
   ORDER 250
 
+ADD FIELD "PhaseID" OF "IssAction" AS int64 
+  DESCRIPTION "System Generated "
+  FORMAT "->,>>>,>>>,>>9"
+  INITIAL "0"
+  POSITION 27
+  MAX-WIDTH 8
+  ORDER 260
+
 ADD INDEX "IssueNumber" ON "IssAction" 
   AREA "Schema Area"
   PRIMARY
@@ -5081,4 +5089,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000100530
+0000100698

@@ -346,6 +346,11 @@ FUNCTION htmlib-SimpleExpandBox RETURNS CHARACTER
     pc-Data     AS CHARACTER )  FORWARD.
 
 
+FUNCTION htmlib-SimpleTableRow RETURNS CHARACTER 
+	(pc-label AS CHARACTER,
+	 pc-data  AS CHARACTER,
+	 pc-align AS CHARACTER) FORWARD.
+
 FUNCTION htmlib-StartFieldSet RETURNS CHARACTER
     ( pc-legend AS CHARACTER  )  FORWARD.
 
@@ -2102,6 +2107,31 @@ FUNCTION htmlib-SimpleExpandBox RETURNS CHARACTER
 
 END FUNCTION.
 
+
+FUNCTION htmlib-SimpleTableRow RETURNS CHARACTER 
+	    (  pc-label AS CHARACTER ,
+	       pc-data  AS CHARACTER ,
+	       pc-align AS CHARACTER ):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+        DEFINE VARIABLE lc-row  AS CHARACTER NO-UNDO.
+        
+        IF pc-align = ""
+        THEN pc-align = "left".
+        
+        ASSIGN
+            lc-row = '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            + htmlib-SideLabel(pc-label) + '</TD>'.
+    
+        ASSIGN
+            lc-row = lc-row +
+            dynamic-function("htmlib-TableField",REPLACE(pc-data,"~n","<br />"),pc-align) + '~n'.
+            
+        RETURN lc-row.
+		
+END FUNCTION.
 
 FUNCTION htmlib-StartFieldSet RETURNS CHARACTER
     ( pc-legend AS CHARACTER  ) :
