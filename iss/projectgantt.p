@@ -1,20 +1,23 @@
 /***********************************************************************
 
-    Program:        iss/viewproject.p
+    Program:        iss/projectgannt.p
     
-    Purpose:        View Project
+    Purpose:        Edit/View Project Gannt
     
     Notes:
     
     
     When        Who         What
-    04/04/2015  phoski      Initial
+    05/04/2015  phoski      Initial
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
+
 DEFINE VARIABLE lc-error-field      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-error-msg        AS CHARACTER NO-UNDO.
+
+
 
 DEFINE VARIABLE li-issue            AS INT       NO-UNDO.
 
@@ -39,6 +42,15 @@ PROCEDURE ip-HTM-Header:
     ------------------------------------------------------------------------------*/
     DEFINE OUTPUT PARAMETER pc-return       AS CHARACTER NO-UNDO.
     
+    
+    pc-return = '~n<script src="/asset/gantt/codebase/dhtmlxgantt.js" type="text/javascript" charset="utf-8"></script>~n' 
+                +
+                '<link rel="stylesheet" href="/asset/gantt/codebase/dhtmlxgantt.css" type="text/css" media="screen" title="no title" charset="utf-8">~n'
+                +
+                '~n<script src="/asset/gantt/samples/common/testdata.js" type="text/javascript" charset="utf-8"></script>~n' 
+                .
+                
+   
 
 END PROCEDURE.
 
@@ -137,7 +149,13 @@ PROCEDURE ip-ProjectPage:
            htmlib-EndTable()
            skip.
     
-    
+    {&out} SKIP
+         '<div id="gantt_here" style="width:100%; height:1800px"></div>' skip
+         '<script type="text/javascript">' SKIP
+         'gantt.init("gantt_here");' SKIP
+         'gantt.parse(demo_tasks);' SKIP
+         '</script>' SKIP.
+         
            
     {&out} htmlib-EndForm() skip.
 

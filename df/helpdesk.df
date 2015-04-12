@@ -1393,6 +1393,89 @@ ADD INDEX "Company" ON "EmailH"
   INDEX-FIELD "RcpDate" DESCENDING 
   INDEX-FIELD "RcpTime" DESCENDING 
 
+ADD TABLE "eSched"
+  AREA "Schema Area"
+  LABEL "Engineer Schedule"
+  DUMP-NAME "eSched"
+
+ADD FIELD "CompanyCode" OF "eSched" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company Code"
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "IssueNumber" OF "eSched" AS integer 
+  FORMAT "99999999"
+  INITIAL "0"
+  LABEL "Issue No"
+  POSITION 3
+  MAX-WIDTH 4
+  ORDER 20
+
+ADD FIELD "AssignTo" OF "eSched" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Assigned To"
+  POSITION 5
+  MAX-WIDTH 16
+  ORDER 40
+
+ADD FIELD "ActionDate" OF "eSched" AS date 
+  FORMAT "99/99/99"
+  INITIAL ?
+  POSITION 6
+  MAX-WIDTH 4
+  ORDER 50
+
+ADD FIELD "EstDuration" OF "eSched" AS integer 
+  DESCRIPTION "in seconds although always rounded to mins"
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Estimated Duration"
+  POSITION 7
+  MAX-WIDTH 4
+  ORDER 60
+
+ADD FIELD "IssActionID" OF "eSched" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  POSITION 8
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 70
+
+ADD FIELD "eSchedID" OF "eSched" AS int64 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 9
+  MAX-WIDTH 8
+  ORDER 80
+
+ADD INDEX "prim" ON "eSched" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "eSchedID" ASCENDING 
+
+ADD INDEX "Action" ON "eSched" 
+  AREA "Schema Area"
+  INDEX-FIELD "IssActionID" ASCENDING 
+  INDEX-FIELD "ActionDate" ASCENDING 
+
+ADD INDEX "Engineer" ON "eSched" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "AssignTo" ASCENDING 
+  INDEX-FIELD "ActionDate" ASCENDING 
+
+ADD INDEX "issue" ON "eSched" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "IssueNumber" ASCENDING 
+  INDEX-FIELD "ActionDate" ASCENDING 
+
 ADD TABLE "gempty"
   AREA "Schema Area"
   DUMP-NAME "gempty"
@@ -5089,4 +5172,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000100698
+0000102448

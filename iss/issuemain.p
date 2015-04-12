@@ -17,6 +17,7 @@
     17/02/2015  phoski      Contract default problem
     21/02/2015  phoski      Billing flag problem and finally remove all DJS 
     29/03/2015  phoski      Complex Project Class 
+    08/04/2015  phoski      Complex Project -  Main work begins
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -161,6 +162,8 @@ FUNCTION fn-DescribeSLA RETURNS CHARACTER
 {lib/htmlib.i}
 {iss/issue.i}
 {lib/ticket.i}
+{lib/project.i}
+
 
 
 
@@ -445,6 +448,18 @@ END PROCEDURE.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-ip-HeaderInclude-Calendar) = 0 &THEN
+
+PROCEDURE ip-GanttPage:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    
+   {&out} 
+        '<div id="gantt_here" style="width:100%; height:1800px"></div>' SKIP.
+
+  
+END PROCEDURE.
 
 PROCEDURE ip-HeaderInclude-Calendar :
 /*------------------------------------------------------------------------------
@@ -783,6 +798,7 @@ PROCEDURE ip-Javascript:
            'var ActionBox1URL = "' appurl '/iss/ajax/actionbox.p?box=1&rowid=' + lc-rowid '"' SKIP
            'var ActionBox2URL = "' appurl '/iss/ajax/actionbox.p?box=2&rowid=' + lc-rowid '"' skip
            'var IssueROWID = "' string(rowid(b-table)) '"' SKIP
+           'var ganttURL = "' appurl '/iss/ajax/gantt.p?rowid=' + lc-rowid '"' SKIP
            
        '</script>' skip.
 
@@ -792,10 +808,13 @@ PROCEDURE ip-Javascript:
     '<script type="text/javascript" src="/scripts/js/issue/custom.js?v=1.0.0"></script>' skip
         '<script language="JavaScript" src="/scripts/js/tree.js?v=1.0.0"></script>' skip
         '<script language="JavaScript" src="/scripts/js/prototype.js?v=1.0.0"></script>' skip
-        '<script language="JavaScript" src="/scripts/js/scriptaculous.js?v=1.0.0"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/scriptaculous.js?v=1.0.0"></script>' SKIP
+        '<script type="text/javascript" src="/asset/jquery/jquery-1.11.2.min.js"></script>' skip
         '<script type="text/javascript" src="/scripts/js/tabber.js?v=1.0.0"></script>' skip
         '<link rel="stylesheet" href="/style/tab.css" TYPE="text/css" MEDIA="screen">' skip
-        '<script language="JavaScript" src="/scripts/js/standard.js?v=1.0.0"></script>' skip
+        '<script language="JavaScript" src="/scripts/js/standard.js?v=1.0.0"></script>' SKIP
+        '<script src="/asset/gantt/codebase/dhtmlxgantt.js" type="text/javascript" charset="utf-8"></script>' SKIP
+        '<link rel="stylesheet" href="/asset/gantt/codebase/dhtmlxgantt.css" type="text/css" media="screen" title="no title" charset="utf-8">' SKIP
          DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
 
     
@@ -1622,6 +1641,20 @@ PROCEDURE process-web-request :
     '<div id="IDCustomerAjax">Loading Notes</div>'.
     {&out} 
     '</div>'.
+    /*
+    *** Complex Project Gannt
+    */
+    
+    IF b-table.iClass = lc-global-iclass-complex THEN
+    DO:
+        {&out}
+            '<div class="tabbertab" title="Project Gantt">' SKIP.
+         RUN ip-GanttPage.   
+        {&out} 
+            '</div>' SKIP.
+             
+    END.
+    
 
 
     {&out} '</div>' skip.           /* tabber */
