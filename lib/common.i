@@ -15,6 +15,7 @@
     03/12/2014  phoski      Eng Type 
     20/03/2015  phoski      com-EndTimeCalc
     27/03/2015  phoski      project stuff
+    18/04/2015  phoski      com-ConvertJSDate 
    
 ***********************************************************************/
 
@@ -189,6 +190,9 @@ FUNCTION com-CatName RETURNS CHARACTER
 FUNCTION com-CheckSystemSetup RETURNS LOGICAL
     ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
+
+FUNCTION com-ConvertJSDate RETURNS DATE 
+	(pc-date AS CHARACTER) FORWARD.
 
 FUNCTION com-CookieDate RETURNS DATE
     ( pc-user AS CHARACTER )  FORWARD.
@@ -1962,6 +1966,34 @@ no-undo.
     END.
 END FUNCTION.
 
+
+FUNCTION com-ConvertJSDate RETURNS DATE 
+	    (  pc-date AS CHARACTER  ):
+/*------------------------------------------------------------------------------
+        Purpose:                                                                      
+        Notes:                                                                        
+------------------------------------------------------------------------------*/
+    DEFINE VARIABLE ld-date AS DATE NO-UNDO.
+    DEFINE VARIABLE li-month    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-day      AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-year     AS INTEGER NO-UNDO.
+    
+    pc-date = REPLACE(TRIM(pc-date)," ",",").
+       
+    ASSIGN
+        li-day = INTEGER(ENTRY(3,pc-date))
+        li-year = INTEGER(ENTRY(4,pc-date))
+        li-month = LOOKUP(ENTRY(2,pc-date),"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec")
+        .   
+    ASSIGN
+        ld-date = DATE(li-month,li-day,li-year) NO-ERROR.
+        
+    RETURN ld-date.
+        
+
+
+		
+END FUNCTION.
 
 FUNCTION com-CookieDate RETURNS DATE
     ( pc-user AS CHARACTER ) :

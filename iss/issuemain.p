@@ -798,7 +798,8 @@ PROCEDURE ip-Javascript:
            'var ActionBox1URL = "' appurl '/iss/ajax/actionbox.p?box=1&rowid=' + lc-rowid '"' SKIP
            'var ActionBox2URL = "' appurl '/iss/ajax/actionbox.p?box=2&rowid=' + lc-rowid '"' skip
            'var IssueROWID = "' string(rowid(b-table)) '"' SKIP
-           'var ganttURL = "' appurl '/iss/ajax/gantt.p?rowid=' + lc-rowid '"' SKIP
+           'var ganttURL = "' appurl '/iss/ajax/ganttupd.p?mode=build&rowid=' + lc-rowid '"' SKIP
+           'var ganttupdURL = "' appurl '/iss/ajax/ganttupd.p?rowid=' + lc-rowid '"' SKIP
            
        '</script>' skip.
 
