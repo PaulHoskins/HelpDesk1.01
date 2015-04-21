@@ -1465,16 +1465,15 @@ ADD INDEX "prim" ON "eSched"
   PRIMARY
   INDEX-FIELD "eSchedID" ASCENDING 
 
-ADD INDEX "Action" ON "eSched" 
-  AREA "Schema Area"
-  INDEX-FIELD "IssActionID" ASCENDING 
-  INDEX-FIELD "ActionDate" ASCENDING 
-
 ADD INDEX "Engineer" ON "eSched" 
   AREA "Schema Area"
   INDEX-FIELD "CompanyCode" ASCENDING 
   INDEX-FIELD "AssignTo" ASCENDING 
   INDEX-FIELD "ActionDate" ASCENDING 
+
+ADD INDEX "IssActionID" ON "eSched" 
+  AREA "Schema Area"
+  INDEX-FIELD "IssActionID" ASCENDING 
 
 ADD INDEX "issue" ON "eSched" 
   AREA "Schema Area"
@@ -1830,6 +1829,15 @@ ADD FIELD "PhaseID" OF "IssAction" AS int64
   POSITION 27
   MAX-WIDTH 8
   ORDER 260
+
+ADD FIELD "WorkDuration" OF "IssAction" AS integer 
+  DESCRIPTION "in seconds although always rounded to mins"
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Work Duration"
+  POSITION 28
+  MAX-WIDTH 4
+  ORDER 270
 
 ADD INDEX "IssueNumber" ON "IssAction" 
   AREA "Schema Area"
@@ -5178,4 +5186,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000102543
+0000102730

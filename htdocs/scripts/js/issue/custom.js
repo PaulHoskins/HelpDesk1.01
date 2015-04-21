@@ -211,8 +211,7 @@ function ganttBuild () {
 		    	dhtmlx.message({type:"error", text:"You can not edit a project phase"});
 		   		return false; 	
 		    }
-		    task.my_template = "<span id='title1'>Engineer(s): </span>"+ task.users;
-		    //+"<span id='title2'>   Progress: </span>"+ task.progress*100 +" %";
+		    task.my_template = "<span id='title1'>Engineer(s): </span>"+ task.users + "<span id='title2'>  Duration: </span>"+ task.cduration;
 		    return true;
 			});
 			gantt.init("gantt_here");

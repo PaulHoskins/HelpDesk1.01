@@ -34,6 +34,7 @@ FOR EACH tt-proj-tasks NO-LOCK:
     ', users:"'  tt-proj-tasks.EngName '"'
     ', engcode:"'  tt-proj-tasks.EngCode '"'
     ', crow:"'  tt-proj-tasks.cRow '"'
+    ', cduration:"'  tt-proj-tasks.cDuration '"'
     ', progress:' STRING(tt-proj-tasks.prog) ', open: true'.
         
     IF tt-proj-tasks.parentID = 0
