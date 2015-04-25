@@ -119,7 +119,7 @@ PROCEDURE ip-ProjectPage:
             htmlib-MntTableField(html-encode(b-task.actdescription),'left')
             htmlib-MntTableField(string(b-task.actiondate,'99/99/9999'),'left')
             htmlib-MntTableField(string(b-task.StartDay),'right')
-              htmlib-MntTableField(com-TimeToString(b-task.EstDuration),'right') 
+              htmlib-MntTableField(com-TimeToString(b-task.PlanDuration),'right') 
             htmlib-MntTableField(IF b-task.IgnoreWeekend THEN "Yes" ELSE "No",'left')
             htmlib-MntTableField(string(b-task.ActionGroup),'right') 
             htmlib-MntTableField(html-encode(

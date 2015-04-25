@@ -17,6 +17,7 @@
     30/04/2014  phoski      Custview link for customers   
     11/12/2014  phoski      Renewal user 
     08/03/2015  phoski      Issue log for customer users      
+    25/04/2015  phoski      Project Schedule
                               
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -168,7 +169,20 @@ PROCEDURE ip-InternalUser :
         '<br /><a class="tlink" style="width: 100%;" href="' appurl
         '/time/diaryframe.p' lc-random '" target="mainwindow" title="Diary View">' skip
                 'Your Diary' 
-                '</a><br /><br />' skip.      
+                '</a><br /><br />' skip.     
+                
+         IF DYNAMIC-FUNCTION("com-HasSchedule",webuser.CompanyCode,WebUser.LoginID) > 0 THEN
+         DO:
+             ASSIGN lc-enc-key =
+               DYNAMIC-FUNCTION("sysec-EncodeValue",WebUser.LoginID,TODAY,"ScheduleKey",STRING(ROWID(webuser))).
+                 
+            {&out} 
+                '<br /><a class="tlink" style="width: 100%;" href="' appurl
+                '/sched/yourschedule.p?engineer=' url-encode(lc-enc-key,"Query")  '" target="mainwindow" title="Project Schedule">' skip
+                'Your Project Schedule' 
+                    '</a><br /><br />' skip. 
+         END.        
+                 
     END.
 
 

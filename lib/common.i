@@ -137,7 +137,7 @@ DEFINE VARIABLE li-global-sla-ok              AS INTEGER   INITIAL 30 NO-UNDO.
 DEFINE VARIABLE li-global-sla-na              AS INTEGER   INITIAL 99 NO-UNDO.
 
 
-
+DEFINE VARIABLE li-global-sched-days-back     AS INTEGER   INITIAL 100 NO-UNDO.
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -248,6 +248,10 @@ FUNCTION com-GenTabDesc RETURNS CHARACTER
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
     ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
+
+FUNCTION com-HasSchedule RETURNS INTEGER 
+	(pc-companyCode AS CHARACTER,
+	 pc-LoginId     AS CHARACTER) FORWARD.
 
 FUNCTION com-Initialise RETURNS LOGICAL
     ( /* parameter-definitions */ )  FORWARD.
@@ -2273,6 +2277,33 @@ FUNCTION com-GetDefaultCategory RETURNS CHARACTER
 
 END FUNCTION.
 
+
+FUNCTION com-HasSchedule RETURNS INTEGER 
+	    ( pc-companyCode AS CHARACTER ,
+	      pc-LoginId     AS CHARACTER ):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+
+		DEFINE VARIABLE li-count AS INTEGER NO-UNDO.
+        
+        DEFINE BUFFER eSched    FOR eSched.
+        
+        FOR EACH eSched NO-LOCK
+            WHERE eSched.CompanyCode = pc-CompanyCode
+              AND eSched.AssignTo = pc-LoginID
+              AND eSched.ActionDate >= ( TODAY - li-global-sched-days-back )
+              :
+            ASSIGN
+                li-count = li-count + 1. 
+        END.
+        
+		RETURN li-count.
+
+
+		
+END FUNCTION.
 
 FUNCTION com-Initialise RETURNS LOGICAL
     ( /* parameter-definitions */ ) :

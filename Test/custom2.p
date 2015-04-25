@@ -21,7 +21,9 @@
 
 /* ***************************  Main Block  *************************** */
 
-FOR EACH Company:
-    DELETE Company.
+FOR EACH IssAction:
+    
+        
+         
 END.
- 
+         

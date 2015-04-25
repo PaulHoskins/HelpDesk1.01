@@ -1426,23 +1426,14 @@ ADD FIELD "AssignTo" OF "eSched" AS character
   LABEL "Assigned To"
   POSITION 5
   MAX-WIDTH 16
-  ORDER 40
+  ORDER 30
 
 ADD FIELD "ActionDate" OF "eSched" AS date 
   FORMAT "99/99/99"
   INITIAL ?
   POSITION 6
   MAX-WIDTH 4
-  ORDER 50
-
-ADD FIELD "EstDuration" OF "eSched" AS integer 
-  DESCRIPTION "in seconds although always rounded to mins"
-  FORMAT "->,>>>,>>9"
-  INITIAL "0"
-  LABEL "Estimated Duration"
-  POSITION 7
-  MAX-WIDTH 4
-  ORDER 60
+  ORDER 40
 
 ADD FIELD "IssActionID" OF "eSched" AS decimal 
   FORMAT "->>,>>9.99"
@@ -1450,14 +1441,14 @@ ADD FIELD "IssActionID" OF "eSched" AS decimal
   POSITION 8
   MAX-WIDTH 17
   DECIMALS 2
-  ORDER 70
+  ORDER 50
 
 ADD FIELD "eSchedID" OF "eSched" AS int64 
   FORMAT "->,>>>,>>9"
   INITIAL "0"
   POSITION 9
   MAX-WIDTH 8
-  ORDER 80
+  ORDER 60
 
 ADD INDEX "prim" ON "eSched" 
   AREA "Schema Area"
@@ -1781,22 +1772,13 @@ ADD FIELD "StartDay" OF "IssAction" AS integer
   MAX-WIDTH 4
   ORDER 200
 
-ADD FIELD "EstDuration" OF "IssAction" AS integer 
-  DESCRIPTION "in seconds although always rounded to mins"
-  FORMAT "->,>>>,>>9"
-  INITIAL "0"
-  LABEL "Estimated Duration"
-  POSITION 22
-  MAX-WIDTH 4
-  ORDER 210
-
 ADD FIELD "IgnoreWeekend" OF "IssAction" AS logical 
   FORMAT "yes/no"
   INITIAL "no"
   LABEL "Ignore Weekend?"
   POSITION 23
   MAX-WIDTH 1
-  ORDER 220
+  ORDER 210
 
 ADD FIELD "ActionGroup" OF "IssAction" AS integer 
   FORMAT "->,>>>,>>9"
@@ -1804,7 +1786,7 @@ ADD FIELD "ActionGroup" OF "IssAction" AS integer
   LABEL "Action Group"
   POSITION 24
   MAX-WIDTH 4
-  ORDER 230
+  ORDER 220
 
 ADD FIELD "TaskID" OF "IssAction" AS int64 
   DESCRIPTION "if > 0 then its a Complex project action"
@@ -1812,7 +1794,7 @@ ADD FIELD "TaskID" OF "IssAction" AS int64
   INITIAL "0"
   POSITION 25
   MAX-WIDTH 8
-  ORDER 240
+  ORDER 230
 
 ADD FIELD "DisplayOrder" OF "IssAction" AS integer 
   FORMAT "->,>>>,>>9"
@@ -1820,7 +1802,7 @@ ADD FIELD "DisplayOrder" OF "IssAction" AS integer
   LABEL "Dsiplay Order"
   POSITION 26
   MAX-WIDTH 4
-  ORDER 250
+  ORDER 240
 
 ADD FIELD "PhaseID" OF "IssAction" AS int64 
   DESCRIPTION "System Generated "
@@ -1828,7 +1810,7 @@ ADD FIELD "PhaseID" OF "IssAction" AS int64
   INITIAL "0"
   POSITION 27
   MAX-WIDTH 8
-  ORDER 260
+  ORDER 250
 
 ADD FIELD "WorkDuration" OF "IssAction" AS integer 
   DESCRIPTION "in seconds although always rounded to mins"
@@ -1836,6 +1818,15 @@ ADD FIELD "WorkDuration" OF "IssAction" AS integer
   INITIAL "0"
   LABEL "Work Duration"
   POSITION 28
+  MAX-WIDTH 4
+  ORDER 260
+
+ADD FIELD "PlanDuration" OF "IssAction" AS integer 
+  DESCRIPTION "in seconds although always rounded to mins"
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Planned Duration"
+  POSITION 29
   MAX-WIDTH 4
   ORDER 270
 
@@ -5186,4 +5177,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000102730
+0000102509

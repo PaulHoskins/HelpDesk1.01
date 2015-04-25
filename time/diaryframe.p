@@ -1,6 +1,3 @@
-&ANALYZE-SUSPEND _VERSION-NUMBER AB_v9r12
-&ANALYZE-RESUME
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _DEFINITIONS Procedure 
 /***********************************************************************
 
     Program:        time/diaryframe.p
@@ -23,109 +20,106 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-def var lc-error-field    as char     no-undo.
-def var lc-error-mess     as char     no-undo.
-def var lc-rowid          as char     no-undo.
-def var li-max-lines      as int initial 12 no-undo.
-def var lr-first-row      as rowid    no-undo.
-def var lr-last-row       as rowid    no-undo.
-def var lc-mainText       as char     no-undo.
-def var lc-timeText       as char     no-undo.
-def var lc-innerText      as char     no-undo.
-def var lc-sliderText     as char     no-undo.
-def var lc-otherText      as char     no-undo.
-def var timeSPixels       as char     no-undo.
-def var timeFinish        as dec      no-undo.
-def var timeFPixels       as char     no-undo.
-def var daysIssues        as int      no-undo.
-def var issueWidth        as int      no-undo.
-def var issueLeft         as int      no-undo.
-def var timeStart         as dec      no-undo.
-def var timeEnd           as dec      no-undo.
-def var offSetCol         as int      no-undo.
-def var offSetWidth       as int      no-undo.
-def var offRowid          as rowid    no-undo. 
-def var p-cx              as char initial "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40"  no-undo.
-def var p-vx              as int      no-undo.
-def var p-vz              as int      no-undo.
-def var p-zx              as int      no-undo. 
-def var colWheel          as char     no-undo.
+DEFINE VARIABLE lc-error-field  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-mess   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-max-lines    AS INTEGER   INITIAL 12 NO-UNDO.
+DEFINE VARIABLE lr-first-row    AS ROWID     NO-UNDO.
+DEFINE VARIABLE lr-last-row     AS ROWID     NO-UNDO.
+DEFINE VARIABLE lc-mainText     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-timeText     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-innerText    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sliderText   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-otherText    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE timeSPixels     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE timeFinish      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE timeFPixels     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE daysIssues      AS INTEGER   NO-UNDO.
+DEFINE VARIABLE issueWidth      AS INTEGER   NO-UNDO.
+DEFINE VARIABLE issueLeft       AS INTEGER   NO-UNDO.
+DEFINE VARIABLE timeStart       AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE timeEnd         AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE offSetCol       AS INTEGER   NO-UNDO.
+DEFINE VARIABLE offSetWidth     AS INTEGER   NO-UNDO.
+DEFINE VARIABLE offRowid        AS ROWID     NO-UNDO. 
+DEFINE VARIABLE p-cx            AS CHARACTER INITIAL "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40" NO-UNDO.
+DEFINE VARIABLE p-vx            AS INTEGER   NO-UNDO.
+DEFINE VARIABLE p-vz            AS INTEGER   NO-UNDO.
+DEFINE VARIABLE p-zx            AS INTEGER   NO-UNDO. 
+DEFINE VARIABLE colWheel        AS CHARACTER NO-UNDO.
 
 
 /* WORKING VARS */
-def var vx                 as int     no-undo.
-def var yx                 as int     no-undo.
-def var zx                 as int     no-undo.
-def var mx                 as int     no-undo.
-def var cx                 as int     no-undo.
-def var AMPM               as char format "xx" extent 2 initial ["AM","PM"]  no-undo.
-def var ap                 as int     no-undo.
-def var dayDate            as date    no-undo.
-def var bubbleNo           as int initial 1  no-undo.
-def var dayWidth           as char    no-undo.
-def var currentDay         as date    no-undo.  
-def var viewerDay          as date    no-undo.
-def var dayDesc            as char    no-undo.
-def var dayNum             as int     no-undo.
-def var dayList            as char    format "x(9)" initial " Sunday , Monday , Tuesday , Wednesday , Thursday , Friday , Saturday ".
-def var dayRange           as int     no-undo.
-def var hourFrom           as int     no-undo.
-def var hourTo             as int     no-undo.
-def var coreHourFrom       as int     no-undo.
-def var coreHourTo         as int     no-undo.
-def var incWeekend         as log     no-undo.
-def var userList           as char    no-undo.
-def var saveSettings       as log     no-undo.
-def var viewShowY          as int     no-undo.
-def var viewshowX          as int     no-undo.
+DEFINE VARIABLE vx              AS INTEGER   NO-UNDO.
+DEFINE VARIABLE yx              AS INTEGER   NO-UNDO.
+DEFINE VARIABLE zx              AS INTEGER   NO-UNDO.
+DEFINE VARIABLE mx              AS INTEGER   NO-UNDO.
+DEFINE VARIABLE cx              AS INTEGER   NO-UNDO.
+DEFINE VARIABLE AMPM            AS CHARACTER FORMAT "xx" EXTENT 2 INITIAL ["AM","PM"] NO-UNDO.
+DEFINE VARIABLE ap              AS INTEGER   NO-UNDO.
+DEFINE VARIABLE dayDate         AS DATE      NO-UNDO.
+DEFINE VARIABLE bubbleNo        AS INTEGER   INITIAL 1 NO-UNDO.
+DEFINE VARIABLE dayWidth        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE currentDay      AS DATE      NO-UNDO.  
+DEFINE VARIABLE viewerDay       AS DATE      NO-UNDO.
+DEFINE VARIABLE dayDesc         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE dayNum          AS INTEGER   NO-UNDO.
+DEFINE VARIABLE dayList         AS CHARACTER FORMAT "x(9)" INITIAL " Sunday , Monday , Tuesday , Wednesday , Thursday , Friday , Saturday ".
+DEFINE VARIABLE dayRange        AS INTEGER   NO-UNDO.
+DEFINE VARIABLE hourFrom        AS INTEGER   NO-UNDO.
+DEFINE VARIABLE hourTo          AS INTEGER   NO-UNDO.
+DEFINE VARIABLE coreHourFrom    AS INTEGER   NO-UNDO.
+DEFINE VARIABLE coreHourTo      AS INTEGER   NO-UNDO.
+DEFINE VARIABLE incWeekend      AS LOG       NO-UNDO.
+DEFINE VARIABLE userList        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE saveSettings    AS LOG       NO-UNDO.
+DEFINE VARIABLE viewShowY       AS INTEGER   NO-UNDO.
+DEFINE VARIABLE viewshowX       AS INTEGER   NO-UNDO.
 
 /* PARAM VARS */
-def var lc-lodate           as char   no-undo. 
-def var lc-hidate           as char   no-undo. 
-def var lc-dispDate         as char   no-undo.
-def var lc-dateDate         as char   no-undo.
-def var lc-viewerDay        as char   no-undo. 
-def var lc-dayRange         as char   no-undo. 
-def var lc-coreHourFrom     as char   no-undo. 
-def var lc-coreHourTo       as char   no-undo. 
-def var lc-hourFrom         as char   no-undo. 
-def var lc-hourTo           as char   no-undo. 
-def var lc-incWeekend       as char   no-undo. 
-def var lc-mode             as char   no-undo.
-def var lc-userList         as char   no-undo.
-def var lc-saveSettings     as char   no-undo.
-def var li-blockheight      as int    no-undo.
-def var lc-blockheight      as char   no-undo.
-def var li-offsetheight     as int    no-undo.
-def var li-blockwidth       as int    no-undo.
-def var lc-viewShowY        as char   no-undo.
-def var lc-viewshowX        as char   no-undo.
+DEFINE VARIABLE lc-lodate       AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-hidate       AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-dispDate     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-dateDate     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-viewerDay    AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-dayRange     AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-coreHourFrom AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-coreHourTo   AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-hourFrom     AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-hourTo       AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-incWeekend   AS CHARACTER NO-UNDO. 
+DEFINE VARIABLE lc-mode         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-userList     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-saveSettings AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-blockheight  AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-blockheight  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-offsetheight AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-blockwidth   AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-viewShowY    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-viewshowX    AS CHARACTER NO-UNDO.
 
 /*  TABLES  */
 
-def temp-table DE like DiaryEvents
-field idRow               as rowid
-field eventID             as char format "xx"
-field overLap             as char format "x(9)" 
-field comment             as char
-field columnID            as int format "z9"
-field issueLeft           as int
-field issueWidth          as int.
+DEFINE TEMP-TABLE DE LIKE DiaryEvents
+    FIELD idRow      AS ROWID
+    FIELD eventID    AS CHARACTER FORMAT "xx"
+    FIELD overLap    AS CHARACTER FORMAT "x(9)" 
+    FIELD comment    AS CHARACTER
+    FIELD columnID   AS INTEGER   FORMAT "z9"
+    FIELD issueLeft  AS INTEGER
+    FIELD issueWidth AS INTEGER.
 
-def buffer bDE            for DE.
-def buffer bbDE           for DE.
-def buffer bDiaryEvents   for DiaryEvents.
-def buffer b-query        for DiaryEvents.
-def buffer b-search       for DiaryEvents.
-def query q               for b-query scrolling.
+DEFINE BUFFER bDE          FOR DE.
+DEFINE BUFFER bbDE         FOR DE.
+DEFINE BUFFER bDiaryEvents FOR DiaryEvents.
+DEFINE BUFFER b-query      FOR DiaryEvents.
+DEFINE BUFFER b-search     FOR DiaryEvents.
+DEFINE QUERY q               FOR b-query SCROLLING.
 
-def temp-table DDEE       like DiaryEvents.
-
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
+DEFINE TEMP-TABLE DDEE LIKE DiaryEvents.
 
 
-&ANALYZE-SUSPEND _UIB-PREPROCESSOR-BLOCK 
+
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -134,95 +128,67 @@ def temp-table DDEE       like DiaryEvents.
 
 
 
-/* _UIB-PREPROCESSOR-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* ************************  Function Prototypes ********************** */
 
 &IF DEFINED(EXCLUDE-dateFormat) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD dateFormat Procedure 
 FUNCTION dateFormat RETURNS CHARACTER
-  ( params as date )  FORWARD.
+    ( params AS DATE )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-fnText) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD fnText Procedure 
 FUNCTION fnText RETURNS CHARACTER
-  ( pf-knbid as dec,
-    pi-count as int )  FORWARD.
+    ( pf-knbid AS DECIMAL,
+    pi-count AS INTEGER )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-DayDate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD Format-Select-DayDate Procedure 
 FUNCTION Format-Select-DayDate RETURNS CHARACTER
-  ( pc-htm as char  )  FORWARD.
+    ( pc-htm AS CHARACTER  )  FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-timeFormat) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION-FORWARD timeFormat Procedure 
 FUNCTION timeFormat RETURNS CHARACTER
- (param1 as int) FORWARD.
+    (param1 AS INTEGER) FORWARD.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
 
-&ANALYZE-SUSPEND _PROCEDURE-SETTINGS
-/* Settings for THIS-PROCEDURE
-   Type: Procedure
-   Allow: 
-   Frames: 0
-   Add Fields to: Neither
-   Other Settings: CODE-ONLY COMPILE
- */
-&ANALYZE-RESUME _END-PROCEDURE-SETTINGS
+
 
 /* *************************  Create Window  ************************** */
 
-&ANALYZE-SUSPEND _CREATE-WINDOW
 /* DESIGN Window definition (used by the UIB) 
   CREATE WINDOW Procedure ASSIGN
          HEIGHT             = 4.81
          WIDTH              = 37.14.
 /* END WINDOW DEFINITION */
                                                                         */
-&ANALYZE-RESUME
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _INCLUDED-LIB Procedure 
 /* ************************* Included-Libraries *********************** */
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
  
 
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _CUSTOM _MAIN-BLOCK Procedure 
 
 
 /* ************************  Main Code Block  *********************** */
@@ -231,30 +197,30 @@ FUNCTION timeFormat RETURNS CHARACTER
 
 {lib/checkloggedin.i}
 
-if can-find(first DiaryParams no-lock                                    
-            where DiaryParams.CompanyCode = lc-global-company           
-            and   DiaryParams.LoginID     = lc-global-user) 
- then  find first DiaryParams no-lock 
-            where DiaryParams.CompanyCode = lc-global-company 
-            and   DiaryParams.LoginID     = lc-global-user no-error.
- else  find first DiaryParams no-lock 
-            where DiaryParams.CompanyCode = lc-global-company 
-            and   DiaryParams.LoginID     = "system" no-error.
+IF CAN-FIND(FIRST DiaryParams NO-LOCK                                    
+    WHERE DiaryParams.CompanyCode = lc-global-company           
+    AND   DiaryParams.LoginID     = lc-global-user) 
+    THEN  FIND FIRST DiaryParams NO-LOCK 
+        WHERE DiaryParams.CompanyCode = lc-global-company 
+        AND   DiaryParams.LoginID     = lc-global-user NO-ERROR.
+ELSE  FIND FIRST DiaryParams NO-LOCK 
+        WHERE DiaryParams.CompanyCode = lc-global-company 
+        AND   DiaryParams.LoginID     = "system" NO-ERROR.
 
 
-assign
-  lc-mode             = get-value("mode")
-  lc-viewerDay        = get-value("viewerDay")
-  lc-dayRange         = get-value("dayRange")
-  lc-userList         = get-value("userList")
-  lc-coreHourFrom     = get-value("coreHourFrom")
-  lc-coreHourTo       = get-value("coreHourTo")
-  lc-hourFrom         = get-value("hourFrom")
-  lc-hourTo           = get-value("hourTo")
-  lc-incWeekend       = get-value("incWeekend")
-  lc-viewShowY        = get-value("viewShowY")
-  lc-viewShowX        = get-value("viewShowX")
-  lc-saveSettings     = get-value("saveSettings").
+ASSIGN
+    lc-mode             = get-value("mode")
+    lc-viewerDay        = get-value("viewerDay")
+    lc-dayRange         = get-value("dayRange")
+    lc-userList         = get-value("userList")
+    lc-coreHourFrom     = get-value("coreHourFrom")
+    lc-coreHourTo       = get-value("coreHourTo")
+    lc-hourFrom         = get-value("hourFrom")
+    lc-hourTo           = get-value("hourTo")
+    lc-incWeekend       = get-value("incWeekend")
+    lc-viewShowY        = get-value("viewShowY")
+    lc-viewShowX        = get-value("viewShowX")
+    lc-saveSettings     = get-value("saveSettings").
 
 /*  output to "C:\temp\djs2.txt" append.                 */
 /*  put unformatted                                      */
@@ -274,56 +240,56 @@ assign
 /*  output close.                                        */
 
 
-if lc-mode = "refresh" then
-  assign
-    viewerDay       = date(lc-viewerDay)
-    lc-mode         = "refresh"
-    dayRange        = integer(lc-dayRange)
-    coreHourFrom    = integer(lc-coreHourFrom)
-    coreHourTo      = integer(lc-coreHourTo)
-    hourFrom        = integer(lc-hourFrom)
-    hourTo          = integer(lc-hourTo)
-    incWeekend      = lc-incWeekend = "checked"
-    viewShowY       = integer(lc-viewShowY)
-    viewShowX       = integer(lc-viewShowX)
-    saveSettings    = lc-saveSettings = "checked"
-    lc-userList     = lc-userList
-  .
-else 
-  assign 
-    viewerDay       = today
-    lc-mode         = "view"
-    dayRange        = integer(DiaryParams.initialDays)
-    coreHourFrom    = integer(substr(DiaryParams.coreHours,1,4))
-    coreHourTo      = integer(substr(DiaryParams.coreHours,5,4))
-    hourFrom        = integer(substr(DiaryParams.displayHours,1,4))
-    hourTo          = integer(substr(DiaryParams.displayHours,5,4))
-    incWeekend      = DiaryParams.incWeekends 
-    viewShowY       = DiaryParams.viewShowY
-    viewShowX       = DiaryParams.viewShowX
-    saveSettings    = false
-    lc-userList     = if trim(DiaryParams.initialEngineers) = "" and DiaryParams.LoginID = "system" then lc-global-user else trim(DiaryParams.initialEngineers)
+IF lc-mode = "refresh" THEN
+    ASSIGN
+        viewerDay       = DATE(lc-viewerDay)
+        lc-mode         = "refresh"
+        dayRange        = INTEGER(lc-dayRange)
+        coreHourFrom    = INTEGER(lc-coreHourFrom)
+        coreHourTo      = INTEGER(lc-coreHourTo)
+        hourFrom        = INTEGER(lc-hourFrom)
+        hourTo          = INTEGER(lc-hourTo)
+        incWeekend      = lc-incWeekend = "checked"
+        viewShowY       = INTEGER(lc-viewShowY)
+        viewShowX       = INTEGER(lc-viewShowX)
+        saveSettings    = lc-saveSettings = "checked"
+        lc-userList     = lc-userList
+        .
+ELSE 
+    ASSIGN 
+        viewerDay       = TODAY
+        lc-mode         = "view"
+        dayRange        = INTEGER(DiaryParams.initialDays)
+        coreHourFrom    = INTEGER(substr(DiaryParams.coreHours,1,4))
+        coreHourTo      = INTEGER(substr(DiaryParams.coreHours,5,4))
+        hourFrom        = INTEGER(substr(DiaryParams.displayHours,1,4))
+        hourTo          = INTEGER(substr(DiaryParams.displayHours,5,4))
+        incWeekend      = DiaryParams.incWeekends 
+        viewShowY       = DiaryParams.viewShowY
+        viewShowX       = DiaryParams.viewShowX
+        saveSettings    = FALSE
+        lc-userList     = IF TRIM(DiaryParams.initialEngineers) = "" AND DiaryParams.LoginID = "system" THEN lc-global-user ELSE TRIM(DiaryParams.initialEngineers)
     
-/*     if DiaryParams.LoginID = "system" then "" else if DiaryParams.initialEngineers <> "" then trim(DiaryParams.initialEngineers) else lc-global-user */
-  .
+        /*     if DiaryParams.LoginID = "system" then "" else if DiaryParams.initialEngineers <> "" then trim(DiaryParams.initialEngineers) else lc-global-user */
+        .
 
 
 
 
-assign
-  lc-lodate       = string(viewerDay - dayRange) 
-  lc-hidate       = string(viewerDay)
-  lc-viewerDay    = string(viewerDay)
-  lc-dayRange     = string(dayRange)
-  lc-coreHourFrom = string(coreHourFrom)
-  lc-coreHourTo   = string(coreHourTo)
-  lc-hourFrom     = string(hourFrom)
-  lc-hourTo       = string(hourTo)
-  lc-incWeekend   = if incWeekend then "checked" else ""
-  lc-viewShowY    = string(viewShowY)
-  lc-viewShowX    = string(viewShowX)
-  lc-saveSettings = if saveSettings then "checked" else ""
-.
+ASSIGN
+    lc-lodate       = STRING(viewerDay - dayRange) 
+    lc-hidate       = STRING(viewerDay)
+    lc-viewerDay    = STRING(viewerDay)
+    lc-dayRange     = STRING(dayRange)
+    lc-coreHourFrom = STRING(coreHourFrom)
+    lc-coreHourTo   = STRING(coreHourTo)
+    lc-hourFrom     = STRING(hourFrom)
+    lc-hourTo       = STRING(hourTo)
+    lc-incWeekend   = IF incWeekend THEN "checked" ELSE ""
+    lc-viewShowY    = STRING(viewShowY)
+    lc-viewShowX    = STRING(viewShowX)
+    lc-saveSettings = IF saveSettings THEN "checked" ELSE ""
+    .
 
 /* output to "C:\temp\djs2.txt" append.                  */
 /* put unformatted                                       */
@@ -346,64 +312,79 @@ assign
 /* "lc-global-user       "    lc-global-user    skip(2). */
 /* output close.                                         */
 
- case viewShowY :
-   when 1 then assign li-blockheight  = 20
-                      li-offsetheight = 18.
-   when 2 then assign li-blockheight  = 40
-                      li-offsetheight = 58.
-   when 3 then assign li-blockheight  = 60
-                      li-offsetheight = 98.
-   otherwise   assign li-blockheight  = 20
-                      li-offsetheight = 18.
- end case.
+CASE viewShowY :
+    WHEN 1 THEN 
+        ASSIGN 
+            li-blockheight  = 20
+            li-offsetheight = 18.
+    WHEN 2 THEN 
+        ASSIGN 
+            li-blockheight  = 40
+            li-offsetheight = 58.
+    WHEN 3 THEN 
+        ASSIGN 
+            li-blockheight  = 60
+            li-offsetheight = 98.
+    OTHERWISE   
+    ASSIGN 
+        li-blockheight  = 20
+        li-offsetheight = 18.
+END CASE.
 
- case viewShowX :
-   when 1 then assign li-blockwidth  = 900.
-   when 2 then assign li-blockwidth  = 1350.
-   when 3 then assign li-blockwidth  = 1800.
-   otherwise   assign li-blockwidth  = 900.
- end case.
+CASE viewShowX :
+    WHEN 1 THEN 
+        ASSIGN 
+            li-blockwidth  = 900.
+    WHEN 2 THEN 
+        ASSIGN 
+            li-blockwidth  = 1350.
+    WHEN 3 THEN 
+        ASSIGN 
+            li-blockwidth  = 1800.
+    OTHERWISE   
+    ASSIGN 
+        li-blockwidth  = 900.
+END CASE.
 
 
                       
 
-do zx = 1 to dayRange:
-   assign currentDay = date(string(viewerDay + (zx - 1)))   /*  date(string(viewerDay + (zx - (round(dayRange / 2,0)))))  */
-          dayNum     = weekday(currentDay).
-   if not incWeekend and (dayNum = 1 or dayNum = 7) then cx = cx + 1.
-end.
-assign dayWidth = string(round(li-blockwidth / (dayRange - cx),0)).
+DO zx = 1 TO dayRange:
+    ASSIGN 
+        currentDay = DATE(STRING(viewerDay + (zx - 1)))   /*  date(string(viewerDay + (zx - (round(dayRange / 2,0)))))  */
+        dayNum     = WEEKDAY(currentDay).
+    IF NOT incWeekend AND (dayNum = 1 OR dayNum = 7) THEN cx = cx + 1.
+END.
+ASSIGN 
+    dayWidth = STRING(ROUND(li-blockwidth / (dayRange - cx),0)).
 
-if cx > 0  and integer(dayWidth) < 80 then dayWidth = "80".
-if integer(dayWidth) <= 80 then
-do: 
-  dayWidth = "80".
-  li-blockwidth = 80 * (dayRange - cx).
-end.
+IF cx > 0  AND INTEGER(dayWidth) < 80 THEN dayWidth = "80".
+IF INTEGER(dayWidth) <= 80 THEN
+DO: 
+    dayWidth = "80".
+    li-blockwidth = 80 * (dayRange - cx).
+END.
 
 
 RUN process-web-request.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 
 /* **********************  Internal Procedures  *********************** */
 
 &IF DEFINED(EXCLUDE-ending-JS) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE ending-JS Procedure 
 PROCEDURE ending-JS :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
 
 
-  {&out}
-  '<script type="text/javascript" language="javascript">' skip
+    {&out}
+    '<script type="text/javascript" language="javascript">' skip
   ' <!-- ' skip
 
 /* populateIframe */
@@ -580,109 +561,104 @@ PROCEDURE ending-JS :
   ' // #' lc-global-user '#   #' lc-userList '# '  skip
   ' // -->' skip 
   '</script>' skip
-   .
+    .
 
 
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE outputHeader Procedure 
 PROCEDURE outputHeader :
-/*------------------------------------------------------------------------------
-  Purpose:     Output the MIME header, and any "cookie" information needed 
-               by this procedure.  
-  Parameters:  <none>
-  Notes:       In the event that this Web object is state-aware, this is
-               a good place to set the webState and webTimeout attributes.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      Notes:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
 
-  /* To make this a state-aware Web object, pass in the timeout period 
-   * (in minutes) before running outputContentType.  If you supply a timeout 
-   * period greater than 0, the Web object becomes state-aware and the 
-   * following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set
-   *   - a cookie is created for the broker to id the client on the return trip
-   *   - a cookie is created to id the correct procedure on the return trip
-   *
-   * If you supply a timeout period less than 1, the following happens:
-   *
-   *   - 4GL variables webState and webTimeout are set to an empty string
-   *   - a cookie is killed for the broker to id the client on the return trip
-   *   - a cookie is killed to id the correct procedure on the return trip
-   *
-   * Example: Timeout period of 5 minutes for this Web object.
-   *
-   *   setWebState (5.0).
-   */
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
     
-  /* 
-   * Output additional cookie information here before running outputContentType.
-   *      For more information about the Netscape Cookie Specification, see
-   *      http://home.netscape.com/newsref/std/cookie_spec.html  
-   *   
-   *      Name         - name of the cookie
-   *      Value        - value of the cookie
-   *      Expires date - Date to expire (optional). See TODAY function.
-   *      Expires time - Time to expire (optional). See TIME function.
-   *      Path         - Override default URL path (optional)
-   *      Domain       - Override default domain (optional)
-   *      Secure       - "secure" or unknown (optional)
-   * 
-   *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-   *      same time but only for secure (https) connections.
-   *      
-   *      RUN SetCookie IN web-utilities-hdl 
-   *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-   */ 
-  output-content-type ("text/html":U).
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type ("text/html":U).
   
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE process-web-request Procedure 
 PROCEDURE process-web-request :
-/*------------------------------------------------------------------------------
-  Purpose:     Process the web request.
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
   
-def var vx            as int no-undo.
-def var lc-checked    as char no-undo.
-def var userColour    as char no-undo.
-def var userVX        as int  no-undo.
+    DEFINE VARIABLE vx            AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lc-checked    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE userColour    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE userVX        AS INTEGER  NO-UNDO.
 
-assign colWheel = 
+    ASSIGN 
+        colWheel = 
 '<iframe id="colWheel_iframe" src="/colourpick.html" allowtransparency="true" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" '
   + ' style="overflow:hidden; background:transparent; width:100%; height:100%; display:block; border:0px solid blue;"></iframe>'. 
 
-RUN outputHeader.
+    RUN outputHeader.
 
     {&out} htmlib-OpenHeader("Diary View") skip.
 
     {&out}
-      '<style>' skip
+    '<style>' skip
       '.hi ~{ color: red; font-size: 10px; margin-left: 15px; font-style: italic;~}' skip
       '</style>' skip 
       '<link href="/style/diary.css" type="text/css" rel="stylesheet" />' skip.
 
-   {&out}
-     '<script type="text/javascript" language="javascript">' skip
+    {&out}
+    '<script type="text/javascript" language="javascript">' skip
 
      'function setSize() ~{' skip
      'var frameW' skip
@@ -733,24 +709,24 @@ RUN outputHeader.
       '<table cellpadding="0" cellspacing="0" border="0"  width="100%" >' skip
         '<tr valign="top" align="left" >' skip
           '<td width="200px" height="650px" valign="top" align="left" >' skip
-      .
+    .
 
-   {&out} '<table valign="top" align="left"  width="200px" cellpadding="0" cellspacing="0" border="0" >' skip
+    {&out} '<table valign="top" align="left"  width="200px" cellpadding="0" cellspacing="0" border="0" >' skip
           ' <tr >' skip
           '  <td valign="top" align="left" width="200px"  colspan="3" >' skip.
              
-   {&out} '<div class="sidelabel"   >'
-          htmlib-CalendarInputField("viewerDay",10,lc-viewerDay) 
-          htmlib-CalendarLink("viewerDay")
-          '&nbsp; Diary Date</div>' skip.
-   {&out}
-              '</td>'
-              '</tr>'
-              '<tr>'
-                '<td colspan="3" valign="middle" align="left" height="20px" width="200px" >'
-                  '<div id="spinCtrlContainer" style="position:relative;border:0; width:50px;height:20px;z-index:99;"  >'
-                  '</div><div class="sidelabel"  style="position:absolute;border:0;margin-left:50px;margin-top:-15px; width:200px;height:20px;" >&nbsp; Days shown</div>'
-                '</td>' skip
+    {&out} '<div class="sidelabel"   >'
+    htmlib-CalendarInputField("viewerDay",10,lc-viewerDay) 
+    htmlib-CalendarLink("viewerDay")
+    '&nbsp; Diary Date</div>' skip.
+    {&out}
+    '</td>'
+    '</tr>'
+    '<tr>'
+    '<td colspan="3" valign="middle" align="left" height="20px" width="200px" >'
+    '<div id="spinCtrlContainer" style="position:relative;border:0; width:50px;height:20px;z-index:99;"  >'
+    '</div><div class="sidelabel"  style="position:absolute;border:0;margin-left:50px;margin-top:-15px; width:200px;height:20px;" >&nbsp; Days shown</div>'
+    '</td>' skip
               '</tr>'
               '<tr>' skip
                 '<td colspan="3" valign="top" align="left"><input class="inputfield" type="checkbox" name="incWeekend" value="" ' lc-incWeekend ' onClick="ChangeWeekend()" >' skip
@@ -780,28 +756,29 @@ RUN outputHeader.
                 '</td>' skip
              '</tr>' skip
 
-/*              '</table></tr><tr><table>' skip */
-              .
+    /*              '</table></tr><tr><table>' skip */
+    .
 
 
-    for each webUser no-lock
-      where webuser.company = lc-global-company
-      and webuser.UserClass matches "*internal*"
-      and webuser.superuser = true
-      and webuser.Disabled = false
+    FOR EACH webUser NO-LOCK
+        WHERE webuser.company = lc-global-company
+        AND webuser.UserClass MATCHES "*internal*"
+        AND webuser.superuser = TRUE
+        AND webuser.Disabled = FALSE
       
-      :
-        find first WebStdTime of WebUser no-lock no-error .
+        :
+        FIND FIRST WebStdTime OF WebUser NO-LOCK NO-ERROR .
 
-        if not avail WebStdTime then next.
+        IF NOT AVAILABLE WebStdTime THEN NEXT.
 
-        assign userColour = if avail WebStdTime then WebStdTime.StdColour else "#FFFFFF"
-               userVX     = userVX + 1.
+        ASSIGN 
+            userColour = IF AVAILABLE WebStdTime THEN WebStdTime.StdColour ELSE "#FFFFFF"
+            userVX     = userVX + 1.
 
-        if lookup(trim(webUser.LoginID),lc-userList) > 0  then lc-checked = "checked".
-                                                          else lc-checked = "".
+        IF LOOKUP(TRIM(webUser.LoginID),lc-userList) > 0  THEN lc-checked = "checked".
+        ELSE lc-checked = "".
 
-      {&out}  '<tr>' skip
+        {&out}  '<tr>' skip
                 '<td width="25px" valign="top" align="left" >' skip
                   '<input class="inputfield" type="checkbox" name="scripts" value="' WebUser.LoginID '" ' lc-checked ' onClick="ChangeUsers(this.name);" >' skip
                 '</td>' skip
@@ -811,52 +788,52 @@ RUN outputHeader.
                   '<span class="sidelabel" width="200px" >' webUser.name '</span>' skip
                 '</td>' skip
               '</tr>' skip .
-    end.
+    END.
 
 
-      {&out}  '<tr>' skip
+    {&out}  '<tr>' skip
                 '<td valign="TOP" align="left" colspan="3">' skip
                 '<hr>' skip
                 '</td>' skip
               '</tr>' skip
               '<tr>' skip.
 
- find first WebStdTime where WebStdTime.loginID = lc-global-user no-lock no-error .
- if avail WebStdTime then 
- do:
+    FIND FIRST WebStdTime WHERE WebStdTime.loginID = lc-global-user NO-LOCK NO-ERROR .
+    IF AVAILABLE WebStdTime THEN 
+    DO:
         {&out} 
-                '<td valign="top" align="left" colspan="3" width="200px" >' skip
+        '<td valign="top" align="left" colspan="3" width="200px" >' skip
                   ' <input type="button" class="prefsbutton" onclick="SaveSettings(false)" value="Delete Prefs" />'  skip
     
                   '<input type="button" class="prefsbutton" onclick="SaveSettings(true)" value="Save Prefs" /> '  skip
                 '</td>' skip 
               '</tr>' skip
 
-/*               '<tr>' skip                                                                                                                                                           */
-/*                 '<td valign="top" align="left"><input class="inputfield" type="checkbox" name="scripts" value="DavidShilling" checked onClick="ChangeUsers(this.name)" ></td>' skip */
-/*                 '<td valign="middle" align="left"><span class="sidelabel">David Shilling</span></td>' skip                                                                          */
-/*               '</tr>' skip                                                                                                                                                          */
-/*               '<tr>' skip                                                                                                                                                           */
-/*                 '<td valign="top" align="left"><input class="inputfield" type="checkbox" name="scripts" value="Ian Bibby" onClick="ChangeUsers(this.name)" ></td>' skip             */
-/*                 '<td valign="middle" align="left"><span class="sidelabel">Ian Bibby</span></td>' skip                                                                               */
-/*               '</tr>' skip                                                                                                                                                          */
+        /*               '<tr>' skip                                                                                                                                                           */
+        /*                 '<td valign="top" align="left"><input class="inputfield" type="checkbox" name="scripts" value="DavidShilling" checked onClick="ChangeUsers(this.name)" ></td>' skip */
+        /*                 '<td valign="middle" align="left"><span class="sidelabel">David Shilling</span></td>' skip                                                                          */
+        /*               '</tr>' skip                                                                                                                                                          */
+        /*               '<tr>' skip                                                                                                                                                           */
+        /*                 '<td valign="top" align="left"><input class="inputfield" type="checkbox" name="scripts" value="Ian Bibby" onClick="ChangeUsers(this.name)" ></td>' skip             */
+        /*                 '<td valign="middle" align="left"><span class="sidelabel">Ian Bibby</span></td>' skip                                                                               */
+        /*               '</tr>' skip                                                                                                                                                          */
         .
- end.
+    END.
 
     {&out}
-            '</table>' skip
+    '</table>' skip
 
  
           '</td>' skip
           '<td width="56px" align="left">' skip
-      .
+    .
 
-      run timeBar.
+    RUN timeBar.
 
-      {&out}
-          '</td>'
+    {&out}
+    '</td>'
 
-          '<td>' skip    /*  ' string(li-blockwidth) 'px */
+    '<td>' skip    /*  ' string(li-blockwidth) 'px */
           '<!--[if gt IE 6 ]>'
             '<!-- gt IE6 --><iframe id="diaryinnerframe" name="diaryinnerframe" src="" onload="setSize()" style="position:relative;overflow:hidden;width:' string(li-blockwidth) 'px;height:650px;" frameborder="0" '  
             ' marginwidth=0 marginheight=0 hspace=0 vspace=0 scrolling=no  >' skip
@@ -879,52 +856,49 @@ RUN outputHeader.
         '</tr>' skip
       '</table>' skip
      '</div>' skip
-     .
+    .
 
 
 
-  {&out} htmlib-CalendarScript("viewerDay") skip.
+    {&out} htmlib-CalendarScript("viewerDay") skip.
 
-  {&out} '<div id="colwheel" style="position:absolute;display:none;width:250px;height:280px;background:transparent;"></div>' skip.
+    {&out} '<div id="colwheel" style="position:absolute;display:none;width:250px;height:280px;background:transparent;"></div>' skip.
 
-  {&out} htmlib-Hidden("xmode",lc-mode) skip.
-  {&out} htmlib-Hidden("xstartDay",lc-viewerDay) skip.
-  {&out} htmlib-Hidden("xdayRange",lc-dayRange) skip.
-  {&out} htmlib-Hidden("xcoreHourFrom",lc-coreHourFrom) skip.
-  {&out} htmlib-Hidden("xcoreHourTo",lc-coreHourTo) skip.
-  {&out} htmlib-Hidden("xhourFrom",lc-hourFrom) skip.
-  {&out} htmlib-Hidden("xhourTo",lc-hourTo) skip.
-  {&out} htmlib-Hidden("xincWeekend",lc-incWeekend) skip.
-  {&out} htmlib-Hidden("xviewShowY",lc-viewShowY) skip.
-  {&out} htmlib-Hidden("xviewShowX",lc-viewShowX) skip.
-  {&out} htmlib-Hidden("xuserList",lc-userList) skip.
-  {&out} htmlib-EndForm() skip.
+    {&out} htmlib-Hidden("xmode",lc-mode) skip.
+    {&out} htmlib-Hidden("xstartDay",lc-viewerDay) skip.
+    {&out} htmlib-Hidden("xdayRange",lc-dayRange) skip.
+    {&out} htmlib-Hidden("xcoreHourFrom",lc-coreHourFrom) skip.
+    {&out} htmlib-Hidden("xcoreHourTo",lc-coreHourTo) skip.
+    {&out} htmlib-Hidden("xhourFrom",lc-hourFrom) skip.
+    {&out} htmlib-Hidden("xhourTo",lc-hourTo) skip.
+    {&out} htmlib-Hidden("xincWeekend",lc-incWeekend) skip.
+    {&out} htmlib-Hidden("xviewShowY",lc-viewShowY) skip.
+    {&out} htmlib-Hidden("xviewShowX",lc-viewShowX) skip.
+    {&out} htmlib-Hidden("xuserList",lc-userList) skip.
+    {&out} htmlib-EndForm() skip.
 
-  RUN ending-JS.
+    RUN ending-JS.
 
-  {&OUT} htmlib-Footer() skip.
+    {&OUT} htmlib-Footer() skip.
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-timeBar) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE timeBar Procedure 
 PROCEDURE timeBar :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
 
- {&out}
+    {&out}
 
-  '<div id="fixedTimeDiv" style="position:relative;top:0px;left:0px;width:56px;z-index:100;">' skip
+    '<div id="fixedTimeDiv" style="position:relative;top:0px;left:0px;width:56px;z-index:100;">' skip
 
 
   
@@ -944,17 +918,17 @@ PROCEDURE timeBar :
             '</td>'  skip
           '</tr>'  skip.
 
-    do vx = 01 to 24 :
-      if vx * 100 >= hourFrom and vx * 100 <= hourTo then /* or how ever many hours to do... */
-      do:
-        if vx > 11 then assign ap = 2.
-                     else assign ap = 1.
-        if vx > 12 then assign yx = vx - 12.
-                     else assign yx = vx.
+    DO vx = 01 TO 24 :
+        IF vx * 100 >= hourFrom AND vx * 100 <= hourTo THEN /* or how ever many hours to do... */
+        DO:
+            IF vx > 11 THEN ASSIGN ap = 2.
+            ELSE ASSIGN ap = 1.
+            IF vx > 12 THEN ASSIGN yx = vx - 12.
+            ELSE ASSIGN yx = vx.
 
-    {&out}
+            {&out}
 
-           '<tr style="height:' (li-blockheight * 2) 'px;">' skip
+            '<tr style="height:' (li-blockheight * 2) 'px;">' skip
             '<td valign="bottom" style="background-color:#ECE9D8;cursor:default;">' skip
              '<div id="idMenuFixedInViewport" >' skip
               '<div id="TT" style="display:block;border-bottom:1px solid #ACA899;height:' (li-blockheight * 1.5) 'px;text-align:right;">' skip
@@ -968,20 +942,18 @@ PROCEDURE timeBar :
             '</div>' skip
             '</td>' skip
           '</tr>'  skip.
-      end.
-    end.
+        END.
+    END.
 
-   {&out}
-        '</table>' skip
+    {&out}
+    '</table>' skip
      '</div>' skip
-     .
+    .
 
 
 
 END PROCEDURE.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
@@ -989,131 +961,122 @@ END PROCEDURE.
 
 &IF DEFINED(EXCLUDE-dateFormat) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION dateFormat Procedure 
 FUNCTION dateFormat RETURNS CHARACTER
-  ( params as date ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( params AS DATE ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-def var lc-day     as char no-undo.
-def var lc-month   as char no-undo.
-def var lc-year    as char no-undo.
-def var lc-mthdesc as char initial "January,February,March,April,May,June,July,August,September,October,November,December"  no-undo.
+    DEFINE VARIABLE lc-day     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-month   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-year    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-mthdesc AS CHARACTER INITIAL "January,February,March,April,May,June,July,August,September,October,November,December"  NO-UNDO.
 
-lc-day = string(day(params)).
-lc-month = entry(month(params),lc-mthdesc).
-lc-year = string(year(params)).
-
-
+    lc-day = STRING(DAY(params)).
+    lc-month = ENTRY(MONTH(params),lc-mthdesc).
+    lc-year = STRING(YEAR(params)).
 
 
-  RETURN string((if length(lc-day) = 1 then "&nbsp;" + lc-day else lc-day) + " " + lc-month + " " + lc-year).
+
+
+    RETURN STRING((IF LENGTH(lc-day) = 1 THEN "&nbsp;" + lc-day ELSE lc-day) + " " + lc-month + " " + lc-year).
 
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-fnText) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION fnText Procedure 
 FUNCTION fnText RETURNS CHARACTER
-  ( pf-knbid as dec,
-    pi-count as int ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pf-knbid AS DECIMAL,
+    pi-count AS INTEGER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-    def buffer knbText  for knbText.  
-    def var li-count    as int no-undo.
-    def var li-found    as int no-undo.
-    def var lc-return   as char no-undo.
-    def var lc-char     as char no-undo.
+    DEFINE BUFFER knbText  FOR knbText.  
+    DEFINE VARIABLE li-count    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-found    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lc-return   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-char     AS CHARACTER NO-UNDO.
 
-    find knbText where knbText.knbID = pf-knbID
-                   and knbText.dType = "I" no-lock no-error.
-    if not avail knbText then return "&nbsp;".
+    FIND knbText WHERE knbText.knbID = pf-knbID
+        AND knbText.dType = "I" NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE knbText THEN RETURN "&nbsp;".
 
 
-    do li-count = 1 to num-entries(knbText.dData,"~n"):
+    DO li-count = 1 TO NUM-ENTRIES(knbText.dData,"~n"):
 
-        assign lc-char = entry(li-count,knbText.dData,"~n").
-        if trim(lc-char) = "" then next.
+        ASSIGN 
+            lc-char = ENTRY(li-count,knbText.dData,"~n").
+        IF TRIM(lc-char) = "" THEN NEXT.
 
        
-        if li-found = 0
-        then assign lc-return = right-trim(lc-char).
-        else assign lc-return = lc-return + "<br>" + right-trim(lc-char).
+        IF li-found = 0
+            THEN ASSIGN lc-return = RIGHT-TRIM(lc-char).
+        ELSE ASSIGN lc-return = lc-return + "<br>" + right-trim(lc-char).
 
-        assign li-found = li-found + 1.
+        ASSIGN 
+            li-found = li-found + 1.
 
-        if li-found = pi-count then leave.
+        IF li-found = pi-count THEN LEAVE.
 
-    end.
+    END.
 
-    return lc-return.
+    RETURN lc-return.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-Format-Select-DayDate) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION Format-Select-DayDate Procedure 
 FUNCTION Format-Select-DayDate RETURNS CHARACTER
-  ( pc-htm as char  ) :
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    ( pc-htm AS CHARACTER  ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var lc-htm as char no-undo.
+    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
 
-  lc-htm = replace(pc-htm,'<select',
-                   '<select onChange="ChangeDates()"'). 
+    lc-htm = REPLACE(pc-htm,'<select',
+        '<select onChange="ChangeDates()"'). 
 
 
-  RETURN lc-htm.
+    RETURN lc-htm.
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 
 &IF DEFINED(EXCLUDE-timeFormat) = 0 &THEN
 
-&ANALYZE-SUSPEND _UIB-CODE-BLOCK _FUNCTION timeFormat Procedure 
 FUNCTION timeFormat RETURNS CHARACTER
- (param1 as int):
-/*------------------------------------------------------------------------------
-  Purpose:  
-    Notes:  
-------------------------------------------------------------------------------*/
+    (param1 AS INTEGER):
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
 
-  def var hh as char no-undo.
-  def var mm as char no-undo.
-  def var ss as char no-undo.
-  def var aa as char no-undo.
+    DEFINE VARIABLE hh AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE mm AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE ss AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE aa AS CHARACTER NO-UNDO.
  
-  assign hh = string(int(substr(string(param1,"9999"),1,2)))
-         mm  = substr(string(param1,"9999"),3,2).
-         return string(string(hh) + ":" + string(mm) ).
+    ASSIGN 
+        hh = STRING(int(substr(STRING(param1,"9999"),1,2)))
+        mm  = substr(STRING(param1,"9999"),3,2).
+    RETURN STRING(STRING(hh) + ":" + string(mm) ).
 
 END FUNCTION.
 
-/* _UIB-CODE-BLOCK-END */
-&ANALYZE-RESUME
 
 &ENDIF
 

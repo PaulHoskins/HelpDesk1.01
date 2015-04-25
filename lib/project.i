@@ -180,8 +180,8 @@ PROCEDURE prjlib-AddNewTask:
             IssAction.TaskID         = pi-taskID
             IssAction.DisplayOrder   = pi-DisplayOrder
             IssAction.ActDescription = pc-descr
-            IssAction.estDuration    = pi-Duration * gli-Global-Proj-Work
-            IssAction.workDuration   = IssAction.estDuration
+            IssAction.PlanDuration   = pi-Duration * gli-Global-Proj-Work
+            IssAction.workDuration   = IssAction.PlanDuration
             .
        
                 
@@ -268,7 +268,7 @@ PROCEDURE prjlib-BuildGanttData:
                 /*+ "." + string(IssAction.Taskid) */
                 tt-proj-tasks.prog      = 0.00
                 tt-proj-tasks.startDate = IssAction.ActionDate
-                tt-proj-tasks.duration  = DYNAMIC-FUNCTION("prjlib-WorkingDays",IssAction.EstDuration)
+                tt-proj-tasks.duration  = DYNAMIC-FUNCTION("prjlib-WorkingDays",IssAction.PlanDuration)
                 tt-proj-tasks.EndDate   = tt-proj-tasks.startDate + tt-proj-tasks.duration - 1
                 tt-proj-tasks.parentID  = issPhase.PhaseID
                 tt-proj-tasks.cDuration = DYNAMIC-FUNCTION("com-TimeToString",IssAction.workDuration)
@@ -563,7 +563,8 @@ PROCEDURE prjlib-ProcessTask:
         ASSIGN
             IssAction.ActDescription = ptp_task.Descr
             IssAction.phaseid        = issPhase.PhaseID
-            IssAction.workDuration   = IssAction.estDuration
+            IssAction.PlanDuration   = ptp_task.EstDuration
+            IssAction.workDuration   = ptp_task.estDuration
             IssAction.taskID         = NEXT-VALUE(projphase)
             .
             
@@ -617,15 +618,7 @@ PROCEDURE prjlib-UpdateTask:
                 IssAction.notes          = pc-descr
                 IssAction.ActDescription = pc-descr
                 IssAction.ActionDate     = pd-start
-                .
-            
-            /*
-            ***
-            *** Only update the time if the number of days has changed
-            ***
-            */    
-            IF DYNAMIC-FUNCTION("prjlib-WorkingDays",IssAction.EstDuration) <> pi-Duration
-            THEN IssAction.estDuration    = pi-Duration * gli-Global-Proj-Work.
+                IssAction.PlanDuration   = pi-Duration * gli-Global-Proj-Work.
             
              
             /*
