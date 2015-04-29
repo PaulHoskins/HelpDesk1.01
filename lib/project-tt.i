@@ -9,7 +9,7 @@
     
     When        Who         What
     08/04/2015  phoski      Initial
-    
+    26/04/2015  phoski      Schedule   
 ***********************************************************************/
 
 DEFINE TEMP-TABLE tt-proj-tasks NO-UNDO 
@@ -29,6 +29,27 @@ DEFINE TEMP-TABLE tt-proj-tasks NO-UNDO
     FIELD cDuration AS CHARACTER 
     FIELD cRow      AS CHARACTER 
     INDEX prim IS UNIQUE PRIMARY rno
-    INDEX id id
-    INDEX ParID parentID
+    INDEX id                     id
+    INDEX ParID                  parentID
     .
+    
+DEFINE TEMP-TABLE tt-schedule NO-UNDO
+    FIELD rno         AS INTEGER 
+    FIELD id          AS INT64  
+    FIELD startDate   AS DATE
+    FIELD endDate     AS DATE
+    FIELD txt         AS CHARACTER
+    
+    FIELD EngCode     AS CHARACTER 
+    FIELD EngName     AS CHARACTER  
+    FIELD cRow        AS CHARACTER 
+    FIELD IssueNumber AS INTEGER 
+    FIELD custName    AS CHARACTER 
+    FIELD bdesc       AS CHARACTER 
+    
+    INDEX prim IS UNIQUE PRIMARY rno
+    INDEX id                     id
+    .
+    
+    
+    

@@ -292,6 +292,9 @@ FUNCTION com-IsSuperUser RETURNS LOGICAL
     ( pc-LoginID      AS CHARACTER )  FORWARD.
 
 
+FUNCTION com-MMDDYYYY RETURNS CHARACTER 
+	(pd-date AS DATE) FORWARD.
+
 FUNCTION com-MonthBegin RETURNS DATE
     ( pd-date AS DATE)  FORWARD.
 
@@ -2529,6 +2532,26 @@ FUNCTION com-IsSuperUser RETURNS LOGICAL
 
 END FUNCTION.
 
+
+FUNCTION com-MMDDYYYY RETURNS CHARACTER 
+	    (  pd-date AS DATE ):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+
+		DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
+
+        ASSIGN 
+            lc-return = STRING(MONTH(pd-date),"99") + "/" +
+                        string(DAY(pd-date),"99") + "/" +
+                        string(YEAR(pd-date),"9999").
+                            
+		RETURN lc-return.
+
+
+		
+END FUNCTION.
 
 FUNCTION com-MonthBegin RETURNS DATE
     ( pd-date AS DATE) :

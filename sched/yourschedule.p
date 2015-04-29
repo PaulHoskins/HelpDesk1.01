@@ -86,6 +86,7 @@ PROCEDURE ip-HTM-Header:
             '<script type="text/javascript" src="/asset/jquery/jquery-1.11.2.min.js"></script>~n' +
             '<script src="/asset/sched/codebase/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>~n' + 
             '<link rel="stylesheet" href="/asset/sched/codebase/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">~n' +
+            '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_year_view.js"></script>' +
             '<script language="JavaScript" src="/asset/page/yourschedule.js?v=1.0.0"></script>~n' 
         
             .
@@ -160,7 +161,7 @@ PROCEDURE process-web-request :
     
     {lib/checkloggedin.i} 
 
-   
+    
     ASSIGN
         lc-rowid = get-value("engineer").
         
@@ -170,6 +171,16 @@ PROCEDURE process-web-request :
         
    
     FIND blogin WHERE ROWID(blogin) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
+    
+    RUN prjlib-BuildScheduleData ( 
+        lc-global-user,
+        lc-global-company,
+                blogin.LoginID,
+        TODAY - li-global-sched-days-back,
+        OUTPUT TABLE tt-schedule
+        ).
+        
+    
     
        
     RUN outputHeader.
@@ -184,8 +195,65 @@ PROCEDURE process-web-request :
     {&out} htmlib-ProgramTitle("Project Schedule - " + dynamic-function("com-UserName",blogin.LoginID)). 
    
     
+    DEFINE VARIABLE li-count    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-this     AS INTEGER NO-UNDO.
     
+    FOR EACH tt-schedule NO-LOCK:
+        li-count = li-count + 1.
+    END.
+      
+
+    {&out}
+    '<div id="scheduler_here" class="dhx_cal_container" style="width:100%; height:900px;">
+    <div class="dhx_cal_navline">
+        <div class="dhx_cal_prev_button">&nbsp;</div>
+        <div class="dhx_cal_next_button">&nbsp;</div>
+        <div class="dhx_cal_today_button"></div>
+        <div class="dhx_cal_date"></div>
+        <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+        <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+        <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+        <div class="dhx_cal_tab" name="year_tab" style="right:280px;"></div>
+    </div>
+    <div class="dhx_cal_header"></div>
+    <div class="dhx_cal_data"></div>       
+    </div>'
+        skip.
+ 
+    
+     {&out} '<script>' SKIP
+            'var events = [' SKIP.
+     
+     FOR EACH tt-schedule NO-LOCK:
+     
+        li-this = li-this + 1.
+        
+        {&out} '~{' 
+                'id:' tt-schedule.id 
+                ', text:"' tt-schedule.txt '"'
+                ', start_date:"' DYNAMIC-FUNCTION("com-MMDDYYYY",tt-schedule.StartDate) " 08:30" '"'
+                ', end_date:"' DYNAMIC-FUNCTION("com-MMDDYYYY",tt-schedule.EndDate) " 17:30" '"'
+                ', engname:"'  tt-schedule.EngName '"'
+                ', engcode:"'  tt-schedule.EngCode '"'
+                ', issue:"'  tt-schedule.IssueNumber '"'
+                ', custname:"'  tt-schedule.CustName '"'
+                ', bdesc:"'  tt-schedule.bdesc '"'
+                ', crow:"'  tt-schedule.cRow '"~}'
+                .
+        IF li-this <> li-count THEN 
+        {&out} ',' SKIP.
+        ELSE
+        {&out} SKIP.
+     END.
+                  
+    {&out} SKIP
+            '];' SKIP.
            
+            
+    {&out} SKIP
+        'drawSchedule ();' skip
+        '</script>' SKIP.
+                         
     {&out} htmlib-EndForm() skip.
 
    

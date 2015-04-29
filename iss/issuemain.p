@@ -17,7 +17,8 @@
     17/02/2015  phoski      Contract default problem
     21/02/2015  phoski      Billing flag problem and finally remove all DJS 
     29/03/2015  phoski      Complex Project Class 
-    08/04/2015  phoski      Complex Project -  Main work begins
+    08/04/2015  phoski      Complex Project - Main work begins
+    29/04/2015  phoski      Complex Project - Main info page
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -38,87 +39,74 @@ DEFINE BUFFER b-IStatus FOR IssStatus.
 DEFINE BUFFER b-user    FOR WebUser.
 DEFINE BUFFER b-status  FOR WebStatus.
 
-DEFINE VARIABLE lc-error-field      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-error-msg        AS CHARACTER NO-UNDO.
-
-
-DEFINE VARIABLE lc-mode             AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-rowid            AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-title            AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-search           AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-firstrow         AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-lastrow          AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-navigation       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-area             AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-account          AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-status           AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-assign           AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-parameters       AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-link-label       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-submit-label     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-link-url         AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-icustname        AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-AreaCode         AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-briefdescription AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-longdescription  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-currentstatus    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-currentassign    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-statnote         AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-planned          AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-catcode          AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-ticket           AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-category         AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-accountmanager   AS CHARACTER NO-UNDO.
-
-
-DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE li-OpenActions      AS INTEGER   NO-UNDO.
-DEFINE VARIABLE ll-IsOpen           AS LOG       NO-UNDO.
-
-/* Lists */
-DEFINE VARIABLE lc-list-area        AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-list-aname       AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-list-status      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-list-sname       AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-list-assign      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-list-assname     AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-list-catcode     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-list-cname       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-iclass           AS CHARACTER NO-UNDO.
-
-
-DEFINE VARIABLE lc-pdf              AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-submitsource     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-link-otherp      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE ll-superuser        AS LOG       NO-UNDO.
-
-DEFINE VARIABLE lc-name             AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-Doc-TBAR         AS CHARACTER 
+DEFINE VARIABLE lc-error-field       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mode              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-title             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-search            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-firstrow          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lastrow           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-navigation        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-area              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-account           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-status            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-assign            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-parameters        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-label        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit-label      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-url          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-icustname         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AreaCode          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-briefdescription  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-longdescription   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentstatus     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-currentassign     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-prj-eng           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-prj-start         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-statnote          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-planned           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-catcode           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ticket            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-category          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accountmanager    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sla-rows          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sla-selected      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-OpenActions       AS INTEGER   NO-UNDO.
+DEFINE VARIABLE ll-IsOpen            AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-list-area         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-aname        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-status       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-sname        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assign       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-assname      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-proj-assign  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-proj-assname AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-catcode      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-cname        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-iclass            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pdf               AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submitsource      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link-otherp       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-superuser         AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-name              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Doc-TBAR          AS CHARACTER 
     INITIAL "doctb" NO-UNDO.
-
-DEFINE VARIABLE lc-Action-TBAR      AS CHARACTER
+DEFINE VARIABLE lc-Action-TBAR       AS CHARACTER
     INITIAL "acttb" NO-UNDO.
 
 /* Contract stuff  */
 
-DEFINE VARIABLE lc-list-ctype       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-list-cdesc       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-contract-type    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-ContractCode     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-billable-flag    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE ll-isBillable          AS LOG       NO-UNDO.
-DEFINE VARIABLE lc-ContractAccount  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-Enc-Key          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-ctype        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-list-cdesc        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-contract-type     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ContractCode      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-billable-flag     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-isBillable        AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-ContractAccount   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Enc-Key           AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE ll-customer         AS LOG       NO-UNDO.
+DEFINE VARIABLE ll-customer          AS LOG       NO-UNDO.
 DEFINE BUFFER this-user FOR WebUser.
 
 
@@ -389,7 +377,7 @@ PROCEDURE ip-ContractSelect :
                     NO-LOCK NO-ERROR. 
 
                 IF WebIssCont.DefCon AND lc-contract-type = ""
-                THEN ASSIGN lc-contract-type = WebIssCont.ContractCode.
+                    THEN ASSIGN lc-contract-type = WebIssCont.ContractCode.
                   
 
                 {&out}
@@ -401,7 +389,7 @@ PROCEDURE ip-ContractSelect :
                 END.
 
                 {&out}  '>'  html-encode(IF AVAILABLE ContractType THEN ContractType.Description + (
-                        IF WebissCont.Billable THEN " (Billable)" ELSE "") ELSE "Unknown") 
+                    IF WebissCont.Billable THEN " (Billable)" ELSE "") ELSE "Unknown") 
                    
 
 
@@ -450,13 +438,13 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-HeaderInclude-Calendar) = 0 &THEN
 
 PROCEDURE ip-GanttPage:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     
-   {&out} 
-        '<div id="gantt_here" style="width:100%; height:1800px"></div>' SKIP.
+    {&out} 
+    '<div id="gantt_here" style="width:100%; height:1800px"></div>' SKIP.
 
   
 END PROCEDURE.
@@ -601,18 +589,18 @@ PROCEDURE ip-IssueMain :
             SKIP.
     END.
     ELSE
-    IF ll-IsOpen THEN
-    DO:
-        FIND WebAttr WHERE WebAttr.SystemID = "SYSTEM"
-             AND   WebAttr.AttrID   = "ISSCLOSEWARNING" NO-LOCK NO-ERROR.
-             
-        IF AVAILABLE webattr THEN
+        IF ll-IsOpen THEN
         DO:
-            {&out} '<div class="infobox" style="font-size: 10px;">' REPLACE(webattr.attrValue,'~n','<br/>')
+            FIND WebAttr WHERE WebAttr.SystemID = "SYSTEM"
+                AND   WebAttr.AttrID   = "ISSCLOSEWARNING" NO-LOCK NO-ERROR.
+             
+            IF AVAILABLE webattr THEN
+            DO:
+                {&out} '<div class="infobox" style="font-size: 10px;">' REPLACE(webattr.attrValue,'~n','<br/>')
                 '</div>'
                 SKIP.
+            END.
         END.
-     END.
      
     
     {&out} htmlib-Select("currentstatus",lc-list-status,lc-list-sname,
@@ -639,16 +627,81 @@ PROCEDURE ip-IssueMain :
     htmlib-Select("catcode",lc-list-catcode,lc-list-cname,
         lc-catcode)
     '</TD></TR>' skip. 
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (IF LOOKUP("iclass",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Class")
-        ELSE htmlib-SideLabel("Class"))
-    '</TD>' 
-    '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-Select("iclass",lc-global-iclass-add-code,lc-global-iclass-add-desc,
-        lc-iclass)
-    '</TD></TR>' skip. 
-
+    /*
+    ***
+    *** Complex Project 
+    ***
+    */
+    IF b-table.iClass = lc-global-iclass-complex THEN
+    DO:
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("iclass",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Class")
+            ELSE htmlib-SideLabel("Class"))
+        '<TD VALIGN="TOP" ALIGN="left">'
+                        
+        htmlib-hidden("iclass",lc-global-iclass-complex)
+        htmlib-BeginCriteria("Complex Project")
+        htmlib-StartMntTable().
+    
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("prj-start",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Project Start")
+            ELSE htmlib-SideLabel("Project Start"))
+        '</TD>'
+        '<TD VALIGN="TOP" ALIGN="left">'
+        htmlib-InputField("prj-start",10,lc-prj-start) 
+        htmlib-CalendarLink("prj-start")
+        '</TD>' SKIP
+            '</TR>' skip.
+    
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("currentassign",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Senior Engineer")
+            ELSE htmlib-SideLabel("Senior Engineer"))
+        '</TD>' 
+        '<TD VALIGN="TOP" ALIGN="left">'
+        htmlib-Select("currentassign",lc-list-proj-assign,lc-list-proj-assname,
+            lc-currentassign)
+        '</TD></TR>' SKIP
+            '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("prj-eng",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Project Engineer")
+            ELSE htmlib-SideLabel("Project Engineer"))
+            '</TD>' 
+                '<TD VALIGN="TOP" ALIGN="left">'
+                htmlib-Select("prj-eng",lc-list-proj-assign,lc-list-proj-assname,
+                lc-prj-eng)
+            '</TD></TR>' SKIP.
+            
+        {&out} skip 
+            htmlib-EndTable()
+            htmlib-EndCriteria() skip.
+             
+            
+        {&out} '</TD></TR>' skip. /* End row of standard */
+               
+ 
+    END.
+    /*
+    ***
+    *** all other issue classes
+    ***
+    */
+    ELSE
+    DO:
+            
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("iclass",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Class")
+            ELSE htmlib-SideLabel("Class"))
+        '</TD>' 
+        '<TD VALIGN="TOP" ALIGN="left">'
+        htmlib-Select("iclass",lc-global-iclass-add-code,lc-global-iclass-add-desc,
+            lc-iclass)
+        '</TD></TR>' skip. 
+    END.
+    
     IF lc-sla-rows <> "" THEN
     DO:
         {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
@@ -663,16 +716,20 @@ PROCEDURE ip-IssueMain :
         {&out} '</TR>' skip.
 
     END.
-    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
-        (IF LOOKUP("currentassign",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Assigned To")
-        ELSE htmlib-SideLabel("Assigned To"))
-    '</TD>' 
-    '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-Select("currentassign",lc-list-assign,lc-list-assname,
-        lc-currentassign)
-    '</TD></TR>' skip. 
-
+        
+    IF b-table.iClass <> lc-global-iclass-complex THEN
+    DO:
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            (IF LOOKUP("currentassign",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("Assigned To")
+            ELSE htmlib-SideLabel("Assigned To"))
+        '</TD>' 
+        '<TD VALIGN="TOP" ALIGN="left">'
+        htmlib-Select("currentassign",lc-list-assign,lc-list-assname,
+            lc-currentassign)
+        '</TD></TR>' skip. 
+    END.
+    
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("planned",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("Planned Completion")
@@ -785,7 +842,7 @@ PROCEDURE ip-Javascript:
 
     {&out}  
     '<script>'
-           'var NoteAjax = "' appurl '/iss/ajax/note.p?rowid=' STRING(ROWID(b-table)) '"' skip
+    'var NoteAjax = "' appurl '/iss/ajax/note.p?rowid=' STRING(ROWID(b-table)) '"' skip
            'var CustomerAjax = "' appurl '/cust/custequiplist.p?expand=yes&ajaxsubwindow=yes&customer=' url-encode(lc-enc-key,"Query")  '"' skip
            'var DocumentAjax = "' appurl '/iss/ajax/document.p?rowid=' string(rowid(b-table)) 
                     '&toolbarid=' lc-Doc-TBAR 
@@ -1245,7 +1302,7 @@ PROCEDURE ip-Validate :
             AND b-status.StatusCode = lc-currentstatus
             NO-LOCK NO-ERROR.
         IF b-status.CompletedStatus = YES
-        THEN
+            THEN
             RUN htmlib-AddErrorMessage(
                 'currentstatus', 
                 'There are open actions, you can not close the issue',
@@ -1253,8 +1310,22 @@ PROCEDURE ip-Validate :
                 INPUT-OUTPUT pc-error-msg ).
                 
     END.
+    IF b-table.iClass = lc-global-iclass-complex THEN
+    DO:
+        ASSIGN 
+            ld-date = ?.
+        ASSIGN 
+            ld-date = DATE(lc-prj-start) no-error.
+        IF ERROR-STATUS:ERROR
+            OR ld-date = ?
+            THEN RUN htmlib-AddErrorMessage(
+                'prj-start', 
+                'The project start date is invalid',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+                
+    END.
     
-
     IF lc-planned <> "" THEN
     DO:
         ASSIGN 
@@ -1375,7 +1446,8 @@ PROCEDURE process-web-request :
         lc-contract-type = get-value("contract")
         lc-billable-flag = get-value("billcheck")
         ll-isBillable      = NO
-        lc-iclass        = get-value("iclass").
+        lc-iclass        = get-value("iclass")
+        lc-prj-start     = get-value("prj-start").
 
     .
     IF lc-iclass = ""
@@ -1460,6 +1532,7 @@ PROCEDURE process-web-request :
 
     RUN com-GetAreaIssue ( lc-global-company , OUTPUT lc-list-area , OUTPUT lc-list-aname ).
     RUN com-GetAssignIssue ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
+    RUN com-GetAssignList ( lc-global-company , OUTPUT lc-list-proj-assign , OUTPUT lc-list-proj-assname ).
     RUN com-GetCategoryIssue( lc-global-company, OUTPUT lc-list-catcode, OUTPUT lc-list-cname ).
     
     
@@ -1484,6 +1557,7 @@ PROCEDURE process-web-request :
             lc-longdescription  = get-value("longdescription")
             lc-currentstatus    = get-value("currentstatus")
             lc-currentassign    = get-value("currentassign")
+            lc-prj-eng          = get-value("prj-eng")
             lc-planned          = get-value("planned")
             lc-statnote         = get-value("statnote")
             lc-sla-selected     = get-value("sla")
@@ -1491,7 +1565,8 @@ PROCEDURE process-web-request :
             lc-ticket           = get-value("ticket")
             lc-contract-type    = get-value("selectcontract")
             lc-billable-flag    = get-value("billcheck")
-            ll-isBillable         = lc-billable-flag = "on"
+            ll-isBillable       = lc-billable-flag = "on"
+            lc-prj-start        = get-value("prj-start")
             lc-iclass           = get-value("iclass").
           
           
@@ -1520,12 +1595,14 @@ PROCEDURE process-web-request :
             lc-longdescription  = b-table.longdescription
             lc-currentstatus    = b-table.StatusCode
             lc-currentassign    = b-table.AssignTo
+            lc-prj-eng          = b-table.prj-eng
             lc-catcode          = b-table.CatCode
             lc-ticket           = IF b-table.Ticket THEN "on" ELSE ""
             lc-contract-type    = b-table.ContractType   
             lc-billable-flag    = IF b-table.Billable THEN "on" ELSE ""
             ll-isBillable       = b-table.Billable
             lc-iclass           = b-table.iclass
+            lc-prj-start        = STRING(b-table.prj-start,"99/99/9999")
             .
 
         IF b-Table.PlannedCompletion = ?
@@ -1649,10 +1726,10 @@ PROCEDURE process-web-request :
     IF b-table.iClass = lc-global-iclass-complex THEN
     DO:
         {&out}
-            '<div class="tabbertab" title="Project Gantt">' SKIP.
-         RUN ip-GanttPage.   
+        '<div class="tabbertab" title="Project Gantt">' SKIP.
+        RUN ip-GanttPage.   
         {&out} 
-            '</div>' SKIP.
+        '</div>' SKIP.
              
     END.
     
@@ -1675,6 +1752,9 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-CalendarScript("planned") skip.
+    
+    IF b-table.iClass = lc-global-iclass-complex 
+        THEN {&out} htmlib-CalendarScript("prj-start") skip.
 
     {&out} htmlib-Footer() skip.
     

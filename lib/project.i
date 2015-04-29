@@ -324,6 +324,88 @@ PROCEDURE prjlib-BuildGanttData:
 
 END PROCEDURE.
 
+PROCEDURE prjlib-BuildScheduleData:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pc-user          AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pc-companyCode   AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pc-engList       AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pd-from          AS DATE         NO-UNDO.
+    DEFINE OUTPUT PARAMETER TABLE           FOR tt-schedule.
+    
+        
+    DEFINE BUFFER issue     FOR Issue.
+    DEFINE BUFFER WebUser   FOR WebUser.
+    DEFINE BUFFER issPhase  FOR issPhase.
+    DEFINE BUFFER IssAction FOR IssAction.
+    DEFINE BUFFER eSched    FOR eSched.
+    
+    DEFINE VARIABLE li-rno   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE ld-Start AS DATE    NO-UNDO.
+    DEFINE VARIABLE ld-end   AS DATE    NO-UNDO.
+    DEFINE VARIABLE lr-row   AS ROWID   NO-UNDO.
+    DEFINE VARIABLE li-loop  AS INTEGER NO-UNDO.
+    
+    
+    DO li-loop = 1 TO NUM-ENTRIES(pc-EngList):
+        
+        FIND WebUser WHERE WebUser.LoginID = entry(li-loop,pc-engList) NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE WebUser 
+        THEN NEXT.
+        
+        FOR EACH eSched NO-LOCK
+            WHERE eSched.CompanyCode = pc-companyCode
+            AND eSched.AssignTo = WebUser.LoginID
+            AND eSched.ActionDate >= pd-from
+            ,
+            FIRST IssAction NO-LOCK 
+                WHERE IssAction.IssActionID = eSched.IssActionID   
+            BY eSched.ActionDate
+            BY eSched.IssueNumber
+            :
+                
+            FIND Issue OF IssAction NO-LOCK NO-ERROR.
+            
+            FIND Customer OF Issue NO-LOCK NO-ERROR.
+            
+                
+            ASSIGN
+                li-rno = li-rno + 1.
+                
+            CREATE tt-schedule.
+            ASSIGN
+                tt-schedule.rno = li-rno
+                tt-schedule.id =  li-rno
+                tt-schedule.startDate =  eSched.ActionDate 
+                tt-schedule.endDate = tt-schedule.startDate + DYNAMIC-FUNCTION("prjlib-WorkingDays",IssAction.PlanDuration) - 1
+                tt-schedule.txt = IssAction.ActDescription + " Issue " + string(Issue.IssueNumber)  
+                              
+                
+                tt-schedule.EngCode = eSched.AssignTo
+                tt-schedule.EngName = DYNAMIC-FUNCTION("com-UserName",eSched.AssignTo)
+                tt-schedule.cRow = STRING(ROWID(eSched))
+                tt-schedule.IssueNumber = Issue.IssueNumber
+                tt-schedule.custName = Customer.Name
+                tt-schedule.bdesc    = Issue.briefDescription
+                
+                .
+                 
+                     
+                    
+        END.     
+        
+    END.
+    
+    
+        
+    
+       
+
+
+END PROCEDURE.
+
 PROCEDURE prjlib-DeleteTask:
     /*------------------------------------------------------------------------------
             Purpose:  																	  
