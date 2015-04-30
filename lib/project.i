@@ -456,6 +456,52 @@ PROCEDURE prjlib-DeleteTask:
     
 END PROCEDURE.
 
+PROCEDURE prjlib-MoveProjectStart:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pc-user              AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pc-companyCode       AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pi-IssueNumber       AS INTEGER      NO-UNDO.
+    DEFINE INPUT PARAMETER pi-Days              AS INTEGER      NO-UNDO.
+    
+    DEFINE BUFFER issue     FOR Issue.
+    DEFINE BUFFER IssAction FOR IssAction.
+    DEFINE BUFFER eSched    FOR eSched.
+    
+    
+    FIND Issue
+        WHERE Issue.CompanyCode = pc-CompanyCode
+        AND Issue.IssueNumber = pi-IssueNumber NO-LOCK NO-ERROR.
+        
+    DO TRANSACTION:
+                         
+        FOR EACH IssAction EXCLUSIVE-LOCK
+            WHERE issAction.CompanyCode = Issue.companyCode
+            AND IssAction.IssueNumber = Issue.IssueNumber
+            BY IssAction.issActionID
+            :
+            
+            ASSIGN 
+                IssAction.ActionDate = IssAction.ActionDate + pi-Days.
+      
+            FOR EACH eSched EXCLUSIVE-LOCK
+                WHERE eSched.IssActionID = IssAction.IssActionID:
+               
+               ASSIGN
+                    eSched.ActionDate = IssAction.ActionDate.
+                     
+               
+            END.
+          
+        END.        
+                               
+    END.
+        
+
+END PROCEDURE.
+
 PROCEDURE prjlib-NewProject:
     /*------------------------------------------------------------------------------
             Purpose:  																	  

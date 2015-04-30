@@ -1047,13 +1047,17 @@ PROCEDURE ip-Update :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-    DEFINE INPUT PARAMETER pr-rowid        AS ROWID NO-UNDO.
-    DEFINE INPUT PARAMETER pc-user         AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAMETER pr-rowid        AS ROWID         NO-UNDO.
+    DEFINE INPUT PARAMETER pc-user         AS CHARACTER     NO-UNDO.
 
-    DEFINE VARIABLE lc-old-status     AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE lc-old-assign     AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE ll-old-ticket     AS LOG       NO-UNDO.
-    DEFINE VARIABLE lc-old-AreaCode   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-old-status     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE lc-old-assign     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE ll-old-ticket     AS LOG        NO-UNDO.
+    DEFINE VARIABLE lc-old-AreaCode   AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE ld-prj-start      AS DATE       NO-UNDO.
+    DEFINE VARIABLE li-prj-diff       AS INTEGER    NO-UNDO.
+    
+    
 
     DEFINE VARIABLE lf-old-link-SLAID LIKE Issue.link-SLAID NO-UNDO.
 
@@ -1082,8 +1086,43 @@ PROCEDURE ip-Update :
         ll-isBillable            = Issue.Billable
         Issue.SearchField      = Issue.briefdescription + " " + 
                                       Issue.LongDescription
-        issue.iClass           = lc-iclass
+        Issue.iClass           = lc-iclass
         .
+        
+    IF Issue.iClass = lc-global-iclass-complex THEN
+    DO:
+        ASSIGN
+            ld-prj-start = DATE(lc-prj-start)
+            li-prj-diff  = ld-prj-start -  Issue.prj-Start.
+       
+        /*
+        ***
+        *** need to adjust project/engineer schedule
+        ***
+        */ 
+        IF li-prj-diff <> 0 THEN
+        DO:
+            RUN prjlib-MoveProjectStart (
+                lc-global-user,
+                Issue.CompanyCode,
+                Issue.IssueNumber,
+                li-prj-diff 
+            ).
+            
+            RUN islib-CreateNote( Issue.CompanyCode,
+                    Issue.IssueNumber,
+                    lc-global-user,
+                    "SYS.INFO",
+                    "Project Start adjusted by " + string(li-prj-diff) + " days... Schedule/Plan adjusted").
+                    
+            
+        END.
+             
+        ASSIGN
+            Issue.prj-Start = ld-prj-start.
+  
+                  
+    END.
 
     IF lc-old-status <> lc-currentstatus THEN
     DO:
@@ -1628,7 +1667,6 @@ PROCEDURE process-web-request :
     '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">' skip 
          '<HTML>' skip
          '<HEAD>' skip
-          
          '<meta http-equiv="Cache-Control" content="No-Cache">' skip
          '<meta http-equiv="Pragma"        content="No-Cache">' skip
          '<meta http-equiv="Expires"       content="0">' skip
@@ -1668,8 +1706,11 @@ PROCEDURE process-web-request :
     /*
     *** Main Issue Details
     */
-    {&out} 
-    '<div class="tabbertab" title="Issue Details">' skip.
+    
+    IF b-table.iClass = lc-global-iclass-complex THEN
+    {&out} '<div class="tabbertab" title="Project Details">' skip.
+    else
+    {&out} '<div class="tabbertab" title="Issue Details">' skip.
     RUN ip-IssueMain.
     {&out}
     '</div>' skip.  
@@ -1726,7 +1767,7 @@ PROCEDURE process-web-request :
     IF b-table.iClass = lc-global-iclass-complex THEN
     DO:
         {&out}
-        '<div class="tabbertab" title="Project Gantt">' SKIP.
+        '<div class="tabbertab" title="Project Plan">' SKIP.
         RUN ip-GanttPage.   
         {&out} 
         '</div>' SKIP.
