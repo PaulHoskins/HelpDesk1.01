@@ -729,7 +729,7 @@ PROCEDURE com-GetAssignIssue :
             pc-LoginID = pc-LoginID + '|' + 
                b-user.LoginID
             pc-name    = pc-name + '|' + 
-               b-user.Name.
+               b-user.Name .
     END.
 END PROCEDURE.
 

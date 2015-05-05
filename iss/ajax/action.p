@@ -12,19 +12,14 @@
     21/03/2007  phoski      Sort Activity by DATE/CREATE TIME desc
     03/04/2015  phoski      ActionID = ? - its from a project task so 
                             use actDescription
+    05/05/2015  phoski      Complex project                        
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
 
-DEFINE VARIABLE lc-rowid     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-toolbarid AS CHARACTER NO-UNDO.
-
-
-DEFINE BUFFER b-table     FOR issue.
-DEFINE BUFFER b-query     FOR issAction.
-DEFINE BUFFER IssActivity FOR IssActivity.
-
+DEFINE VARIABLE lc-rowid          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-toolbarid      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-info           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-object         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE li-tag-end        AS INTEGER   NO-UNDO.
@@ -34,7 +29,16 @@ DEFINE VARIABLE li-total-duration AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-AllowDelete    AS CHARACTER NO-UNDO.
 
 
+DEFINE VARIABLE li-count          AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-start          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Action         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Audit          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE ll-HasClosed      AS LOGICAL   NO-UNDO.
+DEFINE VARIABLE lc-descr          AS CHARACTER NO-UNDO.
 
+DEFINE BUFFER b-table     FOR issue.
+DEFINE BUFFER b-query     FOR issAction.
+DEFINE BUFFER IssActivity FOR IssActivity.    
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -82,93 +86,13 @@ RUN process-web-request.
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-PROCEDURE outputHeader :
-    /*------------------------------------------------------------------------------
-      Purpose:     Output the MIME header, and any "cookie" information needed 
-                   by this procedure.  
-      Parameters:  <none>
-      objtargets:       In the event that this Web object is state-aware, this is
-                   a good place to set the webState and webTimeout attributes.
-    ------------------------------------------------------------------------------*/
+PROCEDURE ip-StandardActionTable:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
 
-    /* To make this a state-aware Web object, pass in the timeout period 
-     * (in minutes) before running outputContentType.  If you supply a timeout 
-     * period greater than 0, the Web object becomes state-aware and the 
-     * following happens:
-     *
-     *   - 4GL variables webState and webTimeout are set
-     *   - a cookie is created for the broker to id the client on the return trip
-     *   - a cookie is created to id the correct procedure on the return trip
-     *
-     * If you supply a timeout period less than 1, the following happens:
-     *
-     *   - 4GL variables webState and webTimeout are set to an empty string
-     *   - a cookie is killed for the broker to id the client on the return trip
-     *   - a cookie is killed to id the correct procedure on the return trip
-     *
-     * Example: Timeout period of 5 minutes for this Web object.
-     *
-     *   setWebState (5.0).
-     */
-    
-    /* 
-     * Output additional cookie information here before running outputContentType.
-     *      For more information about the Netscape Cookie Specification, see
-     *      http://home.netscape.com/newsref/std/cookie_spec.html  
-     *   
-     *      Name         - name of the cookie
-     *      Value        - value of the cookie
-     *      Expires date - Date to expire (optional). See TODAY function.
-     *      Expires time - Time to expire (optional). See TIME function.
-     *      Path         - Override default URL path (optional)
-     *      Domain       - Override default domain (optional)
-     *      Secure       - "secure" or unknown (optional)
-     * 
-     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
-     *      same time but only for secure (https) connections.
-     *      
-     *      RUN SetCookie IN web-utilities-hdl 
-     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
-     */ 
-    output-content-type("text/plain~; charset=iso-8859-1":U).
-  
-END PROCEDURE.
-
-
-&ENDIF
-
-&IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
-
-PROCEDURE process-web-request :
-    /*------------------------------------------------------------------------------
-      Purpose:     Process the web request.
-      Parameters:  <none>
-      objtargets:       
-    ------------------------------------------------------------------------------*/
-    
-    DEFINE VARIABLE li-count        AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE lc-start        AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE lc-Action       AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE lc-Audit        AS CHARACTER     NO-UNDO.
-    DEFINE VARIABLE ll-HasClosed    AS LOGICAL      NO-UNDO.
-    DEFINE VARIABLE lc-descr        AS CHARACTER    NO-UNDO.
-     
-
-    ASSIGN
-        lc-rowid = get-value("rowid")
-        lc-toolbarid = get-value("toolbarid")
-        lc-AllowDelete = get-value("allowdelete").
-    
-
-    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
-
-    
-    RUN outputHeader.
-    
-    {&out}
-    htmlib-CustomerViewable(b-table.CompanyCode,b-table.AccountNumber).
-
-    {&out} skip
+{&out} skip
           replace(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"').
     {&out}
     htmlib-TableHeading(
@@ -183,13 +107,13 @@ PROCEDURE process-web-request :
         BY b-Query.CreateTime DESCENDING
         :
 
-        IF b-query.ActionID <> ?
-        THEN 
+        IF b-query.ActionID <> ? THEN 
         DO:
-        FIND WebAction 
-            WHERE WebAction.ActionID = b-query.ActionID
-            NO-LOCK NO-ERROR.
-            ASSIGN lc-descr = WebAction.Description.
+            FIND WebAction 
+                WHERE WebAction.ActionID = b-query.ActionID
+                NO-LOCK NO-ERROR.
+            ASSIGN 
+                lc-descr = WebAction.Description.
         END.
         ELSE  ASSIGN lc-descr = b-query.ActDescription.
         
@@ -287,14 +211,7 @@ PROCEDURE process-web-request :
             + '~'' 
             + ');'
             ,"")
-        /*                 tbar-Link("addactivity",?,                                                                                                   */
-        /*                      'javascript:PopUpWindow('                                                                                               */
-        /*                           + '~'' + appurl                                                                                                    */
-        /*                           + '/iss/activityupdate.p?mode=add&issuerowid=' + string(rowid(b-table)) + "&actionrowid=" + string(rowid(b-query)) */
-        /*                           + '~''                                                                                                             */
-        /*                           + ');'                                                                                                             */
-        /*                           ,"")                                                                                                               */
-        /*                 tbar-Link("updateactivity",?,"off","")                                                                                       */
+                                                                                            
         tbar-Link("multiiss",?,
             'javascript:PopUpWindow('
             + '~'' + appurl 
@@ -391,23 +308,7 @@ PROCEDURE process-web-request :
                 + '~'' 
                 + ');'
                 ,"")
-            /*                     tbar-Link("addactivity",?,                                                                                                    */
-            /*                      'javascript:PopUpWindow('                                                                                                    */
-            /*                           + '~'' + appurl                                                                                                         */
-            /*                           + '/iss/activityupdate.p?mode=add&issuerowid=' + string(rowid(b-table)) + "&actionrowid=" + string(rowid(b-query))      */
-            /*                           + '~''                                                                                                                  */
-            /*                           + ');'                                                                                                                  */
-            /*                           ,"")                                                                                                                    */
-            /*                      tbar-Link("updateactivity",?,                                                                                                */
-            /*                      'javascript:PopUpWindow('                                                                                                    */
-            /*                           + '~'' + appurl                                                                                                         */
-            /*                           + '/iss/activityupdate.p?mode=update&issuerowid=' + string(rowid(b-table)) + "&actionrowid=" + string(rowid(b-query)) + */
-            /*                                          "&rowid=" + string(rowid(IssActivity))                                                                   */
-            /*                           + '~''                                                                                                                  */
-            /*                           + ');'                                                                                                                  */
-            /*                           ,"")                                                                                                                    */
-                         
-
+                                                                                                                 
             tbar-EndHidden()
             '</tr>' skip.
 
@@ -436,6 +337,97 @@ PROCEDURE process-web-request :
            skip.
 
   
+  
+
+
+END PROCEDURE.
+
+PROCEDURE outputHeader :
+    /*------------------------------------------------------------------------------
+      Purpose:     Output the MIME header, and any "cookie" information needed 
+                   by this procedure.  
+      Parameters:  <none>
+      objtargets:       In the event that this Web object is state-aware, this is
+                   a good place to set the webState and webTimeout attributes.
+    ------------------------------------------------------------------------------*/
+
+    /* To make this a state-aware Web object, pass in the timeout period 
+     * (in minutes) before running outputContentType.  If you supply a timeout 
+     * period greater than 0, the Web object becomes state-aware and the 
+     * following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set
+     *   - a cookie is created for the broker to id the client on the return trip
+     *   - a cookie is created to id the correct procedure on the return trip
+     *
+     * If you supply a timeout period less than 1, the following happens:
+     *
+     *   - 4GL variables webState and webTimeout are set to an empty string
+     *   - a cookie is killed for the broker to id the client on the return trip
+     *   - a cookie is killed to id the correct procedure on the return trip
+     *
+     * Example: Timeout period of 5 minutes for this Web object.
+     *
+     *   setWebState (5.0).
+     */
+    
+    /* 
+     * Output additional cookie information here before running outputContentType.
+     *      For more information about the Netscape Cookie Specification, see
+     *      http://home.netscape.com/newsref/std/cookie_spec.html  
+     *   
+     *      Name         - name of the cookie
+     *      Value        - value of the cookie
+     *      Expires date - Date to expire (optional). See TODAY function.
+     *      Expires time - Time to expire (optional). See TIME function.
+     *      Path         - Override default URL path (optional)
+     *      Domain       - Override default domain (optional)
+     *      Secure       - "secure" or unknown (optional)
+     * 
+     *      The following example sets cust-num=23 and expires tomorrow at (about) the 
+     *      same time but only for secure (https) connections.
+     *      
+     *      RUN SetCookie IN web-utilities-hdl 
+     *        ("custNum":U, "23":U, TODAY + 1, TIME, ?, ?, "secure":U).
+     */ 
+    output-content-type("text/plain~; charset=iso-8859-1":U).
+  
+END PROCEDURE.
+
+
+&ENDIF
+
+&IF DEFINED(EXCLUDE-process-web-request) = 0 &THEN
+
+PROCEDURE process-web-request :
+    /*------------------------------------------------------------------------------
+      Purpose:     Process the web request.
+      Parameters:  <none>
+      objtargets:       
+    ------------------------------------------------------------------------------*/
+    
+    
+     
+
+    ASSIGN
+        lc-rowid = get-value("rowid")
+        lc-toolbarid = get-value("toolbarid")
+        lc-AllowDelete = get-value("allowdelete").
+    
+
+    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
+
+    
+    RUN outputHeader.
+    
+    {&out}
+    htmlib-CustomerViewable(b-table.CompanyCode,b-table.AccountNumber).
+    
+    IF b-table.iClass <> lc-global-iclass-complex
+    THEN RUN ip-StandardActionTable.
+    ELSE RUN ip-StandardActionTable.
+
+    
 END PROCEDURE.
 
 

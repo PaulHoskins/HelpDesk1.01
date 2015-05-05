@@ -398,12 +398,55 @@ PROCEDURE prjlib-BuildScheduleData:
         
     END.
     
+END PROCEDURE.
+
+PROCEDURE prjlib-ChangeProjectEngineer:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+
+    DEFINE INPUT PARAMETER pc-user              AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pc-companyCode       AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pi-IssueNumber       AS INTEGER      NO-UNDO.
+    DEFINE INPUT PARAMETER pc-From              AS CHARACTER    NO-UNDO.
+    DEFINE INPUT PARAMETER pc-To                AS CHARACTER    NO-UNDO.
     
+    DEFINE BUFFER issue     FOR Issue.
+    DEFINE BUFFER IssAction FOR IssAction.
+    DEFINE BUFFER eSched    FOR eSched.
+    
+    FIND Issue
+        WHERE Issue.CompanyCode = pc-CompanyCode
+        AND Issue.IssueNumber = pi-IssueNumber NO-LOCK NO-ERROR.
         
-    
-       
-
-
+    DO TRANSACTION:
+        
+        /*
+        *** Remove any existing schedule for the *To engineer as
+        *** he will get new records
+        ***
+        */
+        FOR EACH eSched EXCLUSIVE-LOCK 
+            WHERE eSched.CompanyCode = pc-companyCode
+              AND eSched.IssueNumber = pi-IssueNumber
+              AND eSched.AssignTo = pc-to:
+            DELETE eSched.
+        END.       
+                         
+        FOR EACH IssAction EXCLUSIVE-LOCK
+            WHERE issAction.CompanyCode = Issue.companyCode
+            AND IssAction.IssueNumber = Issue.IssueNumber
+            AND IssAction.AssignTo = pc-from
+            BY IssAction.issActionID
+            :
+           ASSIGN
+            IssAction.AssignTo = pc-to
+            IssAction.AssignDate = TODAY
+            IssAction.AssignTime = TIME.
+                 
+        END.        
+    END.             
 END PROCEDURE.
 
 PROCEDURE prjlib-DeleteTask:

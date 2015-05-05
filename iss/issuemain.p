@@ -1117,6 +1117,19 @@ PROCEDURE ip-Update :
                     
             
         END.
+        IF lc-currentassign <>  Issue.AssignTo THEN
+        DO:
+                               
+            RUN prjlib-ChangeProjectEngineer 
+                (
+                lc-global-user,
+                Issue.CompanyCode,
+                Issue.IssueNumber,
+                Issue.AssignTo,
+                lc-currentAssign
+                ).
+                
+        END.
              
         ASSIGN
             Issue.prj-Start = ld-prj-start.
@@ -1573,9 +1586,6 @@ PROCEDURE process-web-request :
     RUN com-GetAssignIssue ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
     RUN com-GetAssignList ( lc-global-company , OUTPUT lc-list-proj-assign , OUTPUT lc-list-proj-assname ).
     RUN com-GetCategoryIssue( lc-global-company, OUTPUT lc-list-catcode, OUTPUT lc-list-cname ).
-    
-    
-
     
 
     ASSIGN 
