@@ -179,26 +179,30 @@ PROCEDURE ip-ActionPage :
     ------------------------------------------------------------------------------*/
     {&out}
            skip
-           tbar-BeginID(lc-Action-TBAR,"")
+           tbar-BeginID(lc-Action-TBAR,"") SKIP.
+    IF b-table.iClass <> lc-global-iclass-complex  THEN
+    DO:      
+        {&out} 
            tbar-Link("add",?,
                      'javascript:PopUpWindow('
                           + '~'' + appurl 
-                     + '/iss/actionupdate.p?mode=add&issuerowid=' + string(rowid(b-table))
+                     + '/iss/actionupdate.p?mode=add&issuerowid=' + string(ROWID(b-table))
                           + '~'' 
                           + ');'
                           ,"")
-                      skip
+                      SKIP.
+    END.
+    {&out}
             tbar-BeginOptionID(lc-Action-TBAR) skip.
 
     IF ll-SuperUser
         THEN {&out} tbar-Link("delete",?,"off","").
 
-    {&out}  tbar-Link("update",?,"off","")
-    /*             tbar-Link("addactivity",?,"off","")    */
-    /*             tbar-Link("updateactivity",?,"off","") */
-    tbar-Link("multiiss",?,"off","")
-    tbar-EndOption()
-    tbar-End().
+    {&out}  
+        tbar-Link("update",?,"off","")
+        tbar-Link("multiiss",?,"off","")
+        tbar-EndOption()
+        tbar-End().
 
     {&out}
     '<div id="IDAction"></div>'.

@@ -38,7 +38,9 @@ DEFINE VARIABLE lc-descr          AS CHARACTER NO-UNDO.
 
 DEFINE BUFFER b-table     FOR issue.
 DEFINE BUFFER b-query     FOR issAction.
-DEFINE BUFFER IssActivity FOR IssActivity.    
+DEFINE BUFFER IssActivity FOR IssActivity.   
+DEFINE BUFFER issPhase    FOR issPhase.
+  
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -86,14 +88,281 @@ RUN process-web-request.
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
-PROCEDURE ip-StandardActionTable:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+PROCEDURE ip-ComplexProjectTable:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE li-PhaseID      LIKE issPhase.PhaseID       NO-UNDO.
+    {&out} skip
+          replace(htmlib-StartMntTable(),'width="100%"','width="100%" align="center"').
+    {&out}
+    htmlib-TableHeading(
+        "Phase|Date|Assigned To|Created|Action|Date|Activity|Site Visit|By|Start/End|Duration<br>(H:MM)^right"
+        ) skip.
 
-{&out} skip
-          replace(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"').
+    li-PhaseID = ?.
+    
+    
+    FOR EACH issPhase NO-LOCK
+      WHERE issPhase.CompanyCode = b-table.CompanyCode
+        AND issPhase.IssueNumber = b-table.IssueNumber
+        ,
+        EACH b-query NO-LOCK
+            WHERE b-query.CompanyCode = b-table.CompanyCode
+             AND b-query.IssueNumber = b-table.IssueNumber
+             AND b-query.PhaseID = issPhase.PhaseID
+            BY issPhase.DisplayOrder
+            BY b-query.DisplayOrder
+            
+           :
+
+        
+        IF b-query.ActionID <> ? THEN 
+        DO:
+            FIND WebAction 
+                WHERE WebAction.ActionID = b-query.ActionID
+                NO-LOCK NO-ERROR.
+            ASSIGN 
+                lc-descr = WebAction.Description.
+        END.
+        ELSE  ASSIGN lc-descr = b-query.ActDescription.
+        
+
+        ASSIGN
+            li-duration = 0.
+        FOR EACH IssActivity NO-LOCK
+            WHERE issActivity.CompanyCode = b-table.CompanyCode
+            AND issActivity.IssueNumber = b-table.IssueNumber
+            AND IssActivity.IssActionId = b-query.IssActionID:
+            ASSIGN
+                li-duration = li-duration + IssActivity.Duration
+                li-count    = li-count + 1.
+        END.
+        ASSIGN
+            li-total-duration = li-total-duration + li-duration.
+
+        ASSIGN
+            li-count = li-count + 1.
+
+        ASSIGN
+            lc-Action = STRING(b-Query.ActionDate,"99/99/9999").
+        IF b-query.ActionStatus = "CLOSED"
+            THEN ASSIGN lc-Action = '<span style="color: green;">' + lc-Action + "**</span>"
+                ll-HasClosed = TRUE.
+
+        ASSIGN
+            lc-Audit = STRING(b-Query.CreateDate,"99/99/9999") + " " + 
+                       string(b-Query.CreateTime,"hh:mm") + " " + 
+                       dynamic-function("com-UserName",b-query.CreatedBy).
+                       
+        {&out}
+        SKIP(1)
+        tbar-trID(lc-ToolBarID,ROWID(b-query))
+        SKIP(1)
+        /* Only display first time */
+        htmlib-mntTableField(html-encode(IF li-phaseID <> issPhase.PhaseID THEN issPhase.Descr ELSE ""),'left')
+        htmlib-MntTableField(lc-Action,'left')
+        htmlib-MntTableField(
+            DYNAMIC-FUNCTION("com-UserName",b-query.AssignTo)
+            ,'left')
+        htmlib-MntTableField(lc-Audit,'left').
+
+        ASSIGN li-phaseID = issPhase.PhaseID.
+        
+        /* 1 = 2 dummy fail this side of the condition for now PH 06/05/2015 */
+        IF b-query.notes <> "" AND 1 = 2 THEN
+        DO:
+        
+            ASSIGN 
+                lc-info = 
+                REPLACE(htmlib-MntTableField(html-encode(lc-descr),'left'),'</td>','')
+                lc-object = "hdobj" + string(b-query.issActionID).
+        
+            lc-info = REPLACE(lc-info,"<td","<td colspan=6 ").
+
+            ASSIGN 
+                li-tag-end = INDEX(lc-info,">").
+
+            {&out} substr(lc-info,1,li-tag-end).
+
+            ASSIGN 
+                substr(lc-info,1,li-tag-end) = "".
+            
+            {&out} 
+            '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
+            lc-object '~')">':U skip.
+            {&out} lc-info.
+    
+            {&out} htmlib-ExpandBox(lc-object,b-query.Notes).
+
+            {&out} '</td>' skip.
+        END.
+        ELSE {&out}
+        REPLACE(htmlib-MntTableField(lc-descr,'left'),
+            "<td","<td colspan=6 ").
+        {&out}
+            
+        htmlib-MntTableField(
+            IF li-Duration > 0 
+            THEN '<strong>' + html-encode(com-TimeToString(li-duration)) + '</strong>'
+            ELSE "",'right')
+            
+        tbar-BeginHidden(ROWID(b-query)).
+
+        IF lc-allowDelete = "yes" 
+            THEN {&out} tbar-Link("delete",ROWID(b-query),
+            'javascript:ConfirmDeleteAction(' +
+            "ROW" + string(ROWID(b-query)) + ','
+                           
+                          
+            + string(b-query.issActionID) + ');',
+            "").
+        {&out}
+            
+        tbar-Link("update",?,
+            'javascript:PopUpWindow('
+            + '~'' + appurl 
+            + '/iss/actionprojectupdate.p?mode=update&issuerowid=' + string(ROWID(b-table)) + "&rowid=" + string(ROWID(b-query))
+            + '~'' 
+            + ');'
+            ,"")
+                                                                                            
+        tbar-Link("multiiss",?,
+            'javascript:PopUpWindow('
+            + '~'' + appurl 
+            + '/iss/activityupdmain.p?mode=display&issuerowid=' + string(ROWID(b-table)) + "&rowid=" + string(ROWID(b-query)) + "&actionrowid=" + string(ROWID(b-query))
+            + '~'' 
+            + ');'
+            ,"") skip
+                         
+
+            tbar-EndHidden()
+            '</tr>' skip.
+
+        FOR EACH IssActivity NO-LOCK
+            WHERE issActivity.CompanyCode = b-query.CompanyCode
+            AND issActivity.IssueNumber = b-query.IssueNumber
+            AND IssActivity.IssActionId = b-query.IssActionID
+            BY issActivity.ActDate DESCENDING
+            BY IssActivity.CreateDate DESCENDING
+            BY issActivity.CreateTime DESCENDING:
+
+            ASSIGN
+                lc-start = "".
+
+            IF issActivity.StartDate <> ? THEN
+            DO:
+                ASSIGN
+                    lc-start = STRING(issActivity.StartDate,"99/99/9999") + 
+                               " " +
+                               string(issActivity.StartTime,"hh:mm").
+
+                IF issActivity.EndDate <> ? THEN
+                    ASSIGN
+                        lc-start = lc-start + " - " + 
+                               string(issActivity.EndDate,"99/99/9999") + 
+                               " " +
+                               string(issActivity.EndTime,"hh:mm").
+                                
+            END.
+
+            {&out}
+            SKIP(1)
+            tbar-trID(lc-ToolBarID,ROWID(IssActivity))
+            SKIP(1)
+            REPLACE(htmlib-MntTableField("",'left'),"<td","<td colspan=4") 
+            htmlib-MntTableField(STRING(IssActivity.ActDate,'99/99/9999'),'left') skip.
+
+
+            IF IssActivity.notes <> "" THEN
+            DO:
+            
+                ASSIGN 
+                    lc-info = 
+                    REPLACE(htmlib-MntTableField(html-encode(IssActivity.Description),'left'),'</td>','')
+                    lc-object = "hdobj" + string(IssActivity.issActivityID).
+            
+                ASSIGN 
+                    li-tag-end = INDEX(lc-info,">").
+    
+                {&out} substr(lc-info,1,li-tag-end).
+    
+                ASSIGN 
+                    substr(lc-info,1,li-tag-end) = "".
+                
+                {&out} 
+                '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
+                lc-object '~')">':U skip.
+                {&out} lc-info.
+        
+                {&out} htmlib-ExpandBox(lc-object,IssActivity.Notes).
+    
+                {&out} '</td>' skip.
+            END.
+            ELSE {&out}
+            htmlib-MntTableField(IssActivity.Description,'left').
+
+            {&out}
+            htmlib-MntTableField(IF IssActivity.SiteVisit THEN "Yes" ELSE "&nbsp;",'left').
+
+            {&out}
+            htmlib-MntTableField(
+                DYNAMIC-FUNCTION("com-UserName",IssActivity.ActivityBy)
+                ,'left')
+            htmlib-MntTableField(html-encode(lc-Start),'left')
+            htmlib-MntTableField(IF IssActivity.Duration > 0 
+                THEN html-encode(com-TimeToString(IssActivity.Duration))
+                ELSE "",'right')
+            
+            tbar-BeginHidden(ROWID(IssActivity))
+            
+            tbar-Link("update",?,
+                'javascript:PopUpWindow('
+                + '~'' + appurl 
+                + '/iss/actionupdate.p?mode=update&issuerowid=' + string(ROWID(b-table)) + "&rowid=" + string(ROWID(b-query))
+                + '~'' 
+                + ');'
+                ,"")
+                                                                                                                 
+            tbar-EndHidden()
+            '</tr>' skip.
+
+
+        END.
+
+    END.
+    
+    IF li-total-duration <> 0 THEN
+        {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
+    REPLACE(htmlib-MntTableField("Total Duration","right"),"<td","<td colspan=9 ")
+    htmlib-MntTableField(html-encode(com-TimeToString(li-total-duration))
+        ,'right')
+                
+    '</tr>'.
+
+    IF ll-HasClosed THEN
+    DO:
+        {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
+        REPLACE(htmlib-MntTableField("** Closed Actions","left"),"<td",'<td colspan=10 style="color:green;"')
+                
+        '</tr>'.
+    END.
+    {&out} skip 
+           htmlib-EndTable()
+           skip.
+
+
+END PROCEDURE.
+
+PROCEDURE ip-StandardActionTable:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+
+    {&out} skip
+          replace(htmlib-StartMntTable(),'width="100%"','width="100%" align="center"').
     {&out}
     htmlib-TableHeading(
         "Date|Assigned To|Created|Action|Date|Activity|Site Visit|By|Start/End|Duration<br>(H:MM)^right"
@@ -135,13 +404,13 @@ PROCEDURE ip-StandardActionTable:
             li-count = li-count + 1.
 
         ASSIGN
-            lc-Action = STRING(b-Query.ActionDate,"99/99/99").
+            lc-Action = STRING(b-Query.ActionDate,"99/99/9999").
         IF b-query.ActionStatus = "CLOSED"
             THEN ASSIGN lc-Action = '<span style="color: green;">' + lc-Action + "**</span>"
                 ll-HasClosed = TRUE.
 
         ASSIGN
-            lc-Audit = STRING(b-Query.CreateDate,"99/99/99") + " " + 
+            lc-Audit = STRING(b-Query.CreateDate,"99/99/9999") + " " + 
                        string(b-Query.CreateTime,"hh:mm") + " " + 
                        dynamic-function("com-UserName",b-query.CreatedBy).
                        
@@ -238,14 +507,14 @@ PROCEDURE ip-StandardActionTable:
             IF issActivity.StartDate <> ? THEN
             DO:
                 ASSIGN
-                    lc-start = STRING(issActivity.StartDate,"99/99/99") + 
+                    lc-start = STRING(issActivity.StartDate,"99/99/9999") + 
                                " " +
                                string(issActivity.StartTime,"hh:mm").
 
                 IF issActivity.EndDate <> ? THEN
                     ASSIGN
                         lc-start = lc-start + " - " + 
-                               string(issActivity.EndDate,"99/99/99") + 
+                               string(issActivity.EndDate,"99/99/9999") + 
                                " " +
                                string(issActivity.EndTime,"hh:mm").
                                 
@@ -256,7 +525,7 @@ PROCEDURE ip-StandardActionTable:
             tbar-trID(lc-ToolBarID,ROWID(IssActivity))
             SKIP(1)
             REPLACE(htmlib-MntTableField("",'left'),"<td","<td colspan=4") 
-            htmlib-MntTableField(STRING(IssActivity.ActDate,'99/99/99'),'left') skip.
+            htmlib-MntTableField(STRING(IssActivity.ActDate,'99/99/9999'),'left') skip.
 
 
             IF IssActivity.notes <> "" THEN
@@ -424,8 +693,8 @@ PROCEDURE process-web-request :
     htmlib-CustomerViewable(b-table.CompanyCode,b-table.AccountNumber).
     
     IF b-table.iClass <> lc-global-iclass-complex
-    THEN RUN ip-StandardActionTable.
-    ELSE RUN ip-StandardActionTable.
+        THEN RUN ip-StandardActionTable.
+    ELSE RUN ip-ComplexProjectTable.
 
     
 END PROCEDURE.
