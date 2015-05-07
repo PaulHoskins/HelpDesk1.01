@@ -444,6 +444,15 @@ PROCEDURE prjlib-ChangeProjectEngineer:
             IssAction.AssignTo = pc-to
             IssAction.AssignDate = TODAY
             IssAction.AssignTime = TIME.
+            
+            FIND FIRST eSched 
+                WHERE esched.issActionID = IssAction.IssActionID
+                  AND eSched.AssignTo = pc-from
+                  EXCLUSIVE-LOCK NO-ERROR.
+                  
+            IF AVAILABLE eSched
+            THEN ASSIGN eSched.AssignTo = pc-to .      
+            
                  
         END.        
     END.             

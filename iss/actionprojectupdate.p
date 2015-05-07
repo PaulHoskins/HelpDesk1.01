@@ -22,7 +22,8 @@ DEFINE BUFFER b-table  FOR IssAction.
 DEFINE BUFFER issue    FOR Issue.
 DEFINE BUFFER b-user   FOR WebUser.
 DEFINE BUFFER customer FOR Customer.
-DEFINE BUFFER b-status  FOR WebStatus.
+DEFINE BUFFER b-status FOR WebStatus.
+DEFINE BUFFER esched   FOR eSched.
 
 DEFINE VARIABLE lc-issue-rowid  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-rowid        AS CHARACTER NO-UNDO.
@@ -41,7 +42,8 @@ DEFINE VARIABLE lc-list-assign  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-list-assname AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-notes        AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-assign       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-assign       AS CHARACTER 
+    EXTENT 5 NO-UNDO.
 DEFINE VARIABLE lc-status       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-actiondate   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-CustomerView AS CHARACTER NO-UNDO.
@@ -52,6 +54,7 @@ DEFINE VARIABLE lc-temp         AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lr-temp         AS ROWID     NO-UNDO.
 DEFINE VARIABLE ll-IsOpen       AS LOG       NO-UNDO.
+DEFINE VARIABLE li-loop         AS INTEGER   NO-UNDO.
 
 
 {iss/issue.i}
@@ -167,17 +170,22 @@ PROCEDURE ip-Page :
           '</TD></tr>' skip
            skip.
 
-    /** PH 06/05/2015 not needed 
+    
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("assign",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Assigned To")
-        ELSE htmlib-SideLabel("Assigned To"))
+        THEN htmlib-SideLabelError("Other Engineers")
+        ELSE htmlib-SideLabel("Other Engineers"))
     '</TD>' 
-    '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-Select("assign",lc-list-assign,lc-list-assname,
-        lc-assign)
-    '</TD></TR>' skip. 
-    */
+    '<TD VALIGN="TOP" ALIGN="left">' SKIP.
+    DO li-loop = 1 TO EXTENT(lc-assign):
+        {&out} 
+        htmlib-Select("assign" + string(li-loop),lc-list-assign,lc-list-assname,
+            lc-assign[li-loop]).
+        IF li-loop <> EXTENT(lc-assign) 
+            THEN {&out} '<br />' SKIP.
+    END.    
+    {&out} '</TD></TR>' skip. 
+    
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("customerview",lc-error-field,'|') > 0 
@@ -273,13 +281,41 @@ PROCEDURE ip-Validate :
     END.
     
     IF lc-notes = ?
-    OR lc-notes = ""
-    THEN RUN htmlib-AddErrorMessage(
+        OR lc-notes = ""
+        THEN RUN htmlib-AddErrorMessage(
             'notes', 
             'The action must be entered',
             INPUT-OUTPUT pc-error-field,
-            INPUT-OUTPUT pc-error-msg ).    
-
+            INPUT-OUTPUT pc-error-msg ).   
+        
+    ASSIGNCHK:
+    DO li-loop = 1 TO EXTENT(lc-assign):
+        IF lc-assign[li-loop] = "" THEN NEXT.
+         
+        IF lc-assign[li-loop] = b-table.assignto THEN
+        DO:
+            RUN htmlib-AddErrorMessage(
+                'assign', 
+                'The Senior Engineer can not be selected',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+            LEAVE.   
+        END. 
+        DO li-int = 1 TO   EXTENT(lc-assign):
+            IF li-int = li-loop THEN NEXT.
+            IF lc-assign[li-loop] = lc-assign[li-int] THEN
+            DO:
+                RUN htmlib-AddErrorMessage(
+                    'assign', 
+                    'You can only select an engineer once',
+                    INPUT-OUTPUT pc-error-field,
+                    INPUT-OUTPUT pc-error-msg ).
+                LEAVE ASSIGNCHK.   
+            END. 
+        
+            
+        END.        
+    END.
 
 END PROCEDURE.
 
@@ -370,7 +406,7 @@ PROCEDURE process-web-request :
     IF DYNAMIC-FUNCTION("islib-StatusIsClosed",
         issue.CompanyCode,
         Issue.StatusCode) 
-    THEN ll-IsOpen = FALSE.
+        THEN ll-IsOpen = FALSE.
     ELSE ll-isOpen = TRUE.
               
 
@@ -399,93 +435,82 @@ PROCEDURE process-web-request :
 
     IF request_method = "POST" THEN
     DO:
-        IF lc-mode <> "delete" THEN
-        DO:
-            ASSIGN 
-                lc-notes        = get-value("notes")
-                lc-assign       = get-value("assign")
-                lc-status       = get-value("status")
-                lc-actiondate   = get-value("actiondate")
-                lc-customerview   = get-value("customerview")
-                .
-            
-               
-            RUN ip-Validate( OUTPUT lc-error-field,
-                OUTPUT lc-error-msg ).
+        
+        ASSIGN 
+            lc-notes        = get-value("notes")
+            lc-status       = get-value("status")
+            lc-actiondate   = get-value("actiondate")
+            lc-customerview   = get-value("customerview")
+            .
+                
+        DO li-loop = 1 TO EXTENT(lc-assign):
+            ASSIGN
+                lc-assign[li-loop] = get-value("assign" + string(li-loop)).   
+        END.
+        FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+            NO-LOCK NO-ERROR.
+                        
+        RUN ip-Validate( OUTPUT lc-error-field,
+            OUTPUT lc-error-msg ).
 
+        IF lc-error-msg = "" THEN
+        DO:
+                
+            IF lc-mode = 'update' THEN
+            DO:
+                FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                    EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+                IF LOCKED b-table 
+                    THEN  RUN htmlib-AddErrorMessage(
+                        'none', 
+                        'This record is locked by another user',
+                        INPUT-OUTPUT lc-error-field,
+                        INPUT-OUTPUT lc-error-msg ).
+            END.
+                
             IF lc-error-msg = "" THEN
             DO:
+                /*
+                ***
+                *** Trash all schedules apart from the main user and recreate them if required
+                ***
+                */
+                FOR EACH eSched EXCLUSIVE-LOCK
+                    WHERE eSched.IssActionID = b-table.IssActionID:
+                    IF eSched.AssignTo <> b-table.assignTo
+                    THEN DELETE eSched.
+                END.
                 
-                IF lc-mode = 'update' THEN
-                DO:
-                    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
-                        EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
-                    IF LOCKED b-table 
-                        THEN  RUN htmlib-AddErrorMessage(
-                            'none', 
-                            'This record is locked by another user',
-                            INPUT-OUTPUT lc-error-field,
-                            INPUT-OUTPUT lc-error-msg ).
+                DO li-loop = 1 TO EXTENT(lc-assign):
+                    IF lc-assign[li-loop] = "" THEN NEXT.
+                        CREATE eSched.
+                        ASSIGN 
+                            eSched.eSchedID = NEXT-VALUE(esched).
+                        BUFFER-COPY b-table EXCEPT b-table.assignto 
+                            TO eSched
+                            ASSIGN
+                               eSched.AssignTo = lc-assign[li-loop].    
                 END.
-                ELSE
-                DO:
-                  
-                    CREATE b-table.
-                    ASSIGN 
-                        b-table.actionID    = ?
-                        b-table.CompanyCode = lc-global-company
-                        b-table.IssueNumber = issue.IssueNumber
-                        b-table.CreateDate  = TODAY
-                        b-table.CreateTime  = TIME
-                        b-table.CreatedBy   = lc-global-user
-                        b-table.customerview    = lc-customerview = "on"
-                        .
+                
+                ASSIGN 
+                    b-table.ActDescription   = lc-notes
+                    b-table.ActionStatus     = lc-Status
+                    b-table.ActionDate       = DATE(lc-ActionDate)
+                    b-table.customerview     = lc-customerview = "on".
 
-                    DO WHILE TRUE:
-                        RUN lib/makeaudit.p (
-                            "",
-                            OUTPUT lf-audit
-                            ).
-                        IF CAN-FIND(FIRST IssAction
-                            WHERE IssAction.IssActionID = lf-audit NO-LOCK)
-                            THEN NEXT.
-                        ASSIGN
-                            b-table.IssActionID = lf-audit.
-                        LEAVE.
-                    END.
-                   
-                END.
-                IF lc-error-msg = "" THEN
-                DO:
-                    lc-assign = b-table.assignTo.
+                FOR EACH eSched EXCLUSIVE-LOCK
+                    WHERE eSched.IssActionID = b-table.IssActionID:
                     
-                    ASSIGN 
-                        b-table.ActDescription   = lc-notes
-                        b-table.ActionStatus     = lc-Status
-                        b-table.ActionDate       = DATE(lc-ActionDate)
-                        b-table.customerview     = lc-customerview = "on".
-
-                   
                     ASSIGN
-                        b-table.AssignTo = lc-assign.
+                        eSched.ActionDate = b-table.ActionDate.
+                END.
+                
                   
 
 
-                END.
             END.
         END.
-        ELSE
-        DO:
-            FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
-                EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
-            IF LOCKED b-table 
-                THEN RUN htmlib-AddErrorMessage(
-                    'none', 
-                    'This record is locked by another user',
-                    INPUT-OUTPUT lc-error-field,
-                    INPUT-OUTPUT lc-error-msg ).
-            ELSE DELETE b-table.
-        END.
+       
 
         IF lc-error-field = "" THEN
         DO:
@@ -510,25 +535,29 @@ PROCEDURE process-web-request :
 
         IF CAN-DO("view,delete",lc-mode)
             OR request_method <> "post"
-            THEN ASSIGN lc-notes = b-table.ActDescription
-                lc-assign       = b-table.assignto
+            THEN 
+        DO:
+            ASSIGN 
+                lc-notes = b-table.ActDescription
                 lc-status       = b-table.ActionStatus
                 lc-actiondate   = STRING(b-table.ActionDate,'99/99/9999')
                 lc-customerview   = IF b-table.CustomerView 
                                         THEN "on" ELSE ""
-                .
-       
+                li-loop            = 0.
+        
+            /* Other Engineers */
+            FOR EACH eSched NO-LOCK
+                WHERE eSched.IssActionID = b-table.IssActionID:
+                IF eSched.AssignTo = b-table.AssignTo THEN NEXT.
+                li-loop = li-loop + 1.
+                IF li-loop <= extent(lc-assign)
+                    THEN lc-assign[li-loop] = eSched.AssignTo.
+                     
+            END.             
+        END.  
     END.
     
-    IF request_method = "GET" AND lc-mode = "ADD" THEN
-    DO:
-        ASSIGN 
-            lc-assign = lc-global-user
-            lc-actiondate = STRING(TODAY,'99/99/9999')
-            lc-customerview = 
-            IF Customer.ViewAction THEN "on" ELSE "".
-    END.
-
+    
     RUN outputHeader.
     
     {&out} htmlib-Header(lc-title) skip.

@@ -9,6 +9,7 @@
     
     When        Who         What
     22/04/2006  phoski      Initial
+    07/05/2015  phoski      Remove esched records ( Complex Projects )
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -211,6 +212,10 @@ PROCEDURE process-web-request :
             AND IssActivity.IssActionId = issAction.IssActionID:
 
             DELETE IssActivity.
+        END.
+        FOR EACH eSched EXCLUSIVE-LOCK
+            WHERE eSched.IssActionID = IssAction.IssActionID:
+            DELETE eSched.
         END.
         DELETE issAction.
 

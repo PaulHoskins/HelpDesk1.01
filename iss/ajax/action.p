@@ -40,6 +40,8 @@ DEFINE BUFFER b-table     FOR issue.
 DEFINE BUFFER b-query     FOR issAction.
 DEFINE BUFFER IssActivity FOR IssActivity.   
 DEFINE BUFFER issPhase    FOR issPhase.
+DEFINE BUFFER esched      FOR eSched.
+
   
 
 /* ********************  Preprocessor Definitions  ******************** */
@@ -94,6 +96,9 @@ PROCEDURE ip-ComplexProjectTable:
             Notes:  																	  
     ------------------------------------------------------------------------------*/
     DEFINE VARIABLE li-PhaseID      LIKE issPhase.PhaseID       NO-UNDO.
+    DEFINE VARIABLE lc-eng-list     AS CHARACTER                NO-UNDO.
+    
+    
     {&out} skip
           replace(htmlib-StartMntTable(),'width="100%"','width="100%" align="center"').
     {&out}
@@ -105,17 +110,17 @@ PROCEDURE ip-ComplexProjectTable:
     
     
     FOR EACH issPhase NO-LOCK
-      WHERE issPhase.CompanyCode = b-table.CompanyCode
+        WHERE issPhase.CompanyCode = b-table.CompanyCode
         AND issPhase.IssueNumber = b-table.IssueNumber
         ,
         EACH b-query NO-LOCK
-            WHERE b-query.CompanyCode = b-table.CompanyCode
-             AND b-query.IssueNumber = b-table.IssueNumber
-             AND b-query.PhaseID = issPhase.PhaseID
-            BY issPhase.DisplayOrder
-            BY b-query.DisplayOrder
+        WHERE b-query.CompanyCode = b-table.CompanyCode
+        AND b-query.IssueNumber = b-table.IssueNumber
+        AND b-query.PhaseID = issPhase.PhaseID
+        BY issPhase.DisplayOrder
+        BY b-query.DisplayOrder
             
-           :
+        :
 
         
         IF b-query.ActionID <> ? THEN 
@@ -154,8 +159,23 @@ PROCEDURE ip-ComplexProjectTable:
         ASSIGN
             lc-Audit = STRING(b-Query.CreateDate,"99/99/9999") + " " + 
                        string(b-Query.CreateTime,"hh:mm") + " " + 
-                       dynamic-function("com-UserName",b-query.CreatedBy).
-                       
+                       dynamic-function("com-UserName",b-query.CreatedBy)
+            lc-eng-list = DYNAMIC-FUNCTION("com-UserName",b-query.AssignTo).
+             
+        /*
+        ***
+        *** any other engineers
+        ***
+        */ 
+        FOR EACH eSched NO-LOCK
+            WHERE eSched.IssActionID = b-query.IssActionID:
+            IF eSched.AssignTo = b-query.AssignTo THEN NEXT. 
+            ASSIGN
+                lc-eng-list = lc-eng-list + "<br />" + 
+              DYNAMIC-FUNCTION("com-UserName",esched.AssignTo).
+            
+        END. 
+                    
         {&out}
         SKIP(1)
         tbar-trID(lc-ToolBarID,ROWID(b-query))
@@ -164,11 +184,12 @@ PROCEDURE ip-ComplexProjectTable:
         htmlib-mntTableField(html-encode(IF li-phaseID <> issPhase.PhaseID THEN issPhase.Descr ELSE ""),'left')
         htmlib-MntTableField(lc-Action,'left')
         htmlib-MntTableField(
-            DYNAMIC-FUNCTION("com-UserName",b-query.AssignTo)
+            lc-eng-list
             ,'left')
         htmlib-MntTableField(lc-Audit,'left').
 
-        ASSIGN li-phaseID = issPhase.PhaseID.
+        ASSIGN 
+            li-phaseID = issPhase.PhaseID.
         
         /* 1 = 2 dummy fail this side of the condition for now PH 06/05/2015 */
         IF b-query.notes <> "" AND 1 = 2 THEN
