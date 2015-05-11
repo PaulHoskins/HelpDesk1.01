@@ -342,30 +342,44 @@ PROCEDURE prjlib-BuildScheduleData:
     DEFINE BUFFER IssAction FOR IssAction.
     DEFINE BUFFER eSched    FOR eSched.
     
-    DEFINE VARIABLE li-rno   AS INTEGER NO-UNDO.
-    DEFINE VARIABLE ld-Start AS DATE    NO-UNDO.
-    DEFINE VARIABLE ld-end   AS DATE    NO-UNDO.
-    DEFINE VARIABLE lr-row   AS ROWID   NO-UNDO.
-    DEFINE VARIABLE li-loop  AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-rno    AS INTEGER NO-UNDO.
+    DEFINE VARIABLE ld-Start  AS DATE    NO-UNDO.
+    DEFINE VARIABLE ld-end    AS DATE    NO-UNDO.
+    DEFINE VARIABLE lr-row    AS ROWID   NO-UNDO.
+    DEFINE VARIABLE li-loop   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-sect   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-ecount AS INTEGER NO-UNDO.
     
+    
+    
+    MESSAGE "look = " pc-englist pd-from.
     
     DO li-loop = 1 TO NUM-ENTRIES(pc-EngList):
         
         FIND WebUser WHERE WebUser.LoginID = entry(li-loop,pc-engList) NO-LOCK NO-ERROR.
         IF NOT AVAILABLE WebUser 
-        THEN NEXT.
+            THEN NEXT.
         
+        ASSIGN
+         li-ecount = 0.
+         
         FOR EACH eSched NO-LOCK
             WHERE eSched.CompanyCode = pc-companyCode
             AND eSched.AssignTo = WebUser.LoginID
             AND eSched.ActionDate >= pd-from
             ,
             FIRST IssAction NO-LOCK 
-                WHERE IssAction.IssActionID = eSched.IssActionID   
+            WHERE IssAction.IssActionID = eSched.IssActionID   
             BY eSched.ActionDate
             BY eSched.IssueNumber
             :
-                
+          
+            IF li-ecount = 0 
+            THEN li-sect  = li-sect + 1.
+            
+            li-ecount = li-ecount + 1.
+            
+                  
             FIND Issue OF IssAction NO-LOCK NO-ERROR.
             
             FIND Customer OF Issue NO-LOCK NO-ERROR.
@@ -376,19 +390,20 @@ PROCEDURE prjlib-BuildScheduleData:
                 
             CREATE tt-schedule.
             ASSIGN
-                tt-schedule.rno = li-rno
-                tt-schedule.id =  li-rno
-                tt-schedule.startDate =  eSched.ActionDate 
-                tt-schedule.endDate = tt-schedule.startDate + DYNAMIC-FUNCTION("prjlib-WorkingDays",IssAction.PlanDuration) - 1
-                tt-schedule.txt = IssAction.ActDescription + " Issue " + string(Issue.IssueNumber)  
+                tt-schedule.rno         = li-rno
+                tt-schedule.id          = li-rno
+                tt-schedule.startDate   = eSched.ActionDate 
+                tt-schedule.endDate     = tt-schedule.startDate + DYNAMIC-FUNCTION("prjlib-WorkingDays",IssAction.PlanDuration) - 1
+                tt-schedule.txt         = IssAction.ActDescription + " Issue " + string(Issue.IssueNumber)  
                               
                 
-                tt-schedule.EngCode = eSched.AssignTo
-                tt-schedule.EngName = DYNAMIC-FUNCTION("com-UserName",eSched.AssignTo)
-                tt-schedule.cRow = STRING(ROWID(eSched))
+                tt-schedule.EngCode     = eSched.AssignTo
+                tt-schedule.EngName     = DYNAMIC-FUNCTION("com-UserName",eSched.AssignTo)
+                tt-schedule.cRow        = STRING(ROWID(eSched))
                 tt-schedule.IssueNumber = Issue.IssueNumber
-                tt-schedule.custName = Customer.Name
-                tt-schedule.bdesc    = Issue.briefDescription
+                tt-schedule.custName    = Customer.Name
+                tt-schedule.bdesc       = Issue.BriefDescription
+                tt-schedule.section_id  = li-sect
                 
                 .
                  
@@ -401,10 +416,10 @@ PROCEDURE prjlib-BuildScheduleData:
 END PROCEDURE.
 
 PROCEDURE prjlib-ChangeProjectEngineer:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
 
     DEFINE INPUT PARAMETER pc-user              AS CHARACTER    NO-UNDO.
     DEFINE INPUT PARAMETER pc-companyCode       AS CHARACTER    NO-UNDO.
@@ -429,8 +444,8 @@ PROCEDURE prjlib-ChangeProjectEngineer:
         */
         FOR EACH eSched EXCLUSIVE-LOCK 
             WHERE eSched.CompanyCode = pc-companyCode
-              AND eSched.IssueNumber = pi-IssueNumber
-              AND eSched.AssignTo = pc-to:
+            AND eSched.IssueNumber = pi-IssueNumber
+            AND eSched.AssignTo = pc-to:
             DELETE eSched.
         END.       
                          
@@ -440,18 +455,18 @@ PROCEDURE prjlib-ChangeProjectEngineer:
             AND IssAction.AssignTo = pc-from
             BY IssAction.issActionID
             :
-           ASSIGN
-            IssAction.AssignTo = pc-to
-            IssAction.AssignDate = TODAY
-            IssAction.AssignTime = TIME.
+            ASSIGN
+                IssAction.AssignTo   = pc-to
+                IssAction.AssignDate = TODAY
+                IssAction.AssignTime = TIME.
             
             FIND FIRST eSched 
                 WHERE esched.issActionID = IssAction.IssActionID
-                  AND eSched.AssignTo = pc-from
-                  EXCLUSIVE-LOCK NO-ERROR.
+                AND eSched.AssignTo = pc-from
+                EXCLUSIVE-LOCK NO-ERROR.
                   
             IF AVAILABLE eSched
-            THEN ASSIGN eSched.AssignTo = pc-to .      
+                THEN ASSIGN eSched.AssignTo = pc-to .      
             
                  
         END.        
@@ -509,10 +524,10 @@ PROCEDURE prjlib-DeleteTask:
 END PROCEDURE.
 
 PROCEDURE prjlib-MoveProjectStart:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pc-user              AS CHARACTER    NO-UNDO.
     DEFINE INPUT PARAMETER pc-companyCode       AS CHARACTER    NO-UNDO.
     DEFINE INPUT PARAMETER pi-IssueNumber       AS INTEGER      NO-UNDO.
@@ -541,7 +556,7 @@ PROCEDURE prjlib-MoveProjectStart:
             FOR EACH eSched EXCLUSIVE-LOCK
                 WHERE eSched.IssActionID = IssAction.IssActionID:
                
-               ASSIGN
+                ASSIGN
                     eSched.ActionDate = IssAction.ActionDate.
                      
                

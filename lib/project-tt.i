@@ -47,8 +47,11 @@ DEFINE TEMP-TABLE tt-schedule NO-UNDO
     FIELD custName    AS CHARACTER 
     FIELD bdesc       AS CHARACTER 
     
+    FIELD section_id  AS INTEGER 
+    
     INDEX prim IS UNIQUE PRIMARY rno
     INDEX id                     id
+    INDEX section_id section_id
     .
     
     

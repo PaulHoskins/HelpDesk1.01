@@ -13,6 +13,7 @@
     08/12/2014  phoski      Fix Timer
     19/03/2015  phoski      Various DJS issues
     24/03/2015  phoski      No more js prompt on time start/end diffs
+    09/05/2015  phoski      Complex Project
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1313,6 +1314,10 @@ PROCEDURE process-web-request :
     FIND WebAction 
         WHERE WebAction.ActionID = issAction.ActionID
         NO-LOCK NO-ERROR.
+    MESSAGE "Avail webact = " AVAILABLE WebAction IssAction.ActionID.     
+    
+    IF NOT AVAILABLE WebAction
+    THEN FIND FIRST WebAction WHERE WebAction.CompanyCode = IssAction.CompanyCode NO-LOCK NO-ERROR.
 
     ASSIGN 
         li-duration = 0.

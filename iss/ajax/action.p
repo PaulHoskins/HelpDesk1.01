@@ -292,7 +292,7 @@ PROCEDURE ip-ComplexProjectTable:
             SKIP(1)
             tbar-trID(lc-ToolBarID,ROWID(IssActivity))
             SKIP(1)
-            REPLACE(htmlib-MntTableField("",'left'),"<td","<td colspan=4") 
+            REPLACE(htmlib-MntTableField("",'left'),"<td","<td colspan=5") 
             htmlib-MntTableField(STRING(IssActivity.ActDate,'99/99/9999'),'left') skip.
 
 
@@ -341,7 +341,7 @@ PROCEDURE ip-ComplexProjectTable:
             tbar-Link("update",?,
                 'javascript:PopUpWindow('
                 + '~'' + appurl 
-                + '/iss/actionupdate.p?mode=update&issuerowid=' + string(ROWID(b-table)) + "&rowid=" + string(ROWID(b-query))
+                + '/iss/actionprojectupdate.p?mode=update&issuerowid=' + string(ROWID(b-table)) + "&rowid=" + string(ROWID(b-query))
                 + '~'' 
                 + ');'
                 ,"")
@@ -356,7 +356,7 @@ PROCEDURE ip-ComplexProjectTable:
     
     IF li-total-duration <> 0 THEN
         {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
-    REPLACE(htmlib-MntTableField("Total Duration","right"),"<td","<td colspan=9 ")
+    REPLACE(htmlib-MntTableField("Total Duration","right"),"<td","<td colspan=10 ")
     htmlib-MntTableField(html-encode(com-TimeToString(li-total-duration))
         ,'right')
                 
@@ -365,7 +365,7 @@ PROCEDURE ip-ComplexProjectTable:
     IF ll-HasClosed THEN
     DO:
         {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
-        REPLACE(htmlib-MntTableField("** Closed Actions","left"),"<td",'<td colspan=10 style="color:green;"')
+        REPLACE(htmlib-MntTableField("** Closed Actions","left"),"<td",'<td colspan=11 style="color:green;"')
                 
         '</tr>'.
     END.
@@ -590,7 +590,7 @@ PROCEDURE ip-StandardActionTable:
                 ELSE "",'right')
             
             tbar-BeginHidden(ROWID(IssActivity))
-            
+           
             tbar-Link("update",?,
                 'javascript:PopUpWindow('
                 + '~'' + appurl 
@@ -598,7 +598,7 @@ PROCEDURE ip-StandardActionTable:
                 + '~'' 
                 + ');'
                 ,"")
-                                                                                                                 
+                                                                                                            
             tbar-EndHidden()
             '</tr>' skip.
 

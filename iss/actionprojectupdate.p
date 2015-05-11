@@ -270,6 +270,15 @@ PROCEDURE ip-Validate :
             'The date is invalid',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
+    ELSE
+    IF ld-date < Issue.prj-Start 
+    THEN RUN htmlib-AddErrorMessage(
+            'actiondate', 
+            'The date is before the project start of ' + string(Issue.prj-start,"99/99/9999"),
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+            
+        
     IF NOT ll-isOpen AND lc-status = "OPEN" THEN
     DO:
         RUN htmlib-AddErrorMessage(
@@ -492,11 +501,13 @@ PROCEDURE process-web-request :
                                eSched.AssignTo = lc-assign[li-loop].    
                 END.
                 
+                
                 ASSIGN 
                     b-table.ActDescription   = lc-notes
                     b-table.ActionStatus     = lc-Status
                     b-table.ActionDate       = DATE(lc-ActionDate)
-                    b-table.customerview     = lc-customerview = "on".
+                    b-table.customerview     = lc-customerview = "on"
+                    b-table.StartDay         = ( Issue.prj-Start - b-table.ActionDate ) + 1.
 
                 FOR EACH eSched EXCLUSIVE-LOCK
                     WHERE eSched.IssActionID = b-table.IssActionID:

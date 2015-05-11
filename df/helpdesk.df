@@ -3921,6 +3921,41 @@ ADD INDEX "IssueNumber" ON "Ticket"
   INDEX-FIELD "IssueNumber" ASCENDING 
   INDEX-FIELD "TxnDate" ASCENDING 
 
+ADD TABLE "UserParam"
+  AREA "Schema Area"
+  LABEL "User Params"
+  DESCRIPTION "Save stuff "
+  DUMP-NAME "userparam"
+
+ADD FIELD "LoginID" OF "UserParam" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "User ID"
+  POSITION 2
+  MAX-WIDTH 30
+  ORDER 20
+
+ADD FIELD "pKey" OF "UserParam" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 30
+  ORDER 30
+
+ADD FIELD "pData" OF "UserParam" AS character 
+  FORMAT "x(40)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 80
+  ORDER 40
+
+ADD INDEX "prim" ON "UserParam" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "LoginID" ASCENDING 
+  INDEX-FIELD "pKey" ASCENDING 
+
 ADD TABLE "WebAction"
   AREA "Schema Area"
   LABEL "Action Types"
@@ -4519,11 +4554,11 @@ ADD INDEX "objURL" ON "WebObject"
   AREA "Schema Area"
   INDEX-FIELD "ObjURL" ASCENDING 
 
-ADD TABLE "websalt"
+ADD TABLE "webSalt"
   AREA "Schema Area"
   DUMP-NAME "websalt"
 
-ADD FIELD "LoginID" OF "websalt" AS character 
+ADD FIELD "LoginID" OF "webSalt" AS character 
   FORMAT "x(15)"
   INITIAL ""
   LABEL "User ID"
@@ -4531,28 +4566,28 @@ ADD FIELD "LoginID" OF "websalt" AS character
   MAX-WIDTH 30
   ORDER 20
 
-ADD FIELD "sdate" OF "websalt" AS date 
+ADD FIELD "sdate" OF "webSalt" AS date 
   FORMAT "99/99/9999"
   INITIAL ?
   POSITION 3
   MAX-WIDTH 4
   ORDER 30
 
-ADD FIELD "sother" OF "websalt" AS character 
+ADD FIELD "sother" OF "webSalt" AS character 
   FORMAT "x(8)"
   INITIAL ""
   POSITION 4
   MAX-WIDTH 16
   ORDER 40
 
-ADD FIELD "sval" OF "websalt" AS character 
+ADD FIELD "sval" OF "webSalt" AS character 
   FORMAT "x(8)"
   INITIAL ""
   POSITION 5
   MAX-WIDTH 16
   ORDER 50
 
-ADD INDEX "prim-key" ON "websalt" 
+ADD INDEX "prim-key" ON "webSalt" 
   AREA "Schema Area"
   UNIQUE
   PRIMARY
@@ -5177,4 +5212,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000102509
+0000103173

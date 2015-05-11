@@ -10,6 +10,7 @@
     When        Who         What
     09/04/2006  phoski      Initial
     24/01/2015  phoski      stop 'open' actions if the issue is closed
+    09/05/2015  phoski      Complex Project
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -581,8 +582,9 @@ PROCEDURE process-web-request :
         FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
         FIND WebAction
             WHERE WebAction.ActionID = b-table.ActionID NO-LOCK NO-ERROR.
-        ASSIGN 
-            lc-actioncode = WebAction.description.
+        IF AVAILABLE WebAction
+        THEN ASSIGN 
+                lc-actioncode = WebAction.description.
 
         IF CAN-DO("view,delete",lc-mode)
             OR request_method <> "post"

@@ -16,6 +16,7 @@
     20/03/2015  phoski      com-EndTimeCalc
     27/03/2015  phoski      project stuff
     18/04/2015  phoski      com-ConvertJSDate 
+    10/05/2015  phoski      Read/Write User Params 
    
 ***********************************************************************/
 
@@ -97,9 +98,9 @@ DEFINE VARIABLE lc-global-iclass-desc         AS CHARACTER INITIAL
 ***
 */
 
-DEFINE VARIABLE lc-global-iclass-Add-code         AS CHARACTER INITIAL
+DEFINE VARIABLE lc-global-iclass-Add-code     AS CHARACTER INITIAL
     'Issue|Admin|Project' NO-UNDO.
-DEFINE VARIABLE lc-global-iclass-Add-desc         AS CHARACTER INITIAL
+DEFINE VARIABLE lc-global-iclass-Add-desc     AS CHARACTER INITIAL
     'Issue|Administration|Simple Project' NO-UNDO. 
     
 DEFINE VARIABLE lc-global-SupportTicket-Code  AS CHARACTER
@@ -192,7 +193,7 @@ FUNCTION com-CheckSystemSetup RETURNS LOGICAL
 
 
 FUNCTION com-ConvertJSDate RETURNS DATE 
-	(pc-date AS CHARACTER) FORWARD.
+    (pc-date AS CHARACTER) FORWARD.
 
 FUNCTION com-CookieDate RETURNS DATE
     ( pc-user AS CHARACTER )  FORWARD.
@@ -250,8 +251,8 @@ FUNCTION com-GetDefaultCategory RETURNS CHARACTER
 
 
 FUNCTION com-HasSchedule RETURNS INTEGER 
-	(pc-companyCode AS CHARACTER,
-	 pc-LoginId     AS CHARACTER) FORWARD.
+    (pc-companyCode AS CHARACTER,
+    pc-LoginId     AS CHARACTER) FORWARD.
 
 FUNCTION com-Initialise RETURNS LOGICAL
     ( /* parameter-definitions */ )  FORWARD.
@@ -293,7 +294,7 @@ FUNCTION com-IsSuperUser RETURNS LOGICAL
 
 
 FUNCTION com-MMDDYYYY RETURNS CHARACTER 
-	(pd-date AS DATE) FORWARD.
+    (pd-date AS DATE) FORWARD.
 
 FUNCTION com-MonthBegin RETURNS DATE
     ( pd-date AS DATE)  FORWARD.
@@ -334,6 +335,10 @@ FUNCTION com-NumberUnAssigned RETURNS INTEGER
 FUNCTION com-QuickView RETURNS LOGICAL
     ( pc-LoginID  AS CHARACTER )  FORWARD.
 
+
+FUNCTION com-ReadParam RETURNS CHARACTER 
+    (pc-loginid   AS CHARACTER,
+    pc-key AS CHARACTER) FORWARD.
 
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
     ( pc-user AS CHARACTER )  FORWARD.
@@ -384,6 +389,11 @@ FUNCTION com-UserTrackIssue RETURNS LOGICAL
     ( pc-LoginID AS CHARACTER
     )  FORWARD.
 
+
+FUNCTION com-WriteParam RETURNS ROWID 
+    (pc-LoginID AS CHARACTER,
+    pc-Key     AS CHARACTER,
+    pc-data    AS CHARACTER) FORWARD.
 
 FUNCTION com-WriteQueryInfo RETURNS LOGICAL
     ( hQuery AS HANDLE )  FORWARD.
@@ -1083,10 +1093,10 @@ END PROCEDURE.
 
 
 PROCEDURE com-GetProjectTemplateList:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER  pc-CompanyCode     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Codes           AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Desc            AS CHARACTER NO-UNDO.
@@ -1882,7 +1892,7 @@ FUNCTION com-CanDelete RETURNS LOGICAL
                 FIND ptp_proj WHERE ROWID(ptp_proj) = pr-rowid NO-LOCK NO-ERROR.
                 
                 RETURN NOT CAN-FIND(FIRST ptp_phase WHERE ptp_phase.companyCode = ptp_proj.CompanyCode
-                            AND ptp_phase.ProjCode = ptp_proj.projCode NO-LOCK).
+                    AND ptp_phase.ProjCode = ptp_proj.projCode NO-LOCK).
                 
                  
             END.
@@ -1892,8 +1902,8 @@ FUNCTION com-CanDelete RETURNS LOGICAL
                 FIND ptp_phase WHERE ROWID(ptp_phase) = pr-rowid NO-LOCK NO-ERROR.
                 
                 RETURN NOT CAN-FIND(FIRST ptp_task WHERE ptp_task.companyCode = ptp_phase.CompanyCode
-                            AND ptp_task.ProjCode = ptp_phase.projCode 
-                            AND ptp_task.PhaseID = ptp_phase.PhaseID NO-LOCK).
+                    AND ptp_task.ProjCode = ptp_phase.projCode 
+                    AND ptp_task.PhaseID = ptp_phase.PhaseID NO-LOCK).
                 
                  
             END.
@@ -1975,21 +1985,21 @@ END FUNCTION.
 
 
 FUNCTION com-ConvertJSDate RETURNS DATE 
-	    (  pc-date AS CHARACTER  ):
-/*------------------------------------------------------------------------------
-        Purpose:                                                                      
-        Notes:                                                                        
-------------------------------------------------------------------------------*/
-    DEFINE VARIABLE ld-date AS DATE NO-UNDO.
-    DEFINE VARIABLE li-month    AS INTEGER NO-UNDO.
-    DEFINE VARIABLE li-day      AS INTEGER NO-UNDO.
-    DEFINE VARIABLE li-year     AS INTEGER NO-UNDO.
+    (  pc-date AS CHARACTER  ):
+    /*------------------------------------------------------------------------------
+            Purpose:                                                                      
+            Notes:                                                                        
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE ld-date  AS DATE    NO-UNDO.
+    DEFINE VARIABLE li-month AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-day   AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-year  AS INTEGER NO-UNDO.
     
     pc-date = REPLACE(TRIM(pc-date)," ",",").
        
     ASSIGN
-        li-day = INTEGER(ENTRY(3,pc-date))
-        li-year = INTEGER(ENTRY(4,pc-date))
+        li-day   = INTEGER(ENTRY(3,pc-date))
+        li-year  = INTEGER(ENTRY(4,pc-date))
         li-month = LOOKUP(ENTRY(2,pc-date),"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec")
         .   
     ASSIGN
@@ -2282,27 +2292,27 @@ END FUNCTION.
 
 
 FUNCTION com-HasSchedule RETURNS INTEGER 
-	    ( pc-companyCode AS CHARACTER ,
-	      pc-LoginId     AS CHARACTER ):
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/	
+    ( pc-companyCode AS CHARACTER ,
+    pc-LoginId     AS CHARACTER ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
 
-		DEFINE VARIABLE li-count AS INTEGER NO-UNDO.
+    DEFINE VARIABLE li-count AS INTEGER NO-UNDO.
         
-        DEFINE BUFFER eSched    FOR eSched.
+    DEFINE BUFFER eSched FOR eSched.
         
-        FOR EACH eSched NO-LOCK
-            WHERE eSched.CompanyCode = pc-CompanyCode
-              AND eSched.AssignTo = pc-LoginID
-              AND eSched.ActionDate >= ( TODAY - li-global-sched-days-back )
-              :
-            ASSIGN
-                li-count = li-count + 1. 
-        END.
+    FOR EACH eSched NO-LOCK
+        WHERE eSched.CompanyCode = pc-CompanyCode
+        AND eSched.AssignTo = pc-LoginID
+        AND eSched.ActionDate >= ( TODAY - li-global-sched-days-back )
+        :
+        ASSIGN
+            li-count = li-count + 1. 
+    END.
         
-		RETURN li-count.
+    RETURN li-count.
 
 
 		
@@ -2534,20 +2544,20 @@ END FUNCTION.
 
 
 FUNCTION com-MMDDYYYY RETURNS CHARACTER 
-	    (  pd-date AS DATE ):
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/	
+    (  pd-date AS DATE ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
 
-		DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
 
-        ASSIGN 
-            lc-return = STRING(MONTH(pd-date),"99") + "/" +
+    ASSIGN 
+        lc-return = STRING(MONTH(pd-date),"99") + "/" +
                         string(DAY(pd-date),"99") + "/" +
                         string(YEAR(pd-date),"9999").
                             
-		RETURN lc-return.
+    RETURN lc-return.
 
 
 		
@@ -2888,6 +2898,25 @@ FUNCTION com-QuickView RETURNS LOGICAL
 END FUNCTION.
 
 
+FUNCTION com-ReadParam RETURNS CHARACTER 
+    ( pc-loginid   AS CHARACTER ,
+    pc-key AS CHARACTER  ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    DEFINE BUFFER bup FOR userParam.
+           
+    FIND bup WHERE bup.loginid = pc-loginid 
+        AND bup.pkey = pc-key
+        NO-LOCK NO-ERROR.
+        
+    RETURN IF AVAILABLE bup THEN bup.pData ELSE ?.
+
+		
+END FUNCTION.
+
 FUNCTION com-RequirePasswordChange RETURNS LOGICAL
     ( pc-user AS CHARACTER ) :
     /*------------------------------------------------------------------------------
@@ -3155,6 +3184,46 @@ FUNCTION com-UserTrackIssue RETURNS LOGICAL
 
 END FUNCTION.
 
+
+FUNCTION com-WriteParam RETURNS ROWID 
+    ( pc-LoginID AS CHARACTER,
+    pc-Key     AS CHARACTER,
+    pc-data    AS CHARACTER ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    DEFINE VARIABLE lr-row AS ROWID NO-UNDO.
+    
+    DEFINE BUFFER bup FOR userParam.
+    
+    DO TRANSACTION:
+        
+        FIND bup WHERE bup.loginid = pc-loginid 
+            AND bup.pkey = pc-key
+            EXCLUSIVE-LOCK NO-ERROR.
+        IF NOT AVAILABLE bup THEN
+        DO:
+            CREATE bup.
+            ASSIGN 
+                bup.loginid = pc-loginid
+                bup.pkey    = pc-key.
+                   
+        END.       
+        ASSIGN
+            lr-row    = ROWID(bup)
+            bup.pdata = pc-data.
+            
+                
+    END.
+    
+    
+    RETURN lr-row.
+
+
+		
+END FUNCTION.
 
 FUNCTION com-WriteQueryInfo RETURNS LOGICAL
     ( hQuery AS HANDLE ) :
