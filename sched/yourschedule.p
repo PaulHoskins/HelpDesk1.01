@@ -87,6 +87,8 @@ PROCEDURE ip-HTM-Header:
             '<script src="/asset/sched/codebase/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>~n' + 
             '<link rel="stylesheet" href="/asset/sched/codebase/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">~n' +
             '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_year_view.js"></script>' +
+             '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_readonly.js"></script>' +
+             '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_tooltip.js"></script>' +
             '<script language="JavaScript" src="/asset/page/yourschedule.js?v=1.0.0"></script>~n' 
         
             .

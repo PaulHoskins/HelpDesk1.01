@@ -102,6 +102,8 @@ PROCEDURE ip-HTM-Header:
         '<script src="/asset/sched/codebase/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>~n' + 
         '<link rel="stylesheet" href="/asset/sched/codebase/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">~n' +
         '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_year_view.js"></script>' +
+        '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_readonly.js"></script>' +
+        '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_tooltip.js"></script>' +
         '<script language="JavaScript" src="/asset/page/multischedule.js?v=1.0.0"></script>~n' 
         
         .
@@ -235,8 +237,8 @@ PROCEDURE ip-SchedulePage:
         <div class="dhx_cal_date"></div>
         <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
         <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
-        <div class="dhx_cal_tab" name="timeline_tab" style="right:280px;"></div>
         <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+        <div class="dhx_cal_tab" name="year_tab" style="right:280px;"></div>
     </div>
     <div class="dhx_cal_header"></div>
     <div class="dhx_cal_data"></div>       
@@ -253,7 +255,7 @@ PROCEDURE ip-SchedulePage:
         
         {&out} '~{' 
         'id:' tt-schedule.id 
-        ', text:"' tt-schedule.txt '"'
+        ', text:"' tt-schedule.txt + ' ' + tt-schedule.custName + ' - <b>' + tt-schedule.EngName '</b>"'
         ', start_date:"' DYNAMIC-FUNCTION("com-MMDDYYYY",tt-schedule.StartDate) " 08:30" '"'
         ', end_date:"' DYNAMIC-FUNCTION("com-MMDDYYYY",tt-schedule.EndDate) " 17:30" '"'
         ', engname:"'  tt-schedule.EngName '"'
@@ -269,19 +271,23 @@ PROCEDURE ip-SchedulePage:
         ELSE
         {&out} SKIP.
     END.
-                  
+    /*
+    ***
+    *** object contains all enqineers names - not used yet but could be later (timeline on sched)
+    ***
+    */              
     {&out} SKIP
             '];' SKIP
             'var sections=['
             SKIP.
     FOR EACH tt-schedule NO-LOCK
-         BREAK BY tt-schedule.section_id:
+        BREAK BY tt-schedule.section_id:
         
         IF LAST-OF(tt-schedule.section_id) THEN
         DO:
             {&out} '~{key:' tt-schedule.section_id ', label:"' tt-schedule.engName '"~}'.
             IF NOT LAST(tt-schedule.section_id) 
-            THEN {&out} ',' SKIP.  
+                THEN {&out} ',' SKIP.  
             
         END.      
     END.  
