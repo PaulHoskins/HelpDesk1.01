@@ -17,6 +17,7 @@
     27/03/2015  phoski      project stuff
     18/04/2015  phoski      com-ConvertJSDate 
     10/05/2015  phoski      Read/Write User Params 
+    15/05/2015  phoski      JQuery vas
    
 ***********************************************************************/
 
@@ -140,6 +141,16 @@ DEFINE VARIABLE li-global-sla-na              AS INTEGER   INITIAL 99 NO-UNDO.
 
 DEFINE VARIABLE li-global-sched-days-back     AS INTEGER   INITIAL 100 NO-UNDO.
 
+DEFINE VARIABLE lc-global-jquery              AS CHARACTER 
+    INITIAL 
+    '<script type="text/javascript" src="/asset/jquery/jquery-1.11.3.min.js"></script>~n'
+    NO-UNDO.
+   
+DEFINE VARIABLE lc-global-jquery-ui           AS CHARACTER 
+    INITIAL 
+    '<script type="text/javascript" src="/asset/jquery-easyui-1.4.2/jquery.easyui.min.js"></script>~n'
+    NO-UNDO.
+    
 /* ********************  Preprocessor Definitions  ******************** */
 
 

@@ -954,6 +954,50 @@ ADD INDEX "st-num" ON "Customer"
   INDEX-FIELD "st-num" ASCENDING 
   INDEX-FIELD "AccountNumber" ASCENDING 
 
+ADD TABLE "dashb-def"
+  AREA "Schema Area"
+  LABEL "Dash Board Defintion"
+  DUMP-NAME "dashb-def"
+
+ADD FIELD "CompanyCode" OF "dashb-def" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Co"
+  ORDER 10
+
+ADD FIELD "dashCode" OF "dashb-def" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Dashboard Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "descr" OF "dashb-def" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Description"
+  POSITION 4
+  MAX-WIDTH 16
+  ORDER 30
+
+ADD FIELD "isactive" OF "dashb-def" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Active"
+  POSITION 5
+  MAX-WIDTH 1
+  ORDER 40
+
+ADD INDEX "prim" ON "dashb-def" 
+  AREA "Schema Area"
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "dashCode" ASCENDING 
+
 ADD TABLE "DiaryDays"
   AREA "Schema Area"
   LABEL "DiaryDays"
@@ -5212,4 +5256,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000103173
+0000104035

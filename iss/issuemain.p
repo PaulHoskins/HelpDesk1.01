@@ -871,7 +871,7 @@ PROCEDURE ip-Javascript:
         '<script language="JavaScript" src="/scripts/js/tree.js?v=1.0.0"></script>' skip
         '<script language="JavaScript" src="/scripts/js/prototype.js?v=1.0.0"></script>' skip
         '<script language="JavaScript" src="/scripts/js/scriptaculous.js?v=1.0.0"></script>' SKIP
-        '<script type="text/javascript" src="/asset/jquery/jquery-1.11.2.min.js"></script>' skip
+        lc-global-jquery skip
         '<script type="text/javascript" src="/scripts/js/tabber.js?v=1.0.0"></script>' skip
         '<link rel="stylesheet" href="/style/tab.css" TYPE="text/css" MEDIA="screen">' skip
         '<script language="JavaScript" src="/scripts/js/standard.js?v=1.0.0"></script>' SKIP

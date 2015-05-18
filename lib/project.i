@@ -351,8 +351,7 @@ PROCEDURE prjlib-BuildScheduleData:
     DEFINE VARIABLE li-ecount AS INTEGER NO-UNDO.
     
     
-    
-    MESSAGE "look = " pc-englist pd-from.
+
     
     DO li-loop = 1 TO NUM-ENTRIES(pc-EngList):
         

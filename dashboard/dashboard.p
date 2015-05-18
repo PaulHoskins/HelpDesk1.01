@@ -1,26 +1,25 @@
 /***********************************************************************
 
-    Program:        sched/yourschedule.p
+    Program:        dashboard/dashboard.p
     
-    Purpose:        Show An Engineers Schedule - Not Edittable
+    Purpose:        View a dashboard.p
     
     Notes:
     
     
     When        Who         What
-    25/04/2015  phoski      Initial
+    16/05/2015  phoski      Initial
     
-
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
 
 
-DEFINE VARIABLE lc-rowid    AS CHARACTER    NO-UNDO.
+DEFINE VARIABLE lc-Panel-ID AS CHARACTER NO-UNDO.
+DEFINE VARIABLE MyUUID      AS RAW       NO-UNDO.
+DEFINE VARIABLE cGUID       AS CHARACTER NO-UNDO.
 
-DEFINE BUFFER b-table FOR esched.
-DEFINE BUFFER blogin  FOR webuser.
-
+    
 
 
 
@@ -75,23 +74,22 @@ RUN process-web-request.
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
 PROCEDURE ip-HTM-Header:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
-      DEFINE OUTPUT PARAMETER pc-return       AS CHARACTER NO-UNDO.
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE OUTPUT PARAMETER pc-return       AS CHARACTER NO-UNDO.
       
       
-      pc-return = 
-            lc-global-jquery +
-            '<script src="/asset/sched/codebase/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>~n' + 
-            '<link rel="stylesheet" href="/asset/sched/codebase/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">~n' +
-            '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_year_view.js"></script>' +
-             '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_readonly.js"></script>' +
-             '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_tooltip.js"></script>' +
-            '<script language="JavaScript" src="/asset/page/yourschedule.js?v=1.0.0"></script>~n' 
-        
-            .
+    pc-return = 
+        '~n<link rel="stylesheet" type="text/css" href="/asset/jquery-easyui-1.4.2/themes/default/easyui.css">' +
+        '~n<link rel="stylesheet" type="text/css" href="/asset/jquery-easyui-1.4.2/themes/icon.css">' +
+        '~n<link rel="stylesheet" type="text/css" href="/asset/jquery-easyui-1.4.2/themes/color.css">' +
+    
+        lc-global-jquery +
+        lc-global-jquery-ui 
+            
+        .
     
 
 END PROCEDURE.
@@ -164,98 +162,92 @@ PROCEDURE process-web-request :
     {lib/checkloggedin.i} 
 
     
-    ASSIGN
-        lc-rowid = get-value("engineer").
-        
-    
-    ASSIGN
-        lc-rowid = DYNAMIC-FUNCTION("sysec-DecodeValue",lc-user,TODAY,"ScheduleKey",lc-rowid).
-        
-   
-    FIND blogin WHERE ROWID(blogin) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
-    
-    RUN prjlib-BuildScheduleData ( 
-        lc-global-user,
-        lc-global-company,
-                blogin.LoginID,
-        TODAY - li-global-sched-days-back,
-        OUTPUT TABLE tt-schedule
-        ).
-        
-    
-    
+       
        
     RUN outputHeader.
      
          
-    {&out} htmlib-Header("Project Schedule") skip.
+    {&out} htmlib-Header("Dashboard") skip.
   
 
-    {&out} htmlib-StartForm("mainform","post", appurl + '/sched/yourschedule.p' ) skip.
-    
-    
-    {&out} htmlib-ProgramTitle("Project Schedule - " + dynamic-function("com-UserName",blogin.LoginID)). 
-   
-    
-    DEFINE VARIABLE li-count    AS INTEGER NO-UNDO.
-    DEFINE VARIABLE li-this     AS INTEGER NO-UNDO.
-    
-    FOR EACH tt-schedule NO-LOCK:
-        li-count = li-count + 1.
-    END.
-      
+    {&out} htmlib-StartForm("mainform","post", appurl + '/dashboard/dashboard.p' ) skip.
 
-    {&out}
-    '<div id="scheduler_here" class="dhx_cal_container" style="width:100%; height:900px;">
-    <div class="dhx_cal_navline">
-        <div class="dhx_cal_prev_button">&nbsp;</div>
-        <div class="dhx_cal_next_button">&nbsp;</div>
-        <div class="dhx_cal_today_button"></div>
-        <div class="dhx_cal_date"></div>
-        <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
-        <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
-        <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
-        <div class="dhx_cal_tab" name="year_tab" style="right:280px;"></div>
-    </div>
-    <div class="dhx_cal_header"></div>
-    <div class="dhx_cal_data"></div>       
-    </div>'
-        skip.
- 
+
+
+    DEFINE VARIABLE li-panel        AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-panel-count  AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-panel-URL    AS CHARACTER    NO-UNDO.
+    DEFINE VARIABLE li-panel-size   AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-region-size  AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-dashb-title  AS CHARACTER    NO-UNDO.
+    DEFINE VARIABLE lc-panel-title  AS CHARACTER    NO-UNDO.
     
-     {&out} '<script>' SKIP
-            'var events = [' SKIP.
-     
-     FOR EACH tt-schedule NO-LOCK:
-     
-        li-this = li-this + 1.
+    
+       
+    ASSIGN 
+        lc-dashb-title = "HelpDesk Dashboard " + string(NOW).
+       
+    ASSIGN 
+        li-panel-count = 4
+        li-panel-size = 300
+        li-region-size = max(800, ( li-panel-size * li-panel-count)) + 200.
+    .
+    
+    {&out}
+    '<div id="cc" class="easyui-layout" style="width:100%;height:' li-region-size 'px;">
+    <div data-options="region:~'north~',title:~'HelpDesk Dashboard~',split:true" style="height:100px;"></div>
+    <div data-options="region:~'west~',title:~'Options~',split:true" style="width:100px;">' SKIP.
+    {&out} '<div style="padding:5px 5px;">' SKIP.
+    
+    {&out} '<a href="javascript:init();" class="easyui-linkbutton" data-options="iconCls:~'icon-reload~'">Reload</a>' SKIP.
+    {&out} '</div>' SKIP.
+    
+    {&out} '</div>
+    <div data-options="region:~'center~',title:~'' lc-dashb-title '~'" style="padding:5px;background:#eee;">' SKIP.
+    
         
-        {&out} '~{' 
-                'id:' tt-schedule.id 
-                ', text:"' tt-schedule.txt '"'
-                ', start_date:"' DYNAMIC-FUNCTION("com-MMDDYYYY",tt-schedule.StartDate) " 08:30" '"'
-                ', end_date:"' DYNAMIC-FUNCTION("com-MMDDYYYY",tt-schedule.EndDate) " 17:30" '"'
-                ', engname:"'  tt-schedule.EngName '"'
-                ', engcode:"'  tt-schedule.EngCode '"'
-                ', issue:"'  tt-schedule.IssueNumber '"'
-                ', custname:"'  tt-schedule.CustName '"'
-                ', bdesc:"'  tt-schedule.bdesc '"'
-                ', crow:"'  tt-schedule.cRow '"~}'
-                .
-        IF li-this <> li-count THEN 
-        {&out} ',' SKIP.
-        ELSE
-        {&out} SKIP.
-     END.
-                  
-    {&out} SKIP
-            '];' SKIP.
-           
-            
-    {&out} SKIP
-        'drawSchedule ();' skip
+    DO li-panel = 1 TO li-panel-count:
+        ASSIGN
+            lc-Panel-ID = "panel" + string(li-panel)
+            lc-panel-title = "Latest 20 Issues".
+    
+        {&out} '<div id="' lc-Panel-ID '" class="easyui-panel" title="' lc-Panel-title '" ' SKIP
+               'style="width:99%;height:' li-panel-size 'px;padding:5px;background:#fafafa;"
+        data-options="iconCls:~'icon-large-shapes~',closable:true,collapsible:true,minimizable:false,maximizable:true"></div>' skip.
+      
+    END.
+          
+    /* end of center */
+    {&out} '</div>
+</div>' SKIP.
+   
+    {&out} '<script>' SKIP
+           'function init () ~{' skip.
+   
+    DO li-panel = 1 TO li-panel-count:
+        ASSIGN
+            MyUUID = GENERATE-UUID  
+            cGUID  = GUID(MyUUID).
+        
+        lc-Panel-ID = "panel" + string(li-panel).
+        lc-panel-URL = appurl + "/dashboard/ajax/panel.p".
+        lc-panel-URL = appurl + "/dashboard/ajax/panel.p?Session=" + cGuid 
+            + "&panelid=" + lc-panel-id 
+            + "&number=" + string(li-panel).
+ 
+        {&out}
+        "$('#" lc-panel-ID "').panel(~{
+    href:'" lc-Panel-URL "'
+~});" SKIP.
+
+
+    END.
+
+    {&out} skip 
+         '~}' SKIP
+         'init ();' skip
         '</script>' SKIP.
-                         
+            
     {&out} htmlib-EndForm() skip.
 
    

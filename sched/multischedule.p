@@ -98,7 +98,7 @@ PROCEDURE ip-HTM-Header:
     DEFINE OUTPUT PARAMETER pc-return       AS CHARACTER NO-UNDO.
 
     pc-return = 
-        '<script type="text/javascript" src="/asset/jquery/jquery-1.11.2.min.js"></script>~n' +
+        lc-global-jquery +
         '<script src="/asset/sched/codebase/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>~n' + 
         '<link rel="stylesheet" href="/asset/sched/codebase/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">~n' +
         '<script src="/asset/sched/codebase/ext/dhtmlxscheduler_year_view.js"></script>' +
