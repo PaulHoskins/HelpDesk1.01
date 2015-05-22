@@ -33,27 +33,10 @@ DEFINE VARIABLE cGUID       AS CHARACTER NO-UNDO.
 
 
 
-
-/* *********************** Procedure Settings ************************ */
-
-
-
-/* *************************  Create Window  ************************** */
-
-/* DESIGN Window definition (used by the UIB) 
-  CREATE WINDOW Procedure ASSIGN
-         HEIGHT             = 14.14
-         WIDTH              = 60.6.
-/* END WINDOW DEFINITION */
-                                                                        */
-
-/* ************************* Included-Libraries *********************** */
-
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
-{iss/issue.i}
-{lib/ticket.i}
-{lib/project.i}
+{lib/dashlib.i}
+
 
 
 
@@ -181,39 +164,54 @@ PROCEDURE process-web-request :
     DEFINE VARIABLE li-region-size  AS INTEGER      NO-UNDO.
     DEFINE VARIABLE lc-dashb-title  AS CHARACTER    NO-UNDO.
     DEFINE VARIABLE lc-panel-title  AS CHARACTER    NO-UNDO.
+    DEFINE VARIABLE lc-panel-panelCode  AS CHARACTER EXTENT 400 NO-UNDO.
+    DEFINE VARIABLE lc-panel-descr  AS CHARACTER EXTENT 400 NO-UNDO.
+    
     
     
        
     ASSIGN 
-        lc-dashb-title = "HelpDesk Dashboard " + string(NOW).
+        lc-dashb-title = "HelpDesk Dashboard".
        
+    FOR EACH tt-dashlib NO-LOCK:
+        li-panel-count = li-panel-count + 1.
+        ASSIGN
+            lc-panel-panelCode[li-panel-count] = tt-dashlib.panelCode
+            lc-panel-descr[li-panel-count] = tt-dashlib.descr.
+    END.  
+     
     ASSIGN 
-        li-panel-count = 4
         li-panel-size = 300
         li-region-size = max(800, ( li-panel-size * li-panel-count)) + 200.
     .
     
+    /*  <---<div data-options="region:~'north~',title:~'HelpDesk Dashboardxx~',split:true" style="height:100px;"></div>---> */
+    
+    /*
+    ***
+    *** Layout just has west & center
+    ***
+    */
     {&out}
     '<div id="cc" class="easyui-layout" style="width:100%;height:' li-region-size 'px;">
-    <div data-options="region:~'north~',title:~'HelpDesk Dashboard~',split:true" style="height:100px;"></div>
-    <div data-options="region:~'west~',title:~'Options~',split:true" style="width:100px;">' SKIP.
+       <div data-options="region:~'west~',title:~'Options~',split:true" style="width:100px;">' SKIP.
     {&out} '<div style="padding:5px 5px;">' SKIP.
     
     {&out} '<a href="javascript:init();" class="easyui-linkbutton" data-options="iconCls:~'icon-reload~'">Reload</a>' SKIP.
     {&out} '</div>' SKIP.
     
     {&out} '</div>
-    <div data-options="region:~'center~',title:~'' lc-dashb-title '~'" style="padding:5px;background:#eee;">' SKIP.
+    <div data-options="region:~'center~',title:~'Dashboard Contents~'" style="padding:5px;background:#eee;">' SKIP.
     
         
     DO li-panel = 1 TO li-panel-count:
         ASSIGN
             lc-Panel-ID = "panel" + string(li-panel)
-            lc-panel-title = "Latest 20 Issues".
+            lc-panel-title = lc-panel-descr[li-panel].
     
         {&out} '<div id="' lc-Panel-ID '" class="easyui-panel" title="' lc-Panel-title '" ' SKIP
                'style="width:99%;height:' li-panel-size 'px;padding:5px;background:#fafafa;"
-        data-options="iconCls:~'icon-large-shapes~',closable:true,collapsible:true,minimizable:false,maximizable:true"></div>' skip.
+        data-options="iconCls:~'icon-large-shapes~',cache:false,border:true,doSize:true,closable:true,collapsible:true,minimizable:false,maximizable:true"></div>' skip.
       
     END.
           
@@ -232,8 +230,8 @@ PROCEDURE process-web-request :
         lc-Panel-ID = "panel" + string(li-panel).
         lc-panel-URL = appurl + "/dashboard/ajax/panel.p".
         lc-panel-URL = appurl + "/dashboard/ajax/panel.p?Session=" + cGuid 
-            + "&panelid=" + lc-panel-id 
-            + "&number=" + string(li-panel).
+            + "&panelcode=" + lc-panel-panelCode[li-panel]
+            + "&position=" + string(li-panel).
  
         {&out}
         "$('#" lc-panel-ID "').panel(~{

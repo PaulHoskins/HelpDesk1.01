@@ -17,13 +17,42 @@ CREATE WIDGET-POOL.
 
 /* Parameters Definitions ---                                           */
 
-DEFINE VARIABLE lh-Buffer1 AS HANDLE NO-UNDO.
-DEFINE VARIABLE lh-Query   AS HANDLE NO-UNDO.
+DEFINE VARIABLE lh-Buffer1  AS HANDLE    NO-UNDO.
+DEFINE VARIABLE lh-Buffer2  AS HANDLE    NO-UNDO.
+DEFINE VARIABLE lh-Buffer3  AS HANDLE    NO-UNDO.
+DEFINE VARIABLE lh-Query    AS HANDLE    NO-UNDO.
+DEFINE VARIABLE lc-panelCode    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-position AS CHARACTER NO-UNDO.
 
+DEFINE TEMP-TABLE tt-stat NO-UNDO
+    FIELD sCode  AS CHARACTER 
+    FIELD descr  AS CHARACTER
+    FIELD svalue AS INTEGER
+    INDEX scodeIDX sCode.
+    
+DEFINE TEMP-TABLE tt-eng    NO-UNDO
+    FIELD loginid   AS CHARACTER 
+    FIELD name      AS CHARACTER 
+    
+    FIELD itoday    AS INTEGER
+    FIELD iweek     AS INTEGER 
+    FIELD imonth    AS INTEGER 
+    FIELD iinfo     AS CHARACTER 
+    
+    
+    INDEX NAMEIDX NAME.
+        
+     
+         
 
 
 
 /* ********************  Preprocessor Definitions  ******************** */
+
+FUNCTION WriteStat RETURNS ROWID 
+    (pc-Code AS CHAR,
+    pc-Description AS CHARACTER,
+    pi-Count AS INTEGER) FORWARD.
 
 &Scoped-define PROCEDURE-TYPE Procedure
 &Scoped-define DB-AWARE no
@@ -50,7 +79,7 @@ DEFINE VARIABLE lh-Query   AS HANDLE NO-UNDO.
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
-
+{lib/dashlib.i}
 
 
 
@@ -67,16 +96,33 @@ RUN process-web-request.
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
 PROCEDURE ip-BuildCompanyStats:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
-    DEFINE VARIABLE li-count     AS INTEGER      NO-UNDO.
-    
-    DEFINE VARIABLE lc-QPhrase   AS CHARACTER    NO-UNDO.
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE lr-row          AS ROWID        NO-UNDO.
+    DEFINE VARIABLE lc-QPhrase      AS CHARACTER    NO-UNDO.
     
     
     DEFINE BUFFER Issue FOR Issue.
+    DEFINE BUFFER Customer FOR Customer.
+
+    DEFINE BUFFER b-status  FOR WebStatus.  
+    DEFINE BUFFER b-user    FOR WebUser.
+    DEFINE BUFFER b-Area    FOR WebIssArea. 
+    DEFINE BUFFER this-user FOR WebUser.
+    
+    DEFINE VARIABLE ll-Complete AS LOG NO-UNDO.
+    DEFINE VARIABLE ld-this-month   AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-prev-month   AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-date         AS DATE     NO-UNDO.
+    
+    ASSIGN ld-date = TODAY.
+    ASSIGN
+        ld-this-month = ld-date - day(ld-date) + 1
+        ld-date = ld-this-month - 1
+        ld-prev-month = ld-date - day(ld-date) + 1.
+        
        
     ASSIGN 
         
@@ -84,8 +130,11 @@ PROCEDURE ip-BuildCompanyStats:
         "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "'".
     
     CREATE QUERY lh-Query  
+    /*
         ASSIGN 
-        CACHE = 500 .
+        CACHE = 4000
+        */
+        .
 
     lh-Buffer1 = BUFFER issue:HANDLE.
    
@@ -96,9 +145,50 @@ PROCEDURE ip-BuildCompanyStats:
     lh-Query:GET-FIRST(NO-LOCK). 
     
     REPEAT WHILE lh-Buffer1:AVAILABLE: 
+    
+        lr-row =  DYNAMIC-FUNCTION("WriteStat","001:001","Number of Issues",1).
         
-        ASSIGN 
-            li-count = li-count + 1.
+        FIND b-status OF Issue NO-LOCK NO-ERROR.
+        IF AVAILABLE b-status AND b-status.CompletedStatus
+        THEN ll-complete = b-status.CompletedStatus.
+        ELSE ll-Complete = FALSE.
+        
+        lr-row =  DYNAMIC-FUNCTION("WriteStat","001:002","Closed Issues", IF ll-complete THEN 1 ELSE 0).
+        lr-row =  DYNAMIC-FUNCTION("WriteStat","001:003","Open Issues", IF ll-complete THEN 0 ELSE 1).
+        
+        IF Issue.CreateDate = TODAY THEN
+        DO:
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","002:001","Today - Number of Issues",1).
+       
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","002:002","Today - Closed Issues",IF ll-complete THEN 1 ELSE 0).
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","002:003","Today  - Open Issues",IF ll-complete THEN 0 ELSE 1).
+        END.
+        
+        IF Issue.CreateDate >= TODAY - 7 THEN
+        DO:
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","003:001","Week - Number of Issues",1).
+       
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","003:002","Week - Closed Issues",IF ll-complete THEN 1 ELSE 0).
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","003:003","Week - Open Issues",IF ll-complete THEN 0 ELSE 1).
+        END.
+        
+        IF Issue.CreateDate >= ld-this-Month THEN
+        DO:
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","004:001","Month - Number of Issues" ,1).
+       
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","004:002","Month - Closed Issues",IF ll-complete THEN 1 ELSE 0).
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","004:003","Month - Open Issues",IF ll-complete THEN 0 ELSE 1).
+        END.
+        
+        IF Issue.CreateDate >= ld-prev-Month 
+        AND Issue.CreateDate < ld-this-month THEN
+        DO:
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","005:001","Prev Month - Number of Issues",1).
+       
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","005:002","Prev Month - Closed Issues",IF ll-complete THEN 1 ELSE 0).
+            lr-row =  DYNAMIC-FUNCTION("WriteStat","005:003","Prev Month - Open Issues",IF ll-complete THEN 0 ELSE 1).
+        END.
+        
     
         lh-Query:GET-NEXT(NO-LOCK). 
          
@@ -111,6 +201,150 @@ PROCEDURE ip-BuildCompanyStats:
 
 END PROCEDURE.
 
+PROCEDURE ip-BuildEngineerSummary:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+
+    DEFINE BUFFER WebUser FOR WebUser.
+    DEFINE BUFFER issActivity FOR issActivity.
+    
+    DEFINE VARIABLE ll-Complete AS LOG NO-UNDO.
+    DEFINE VARIABLE ld-this-month   AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-prev-month   AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-date         AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-week         AS DATE     NO-UNDO.
+    
+    
+    ASSIGN ld-date = TODAY.
+    ASSIGN
+        ld-this-month = ld-date - day(ld-date) + 1
+        ld-date = ld-this-month - 1
+        ld-prev-month = ld-date - day(ld-date) + 1
+        ld-week = TODAY - 7.
+        
+       
+    FOR EACH WebUser NO-LOCK
+        WHERE CAN-DO(lc-global-internal,webuser.UserClass)
+        AND webuser.CompanyCode = lc-Global-Company
+        BY WebUser.Name:
+       
+        CREATE tt-eng.
+        ASSIGN
+            tt-eng.loginid = WebUser.LoginID
+            tt-eng.name = WebUser.Name.
+        FOR EACH issActivity NO-LOCK
+            WHERE issActivity.CompanyCode = lc-global-company
+              AND issActivity.ActivityBy = WebUser.LoginID
+              AND issActivity.startdate >= ld-this-month
+              :
+                  
+            IF issActivity.StartDate = ? THEN NEXT.
+                  
+            IF issActivity.startdate = TODAY
+            THEN ASSIGN tt-eng.itoday = tt-eng.itoday + issActivity.Duration.
+            
+            IF issActivity.startdate >= ld-week
+            THEN ASSIGN tt-eng.iweek = tt-eng.iweek + issActivity.Duration.
+            
+            IF issActivity.startdate >= ld-this-month
+            THEN ASSIGN tt-eng.imonth = tt-eng.imonth + issActivity.Duration.
+            
+            ASSIGN
+                tt-eng.iinfo =  STRING(issActivity.StartDate,"99/99/9999") + " " +
+                                string(issActivity.StartTime,"hh:mm") + " - Issue " + 
+                               STRING(issActivity.IssueNumber) 
+                               + " " +
+                               issActivity.ActDescription .
+                
+                         
+        END.
+                      
+    END.
+    
+END PROCEDURE.
+
+PROCEDURE ip-EngineerStatistics:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    
+    RUN ip-BuildEngineerSummary.
+    
+    {&out} '<table class="easyui-datagrid"' SKIP.
+       
+    {&out} 'data-options="fitColumns:true,singleSelect:true,striped:true"
+            xxstyle="width:250px"
+    >
+    <thead>
+        <tr>
+            <th data-options="field:~'Engineer~',sortable:false">Engineer</th>
+    
+            <th data-options="field:~'today~',align:~'right~',sortable:false">Today</th>
+            <th data-options="field:~'week~',align:~'right~',sortable:false">Week</th>
+            <th data-options="field:~'month~',align:~'right~',sortable:false">Month</th>
+            <th data-options="field:~'info~',sortable:false">Last Activity</th>
+            
+        </tr>
+    </thead>
+    <tbody>' skip.
+    
+ 
+    FOR EACH tt-eng NO-LOCK:
+        {&out}
+        '<tr><td>' tt-eng.name 
+        '</td><td>' DYNAMIC-FUNCTION("com-TimeToString",tt-eng.iToday) 
+        '</td><td>' DYNAMIC-FUNCTION("com-TimeToString",tt-eng.iWeek) 
+        '</td><td>' DYNAMIC-FUNCTION("com-TimeToString",tt-eng.iMonth)
+        '</td><td>' tt-eng.iinfo
+        '</td></tr>' SKIP.
+        
+    END.
+    
+    {&out} '</tbody></table>' SKIP.
+    
+    
+
+END PROCEDURE.
+
+PROCEDURE ip-HelpdeskStatistics:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+
+    RUN ip-BuildCompanyStats.
+    
+    {&out} '<table class="easyui-datagrid"' SKIP.
+       
+    {&out} 'data-options="fitColumns:true,singleSelect:true,striped:true"
+            style="width:250px"
+    >
+    <thead>
+        <tr>
+            <th data-options="field:~'StatDescr~',sortable:false">Statistic</th>
+    
+            <th data-options="field:~'StatValue~',align:~'right~',sortable:false">Total</th>
+            
+        </tr>
+    </thead>
+    <tbody>' skip.
+    
+    
+    FOR EACH tt-stat NO-LOCK:
+        {&out}
+        '<tr><td>' tt-stat.descr '</td><td>' tt-stat.svalue '</td></tr>' SKIP.
+    END.
+    
+    {&out} '</tbody></table>' SKIP.
+    
+    
+    
+    
+END PROCEDURE.
+
 PROCEDURE ip-IssueGridHeader:
     /*------------------------------------------------------------------------------
             Purpose:  																	  
@@ -118,9 +352,12 @@ PROCEDURE ip-IssueGridHeader:
     ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pc-title         AS CHARACTER NO-UNDO.
     
-    {&out} '<table class="easyui-datagrid"
-        title="' pc-title ' "
-        data-options="fitColumns:true,singleSelect:true,striped:true"
+    {&out} '<table class="easyui-datagrid"' SKIP.
+    
+    IF pc-title <> "" THEN
+        {&out} 'title="' pc-title ' "' SKIP.
+    
+    {&out} 'data-options="fitColumns:false,singleSelect:true,striped:true"
     >
     <thead>
         <tr>
@@ -219,11 +456,15 @@ PROCEDURE ip-IssueGridRow:
 
     ELSE {&out} '&nbsp;' SKIP.
 
-    {&out} '</td><td>' IF b-query.slaTrip <> ? THEN       
-    STRING(b-query.slatrip,"99/99/9999 HH:MM") ELSE "".
+    {&out} '</td><td>' 
+    IF b-query.slaTrip <> ? THEN       
+        STRING(b-query.slatrip,"99/99/9999 HH:MM") 
+    ELSE "".
     
-    {&out} '</td><td>' IF b-query.slaAmber <> ? THEN       
-    STRING(b-query.slaAmber,"99/99/9999 HH:MM") ELSE "".
+    {&out} '</td><td>' 
+    IF b-query.slaAmber <> ? THEN       
+        STRING(b-query.slaAmber,"99/99/9999 HH:MM") 
+    ELSE "".
     
     {&out} '</td><td>' b-query.IssueNumber 
     '</td><td>' STRING(b-query.IssueDate,"99/99/9999") 
@@ -257,7 +498,7 @@ PROCEDURE ip-LatestIssue:
         li-max = 20
         lc-QPhrase = 
         "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "' by issue.IssueNumber DESCENDING".
-    RUN ip-IssueGridHeader ( "Latest " + string(li-max) + " Issues").
+    RUN ip-IssueGridHeader ( "").
     CREATE QUERY lh-Query  
         ASSIGN 
         CACHE = 100 .
@@ -290,6 +531,122 @@ PROCEDURE ip-LatestIssue:
     
     
     {&out} '</tbody></table>' SKIP.
+
+END PROCEDURE.
+
+PROCEDURE ip-OldestIssue:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE VARIABLE li-count        AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-max          AS INTEGER      NO-UNDO.
+    
+    DEFINE VARIABLE lc-QPhrase   AS CHARACTER    NO-UNDO.
+    
+    
+    DEFINE BUFFER Issue FOR Issue.
+    DEFINE BUFFER WebStatus FOR WebStatus.
+    
+    
+       
+    ASSIGN 
+        li-max = 20
+        lc-QPhrase = 
+        "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "'" +
+        ", first webstatus NO-LOCK where webstatus.CompanyCode = issue.CompanyCode and webstatus.statusCode = issue.StatusCode and webstatus.CompletedStatus = false "
+        
+        lc-qPhrase = lc-qPhrase +  " by issue.IssueNumber".
+        
+    
+        
+    RUN ip-IssueGridHeader ("").
+    CREATE QUERY lh-Query  
+        ASSIGN 
+        CACHE = 100 .
+
+    lh-Buffer1 = BUFFER issue:HANDLE.
+    lh-Buffer2 = BUFFER webStatus:HANDLE.
+   
+    lh-Query:SET-BUFFERS(lh-Buffer1,lh-Buffer2).
+    lh-Query:QUERY-PREPARE(lc-QPhrase).
+    lh-Query:QUERY-OPEN().
+    
+    lh-Query:GET-FIRST(NO-LOCK). 
+    
+    REPEAT WHILE lh-Buffer1:AVAILABLE: 
+        
+        ASSIGN 
+            li-count = li-count + 1.
+        RUN ip-IssueGridRow ( ROWID(issue)).
+        
+        
+        IF li-count >= li-max THEN LEAVE.
+        
+        
+        lh-Query:GET-NEXT(NO-LOCK). 
+         
+    END.   
+    
+    lh-Query:QUERY-CLOSE ().
+     
+    DELETE OBJECT lh-Query NO-ERROR. 
+    
+    
+    {&out} '</tbody></table>' SKIP.
+
+
+
+END PROCEDURE.
+
+PROCEDURE ip-TodayIssue:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+
+    DEFINE VARIABLE li-count        AS INTEGER      NO-UNDO.
+    
+    DEFINE VARIABLE lc-QPhrase   AS CHARACTER    NO-UNDO.
+    
+    
+    DEFINE BUFFER Issue FOR Issue.
+       
+    ASSIGN 
+        lc-QPhrase = 
+        "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "' and issue.createDate = today".
+    RUN ip-IssueGridHeader ( "").
+    CREATE QUERY lh-Query  
+        ASSIGN 
+        CACHE = 100 .
+
+    lh-Buffer1 = BUFFER issue:HANDLE.
+   
+    lh-Query:SET-BUFFERS(lh-Buffer1).
+    lh-Query:QUERY-PREPARE(lc-QPhrase).
+    lh-Query:QUERY-OPEN().
+    
+    lh-Query:GET-FIRST(NO-LOCK). 
+    
+    REPEAT WHILE lh-Buffer1:AVAILABLE: 
+        
+        ASSIGN 
+            li-count = li-count + 1.
+        RUN ip-IssueGridRow ( ROWID(issue)).
+        
+       
+        
+        lh-Query:GET-NEXT(NO-LOCK). 
+         
+    END.   
+    
+    lh-Query:QUERY-CLOSE ().
+     
+    DELETE OBJECT lh-Query NO-ERROR. 
+    
+    
+    {&out} '</tbody></table>' SKIP.
+    
 
 END PROCEDURE.
 
@@ -359,10 +716,29 @@ PROCEDURE process-web-request :
 
     {lib/checkloggedin.i}
 
+    ASSIGN
+        lc-panelCode = get-value("panelcode").
     
     RUN outputHeader.
     
-    RUN ip-LatestIssue.
+    
+    FIND tt-dashlib 
+        WHERE tt-dashlib.panelCode = lc-panelCode NO-LOCK NO-ERROR.
+    
+    IF NOT AVAILABLE tt-dashlib THEN
+    DO:
+        {&out} '<p>Dashboard panel not found: Code = ' lc-panelCode '</p>' SKIP.
+        
+    END.
+    ELSE
+    DO: 
+        RUN value(tt-dashlib.iprun) NO-ERROR.
+        IF ERROR-STATUS:ERROR THEN
+        DO:
+            {&out} '<p>Dashboard Panel Run Code not found: PanelCode = ' lc-panelCode ' Run=' tt-dashlib.iprun '</p>' SKIP.
+        END.    
+        
+    END.
     
    
     
@@ -372,3 +748,30 @@ END PROCEDURE.
 
 &ENDIF
 
+
+
+/* ************************  Function Implementations ***************** */
+FUNCTION WriteStat RETURNS ROWID 
+    ( pc-Code AS CHARACTER ,
+    pc-Description AS CHARACTER ,
+    pi-Count AS INTEGER  ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    
+		
+    FIND tt-stat WHERE tt-stat.Scode = pc-code NO-ERROR.
+    IF NOT AVAILABLE tt-stat THEN CREATE tt-stat.
+    ASSIGN
+        tt-stat.scode = pc-code
+        tt-stat.descr = pc-description
+        tt-stat.svalue = tt-stat.svalue + pi-count.
+		  
+		
+    RETURN ROWID(tt-stat).
+		
+
+		
+END FUNCTION.
