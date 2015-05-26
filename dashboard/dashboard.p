@@ -15,9 +15,27 @@ CREATE WIDGET-POOL.
 
 
 
-DEFINE VARIABLE lc-Panel-ID AS CHARACTER NO-UNDO.
-DEFINE VARIABLE MyUUID      AS RAW       NO-UNDO.
-DEFINE VARIABLE cGUID       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Panel-ID        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE MyUUID             AS RAW       NO-UNDO.
+DEFINE VARIABLE cGUID              AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid           AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE li-panel           AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-panel-count     AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-panel-URL       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-panel-size      AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-region-size     AS INTEGER   NO-UNDO.
+DEFINE VARIABLE lc-dashb-title     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-panel-title     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-panel-panelCode AS CHARACTER EXTENT 100 NO-UNDO.
+DEFINE VARIABLE lc-panel-panelIdx  AS CHARACTER EXTENT 100 NO-UNDO.
+DEFINE VARIABLE lc-panel-descr     AS CHARACTER EXTENT 100 NO-UNDO.
+DEFINE VARIABLE li-loop            AS INTEGER   NO-UNDO.
+    
+
+DEFINE BUFFER dashb FOR dashb.
+
+
 
     
 
@@ -145,7 +163,11 @@ PROCEDURE process-web-request :
     {lib/checkloggedin.i} 
 
     
-       
+    ASSIGN 
+        lc-rowid = get-value("rowid").
+    
+    FIND dashb WHERE ROWID(dashb) = to-rowid(lc-rowid) NO-LOCK NO-ERROR.
+           
        
     RUN outputHeader.
      
@@ -157,26 +179,22 @@ PROCEDURE process-web-request :
 
 
 
-    DEFINE VARIABLE li-panel        AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE li-panel-count  AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE lc-panel-URL    AS CHARACTER    NO-UNDO.
-    DEFINE VARIABLE li-panel-size   AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE li-region-size  AS INTEGER      NO-UNDO.
-    DEFINE VARIABLE lc-dashb-title  AS CHARACTER    NO-UNDO.
-    DEFINE VARIABLE lc-panel-title  AS CHARACTER    NO-UNDO.
-    DEFINE VARIABLE lc-panel-panelCode  AS CHARACTER EXTENT 400 NO-UNDO.
-    DEFINE VARIABLE lc-panel-descr  AS CHARACTER EXTENT 400 NO-UNDO.
-    
-    
-    
+   
+  
        
     ASSIGN 
-        lc-dashb-title = "HelpDesk Dashboard".
+        lc-dashb-title = dashb.descr.
        
-    FOR EACH tt-dashlib NO-LOCK:
-        li-panel-count = li-panel-count + 1.
+    DO li-loop = 1 TO EXTENT(dashb.PanelCode):
+        IF dashb.panelCode[li-loop] = "" THEN NEXT.
+        FIND tt-dashlib WHERE tt-dashlib.PanelCode = dashb.panelCode[li-loop] NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE tt-dashlib THEN NEXT.
+               
+        
         ASSIGN
+            li-panel-count = li-panel-count + 1
             lc-panel-panelCode[li-panel-count] = tt-dashlib.panelCode
+            lc-panel-panelIdx[li-panel-count] = STRING(li-loop)
             lc-panel-descr[li-panel-count] = tt-dashlib.descr.
     END.  
      
@@ -185,23 +203,13 @@ PROCEDURE process-web-request :
         li-region-size = max(800, ( li-panel-size * li-panel-count)) + 200.
     .
     
-    /*  <---<div data-options="region:~'north~',title:~'HelpDesk Dashboardxx~',split:true" style="height:100px;"></div>---> */
+  
     
-    /*
-    ***
-    *** Layout just has west & center
-    ***
-    */
-    {&out}
-    '<div id="cc" class="easyui-layout" style="width:100%;height:' li-region-size 'px;">
-       <div data-options="region:~'west~',title:~'Options~',split:true" style="width:100px;">' SKIP.
-    {&out} '<div style="padding:5px 5px;">' SKIP.
-    
-    {&out} '<a href="javascript:init();" class="easyui-linkbutton" data-options="iconCls:~'icon-reload~'">Reload</a>' SKIP.
-    {&out} '</div>' SKIP.
-    
-    {&out} '</div>
-    <div data-options="region:~'center~',title:~'Dashboard Contents~'" style="padding:5px;background:#eee;">' SKIP.
+    {&out} '<div id="Controller" class="easyui-panel" title="Dashboard - ' lc-dashb-Title '" ' SKIP
+               'style="width:99%;height:' 100 'px;padding:0px;background:#fafafa;"
+        data-options="iconCls:~'icon-large-shapes~',cache:false,border:true,doSize:true,closable:false,collapsible:true,minimizable:false,maximizable:false">'.
+        
+    {&out} '<br/><div style="text-align:center"><a href="javascript:init();" class="easyui-linkbutton" data-options="iconCls:~'icon-reload~'">Reload</a></div></div></br />' SKIP.
     
         
     DO li-panel = 1 TO li-panel-count:
@@ -210,15 +218,11 @@ PROCEDURE process-web-request :
             lc-panel-title = lc-panel-descr[li-panel].
     
         {&out} '<div id="' lc-Panel-ID '" class="easyui-panel" title="' lc-Panel-title '" ' SKIP
-               'style="width:99%;height:' li-panel-size 'px;padding:5px;background:#fafafa;"
-        data-options="iconCls:~'icon-large-shapes~',cache:false,border:true,doSize:true,closable:true,collapsible:true,minimizable:false,maximizable:true"></div>' skip.
+               'style="width:99%;height:' li-panel-size 'px;padding:0px;background:#fafafa;"
+        data-options="iconCls:~'icon-large-shapes~',cache:false,border:true,doSize:true,closable:false,collapsible:true,minimizable:false,maximizable:true"></div><br />' skip.
       
     END.
-          
-    /* end of center */
-    {&out} '</div>
-</div>' SKIP.
-   
+
     {&out} '<script>' SKIP
            'function init () ~{' skip.
    
@@ -230,8 +234,9 @@ PROCEDURE process-web-request :
         lc-Panel-ID = "panel" + string(li-panel).
         lc-panel-URL = appurl + "/dashboard/ajax/panel.p".
         lc-panel-URL = appurl + "/dashboard/ajax/panel.p?Session=" + cGuid 
+            + "&rowid=" + lc-rowid
             + "&panelcode=" + lc-panel-panelCode[li-panel]
-            + "&position=" + string(li-panel).
+            + "&position=" + lc-panel-panelIdx[li-panel].
  
         {&out}
         "$('#" lc-panel-ID "').panel(~{

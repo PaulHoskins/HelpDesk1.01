@@ -1919,7 +1919,8 @@ FUNCTION com-CanDelete RETURNS LOGICAL
                  
             END.
             
-        WHEN "webprojptask" THEN 
+        WHEN "webprojptask"
+        OR WHEN "webdashb" THEN 
             RETURN TRUE.
         
         OTHERWISE

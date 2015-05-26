@@ -18,6 +18,7 @@
     11/12/2014  phoski      Renewal user 
     08/03/2015  phoski      Issue log for customer users      
     25/04/2015  phoski      Project Schedule
+    24/05/2015  phoski      Dashboard Links
                               
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -171,17 +172,18 @@ PROCEDURE ip-InternalUser :
                 'Your Diary' 
                 '</a><br /><br />' skip.     
                 
-         IF DYNAMIC-FUNCTION("com-HasSchedule",webuser.CompanyCode,WebUser.LoginID) > 0 THEN
-         DO:
-             ASSIGN lc-enc-key =
+        IF DYNAMIC-FUNCTION("com-HasSchedule",webuser.CompanyCode,WebUser.LoginID) > 0 THEN
+        DO:
+            ASSIGN 
+                lc-enc-key =
                DYNAMIC-FUNCTION("sysec-EncodeValue",WebUser.LoginID,TODAY,"ScheduleKey",STRING(ROWID(webuser))).
                  
             {&out} 
-                '<br /><a class="tlink" style="width: 100%;" href="' appurl
-                '/sched/yourschedule.p?engineer=' url-encode(lc-enc-key,"Query")  '" target="mainwindow" title="Project Schedule">' skip
+            '<br /><a class="tlink" style="width: 100%;" href="' appurl
+            '/sched/yourschedule.p?engineer=' url-encode(lc-enc-key,"Query")  '" target="mainwindow" title="Project Schedule">' skip
                 'Your Project Schedule' 
                     '</a><br /><br />' skip. 
-         END.        
+        END.        
                  
     END.
 
@@ -536,10 +538,56 @@ PROCEDURE mnlib-BuildIssueMenu :
     DEFINE BUFFER b-object FOR webobject.
     DEFINE BUFFER b-user   FOR webuser.
 
-    DEFINE VARIABLE li-ItemNo AS INTEGER   NO-UNDO.
-    DEFINE VARIABLE lc-desc   AS CHARACTER NO-UNDO.
-
+    DEFINE VARIABLE li-ItemNo AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE lc-desc   AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE ll-found  AS LOGICAL    NO-UNDO.
+    DEFINE VARIABLE li-loop   AS INTEGER    NO-UNDO.
+    
+    
     FIND b-user WHERE b-user.loginid = lc-user NO-LOCK NO-ERROR.
+    
+    ASSIGN
+        ll-found = FALSE.
+    IF b-user.dashbList <> "" THEN
+    DO:
+        DO li-loop = 1 TO NUM-ENTRIES(b-user.dashbList):
+            FIND dashb WHERE dashb.CompanyCode = b-user.companyCode
+                          AND dashb.dashCode = entry(li-loop,b-user.dashbList) 
+                          AND dashb.isActive = TRUE
+                          NO-LOCK NO-ERROR.
+                          
+            IF ll-found = FALSE THEN
+            DO:
+                FIND LAST tt-menu NO-LOCK NO-ERROR.
+                ASSIGN 
+                    li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+                 CREATE tt-menu.
+                 ASSIGN 
+                        tt-menu.ItemNo      = li-itemno
+                        tt-menu.Level       = pi-level
+                        tt-menu.Description = "Your Dashboards"
+                        ll-found = TRUE.
+            END.
+            FIND LAST tt-menu NO-LOCK NO-ERROR.
+            ASSIGN 
+                li-itemno = IF AVAILABLE tt-menu 
+                               THEN tt-menu.itemno + 1
+                               ELSE 1.
+            CREATE tt-menu.
+            ASSIGN 
+                tt-menu.itemno      = li-itemno
+                tt-menu.Level       = pi-level + 1
+                tt-menu.Description = dashb.descr
+                tt-menu.ObjType     = "WS"
+                tt-menu.ObjTarget   = "mainwindow"
+                tt-menu.ObjURL      = "dashboard/dashboard.p?mode=display&rowid=" + string(ROWID(dashb)).
+            .                 
+                             
+        END.    
+            
+    END.
 
     IF CAN-DO("INTERNAL,CONTRACT",b-user.UserClass) THEN
     DO:
@@ -556,7 +604,8 @@ PROCEDURE mnlib-BuildIssueMenu :
 
             FIND Customer OF Issue NO-LOCK NO-ERROR.
             
-            ASSIGN lc-enc-key =
+            ASSIGN 
+                lc-enc-key =
                  DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
                  
             
@@ -867,7 +916,8 @@ PROCEDURE process-web-request :
                 AND Customer.AccountNumber = webUser.AccountNumber
                 NO-LOCK NO-ERROR.
                 
-            ASSIGN lc-enc-key =
+            ASSIGN 
+                lc-enc-key =
                  DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
             ASSIGN
                 lc-address   = customer.name

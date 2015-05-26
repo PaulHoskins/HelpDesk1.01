@@ -10,6 +10,7 @@
     When        Who         What
     27/03/2015  phoski      Initial
     31/03/2015  phoski      Renamed 'task' to 'action'
+    24/05/2015  phoski      Spelling mistake... tsk
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -217,7 +218,7 @@ PROCEDURE ip-Page:
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("resp",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("Responsibility")
-        ELSE htmlib-SideLabel("Repsonsibility"))
+        ELSE htmlib-SideLabel("Responsibility"))
     '</TD>'.
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN

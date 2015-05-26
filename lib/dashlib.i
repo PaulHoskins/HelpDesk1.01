@@ -29,7 +29,7 @@ DEFINE TEMP-TABLE   tt-dashlib  NO-UNDO
 RUN dashlib-Initialise.
 
 FUNCTION dashlib-CreateLib RETURNS ROWID 
-	(pc-dCode AS CHARACTER,
+	(pc-panelCode AS CHARACTER,
 	 pc-descr AS CHARACTER,
 	 pc-iprun AS CHARACTER) FORWARD.
 
@@ -51,6 +51,9 @@ PROCEDURE dashlib-Initialise:
     FIND tt-row WHERE ROWID(tt-row) = lr-row EXCLUSIVE-LOCK.
     
     lr-row = DYNAMIC-FUNCTION("dashlib-CreateLib","002-IToday","Todays Issues","ip-TodayIssue").
+    FIND tt-row WHERE ROWID(tt-row) = lr-row EXCLUSIVE-LOCK.
+    
+    lr-row = DYNAMIC-FUNCTION("dashlib-CreateLib","002-ITodayClass","Todays Issues By Class","ip-TodayIssueClass").
     FIND tt-row WHERE ROWID(tt-row) = lr-row EXCLUSIVE-LOCK.
     
     

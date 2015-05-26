@@ -21,7 +21,8 @@
     13/11/2014  phoski      Customer View Inventory Flag
     20/11/2014  phoski      save & Pass back 'selacc' field
     29/11/2014  phoski      remove working hours
-    03/12/20114 phoski      Engineer Type 
+    03/12/2014  phoski      Engineer Type 
+    24/05/2015  phoski      Dashboard selection  
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -658,6 +659,77 @@ PROCEDURE ip-Page :
 
      
     END.
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    htmlib-SideLabel("Dashboards")
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+    DO:
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'.
+
+        ASSIGN li-count = 0.
+        
+        {&out} htmlib-StartMntTable().
+
+        FOR EACH dashb NO-LOCK WHERE dashb.companycode = lc-global-company:
+
+            li-count = li-count + 1.
+            IF li-count = 1 THEN
+            DO:
+                {&out} '<tr>' SKIP.
+
+            END.
+            lc-html = "dash" + STRING(ROWID(dashb)).
+            ll-check = get-value(lc-html) = "on".
+            {&out} '<td>' htmlib-CheckBox(lc-html,ll-check) 
+            ' - '  html-encode(dashb.descr) '</td>' SKIP.
+            IF li-count MOD li-row = 0 THEN
+            DO:
+                {&out} '</tr>'.
+                li-count = 0.
+            END.
+
+
+        END.
+        {&out} htmlib-EndTable() skip.
+
+        {&out} '</TD>' skip.
+    END.
+    ELSE
+    DO:
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'.
+
+        ASSIGN li-count = 0.
+        
+        {&out} htmlib-StartMntTable().
+
+        FOR EACH dashb NO-LOCK WHERE dashb.companycode = lc-global-company:
+
+            li-count = li-count + 1.
+            IF li-count = 1 THEN
+            DO:
+                {&out} '<tr>' SKIP.
+
+            END.
+            lc-html = "dash" + STRING(ROWID(dashb)).
+            ll-check = get-value(lc-html) = "on".
+            IF NOT ll-check THEN NEXT.
+            
+            {&out} '<td>' html-encode(dashb.descr) '</td>' SKIP.
+            IF li-count MOD li-row = 0 THEN
+            DO:
+                {&out} '</tr>'.
+                li-count = 0.
+            END.
+
+
+        END.
+        {&out} htmlib-EndTable() skip.
+
+        {&out} '</TD>' skip.
+    END.
+    
 
     {&out} '</TR>' skip.
 
@@ -1108,6 +1180,7 @@ PROCEDURE process-web-request :
                         b-table.disabletimeout   = lc-disabletimeout = "on"
                         b-table.CustomerViewInventory = lc-custinv = 'on'
                         b-table.engtype               = lc-engtype
+                        b-table.dashbList           = "".
                         .
                     ASSIGN 
                         b-table.name = b-table.forename + ' ' + 
@@ -1135,6 +1208,13 @@ PROCEDURE process-web-request :
                             webuSteam.LoginID = b-table.loginid
                             webuSteam.st-num = steam.st-num.
 
+                    END.
+                    FOR EACH dashb NO-LOCK WHERE dashb.CompanyCode = b-table.companyCode:
+                        lc-html = "dash" + string(ROWID(dashb)). 
+                        IF get-value(lc-html) <> "on" THEN NEXT.
+                        IF b-table.dashbList = ""
+                        THEN b-table.dashblist = dashb.dashCode.
+                        ELSE b-table.dashblist = b-table.dashblist + "," + dashb.dashCode.
                     END.
                     IF b-table.UserClass = "customer"
                         AND b-table.AccountNumber <> ""
@@ -1187,13 +1267,20 @@ PROCEDURE process-web-request :
         ASSIGN 
             lc-loginid = b-table.loginid.
         IF request_method = "GET" THEN
+        DO:
+            FOR EACH dashb NO-LOCK WHERE dashb.CompanyCode = b-table.companyCode:
+                lc-html = "dash" + string(ROWID(dashb)). 
+                
+                IF LOOKUP(dashb.dashCode,b-table.dashbList) > 0
+                THEN set-user-field(lc-html,"on").
+            END.
             FOR EACH webUsteam OF b-table NO-LOCK:
                 
                 lc-html = "steam" + STRING(webusteam.st-num).
                 set-user-field(lc-html,"on").
 
             END.
-
+        END.
 
         IF CAN-DO("view,delete",lc-mode) 
             OR request_method <> "post" THEN 
