@@ -9,6 +9,7 @@
     
     When        Who         What
     16/05/2015  phoski      Initial
+    27/05/2015  phoski      cater for customer users
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -131,9 +132,11 @@ PROCEDURE ip-BuildCompanyStats:
         
        
     ASSIGN 
-        
         lc-QPhrase = 
         "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "'".
+        
+    RUN ip-IssueQueryAdjust ( INPUT-OUTPUT lc-qPhrase ).
+         
     
     CREATE QUERY lh-Query  
         /*
@@ -515,6 +518,32 @@ PROCEDURE ip-IssueGridRow:
 
 END PROCEDURE.
 
+PROCEDURE ip-IssueQueryAdjust:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT-OUTPUT PARAMETER pc-q     AS CHARACTER NO-UNDO.
+    
+    DEFINE BUFFER Webuser FOR WebUser.
+
+    FIND WebUser
+        WHERE WebUser.LoginID = lc-global-user
+        NO-LOCK NO-ERROR.
+    
+    IF NOT AVAILABLE WebUser THEN RETURN.
+    
+    IF WebUser.UserClass = "customer" THEN
+    DO:
+        ASSIGN pc-q = pc-q + "  and issue.AccountNumber = '" + WebUser.AccountNumber + "'".  
+
+    END.
+    
+
+
+
+END PROCEDURE.
+
 PROCEDURE ip-LatestIssue:
     /*------------------------------------------------------------------------------
             Purpose:  																	  
@@ -532,7 +561,12 @@ PROCEDURE ip-LatestIssue:
     ASSIGN 
         li-max = 20
         lc-QPhrase = 
-        "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "' by issue.IssueNumber DESCENDING".
+        "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "' ".
+        
+    RUN ip-IssueQueryAdjust ( INPUT-OUTPUT lc-qPhrase ).
+    
+    ASSIGN lc-QPhrase = lc-QPhrase + " by issue.IssueNumber DESCENDING".
+    
     RUN ip-IssueGridHeader ( "").
     CREATE QUERY lh-Query  
         ASSIGN 
@@ -588,9 +622,12 @@ PROCEDURE ip-OldestIssue:
     ASSIGN 
         li-max = 20
         lc-QPhrase = 
-        "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "'" +
-        ", first webstatus NO-LOCK where webstatus.CompanyCode = issue.CompanyCode and webstatus.statusCode = issue.StatusCode and webstatus.CompletedStatus = false "
+        "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "' ".
         
+    RUN ip-IssueQueryAdjust ( INPUT-OUTPUT lc-qPhrase ).
+    ASSIGN 
+        lc-QPhrase = lc-QPhrase + 
+        ", first webstatus NO-LOCK where webstatus.CompanyCode = issue.CompanyCode and webstatus.statusCode = issue.StatusCode and webstatus.CompletedStatus = false "
         lc-qPhrase = lc-qPhrase +  " by issue.IssueNumber".
         
     
@@ -650,6 +687,8 @@ PROCEDURE ip-TodayIssue:
     ASSIGN 
         lc-QPhrase = 
         "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "' and issue.createDate = today".
+    RUN ip-IssueQueryAdjust ( INPUT-OUTPUT lc-qPhrase ).
+      
     RUN ip-IssueGridHeader ( "").
     CREATE QUERY lh-Query  
         ASSIGN 
@@ -774,6 +813,8 @@ PROCEDURE ip-TodayIssueClass:
         "for each issue NO-LOCK where issue.CompanyCode = '" + string(lc-Global-Company) + "' and issue.createDate = today" 
         +
          " and issue.iclass = '" + lc-iclass + "'".
+          
+       RUN ip-IssueQueryAdjust ( INPUT-OUTPUT lc-qPhrase ).
           
         
         CREATE QUERY lh-Query  
