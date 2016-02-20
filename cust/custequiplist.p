@@ -11,6 +11,7 @@
     22/04/2006  phoski      Initial
     
     03/09/2010  DJS         3704 - Customer Details Tab alteration
+    20/02/2016  PHOSKI      Include manager/team/ref etc
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -151,10 +152,15 @@ PROCEDURE ip-AccountInformation :
     DEFINE INPUT PARAMETER pc-AccountNumber    AS CHARACTER     NO-UNDO.
     
     DEFINE BUFFER b-query  FOR Customer.
+    DEFINE BUFFER b-webu   FOR WebUser.
     
 
     DEFINE VARIABLE lc-address      AS CHARACTER     NO-UNDO.
     DEFINE VARIABLE lc-temp         AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-cam          AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-AMan         AS CHARACTER     NO-UNDO.
+    DEFINE VARIABLE lc-def-cont     AS CHARACTER     NO-UNDO.
+    
    
 
 
@@ -164,9 +170,24 @@ PROCEDURE ip-AccountInformation :
     IF NOT AVAILABLE b-query THEN RETURN.
    
 
+    FIND FIRST WebissCont 
+         WHERE WebissCont.CompanyCode = b-query.companyCode
+           AND WebissCont.Customer  = b-query.AccountNumber
+           AND WebissCont.defcon = TRUE
+           NO-LOCK NO-ERROR.
+    IF AVAILABLE WebissCont
+    THEN lc-def-cont = WebissCont.ContractCode.
+    ELSE lc-def-cont = "<b>** None **</b>".
     
     ASSIGN
-        lc-address = "".
+        lc-address = ""
+        lc-cam = ""
+        lc-AMan = "".
+        
+    FIND b-webu WHERE b-webu.LoginID = b-query.AccountManager NO-LOCK NO-ERROR.
+    IF AVAILABLE b-webu
+    THEN lc-AMan = b-webu.Name.
+        
 
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.Address1).
     lc-address = DYNAMIC-FUNCTION("com-StringReturn",lc-address,b-query.Address2).
@@ -181,12 +202,13 @@ PROCEDURE ip-AccountInformation :
     RUN ip-AccountHeader(b-query.postcode, b-query.name).                   /* 3704 */ 
 
     {&out} skip
-           replace(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"').
+           replace(htmlib-StartMntTable(),'XXwidth="100%"','width="95%" align="center"').
 
     {&out}
     htmlib-TableHeading(
-        "Account^left|Name^left|Address^left|Contact|Telephone|Notes")
+        "Account^left|Name^left|Address^left|Contact|Telephone|Support Team|Account<br>Manager|Account<br>Ref|Default<br>Contract|Notes")
             skip.
+            
 
     {&out}
     '<tr>' skip
@@ -196,24 +218,19 @@ PROCEDURE ip-AccountInformation :
     /*     if b-query.PostCode = "" then                                                                                       */
     {&out}
     htmlib-MntTableField(REPLACE(html-encode(lc-address),"~n","<br>"),'left').
-    /*     else                                                                                                                */
-    /*     do:                                                                                                                 */
-    /*         assign lc-temp = replace(htmlib-MntTableField(replace(html-encode(lc-address),"~n","<br>"),'left'),"</td>",""). */
-    /*         lc-temp = lc-temp +                                                                                             */
-    /*                 '<br><a  target="new" href="http://www.streetmap.co.uk/streetmap.dll?postcode2map?code='                */
-    /*                         + replace(b-query.postcode," ","+")                                                             */
-    /*                         + "&title="                                                                                     */
-    /*                         + replace(replace(b-query.name," ","+"),"&","")                                                 */
-    /*                         + '"><img border=0 src=/images/general/map.gif title="View Map TWO">'                           */
-    /*                         + '</a>'.                                                                                       */
-    /*             .                                                                                                           */
-    /*         {&out} lc-temp.                                                                                                 */
-    /*     end.                                                                                                                */
-
+ 
     {&out}
     htmlib-MntTableField(html-encode(b-query.Contact),'left')
     htmlib-MntTableField(html-encode(b-query.Telephone),'left').
+    FIND steam WHERE steam.companyCode = b-query.CompanyCode
+    AND steam.st-num = b-query.st-num NO-LOCK NO-ERROR.
+    {&out} htmlib-MntTableField(IF AVAILABLE steam THEN STRING(steam.st-num) + " - " + steam.descr ELSE 'None','left').
 
+    {&out}
+    htmlib-MntTableField(html-encode(lc-AMan),'left')
+    htmlib-MntTableField(html-encode(b-query.accountRef),'left')
+    htmlib-MntTableField(lc-def-cont,'left').
+    
     IF b-query.notes = ""
         THEN {&out} htmlib-MntTableField("",'left').
     else {&out} replace(htmlib-TableField(replace(html-encode(b-query.notes),"~n",'<br>'),'left'),

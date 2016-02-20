@@ -9,6 +9,7 @@
     
     When        Who         What
     13/07/2006  phoski      CompanyCode  
+    20/02/2016  phoski      Allow negative tickets amounts
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -146,7 +147,7 @@ PROCEDURE ip-Validate :
 
     IF ERROR-STATUS:ERROR
         OR lf-amount = ?
-        OR lf-amount <= 0
+        OR lf-amount = 0
         OR lf-amount <> truncate(lf-amount,0)
         THEN RUN htmlib-AddErrorMessage(
             'amount', 
