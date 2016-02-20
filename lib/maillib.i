@@ -130,7 +130,11 @@ FUNCTION mlib-SendAttEmail RETURNS LOG
     DO li-mail = 1 TO NUM-ENTRIES(lc-address-to):
         oSmtp:AddRecipient( ENTRY(li-mail,lc-address-to), ENTRY(li-mail,lc-address-to), li-Recipient ).
     END.
+    DEFINE VARIABLE li-time AS INTEGER NO-UNDO.
+    li-time = TIME.
+    /* oSmtp:LogFileName = "c:\temp\email.log". */
     
+    MESSAGE "SendM " lc-address-to " " pc-Subject " From " pc-sender.
     li-result = oSmtp:SendMail().
     IF li-result <> 0 THEN
     DO:
@@ -140,8 +144,10 @@ FUNCTION mlib-SendAttEmail RETURNS LOG
             "Result Code = " li-result SKIP
             "Err Desc  = " oSmtp:GetLastErrDescription() .
     END.
-    
+    li-time = TIME - li-time.
+    MESSAGE "SendE " lc-address-to " In " STRING(li-time,"HH:MM:SS").
     RELEASE OBJECT oSmtp NO-ERROR.
+    oSmtp = ?.
     
     RETURN TRUE.
 END FUNCTION.     

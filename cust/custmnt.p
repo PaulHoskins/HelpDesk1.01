@@ -15,6 +15,12 @@
     20/07/2006  phoski      Statement Email
     26/07/2006  phoski      Ticket Transactions
     29/09/2014  phoski      Account Manager
+    09/06/2015  phoski      Removed contract DJS drivel 
+    15/08/2015  phoski      Default user - Issue/Bulk Email/Status
+                            Changes
+    24/08/2015  phoski      Inventory renewal user
+    22/10/2015  phoski      allowAllTeams    
+    08/11/2015  phoski      AccountRef field    
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -39,12 +45,6 @@ DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
 DEFINE BUFFER b-valid FOR customer.
 DEFINE BUFFER b-table FOR customer.
 
-DEFINE TEMP-TABLE conts LIKE ContractType
-    INDEX i-conts ContractNumber.
-
-DEFINE BUFFER b-tabletype  FOR WebissCont.
-DEFINE BUFFER bb-tabletype FOR WebissCont.
-DEFINE TEMP-TABLE b-webcont LIKE WebissCont.
 
 DEFINE VARIABLE lc-search           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-firstrow         AS CHARACTER NO-UNDO.
@@ -79,8 +79,12 @@ DEFINE VARIABLE lc-st-num           AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-st-code          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-st-descr         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-AccountManager   AS CHARACTER NO-UNDO.
-
-
+DEFINE VARIABLE lc-iss-loginid      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-bulk-loginid     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-stat-loginid     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-renew-loginid    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-allowAllTeams    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-accountref       AS CHARACTER NO-UNDO.
 
 
 DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
@@ -88,34 +92,16 @@ DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-temp             AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE vx                  AS INTEGER   NO-UNDO.
-DEFINE VARIABLE vz                  AS INTEGER   NO-UNDO.
-DEFINE VARIABLE vc-con              AS CHARACTER EXTENT 20 NO-UNDO.
-
-DEFINE VARIABLE lc-saved-contracts  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-saved-connums    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-saved-billables  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-saved-connotes   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-saved-defcons    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-saved-conactives AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-saved-recids     AS CHARACTER NO-UNDO.
-
-DEFINE VARIABLE lc-connums-list     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-contract-list    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-billable-list    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-connotes-list    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-defcons-list     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-conactive-list   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-contractnotes    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-contractbilling  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-ct-code          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-ct-desc          AS CHARACTER NO-UNDO.
-
 DEFINE VARIABLE lc-contract         AS CHARACTER EXTENT 20 NO-UNDO.
 DEFINE VARIABLE ll-billable         AS LOG       EXTENT 20 NO-UNDO.
 DEFINE VARIABLE lc-connotes         AS CHARACTER EXTENT 20 NO-UNDO.
 DEFINE VARIABLE ll-default          AS LOG       EXTENT 20 NO-UNDO.
 DEFINE VARIABLE ll-conactive        AS LOG       EXTENT 20 NO-UNDO.
+DEFINE VARIABLE lc-cu-code          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-cu-desc          AS CHARACTER NO-UNDO.
+
 
 
 
@@ -131,13 +117,6 @@ DEFINE VARIABLE ll-conactive        AS LOG       EXTENT 20 NO-UNDO.
 
 /* ************************  Function Prototypes ********************** */
 
-&IF DEFINED(EXCLUDE-addBalloon) = 0 &THEN
-
-FUNCTION addBalloon RETURNS CHARACTER
-    ( f-text AS CHARACTER )  FORWARD.
-
-
-&ENDIF
 
 
 /* *********************** Procedure Settings ************************ */
@@ -256,258 +235,9 @@ END PROCEDURE.
 
 &ENDIF
 
-&IF DEFINED(EXCLUDE-ip-AddContracts) = 0 &THEN
-
-PROCEDURE ip-AddContracts :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE nextID  AS INTEGER NO-UNDO.
-
-    DO vx = 1 TO NUM-ENTRIES(TRIM(lc-saved-contracts,"|"),"|"):
-  
-        FIND b-tabletype 
-            WHERE  ROWID(b-tabletype)  = to-rowid(ENTRY(vx,lc-saved-recids,"|"))
-            EXCLUSIVE-LOCK NO-ERROR.
-  
-        IF ENTRY(vx,lc-saved-contracts,"|") = "NONE" 
-            OR ENTRY(vx,lc-saved-contracts,"|") = "" 
-            AND AVAILABLE b-tabletype THEN 
-        DO:
-            DELETE b-tabletype.
-            IF v-debug THEN 
-            DO:
-                OUTPUT to "c:\temp\djstest.txt" append.
-                PUT UNFORMATTED "Deleted  - " STRING(vx) " -- "  ENTRY(vx,lc-saved-recids,"|")  " - "  STRING(NUM-ENTRIES(lc-saved-contracts,"|")) SKIP.
-                OUTPUT close.
-            END.
-        END.
-        ELSE
-        DO:
-  
-            IF NOT AVAILABLE b-tabletype THEN 
-            DO:
-                FIND LAST bb-tabletype 
-                    WHERE bb-tabletype.CompanyCode     = b-table.CompanyCode
-                    AND   bb-tabletype.Customer        = b-table.AccountNumber 
-                    NO-LOCK NO-ERROR.
-                IF AVAILABLE bb-tabletype THEN nextID = bb-tabletype.ConID + 1.
-                ELSE nextID = 1.
-                IF v-debug THEN 
-                DO:
-                    OUTPUT to "c:\temp\djstest.txt" append.
-                    PUT UNFORMATTED "Created  -  " STRING(vx) "  "  STRING(nextID) " _ "  STRING(NUM-ENTRIES(lc-saved-contracts,"|")) SKIP.
-                    OUTPUT close.
-                END.
-                CREATE b-tabletype.
-                ASSIGN 
-                    b-tabletype.ConID          = nextID
-                    b-tabletype.CompanyCode    = b-table.CompanyCode  
-                    b-tabletype.Customer       = b-table.AccountNumber 
-                    b-tabletype.ContractCode   = ENTRY(vx,lc-saved-contracts,"|")
-                    b-tabletype.Billable       = ENTRY(vx,lc-saved-billables,"|") = "yes"
-                    b-tabletype.Notes          = ENTRY(vx,lc-saved-connotes,"|")
-                    b-tabletype.DefCon         = ENTRY(vx,lc-saved-defcons,"|") = "yes"
-                    b-tabletype.ConActive      = ENTRY(vx,lc-saved-conactives,"|") = "yes"
-                    .
-                IF v-debug THEN 
-                DO:
-                    OUTPUT to "c:\temp\djstest.txt" append.
-                    PUT UNFORMATTED "Done Created  -  " STRING(vx) "  "  STRING(nextID) SKIP.
-                    OUTPUT close.
-                END.
-  
-            END.
-            ELSE
-            DO:
-                ASSIGN 
-                    b-tabletype.ContractCode   = ENTRY(vx,lc-saved-contracts,"|")
-                    b-tabletype.Billable       = ENTRY(vx,lc-saved-billables,"|") = "yes"
-                    b-tabletype.Notes          = ENTRY(vx,lc-saved-connotes,"|")
-                    b-tabletype.DefCon         = ENTRY(vx,lc-saved-defcons,"|") = "yes"
-                    b-tabletype.ConActive      = ENTRY(vx,lc-saved-conactives,"|") = "yes"
-                    .
-                IF v-debug THEN 
-                DO:  
-                    OUTPUT to "c:\temp\djstest.txt" append.
-                    PUT UNFORMATTED "In Assign Update   " SKIP.
-                    OUTPUT close.
-                END.
-            END.
-        END.
-    END.
-
-END PROCEDURE.
 
 
-&ENDIF
 
-&IF DEFINED(EXCLUDE-ip-Contracts) = 0 &THEN
-
-PROCEDURE ip-Contracts :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE vy  AS INTEGER  NO-UNDO.
-    DEFINE VARIABLE v-conn-start  AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE total-contracts AS INTEGER  NO-UNDO.
-    
-    total-contracts = 10.
-
-    total-contracts = total-contracts .
-
-    v-conn-start = '<table id=~'dynamiccontents~' cellpadding=0 cellspacing=0  valign=~'top~'><tr>'.
-    v-conn-start = v-conn-start + '<td  class=~'sidelabel~'  valign=~'top~'>Contracts:&nbsp;</td><td>'.
-  
-
-    /* FIRST CONTRACT                                                                                                                    */
-    IF vx > 0 THEN
-    DO:
-        vc-con[1] = vc-con[1] + '<!--   FIRST  --><div id=~'DD1~'  >'.
-        vc-con[1] = vc-con[1] + '<input id=~'defcon1~' name=~'defcon1~' class=~'inputfield~' type=~'radio~' ' + addBalloon("Default?") + ' onclick=~'javascript:SDefCon(1)~' value=~'defcon1~'' .
-        IF ll-default[1] = TRUE THEN vc-con[1] = vc-con[1] + ' checked '.
-        vc-con[1] = vc-con[1] + '><select class=~'inputfield~'  id=~'contract1~' name=~'contract1~' valign=~'top~' width=~'200px~' disabled >'.
-        FOR EACH conts NO-LOCK:
-            vc-con[1] = vc-con[1] + '<option '.
-            IF lc-contract[1] = conts.ContractNumber THEN
-                vc-con[1] = vc-con[1] + ' selected '.
-            vc-con[1] = vc-con[1] + '  value=~'' + conts.ContractNumber + '~'>' + conts.Description + '</option>'.
-        END.
-        vc-con[1] = vc-con[1] + '</select>'.
-        vc-con[1] = vc-con[1] + '<input id=~'cnotes1~' class=~'tablefield~' type=~'text~' onChange=~'javascript:SNotes(1,this.value)~' value=~'' + lc-connotes[1] +   '~' >'.
-        vc-con[1] = vc-con[1] + ' <input id=~'conactive1~' type=~'checkbox~' ' + addBalloon("Active?") + ' onclick=~\~"javascript:SConActive(~'1~');~\~"   '.
-        IF ll-conactive[1] THEN vc-con[1] = vc-con[1] + " checked ".
-        vc-con[1] = vc-con[1] + ' >'.
-        vc-con[1] = vc-con[1] + ' <input id=~'billable1~' type=~'checkbox~' ' + addBalloon("Billable?") + ' onclick=~\~"javascript:SBillable(~'1~');~\~"   '.
-        IF ll-billable[1] THEN vc-con[1] = vc-con[1] + " checked ".
-        vc-con[1] = vc-con[1] + ' >'.
-        vc-con[1] = vc-con[1] + ' <img src=~'/images/general/remove01.gif~'' + addBalloon("Click to delete") + ' id=~'RM1~' onclick=~\~"javascript:SRemove(this);~\~">'.
-        vc-con[1] = vc-con[1] + '</div></td></tr>'.
-        vc-con[1] = vc-con[1] + '<tr><td></td><td> '.
-    END.
-
-
-    /* NEXT CONTRACTS                                                                                                                       */
-    IF vx > 1 THEN
-    DO vz = 2 TO vx :          
-        vc-con[vz] = '<!--   NEXT  --><div id=~'DD' + string(vz) + '~' >'.
-        vc-con[vz] = vc-con[vz] + '<input  id=~'defcon' + string(vz) + '~' name=~'defcon' + string(vz) + '~'  class=~'inputfield~' type=~'radio~' ' + addBalloon("Default?") + ' onclick=~'javascript:SDefCon(' + string(vz) + ')~' value=~'defcon' + string(vz) + '~''.
-        IF ll-default[vz] = TRUE THEN vc-con[vz] = vc-con[vz] + ' checked '.
-        vc-con[vz] = vc-con[vz] + '><select class=~'inputfield~'  id=~'contract' + string(vz) + '~' name=~'contract' + string(vz) + '~' valign=~'top~' width=~'100px~' disabled >'.
-        FOR EACH conts NO-LOCK   :
-            vc-con[vz] = vc-con[vz] + '<option '.
-            IF lc-contract[vz] = conts.ContractNumber THEN 
-                vc-con[vz] = vc-con[vz] + ' selected '.
-            vc-con[vz] = vc-con[vz] + ' value=~'' + conts.ContractNumber + '~'>' + conts.Description + '</option>'. 
-        END.
-        vc-con[vz] = vc-con[vz] + '</select>'. 
-        vc-con[vz] = vc-con[vz] + '<input id=~'cnotes' + string(vz) + '~' class=~'tablefield~' type=~'text~' onChange=~'javascript:SNotes(' + string(vz) + ',this.value)~' value=~'' + lc-connotes[vz] +   '~' >'.
-        vc-con[vz] = vc-con[vz] + ' <input id=~'conactive' + string(vz) + '~' type=~'checkbox~' ' + addBalloon("Active?") + ' onclick=~\~"javascript:SConActive(~'' + string(vz) + '~');~\~"   '.
-        IF ll-conactive[vz] THEN vc-con[vz] = vc-con[vz] + " checked ".
-        vc-con[vz] = vc-con[vz] + ' >'.
-        vc-con[vz] = vc-con[vz] + ' <input id=~'billable' + string(vz) + '~' type=~'checkbox~' ' + addBalloon("Billable?") + ' onclick=~\~"javascript:SBillable(~'' + string(vz) + '~');~\~"   '.
-        IF ll-billable[vz] THEN vc-con[vz] = vc-con[vz] + " checked ".
-        vc-con[vz] = vc-con[vz] + ' >'.
-        vc-con[vz] = vc-con[vz] + ' <img src=~'/images/general/remove01.gif~'' + addBalloon("Click to delete") + ' id=~'RM'  + string(vz) + '~' onclick=~\~"javascript:SRemove(this);~\~">'.
-        vc-con[vz] = vc-con[vz] + '</div></td></tr><tr> '.  
-        vc-con[vz] = vc-con[vz] + '<td></td><td   >'.  
-    END.
-  
-
-
-    /* BLANK CONTRACTS                                                                                                                       */
-    IF vx <= total-contracts THEN
-    DO vz = (vx + 1) TO total-contracts :
-
-        vc-con[vz] = '<!--   BLANKS  --><div id=~'DD' + string(vz) + '~' style=~\~"display:none;~\~"  >'.
-        /*   vc-con[vz] = ' <tr    ><td></td><td   ><div id=~'DD' + string(vz) + '~'    >'.  */
-        vc-con[vz] = vc-con[vz] + '<input  id=~'defcon' + string(vz) + '~' name=~'defcon' + string(vz) + '~'  class=~'inputfield~' type=~'radio~' ' + addBalloon("Default?") + ' onclick=~'javascript:SDefCon(' + string(vz) + ')~' value=~'defcon' + string(vz) + '~''.
-        IF ll-default[vz] = TRUE THEN vc-con[vz] = vc-con[vz] + ' checked '.
-        vc-con[vz] = vc-con[vz] + '><select class=~'inputfield~' id=~'contract' + string(vz) + '~' name=~'contract' + string(vz) + '~' disabled  valign=~'top~' width=~'100px~' >'.
-        vc-con[vz] = vc-con[vz] + '<option '.
-        vc-con[vz] = vc-con[vz] + ' value=~'NONE~'>Add Contract</option>'. 
-        FOR EACH conts NO-LOCK:
-            IF LOOKUP(STRING(conts.ContractNumber),lc-contract-list) > 0 THEN 
-                NEXT.
-            vc-con[vz] = vc-con[vz] + '<option '.
-            vc-con[vz] = vc-con[vz] + ' value=~'' + conts.ContractNumber + '~'>' + conts.Description + '</option>'. 
-        END.
-        vc-con[vz] = vc-con[vz] + ' </select>'.
-        vc-con[vz] = vc-con[vz] + '<input id=~'cnotes' + string(vz) + '~' class=~'tablefield~' type=~'text~' onChange=~'javascript:SNotes(' + string(vz) + ',this.value)~' value=~'' + lc-connotes[vz] +   '~' >'.
-        vc-con[vz] = vc-con[vz] + ' <input id=~'conactive' + string(vz) + '~' type=~'checkbox~' ' + addBalloon("Active?") + ' onclick=~\~"javascript:SConActive(~'' + string(vz) + '~');~\~"   '.
-        IF ll-conactive[vz] THEN vc-con[vz] = vc-con[vz] + " checked ".
-        vc-con[vz] = vc-con[vz] + ' >'.
-        vc-con[vz] = vc-con[vz] + ' <input id=~'billable' + string(vz) + '~' type=~'checkbox~' ' + addBalloon("Billable?") + ' onclick=~\~"javascript:SBillable(~'' + string(vz) + '~');~\~"   '.
-        IF ll-billable[vz] THEN vc-con[vz] = vc-con[vz] + " checked ".
-        vc-con[vz] = vc-con[vz] + ' >'.
-        vc-con[vz] = vc-con[vz] + ' <img src=~'/images/general/remove01.gif~'' + addBalloon("Click to delete") + ' id=~'RM'  + string(vz) + '~' onclick=~\~"javascript:SRemove(this);~\~">'.
-        vc-con[vz] = vc-con[vz] + '</div></td></tr><tr><td></td><td> '.
-    END.
- 
-    /*   vz = vz + 1. */
-  
-    {&out}  htmlib-Hidden ("vx...............", STRING(vx)) skip.
-    {&out}  htmlib-Hidden ("vz...............", STRING(vz)) skip.
-
-    /* NEW CONTRACT                                                                                                                             */
-    IF vx < total-contracts THEN 
-        vc-con[20] = vc-con[20] + '<!--   ADD  --><div id=~'DD' + string(20) + '~' >'.
-    ELSE
-        vc-con[20] = vc-con[20] + '<!--   ADD  --><div id=~'DD' + string(20) + '~' style=~\~"display:none;~\~"  >'.
-
-    vc-con[20] = vc-con[20] + '<input id=~'defcon' + string(20) + '~' name=~'defcon' + string(20) + '~' class=~'inputfield~' type=~'radio~' ' + addBalloon("Default?") + '   value=~'defcon' + string(20) + '~' '.
-    IF vz <= 1 THEN vc-con[20] = vc-con[20] + " checked".
-    vc-con[20] = vc-con[20] + '><select class=~'inputfield~' id=~'contract' + string(20) + '~' name=~'contract' + string(20) + '~' ' + addBalloon("Choose Contract") + ' onChange=~'javascript:SNewContract(' + string(20) + ')~' valign=~'top~' width=~'100px~' >'.
-    vc-con[20] = vc-con[20] + '<option '.
-    vc-con[20] = vc-con[20] + ' value=~'NONE~'>Add Contract</option>'.
-    FOR EACH conts NO-LOCK:
-        IF LOOKUP(STRING(conts.ContractNumber),lc-contract-list) > 0 THEN
-            NEXT.
-        vc-con[20] = vc-con[20] + '<option '.
-        vc-con[20] = vc-con[20] + ' value=~'' + conts.ContractNumber + '~'>' + conts.Description + '</option>'.
-    END.
-    vc-con[20] = vc-con[20] + ' </select>'.
-    vc-con[20] = vc-con[20] + '<input id=~'cnotes' + string(20) + '~' class=~'tablefield~' type=~'text~' value=~'~'  >'.
-    vc-con[20] = vc-con[20] + ' <input id=~'conactive' + string(20) + '~' type=~'checkbox~'' + addBalloon("Active?") + ' checked  >'.
-    vc-con[20] = vc-con[20] + ' <input id=~'billable' + string(20) + '~' type=~'checkbox~'' + addBalloon("Billable?") + ' >'.
-    vc-con[20] = vc-con[20] + ' <img src=~'/images/general/tick.gif~'' + addBalloon("Click to add") + ' onclick=~\~"javascript:SAddContract(~'' + string(20) + '~');~\~"></td></tr> '.
-    vc-con[20] = vc-con[20] + '</div>'.
- 
-
-      
-    vc-con[20] = vc-con[20] + ' </td></tr></table>'.
-    vc-con[20] = vc-con[20] + '<div id=~'balloon~' class=~'infobox~' style=~'top:;right:200px;float:right;width:100px;height:10px;padding:5px;text-align:center;position:absolute;display:none;text-decoration:bold;~'></div> '.
-
-  
-    /* DISPLAY CONTRACTS */
-    {&out} 
-    '<script type="text/javascript">' skip
-  'document.getElementById("contracts").innerHTML = "' v-conn-start .
-
-    IF vz <= 1 THEN  {&out}  vc-con[1] .
-  else
-  do vy = 1 to vz:
-    
-{&out}  vc-con[vy] .
-
-END.
-{&out}  vc-con[20] .
-
-{&out} 
-'";' skip
-  '</script>' skip
-  
-  htmlib-Hidden ("contractnotes", lc-contractnotes) skip
-  htmlib-Hidden ("contractbilling", lc-contractbilling) skip.
-
-END PROCEDURE.
-
-
-&ENDIF
 
 &IF DEFINED(EXCLUDE-ip-MainPage) = 0 &THEN
 
@@ -731,12 +461,68 @@ END.
 {&out} '</TR>' skip.
 
 END.
+IF lc-mode <> "ADD" THEN
+DO:
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            htmlib-SideLabel("Default Issue User")
+        '</TD>'.
+
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    htmlib-Select("iss-loginid",lc-cu-Code,lc-cu-desc,lc-iss-loginid)
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(lc-iss-loginid,'left')
+           skip.
+    {&out} '</TR>' skip.
+
+   {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            htmlib-SideLabel("Bulk Email User")
+        '</TD>'.
+
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    htmlib-Select("bulk-loginid",lc-cu-Code,lc-cu-desc,lc-bulk-loginid)
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(lc-bulk-loginid,'left')
+           skip.
+    {&out} '</TR>' skip.
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            htmlib-SideLabel("Status Change User")
+        '</TD>'.
+
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    htmlib-Select("stat-loginid",lc-cu-Code,lc-cu-desc,lc-stat-loginid)
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(lc-stat-loginid,'left')
+           skip.
+    {&out} '</TR>' skip.
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+            htmlib-SideLabel("Inventory Renewal User")
+        '</TD>'.
+
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+    htmlib-Select("renew-loginid",lc-cu-Code,lc-cu-desc,lc-renew-loginid)
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(lc-renew-loginid,'left')
+           skip.
+    {&out} '</TR>' skip.
+    
+    
+    
+END.
+
 {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
     (IF LOOKUP("st-num",lc-error-field,'|') > 0 
     THEN htmlib-SideLabelError("Support Team")
     ELSE htmlib-SideLabel("Support Team"))
 '</TD>'.
-    
 IF NOT CAN-DO("view,delete",lc-mode) THEN
     {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
 htmlib-Select("st-num",lc-st-Code,lc-st-descr,lc-st-num)
@@ -745,6 +531,18 @@ htmlib-Select("st-num",lc-st-Code,lc-st-descr,lc-st-num)
     {&out} htmlib-TableField(lc-st-num,'left')
            skip.
 {&out} '</TR>' skip.
+
+ IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("allowAllTeams",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Allow Access To All Teams?")
+    ELSE htmlib-SideLabel("Allow Access To All Teams?"))
+'</TD>'
+'<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+htmlib-CheckBox("allowAllTeams", IF lc-allowAllTeams = 'on'
+    THEN TRUE ELSE FALSE) 
+'</TD></TR>' skip.
+
 
 
 
@@ -762,6 +560,8 @@ htmlib-Select("accountmanager",lc-ct-Code,lc-ct-desc,lc-AccountManager)
     {&out} htmlib-TableField(lc-AccountManager,'left')
            skip.
 {&out} '</TR>' skip.
+
+
 
 /***/
 
@@ -832,7 +632,21 @@ IF NOT CAN-DO("view,delete",lc-mode) THEN
 htmlib-CheckBox("isactive", IF lc-isActive = 'on'
     THEN TRUE ELSE FALSE) 
 '</TD></TR>' skip.
-
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("accountref",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Account Reference")
+        ELSE htmlib-SideLabel("Account Reference"))
+    '</TD>'.
+    
+ IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+      htmlib-InputField("accountref",15,lc-accountref) 
+    '</TD>' skip.
+    else 
+ {&out} htmlib-TableField(html-encode(lc-accountref),'left')
+           skip.
+ {&out} '</TR>' skip.
+    
 {&out} htmlib-EndTable() skip.
 
 END PROCEDURE.
@@ -1005,6 +819,8 @@ PROCEDURE ip-Validate :
     DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
+    DEFINE BUFFER b-Customer FOR Customer.
+    
     IF lc-mode = "ADD":U THEN
     DO:
         IF lc-accountnumber = ""
@@ -1029,14 +845,35 @@ PROCEDURE ip-Validate :
     END.
 
     IF lc-name = ""
-        OR lc-name = ?
-        THEN RUN htmlib-AddErrorMessage(
+    OR lc-name = ?
+    THEN RUN htmlib-AddErrorMessage(
             'name', 
             'You must enter the name',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
  
-
+    IF lc-accountref <> "" THEN
+    DO:
+        FIND FIRST b-customer 
+            WHERE b-customer.companyCode = lc-global-company
+              AND b-customer.accountref = lc-accountRef
+              NO-LOCK NO-ERROR. 
+        IF AVAILABLE b-customer THEN
+        DO:
+            IF lc-mode = "ADD"
+            OR b-table.AccountNumber <> b-customer.AccountNumber THEN
+            DO:
+                RUN htmlib-AddErrorMessage(
+                    'accountref', 
+                'This account reference already exists on account ' + b-customer.accountnumber + ' ' + b-customer.name,
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
+                
+            END.
+        END.
+              
+    END.
+    
 END PROCEDURE.
 
 
@@ -1111,18 +948,7 @@ PROCEDURE process-web-request :
 
     {lib/checkloggedin.i} 
   
-    FOR EACH ContractType WHERE ContractType.CompanyCode = lc-global-company
-        NO-LOCK:
-        CREATE conts.
-        BUFFER-COPY ContractType TO conts.
-    END.
-
-    FOR EACH conts:
-        ASSIGN 
-            lc-contractnotes = lc-contractnotes + conts.Notes + "|"
-            lc-contractbilling = lc-contractbilling + IF conts.Billable THEN "yes|" ELSE  "|".
-
-    END.
+ 
 
     RUN com-GetTeams ( lc-global-company, OUTPUT lc-st-code, OUTPUT lc-st-descr ).
     RUN com-GetUserListByClass ( lc-global-company, "INTERNAL",OUTPUT lc-ct-code, OUTPUT lc-ct-desc).
@@ -1206,37 +1032,7 @@ PROCEDURE process-web-request :
             RUN run-web-object IN web-utilities-hdl ("mn/deleted.p").
             RETURN.
         END.
-        vx = 0.
-        FOR EACH WebissCont WHERE WebissCont.CompanyCode = b-table.CompanyCode
-            AND   WebissCont.Customer    = b-table.AccountNumber
-            NO-LOCK
-            BY    WebIssCont.ConID  :
-            CREATE b-webcont.
-            BUFFER-COPY WebissCont TO b-webcont.
-            ASSIGN  
-                vx = vx + 1
-                lc-contract[vx]    = STRING(WebissCont.ContractCode)
-                ll-billable[vx]    = WebissCont.Billable
-                lc-connotes[vx]    = STRING(WebissCont.Notes)
-                ll-default[vx]     = WebissCont.DefCon
-                ll-conactive[vx]   = WebissCont.ConActive
-                lc-contract-list   = lc-contract-list + string(WebissCont.ContractCode) + "|"
-                lc-billable-list   = lc-billable-list + string(WebissCont.Billable) + "|"
-                lc-connotes-list   = lc-connotes-list + string(WebissCont.Notes) + "|"
-                lc-defcons-list    = lc-defcons-list  + string(WebissCont.DefCon) + "|"
-                lc-conactive-list  = lc-conactive-list  + string(WebissCont.ConActive) + "|"
-                lc-connums-list    = lc-connums-list  + string(WebissCont.ConID) + "|"
-                lc-saved-recids    = lc-saved-recids + string(ROWID(WebIssCont)) + "|".
-        END.
-        ASSIGN  
-            lc-saved-contracts  =  TRIM(lc-contract-list,"|")
-            lc-saved-billables  =  TRIM(lc-billable-list,"|")
-            lc-saved-connotes   =  TRIM(lc-connotes-list,"|")
-            lc-saved-defcons    =  TRIM(lc-defcons-list,"|")
-            lc-saved-conactives =  TRIM(lc-conactive-list,"|")
-            lc-saved-connums    =  TRIM(lc-connums-list,"|")
-            .                                             
-
+   
     END.
     
     IF request_method = "POST" THEN
@@ -1244,6 +1040,12 @@ PROCEDURE process-web-request :
 
         IF lc-mode <> "delete" THEN
         DO:
+            IF lc-mode = 'update' THEN
+            DO:
+                FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
+                        NO-LOCK NO-ERROR.
+            END.
+                        
             ASSIGN 
                 lc-accountnumber     = get-value("accountnumber")
                 lc-name              = get-value("name")
@@ -1264,12 +1066,13 @@ PROCEDURE process-web-request :
                 lc-viewAction        = get-value("viewaction")
                 lc-AccountManager    = get-value("accountmanager")
                 lc-viewActivity      = get-value("viewactivity")
-                lc-saved-contracts   = get-value("savedcontracts")
-                lc-saved-billables   = get-value("savedbillables")
-                lc-saved-connotes    = get-value("savedconnotes")
-                lc-saved-defcons     = get-value("saveddefcons")
-                lc-saved-conactives  = get-value("savedconactives")
-                lc-saved-recids      = get-value("savedrecids")
+                lc-iss-loginid       = get-value("iss-loginid")
+                lc-bulk-loginid      = get-value("bulk-loginid")
+                lc-stat-loginid      = get-value("stat-loginid")
+                lc-renew-loginid     = get-value("renew-loginid")
+                lc-allowAllTeams     = get-value("allowallteams")
+                lc-accountref        = get-value("accountref")
+             
                 .
 
             
@@ -1317,11 +1120,18 @@ PROCEDURE process-web-request :
                         b-table.isActive       = lc-isActive = "on"
                         b-table.ViewAction     = lc-viewAction = "on"
                         b-table.ViewActivity   = lc-viewActivity = "on"
+                        b-table.allowAllTeams  = lc-allowAllTeams = "on"
                         b-table.AccountManager = lc-AccountManager
                         b-table.st-num         = INT(lc-st-num)
-                        vz = 0.
+                        b-table.def-iss-loginid = lc-iss-loginid
+                        b-table.def-bulk-loginid = lc-bulk-loginid
+                        b-table.def-stat-loginid = lc-stat-loginid
+                        b-table.def-renew-loginid = lc-renew-loginid
+                        b-table.accountref       = lc-accountref
+                        
+                       .
                      
-                    RUN ip-AddContracts.
+                    
 
                     ASSIGN
                         lc-sla-rows = com-CustomerAvailableSLA(lc-global-company,b-table.AccountNumber).
@@ -1379,6 +1189,10 @@ PROCEDURE process-web-request :
         FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
         ASSIGN 
             lc-accountnumber = b-table.accountnumber.
+        RUN com-GetUserListForAccount (lc-global-company,lc-AccountNumber,OUTPUT lc-cu-code, OUTPUT lc-cu-desc).
+        ASSIGN
+            lc-cu-code = "|" + lc-cu-code
+            lc-cu-desc = "None|" + lc-cu-desc.
 
         IF CAN-DO("view,delete",lc-mode)
             OR request_method <> "post" THEN 
@@ -1399,8 +1213,15 @@ PROCEDURE process-web-request :
                 lc-isactive = IF b-table.isActive THEN "on" ELSE ""
                 lc-viewAction = IF b-table.viewAction THEN "on" ELSE ""
                 lc-viewActivity = IF b-table.viewActivity THEN "on" ELSE ""
+                lc-allowAllTeams = IF b-table.allowAllTeams THEN "on" ELSE ""
                 lc-st-num = STRING(b-table.st-num)
                 lc-AccountManager   = b-table.AccountManager
+                lc-iss-loginid  = b-table.def-iss-loginid
+                lc-bulk-loginid  = b-table.def-bulk-loginid
+                lc-stat-loginid  = b-table.def-stat-loginid
+                lc-renew-loginid  = b-table.def-renew-loginid
+                lc-accountref     = b-table.accountRef
+                
                 .
 
             IF b-table.DefaultSLAID = 0
@@ -1440,7 +1261,7 @@ PROCEDURE process-web-request :
 
     RUN ip-MainPage.
 
-    RUN ip-Contracts.
+    
 
     IF lc-mode = "view" THEN
     DO:
@@ -1461,13 +1282,6 @@ PROCEDURE process-web-request :
         '</center>' skip.
     END.
 
-    {&out} htmlib-Hidden ("savedcontracts", lc-saved-contracts) skip
-           htmlib-Hidden ("savedbillables", lc-saved-billables) skip
-           htmlib-Hidden ("savedconnotes", lc-saved-connotes) skip
-           htmlib-Hidden ("saveddefcons", lc-saved-defcons) skip
-           htmlib-Hidden ("savedconactives", lc-saved-conactives) skip
-           htmlib-Hidden ("savedrecids", lc-saved-recids) skip
-           htmlib-Hidden ("totalcontracts", string(vx)) skip.
 
     {&out} htmlib-EndForm() skip
            htmlib-Footer() skip.
@@ -1480,29 +1294,4 @@ END PROCEDURE.
 
 /* ************************  Function Implementations ***************** */
 
-&IF DEFINED(EXCLUDE-addBalloon) = 0 &THEN
-
-FUNCTION addBalloon RETURNS CHARACTER
-    ( f-text AS CHARACTER ) :
-    /*------------------------------------------------------------------------------
-      Purpose:  
-        Notes:  
-    ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE newText AS CHARACTER NO-UNDO.
-
-    newText = "onMouseOver=~\~"javascript:displayBalloon(~'balloon~',~'on~',~' ".
-    newText = newText +  f-text.
-    newText = newText + "~');~\~"".
-    newText = newText +  " onMouseOut=~\~"javascript:displayBalloon(~'balloon~',~'off~',~' ".
-    newText = newText +  f-text.
-    newText = newText +  "~');~\~"" .
- 
-
-
-    RETURN newText.
-
-END FUNCTION.
-
-
-&ENDIF
 

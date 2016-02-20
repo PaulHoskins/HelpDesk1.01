@@ -736,11 +736,13 @@ function ChangeReportType (objVar)
 	if ( objVar == "eng" )
 	{
 		document.getElementById("customerdiv").style.display = 'none';
+    //document.getElementById("sortbox").style.display = 'none';
 		document.getElementById("engineerdiv").style.display = 'block';
 	}
 	else
 	{
 		document.getElementById("engineerdiv").style.display = 'none';
+   //document.getElementById("sortbox").style.display = 'block';
 		document.getElementById("customerdiv").style.display = 'block';
 	}
 }

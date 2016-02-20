@@ -33,17 +33,17 @@ ADD SEQUENCE "ReportNumber"
   MIN-VAL 1
   MAX-VAL 999999
 
-ADD SEQUENCE "ProjPhase"
-  INITIAL 1
-  INCREMENT 1
-  CYCLE-ON-LIMIT no
-  MAX-VAL 99999999999
-
 ADD SEQUENCE "eSched"
   INITIAL 1
   INCREMENT 1
   CYCLE-ON-LIMIT yes
   MAX-VAL 99999999
+
+ADD SEQUENCE "ProjPhase"
+  INITIAL 1
+  INCREMENT 1
+  CYCLE-ON-LIMIT no
+  MAX-VAL 99999999999
 
 ADD TABLE "AdHocWork"
   AREA "Schema Area"
@@ -405,6 +405,29 @@ ADD FIELD "renewal-Login" OF "Company" AS character
   MAX-WIDTH 30
   ORDER 270
 
+ADD FIELD "EngCost" OF "Company" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  LABEL "Engineer Cost"
+  POSITION 29
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 280
+
+ADD FIELD "bulkemail" OF "Company" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 30
+  MAX-WIDTH 16
+  ORDER 290
+
+ADD FIELD "custaddissue" OF "Company" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 31
+  MAX-WIDTH 16
+  ORDER 300
+
 ADD INDEX "CompanyCode" ON "Company" 
   AREA "Schema Area"
   UNIQUE
@@ -438,6 +461,63 @@ ADD INDEX "LoginID" ON "ContAccess"
   PRIMARY
   INDEX-FIELD "LoginID" ASCENDING 
   INDEX-FIELD "AccountNumber" ASCENDING 
+
+ADD TABLE "ContractRate"
+  AREA "Schema Area"
+  DUMP-NAME "contractrate"
+
+ADD FIELD "CompanyCode" OF "ContractRate" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Co"
+  ORDER 10
+
+ADD FIELD "Customer" OF "ContractRate" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Customer"
+  POSITION 3
+  MAX-WIDTH 16
+  COLUMN-LABEL "Cust"
+  ORDER 20
+
+ADD FIELD "ContractCode" OF "ContractRate" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Code"
+  POSITION 4
+  MAX-WIDTH 16
+  COLUMN-LABEL "Code"
+  ORDER 180
+
+ADD FIELD "cBegin" OF "ContractRate" AS date 
+  FORMAT "99/99/9999"
+  INITIAL ?
+  LABEL "Contract Begin"
+  POSITION 5
+  MAX-WIDTH 4
+  ORDER 190
+
+ADD FIELD "cValue" OF "ContractRate" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  LABEL "Contract Value"
+  POSITION 6
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 200
+
+ADD INDEX "PrimKey" ON "ContractRate" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "Customer" ASCENDING 
+  INDEX-FIELD "ContractCode" ASCENDING 
+  INDEX-FIELD "cBegin" ASCENDING 
 
 ADD TABLE "ContractType"
   AREA "Schema Area"
@@ -481,16 +561,6 @@ ADD FIELD "Billable" OF "ContractType" AS logical
   COLUMN-LABEL "Bill"
   ORDER 40
 
-ADD FIELD "ContractRate" OF "ContractType" AS decimal 
-  FORMAT ">>,>>9.99"
-  INITIAL "0"
-  LABEL "CRate"
-  POSITION 6
-  MAX-WIDTH 17
-  COLUMN-LABEL "CRate"
-  DECIMALS 2
-  ORDER 50
-
 ADD FIELD "Description" OF "ContractType" AS character 
   FORMAT "X(20)"
   INITIAL ""
@@ -517,6 +587,22 @@ ADD FIELD "Notes" OF "ContractType" AS character
   MAX-WIDTH 40
   COLUMN-LABEL "Notes"
   ORDER 80
+
+ADD FIELD "GrossProfit" OF "ContractType" AS decimal 
+  FORMAT "->>,>>9.99"
+  INITIAL "0"
+  LABEL "Gross Profit %"
+  POSITION 10
+  MAX-WIDTH 17
+  DECIMALS 2
+  ORDER 90
+
+ADD INDEX "Prim" ON "ContractType" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ContractNumber" ASCENDING 
 
 ADD TABLE "CustAst"
   AREA "Schema Area"
@@ -725,6 +811,40 @@ ADD FIELD "Ref" OF "CustIv" AS character
   MAX-WIDTH 16
   ORDER 50
 
+ADD FIELD "crt-by" OF "CustIv" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Created By"
+  POSITION 7
+  MAX-WIDTH 16
+  ORDER 60
+
+ADD FIELD "crt-datetime" OF "CustIv" AS datetime 
+  FORMAT "99/99/9999 HH:MM:SS.SSS"
+  INITIAL ?
+  LABEL "Created Date"
+  POSITION 8
+  MAX-WIDTH 8
+  ORDER 70
+
+ADD FIELD "upd-by" OF "CustIv" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Updated By"
+  POSITION 9
+  MAX-WIDTH 180
+  EXTENT 10
+  ORDER 80
+
+ADD FIELD "upd-datetime" OF "CustIv" AS datetime 
+  FORMAT "99/99/9999 HH:MM:SS.SSS"
+  INITIAL ?
+  LABEL "Updated Time"
+  POSITION 10
+  MAX-WIDTH 100
+  EXTENT 10
+  ORDER 90
+
 ADD INDEX "Customer" ON "CustIv" 
   AREA "Schema Area"
   UNIQUE
@@ -909,13 +1029,21 @@ ADD FIELD "st-num" OF "Customer" AS integer
   MAX-WIDTH 4
   ORDER 200
 
-ADD FIELD "old-AccountNumber" OF "Customer" AS character 
+ADD FIELD "old-accountNumber" OF "Customer" AS character 
   FORMAT "X(20)"
   INITIAL ""
   LABEL "Old Account"
   POSITION 22
   MAX-WIDTH 40
   ORDER 210
+
+ADD FIELD "def-iss-loginid" OF "Customer" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Default Issue User"
+  POSITION 24
+  MAX-WIDTH 16
+  ORDER 230
 
 ADD FIELD "AccountManager" OF "Customer" AS character 
   FORMAT "x(15)"
@@ -924,6 +1052,46 @@ ADD FIELD "AccountManager" OF "Customer" AS character
   POSITION 25
   MAX-WIDTH 30
   ORDER 220
+
+ADD FIELD "def-stat-loginid" OF "Customer" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Default Issue Status User"
+  POSITION 26
+  MAX-WIDTH 16
+  ORDER 250
+
+ADD FIELD "def-bulk-loginid" OF "Customer" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Default Bulk Email User"
+  POSITION 27
+  MAX-WIDTH 16
+  ORDER 240
+
+ADD FIELD "def-renew-loginid" OF "Customer" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Inventory Renewal User"
+  POSITION 28
+  MAX-WIDTH 16
+  ORDER 260
+
+ADD FIELD "allowAllTeams" OF "Customer" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Allow All Support Teams To View"
+  POSITION 29
+  MAX-WIDTH 1
+  ORDER 270
+
+ADD FIELD "AccountRef" OF "Customer" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Accounts Ref"
+  POSITION 30
+  MAX-WIDTH 16
+  ORDER 280
 
 ADD INDEX "AccountNumber" ON "Customer" 
   AREA "Schema Area"
@@ -937,6 +1105,11 @@ ADD INDEX "AccountManager" ON "Customer"
   INDEX-FIELD "CompanyCode" ASCENDING 
   INDEX-FIELD "AccountManager" ASCENDING 
   INDEX-FIELD "AccountNumber" ASCENDING 
+
+ADD INDEX "AccountRef" ON "Customer" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "AccountRef" ASCENDING 
 
 ADD INDEX "CustomerWordKey" ON "Customer" 
   AREA "Schema Area"
@@ -2771,6 +2944,16 @@ ADD FIELD "prj-Start" OF "Issue" AS date
   MAX-WIDTH 4
   ORDER 450
 
+ADD FIELD "Old_ContractType" OF "Issue" AS character 
+  DESCRIPTION "Used when moving adhoc to default contract"
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Contract Type"
+  POSITION 47
+  MAX-WIDTH 16
+  COLUMN-LABEL "CType"
+  ORDER 460
+
 ADD INDEX "IssueNumber" ON "Issue" 
   AREA "Schema Area"
   UNIQUE
@@ -2806,6 +2989,12 @@ ADD INDEX "ClassIndex" ON "Issue"
   INDEX-FIELD "CompanyCode" ASCENDING 
   INDEX-FIELD "iClass" ASCENDING 
   INDEX-FIELD "IssueNumber" ASCENDING 
+
+ADD INDEX "ContractCustomer" ON "Issue" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ContractType" ASCENDING 
+  INDEX-FIELD "AccountNumber" ASCENDING 
 
 ADD INDEX "LastActiviy" ON "Issue" 
   AREA "Schema Area"
@@ -3809,6 +3998,14 @@ ADD FIELD "descr" OF "steam" AS character
   MAX-WIDTH 80
   ORDER 30
 
+ADD FIELD "SupportEmail" OF "steam" AS character 
+  FORMAT "x(30)"
+  INITIAL ""
+  LABEL "Email Address"
+  POSITION 5
+  MAX-WIDTH 60
+  ORDER 40
+
 ADD INDEX "st-num" ON "steam" 
   AREA "Schema Area"
   UNIQUE
@@ -4363,15 +4560,6 @@ ADD FIELD "Customer" OF "WebissCont" AS character
   COLUMN-LABEL "Cust"
   ORDER 20
 
-ADD FIELD "Description" OF "WebissCont" AS character 
-  FORMAT "X(20)"
-  INITIAL ""
-  LABEL "Desc"
-  POSITION 4
-  MAX-WIDTH 40
-  COLUMN-LABEL "Desc"
-  ORDER 110
-
 ADD FIELD "Billable" OF "WebissCont" AS logical 
   FORMAT "yes/no"
   INITIAL "no"
@@ -4425,6 +4613,21 @@ ADD FIELD "ConID" OF "WebissCont" AS integer
   MAX-WIDTH 4
   COLUMN-LABEL "ID"
   ORDER 190
+
+ADD FIELD "Contract_no" OF "WebissCont" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Contract Number"
+  POSITION 11
+  MAX-WIDTH 16
+  ORDER 200
+
+ADD INDEX "PrimKey" ON "WebissCont" 
+  AREA "Schema Area"
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "Customer" ASCENDING 
+  INDEX-FIELD "ContractCode" ASCENDING 
 
 ADD TABLE "WebMHead"
   AREA "Schema Area"
@@ -4622,11 +4825,11 @@ ADD INDEX "objURL" ON "WebObject"
   AREA "Schema Area"
   INDEX-FIELD "ObjURL" ASCENDING 
 
-ADD TABLE "webSalt"
+ADD TABLE "websalt"
   AREA "Schema Area"
   DUMP-NAME "websalt"
 
-ADD FIELD "LoginID" OF "webSalt" AS character 
+ADD FIELD "LoginID" OF "websalt" AS character 
   FORMAT "x(15)"
   INITIAL ""
   LABEL "User ID"
@@ -4634,28 +4837,28 @@ ADD FIELD "LoginID" OF "webSalt" AS character
   MAX-WIDTH 30
   ORDER 20
 
-ADD FIELD "sdate" OF "webSalt" AS date 
+ADD FIELD "sdate" OF "websalt" AS date 
   FORMAT "99/99/9999"
   INITIAL ?
   POSITION 3
   MAX-WIDTH 4
   ORDER 30
 
-ADD FIELD "sother" OF "webSalt" AS character 
+ADD FIELD "sother" OF "websalt" AS character 
   FORMAT "x(8)"
   INITIAL ""
   POSITION 4
   MAX-WIDTH 16
   ORDER 40
 
-ADD FIELD "sval" OF "webSalt" AS character 
+ADD FIELD "sval" OF "websalt" AS character 
   FORMAT "x(8)"
   INITIAL ""
   POSITION 5
   MAX-WIDTH 16
   ORDER 50
 
-ADD INDEX "prim-key" ON "webSalt" 
+ADD INDEX "prim-key" ON "websalt" 
   AREA "Schema Area"
   UNIQUE
   PRIMARY
@@ -5288,4 +5491,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000104695
+0000108989

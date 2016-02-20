@@ -10,16 +10,19 @@
     When        Who         What
     21/11/2014  phoski      Initial
     18/03/2015  phoski      index on tt-isstime
+    10/06/2015  phoski      Sort options on customer report
 ***********************************************************************/
 
 DEFINE TEMP-TABLE tt-IssRep NO-UNDO LIKE issActivity
+    FIELD SortField     AS CHARACTER 
     FIELD AccountNumber LIKE issue.AccountNumber
     FIELD ActionDesc    LIKE issAction.Notes
     FIELD ActivityType  LIKE issActivity.ContractType
     FIELD IssueDate     LIKE Issue.IssueDate
     FIELD period-of     AS INTEGER
     INDEX i-cust AccountNumber period-of
-    INDEX i-user ActivityBy    period-of.
+    INDEX i-user ActivityBy    period-of
+    INDEX i-sort SortField AccountNumber period-of.
  
 DEFINE TEMP-TABLE tt-IssTime NO-UNDO
     FIELD IssueNumber   LIKE issActivity.IssueNumber

@@ -162,6 +162,11 @@ FOR EACH customer NO-LOCK
     /* AND Customer.AccountNumber BEGINS "1" */     
     WITH FRAME f-report DOWN WIDTH 255 STREAM-IO TRANSACTION:
 
+    ASSIGN
+        lc-raisedlogin = Customer.def-renew-loginid.
+    IF lc-raisedlogin = ""
+    THEN lc-raisedlogin = "BATCH".
+    
     FOR EACH CustIv   NO-LOCK OF customer,
         FIRST ivSub   NO-LOCK OF CustIv,
         FIRST ivClass NO-LOCK OF ivSub
@@ -536,7 +541,6 @@ PROCEDURE ip-GenerateIssue :
         lc-accountnumber    = pc-accountnumber
         lc-briefdescription = pc-briefdescription
         lc-longdescription  = pc-longdescription
-        lc-raisedlogin      = "BATCH"
         lc-date             = STRING(TODAY)
         lc-AreaCode         = pc-AreaCode 
         lc-gotomaint        = "true"

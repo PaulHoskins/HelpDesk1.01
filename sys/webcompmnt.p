@@ -17,7 +17,9 @@
     07/09/2010  DJS         3704  Removed streetmap button.
     30/04/2014  phoski      Marketing Banner
     09/11/2014  phoski      Email Stuff
-    11/12/20124 phoski      Renewal user
+    11/12/2014  phoski      Renewal user
+    05/06/2015  phoski      Engineer Cost
+    19/08/2015  phoski      Email bulkemail custaddissue
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -83,6 +85,10 @@ DEFINE VARIABLE lc-emuser         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-empass         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-emssl          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-renew          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-engCost        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-bulkemail      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-custaddissue   AS CHARACTER NO-UNDO.
+
 
 
 
@@ -364,6 +370,35 @@ htmlib-InputField("helpdeskemail",40,lc-helpdeskemail)
     {&out} htmlib-TableField(html-encode(lc-helpdeskemail),'left')
            skip.
 {&out} '</TR>' skip.
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("bulkemail",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Bulk Email Address")
+    ELSE htmlib-SideLabel("Bulk Email Address"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("bulkemail",40,lc-bulkemail) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-bulkemail),'left')
+           skip.
+{&out} '</TR>' skip.
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("custaddissue",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Unassigned Issue Alert Email Address")
+    ELSE htmlib-SideLabel("Unassigned Issue Alert Email Address"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("custaddissue",40,lc-custaddissue) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-custaddissue),'left')
+           skip.
+{&out} '</TR>' skip.
+
 
 {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
     (IF LOOKUP("email2db",lc-error-field,'|') > 0 
@@ -531,9 +566,24 @@ IF lc-mbanner <> "" THEN
 END.
 {&out} '</TR>' skip.
 
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("engcost",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Engineer Cost")
+    ELSE htmlib-SideLabel("Engineer Cost"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("engcost",10,lc-engcost) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-engcost),'left')
+           skip.
+{&out} '</TR>' skip.
 
 
-{&out} htmlib-EndTable() skip.
+
+{&out} htmlib-EndTable() '<br /> 'skip.
 END PROCEDURE.
 
 
@@ -551,9 +601,10 @@ PROCEDURE ip-Validate :
     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
 
 
-    DEFINE VARIABLE lc-code         AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE li-int          AS INTEGER  NO-UNDO.
-
+    DEFINE VARIABLE lc-code         AS CHARACTER    NO-UNDO.
+    DEFINE VARIABLE li-int          AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lf-dec          AS DECIMAL      NO-UNDO.
+    
     IF lc-mode = "ADD":U THEN
     DO:
         IF lc-companycode = ""
@@ -624,7 +675,17 @@ PROCEDURE ip-Validate :
                 
  
     END.          
-
+    ASSIGN 
+        lf-dec = dec(lc-engcost) no-error.
+    IF ERROR-STATUS:ERROR
+    OR lf-dec <= 0 
+        THEN RUN htmlib-AddErrorMessage(
+            'engcost', 
+            'The engineer cost must be over zero',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+            
+            
 
 END PROCEDURE.
 
@@ -811,6 +872,10 @@ PROCEDURE process-web-request :
                 lc-empass         = get-value("empass")
                 lc-emssl          = get-value("emssl")
                 lc-renew          = get-value("renew")
+                lc-engcost        = get-value("engcost")
+                lc-bulkemail      = get-value("bulkemail")
+                lc-custaddissue   = get-value("custaddissue")
+                  
 
                 .
             IF lc-mode = 'update' THEN
@@ -875,6 +940,9 @@ PROCEDURE process-web-request :
                         b-table.em_pass        = lc-empass
                         b-table.em_ssl         = lc-emssl = "on"
                         b-table.renewal-login  = lc-renew
+                        b-table.engcost        = dec(lc-engcost)
+                        b-table.custaddissue   = lc-custaddissue
+                        b-table.bulkemail      = lc-bulkemail
                         .
                    
                     
@@ -941,6 +1009,9 @@ PROCEDURE process-web-request :
                 lc-empass         = b-table.em_pass
                 lc-emssl          = IF b-table.em_ssl THEN "on" ELSE ""
                 lc-renew          = b-table.renewal-login
+                lc-engcost        = STRING(b-table.engcost)
+                lc-bulkemail      = b-table.bulkemail
+                lc-custaddissue   = b-table.custaddissue
                 .
        
     END.

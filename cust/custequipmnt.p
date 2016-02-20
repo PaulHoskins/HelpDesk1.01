@@ -9,6 +9,7 @@
     
     When        Who         What
     30/07/2006  phoski      Initial
+    23/10/2015  phoski      create and update audits
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -53,7 +54,13 @@ DEFINE VARIABLE lc-list-Name    AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-ref          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-ivClass      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE li-loop         AS INTEGER   NO-UNDO.
 
+DEFINE TEMP-TABLE tu NO-UNDO
+    FIELD upd-by AS CHARACTER
+    FIELD upd-datetime AS DATETIME
+    INDEX prim upd-datetime.
+    
 DEFINE TEMP-TABLE tt NO-UNDO
     FIELD ivFieldID LIKE ivField.ivFieldID
     FIELD FieldData LIKE custField.FieldData
@@ -668,6 +675,8 @@ PROCEDURE process-web-request :
                             b-table.CompanyCode   = customer.CompanyCode
                             b-table.CustIvID      = ?
                             b-table.ivSubID       = dec(substr(lc-ivclass,2))
+                            b-table.crt-by        = lc-global-user
+                            b-table.crt-datetime  = NOW
                             lc-firstrow           = STRING(ROWID(b-table)).
                         DO WHILE TRUE:
                             RUN lib/makeaudit.p (
@@ -687,7 +696,39 @@ PROCEDURE process-web-request :
                     ASSIGN 
                         b-table.ref = lc-ref
                         .
-
+                    /* 
+                    ***
+                    *** Last 10 inventory updates
+                    ***
+                    */
+                    IF lc-mode = "update" THEN
+                    DO:
+                        EMPTY TEMP-TABLE tu.
+                        DO li-loop = 1 TO EXTENT(b-table.upd-by):
+                            IF b-table.upd-by[li-loop] = "" THEN NEXT.
+                            CREATE tu.
+                            ASSIGN 
+                                tu.upd-by = b-table.upd-by[li-loop]
+                                tu.upd-datetime = b-table.upd-datetime[li-loop].
+                                
+                        END. 
+                        CREATE tu.
+                        ASSIGN 
+                            tu.upd-by = lc-global-user
+                            tu.upd-datetime = NOW.
+                        ASSIGN li-loop = 0.
+                        FOR EACH tu BY tu.upd-datetime DESCENDING:
+                            ASSIGN li-loop = li-loop + 1.
+                            IF li-loop > EXTENT(b-table.upd-by) THEN LEAVE.
+                            ASSIGN 
+                                b-table.upd-by[li-loop] = tu.upd-by 
+                                b-table.upd-datetime[li-loop] = tu.upd-datetime.
+                                
+                        END.
+                                     
+                            
+                    END.
+                    
                     FOR EACH CustField OF b-table EXCLUSIVE-LOCK:
                         DELETE CustField.
                     END.

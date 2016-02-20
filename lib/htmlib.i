@@ -609,6 +609,10 @@ FUNCTION htmlib-BlankTableLines RETURNS CHARACTER
 
     ASSIGN 
         lc-char = '<tr>' + htmlib-TableField("&nbsp;",'left') + '</tr>'.
+        
+    IF pi-lines > 100 
+    THEN pi-lines = 0.
+    
 
     IF pi-lines > 0 THEN
         RETURN FILL(lc-char,pi-lines).   /* Function return value. */

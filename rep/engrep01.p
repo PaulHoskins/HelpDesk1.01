@@ -11,6 +11,9 @@
     10/11/2010  DJS         Initial
     21/11/2014  phoski      Fix it
     18/03/2015  phoski      debug info
+    10/06/2015  phoski      Customer Report - Sort options
+    23/10/2015  phoski      Replace week/year DJS drivel with a 
+                            date range
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -29,13 +32,9 @@ DEFINE VARIABLE lc-title                   AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-reptypeA                AS CHARACTER NO-UNDO.   
 DEFINE VARIABLE lc-reptypeE                AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-reptypeC                AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-reptype-checked         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-selectengineer          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-selectcustomer          AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectmonth             AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectweek              AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-selectyear              AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-date                    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-days                    AS CHARACTER NO-UNDO.
@@ -45,13 +44,14 @@ DEFINE VARIABLE lc-setrun                  AS LOG       NO-UNDO.
 DEFINE VARIABLE li-run                     AS INTEGER   NO-UNDO.
 DEFINE VARIABLE TYPEOF                     AS CHARACTER INITIAL "Detail,Summary Detail,Summary" NO-UNDO.
 DEFINE VARIABLE ISSUE                      AS CHARACTER INITIAL "Customer,Engineer,Issues" NO-UNDO.
-DEFINE VARIABLE CAL                        AS CHARACTER INITIAL "Week,Month" NO-UNDO.
+
 DEFINE VARIABLE typedesc                   AS CHARACTER INITIAL "Detail,SumDet,Summary" NO-UNDO.
 DEFINE VARIABLE engcust                    AS CHARACTER INITIAL "Cust,Eng,Iss" NO-UNDO.
-DEFINE VARIABLE weekly                     AS CHARACTER INITIAL "Week,Month" NO-UNDO.
-DEFINE VARIABLE period                     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-csort-cde               AS CHARACTER INITIAL 'Account|Customer Name|Total' NO-UNDO.
+DEFINE VARIABLE lc-custSort                AS CHARACTER NO-UNDO.
+
 DEFINE VARIABLE reportdesc                 AS CHARACTER NO-UNDO.
-DEFINE VARIABLE periodDesc                 AS CHARACTER NO-UNDO.
+
 DEFINE VARIABLE lc-style                   AS CHARACTER NO-UNDO.
 
 
@@ -61,6 +61,9 @@ DEFINE VARIABLE li-tot-productivity        AS DECIMAL   NO-UNDO.
 DEFINE VARIABLE li-tot-period-billable     AS INTEGER   NO-UNDO.
 DEFINE VARIABLE li-tot-period-nonbillable  AS INTEGER   NO-UNDO.
 DEFINE VARIABLE li-tot-period-productivity AS DECIMAL   NO-UNDO.
+
+DEFINE VARIABLE lc-lodate                  AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
+DEFINE VARIABLE lc-hidate                  AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
 
 {rep/engrep01-build.i}
 
@@ -116,7 +119,7 @@ FUNCTION Format-Submit-Button RETURNS CHARACTER
 
 
 FUNCTION lcom-ts RETURNS CHARACTER 
-	(pi-time AS INTEGER) FORWARD.
+    (pi-time AS INTEGER) FORWARD.
 
 FUNCTION percentage-calc RETURNS DECIMAL 
     (p-one AS DECIMAL,
@@ -186,17 +189,50 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-engcust-table) = 0 &THEN
 
 PROCEDURE ip-CustomerReport:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
-DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
     
     DEFINE VARIABLE pc-local-period AS CHARACTER NO-UNDO. 
     DEFINE VARIABLE std-hours       AS CHARACTER NO-UNDO.
     DEFINE VARIABLE i-Fuck          AS INT       EXTENT 3 NO-UNDO.
+    DEFINE VARIABLE lc-Key          AS CHARACTER NO-UNDO.
     
-     
+    /*
+    ***
+    *** Can sort by Account,Customer Name or total 
+    *** Put account at end of string to ensure field is unique
+    ***
+    */
+    FOR EACH tt-issRep EXCLUSIVE-LOCK:
+        
+        ASSIGN
+            tt-issRep.SortField = tt-issRep.AccountNumber.
+        CASE lc-custsort:
+            WHEN "Total" THEN
+                DO:
+                    FIND  FIRST tt-issCust 
+                        WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber 
+                        AND tt-issCust.period-of  = tt-IssRep.period-of NO-LOCK NO-ERROR.
+                    FIND FIRST tt-IssTotal WHERE tt-IssTotal.AccountNumber = tt-IssRep.AccountNumber  NO-LOCK NO-ERROR.
+                  
+                    ASSIGN
+                        tt-issRep.SortField = STRING(tt-IssTotal.billable + tt-IssTotal.nonbillable,"9999999999.99-") + "," + tt-issrep.AccountNumber.         
+                END.
+            WHEN "Customer Name" THEN
+                DO:
+                    FIND  Customer WHERE Customer.CompanyCode  = lc-global-company
+                        AND  Customer.AccountNumber = tt-IssRep.AccountNumber NO-LOCK NO-ERROR.
+                    IF AVAILABLE Customer
+                        THEN ASSIGN
+                            tt-issRep.SortField = Customer.Name + "," + tt-issrep.AccountNumber.        
+                END.
+            
+        END CASE. 
+        
+    END.   
     
     
     {&out} '<table width=100% class="rptable">' SKIP.
@@ -219,17 +255,17 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
     END CASE.
     
     FOR EACH tt-IssRep NO-LOCK 
-        BREAK BY tt-IssRep.AccountNumber
+        BREAK BY tt-IssRep.SortField
         BY tt-IssRep.period-of 
         BY tt-IssRep.IssueNumber:
             
             
         FIND  Customer WHERE Customer.CompanyCode  = lc-global-company
-                         AND  Customer.AccountNumber = tt-IssRep.AccountNumber NO-LOCK NO-ERROR.
+            AND  Customer.AccountNumber = tt-IssRep.AccountNumber NO-LOCK NO-ERROR.
         
-        FIND tt-IssTotal WHERE tt-IssTotal.AccountNumber = tt-IssRep.AccountNumber  NO-LOCK NO-ERROR.
+        FIND FIRST tt-IssTotal WHERE tt-IssTotal.AccountNumber = tt-IssRep.AccountNumber  NO-LOCK NO-ERROR.
            
-        IF FIRST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 1 THEN
+        IF FIRST-OF(tt-IssRep.SortField) AND pc-rep-type = 1 THEN
         DO:
             FIND  tt-issCust 
                 WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber 
@@ -252,7 +288,8 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
         END.
         IF FIRST-OF(tt-IssRep.period-of) AND pc-rep-type = 2 THEN
         DO:
-            ASSIGN i-fuck = 0.
+            ASSIGN 
+                i-fuck = 0.
             
             FIND tt-issCust 
                 WHERE tt-issCust.AccountNumber = tt-IssRep.AccountNumber
@@ -264,11 +301,11 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
             
             ASSIGN
                 lc-style = 'font-weight:bold;'.
-            IF FIRST-OF(tt-IssRep.AccountNumber)
+            IF FIRST-OF(tt-IssRep.SortField)
                 THEN lc-style = lc-style + "border-top:1px solid black;".
             {&out}
             '<tr>' SKIP
-                  replib-RepField(IF first-of(tt-IssRep.AccountNumber) then Customer.name ELSE '','',lc-style)
+                  replib-RepField(IF first-of(tt-IssRep.SortField) then Customer.name ELSE '','',lc-style)
                   replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
                   replib-RepField('','',lc-style)
                   replib-RepField('','',lc-style)
@@ -310,7 +347,7 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                 lc-style = ''.
             {&out}
             '<tr>' SKIP
-                  replib-RepField(IF first-of(tt-IssRep.AccountNumber) then Customer.name ELSE '','',lc-style)
+                  replib-RepField(IF first-of(tt-IssRep.SortField) then Customer.name ELSE '','',lc-style)
                   replib-RepField(STRING(tt-IssRep.period-of,"99"),'',lc-style)
                   
                   replib-RepField(lcom-ts(tt-issCust.billable),'right',lc-style)
@@ -318,7 +355,7 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                   replib-RepField(lcom-ts(tt-issCust.billable + tt-issCust.nonbillable),'right',lc-style)
                   
                 '</tr>' SKIP.
-             ASSIGN
+            ASSIGN
                 li-tot-billable     = li-tot-billable + tt-issCust.billable
                 li-tot-nonbillable  = li-tot-nonbillable + tt-issCust.nonbillable
                 .
@@ -354,7 +391,7 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                     
                     '</tr>' SKIP. 
                 {&out} 
-                    '<tr>' SKIP
+                '<tr>' SKIP
                         replib-RepField('','','')
                         replib-RepField('Brief Description','left','')
                         replib-RepField(tt-IssRep.Description,'left','')
@@ -470,7 +507,7 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                 
         END.
     
-        IF LAST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 1 THEN
+        IF LAST-OF(tt-IssRep.SortField) AND pc-rep-type = 1 THEN
         DO:
                       
             ASSIGN 
@@ -487,7 +524,7 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                 
                 
         END.
-        IF LAST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 2 THEN
+        IF LAST-OF(tt-IssRep.SortField) AND pc-rep-type = 2 THEN
         DO:
                   
             ASSIGN 
@@ -515,7 +552,7 @@ DEFINE INPUT PARAMETER pc-rep-type      AS INT   NO-UNDO.
                  
                       
         END.
-        IF LAST-OF(tt-IssRep.AccountNumber) AND pc-rep-type = 3 THEN
+        IF LAST-OF(tt-IssRep.SortField) AND pc-rep-type = 3 THEN
         DO:
             /*           
             ASSIGN 
@@ -615,14 +652,22 @@ PROCEDURE ip-engcust-table :
     htmlib-TableHeading("Customer or Engineer") skip.
     
     {&out}
-    htmlib-trmouse() '<td>' skip
+    /*htmlib-trmouse() '<td>' skip */
+    '<tr><td>' skip
       Format-Select-Type(htmlib-Radio("engcust", "eng" , true ) ) '</td>' skip
       htmlib-TableField(html-encode("Engineer"),'left') '</tr>' skip.
     
     {&out}
-    htmlib-trmouse() '<td>' skip
+    '<tr><td>' SKIP /*htmlib-trmouse() '<td>' skip*/
       Format-Select-Type(htmlib-Radio("engcust" , "cust", false) ) '</td>' skip
-      htmlib-TableField(html-encode("Customer"),'left') '</tr>' skip.
+      htmlib-TableField(html-encode("Customer"),'left') '</tr>' SKIP
+      '<tr><td align="right"><b>Sort By</b></td><td>' SKIP
+      
+      htmlib-Select("custsort",lc-csort-cde,lc-csort-cde,get-value("custsort")) SKIP.
+      
+      
+    
+    {&out} '</td><tr>' SKIP.
     
     {&out} skip 
       htmlib-EndTable()
@@ -817,7 +862,7 @@ PROCEDURE ip-EngineerReport:
                     STRING(percentage-calc(dec(std-hours),tt-IssUser.productivity)
                     ,">>>>>>>>>9.99-") ELSE '','right',lc-style)
                 '</tr>' SKIP.
-             ASSIGN
+            ASSIGN
                 li-tot-billable     = li-tot-billable + tt-IssUser.billable
                 li-tot-nonbillable  = li-tot-nonbillable + tt-IssUser.nonbillable
                 .
@@ -1131,46 +1176,6 @@ PROCEDURE ip-ExportJavascript :
         '~}' SKIP
         
 
-        /* 
-       'function validateForm()' skip
-        '~{' skip
-        'var selectengineer = document.getElementById("selectengineer").value; ' skip
-        'var selectcustomer = document.getElementById("selectcustomer").value; ' skip
-        'var selectmonth    = document.getElementById("selectmonth").value; ' skip
-        'var selectweek     = document.getElementById("selectweek").value; ' skip
-        'var reptype        = document.getElementById("reptype").checked; ' skip
-        'var engcust        = document.getElementById("engcust").checked; ' skip
-        'var weekly         = document.getElementById("weekly").checked; ' skip
-        'if (engcust) ~{' skip
-        '  if ( selectengineer == "ALL" ) ~{' skip
-        '   var answer = confirm("Selecting ALL Enginers may make this report\n   run for along time.  Are you sure?\n           (Cancel to change)");' skip
-        '   if (answer) ~{ return true;  ~}' skip
-        '   else ~{ return false; ~}' skip
-        '  ~}' skip
-        '~}' skip
-        'else ~{' skip
-        '  if ( selectcustomer == "ALL" ) ~{' skip
-        '   var answer = confirm("Selecting ALL Customers may make this report\n   run for along time.  Are you sure?\n           (Cancel to change)");' skip
-        '   if (answer) ~{ return true;  ~}' skip
-        '   else ~{   return false; ~}' skip
-        '  ~}' skip
-        '~}' skip
-        'if (weekly) ~{' skip
-        '  if ( selectweek == "ALL" ) ~{' skip
-        '   var answer = confirm("Selecting ALL Weeks may make this report\n   run for along time.  Are you sure?\n           (Cancel to change)");' skip
-        '   if (answer) ~{ return true;  ~}' skip
-        '   else ~{     return false; ~}' skip
-        '  ~}' skip
-        '~}' skip
-        'else ~{' skip
-        '  if ( selectmonth == "ALL" ) ~{' skip
-        '   var answer = confirm("Selecting ALL Months may make this report\n   run for along time.  Are you sure?\n           (Cancel to change)");' skip
-        '   if (answer) ~{ return true;  ~}' skip
-        '   else ~{       return false; ~}' skip
-        '  ~}' skip
-        '~}' skip
-        '~}' skip
-       */
         '</script>' skip.              
               
               
@@ -1205,9 +1210,8 @@ PROCEDURE ip-GenerateReport:
            '<th valign="top">For: </th><td valign="top">' 
                 entry(LOOKUP(lc-reptypeE,engcust),issue)
              '</td>' SKIP
-           '<th valign="top">Period Type: </th><td valign="top">' 
-              entry(LOOKUP(lc-reptypeC,weekly),cal) '</td>' SKIP
-           '<th valign="top">Period(s): </th><td valign="top">' replace(period,"|","<br/>") '</td>' SKIP
+           
+           '<th valign="top">Date Range: </th><td valign="top">' lc-lodate ' - ' lc-hidate '</td>' SKIP
            '<th valign="top">' IF LOOKUP(lc-reptypeE,engcust) = 1 THEN "Customer(s)"
                   ELSE 'Engineer(s)' ': </th><td valign="top">'.
                   
@@ -1240,6 +1244,8 @@ PROCEDURE ip-GenerateReport:
         END.
         ELSE {&out} lc-SelectCustomer.
         
+        {&out} '</td><th>Sort By:</th><td>' lc-custSort.
+        
     END.
     
     
@@ -1251,9 +1257,7 @@ PROCEDURE ip-GenerateReport:
     
     {&out} htmlib-EndCriteria().
     
-                         
-    /* LOOKUP(lc-reptypeA,typedesc) */
-    
+   
     {&out} htmlib-BeginCriteria("Report") '<div id="repdata">'.
        
     CASE STRING(LOOKUP(lc-reptypeE,engcust)):
@@ -1277,37 +1281,6 @@ PROCEDURE ip-GenerateReport:
     
 END PROCEDURE.
 
-PROCEDURE ip-month-select :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE lc-year  AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE zx       AS INTEGER   NO-UNDO.
-    DEFINE VARIABLE lc-desc  AS CHARACTER  INITIAL "January,February,March,April,May,June,July,August,September,October,November,December" NO-UNDO.
-
- 
-    {&out}  '<div id="monthdiv" style="display:none;">' skip
-      '<span class="tableheading" >Please select period(s)</span><br>' skip .
-      
-      
-                                                                                   
-
-    {&out} 
-    '<select id="selectmonth" name="selectmonth" class="inputfield" ' skip
-            'multiple="multiple" size=8 width="150px" style="width:150px;" >' skip.
-    {&out}
-    '<option value="ALL" selected >Select All</option>' skip.
- 
-    DO zx = 1 TO 12 :
-        {&out}
-        '<option value="' STRING(zx,"99") '" >'  html-encode(ENTRY(zx,lc-desc)) '</option>' skip.
-    END.
-    {&out} '</select></div>'.
-
-END PROCEDURE.
-
 
 &ENDIF
 
@@ -1319,34 +1292,17 @@ PROCEDURE ip-ProcessReport :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-    
-
-    
-
-    ASSIGN 
-        period = IF lc-reptypeC = "week" 
-                THEN 
-                  IF NUM-ENTRIES(lc-selectweek) > 1 THEN STRING(STRING(ENTRY(1,lc-selectweek),"99") + "-" + string(lc-selectyear,"9999") + "|" +  string(ENTRY(NUM-ENTRIES(lc-selectweek),lc-selectweek),"99") + "-" + string(lc-selectyear,"9999")   )
-                           ELSE STRING(STRING(lc-selectweek,"99") + "-" + string(lc-selectyear,"9999"))
-                ELSE 
-                  IF NUM-ENTRIES(lc-selectmonth) > 1 THEN STRING(STRING(ENTRY(1,lc-selectmonth),"99") + "-" + string(lc-selectyear,"9999") + "|" +  string(ENTRY(NUM-ENTRIES(lc-selectmonth),lc-selectmonth),"99") + "-" + string(lc-selectyear,"9999")   )
-                             ELSE STRING(STRING(lc-selectmonth,"99") + "-" + string(lc-selectyear,"9999")).
    
-
-    IF period BEGINS "AL" THEN period = REPLACE(period,"AL","ALL").
-
-
-    
 
     RUN rep/engrep01-build.p
         (
         lc-global-company,
+        DATE(lc-lodate),
+        DATE(lc-hidate),
         STRING(LOOKUP(lc-reptypeA,typedesc)),
         STRING(LOOKUP(lc-reptypeE,engcust)),
-        STRING(LOOKUP(lc-reptypeC,weekly)),
         lc-selectengineer ,
         lc-selectcustomer ,
-        period,
         OUTPUT TABLE tt-IssRep,
         OUTPUT TABLE tt-IssTime,
         OUTPUT TABLE tt-IssTotal,
@@ -1383,17 +1339,17 @@ PROCEDURE ip-report-type :
     htmlib-TableHeading("Report Type") skip.
     
     {&out}
-    htmlib-trmouse() '<td>' 
+    /*htmlib-trmouse() '<td>' */ '<tr><td>' skip 
     htmlib-Radio("reptype", "detail" , TRUE ) '</td>'
     htmlib-TableField(html-encode("Detail"),'left') '</tr>' skip.
     
     {&out}
-    htmlib-trmouse() '<td>' 
+    /* htmlib-trmouse() '<td>' */ '<tr><td>' skip 
     htmlib-Radio("reptype" , "sumdet", FALSE) '</td>'
     htmlib-TableField(html-encode("Summary Detail"),'left') '</tr>' skip.
 
     {&out}
-    htmlib-trmouse() '<td>' 
+    /* htmlib-trmouse() '<td>' */ '<tr><td>' skip 
     htmlib-Radio("reptype" , "summary", FALSE) '</td>'
     htmlib-TableField(html-encode("Summary"),'left') '</tr>' skip.
     
@@ -1415,13 +1371,61 @@ PROCEDURE ip-Validate :
       Parameters:  <none>
       emails:       
     ------------------------------------------------------------------------------*/
-    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
- 
+     DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
+     DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
+
+
+    
+       
     IF lc-selectengineer BEGINS "ALL," AND NUM-ENTRIES(lc-selectengineer) > 1 THEN lc-selectengineer = substr(lc-selectengineer,INDEX(lc-selectengineer,",") + 1).
     IF lc-selectcustomer BEGINS "ALL," AND NUM-ENTRIES(lc-selectcustomer) > 1 THEN lc-selectcustomer = substr(lc-selectcustomer,INDEX(lc-selectcustomer,",") + 1).
-    IF lc-selectmonth    BEGINS "ALL," AND NUM-ENTRIES(lc-selectmonth)    > 1 THEN lc-selectmonth = substr(lc-selectmonth,INDEX(lc-selectmonth,",") + 1).
-    IF lc-selectweek     BEGINS "ALL," AND NUM-ENTRIES(lc-selectweek)     > 1 THEN lc-selectweek = substr(lc-selectweek,INDEX(lc-selectweek,",") + 1).
 
+    
+    DEFINE VARIABLE ld-lodate   AS DATE     NO-UNDO.
+    DEFINE VARIABLE ld-hidate   AS DATE     NO-UNDO.
+    DEFINE VARIABLE li-loop     AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE lc-rowid    AS CHARACTER     NO-UNDO.
+
+    ASSIGN
+        ld-lodate = DATE(lc-lodate) no-error.
+    IF ERROR-STATUS:ERROR 
+        OR ld-lodate = ?
+        THEN RUN htmlib-AddErrorMessage(
+            'lodate', 
+            'The from date is invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    
+    
+    ASSIGN
+        ld-hidate = DATE(lc-hidate) no-error.
+    IF ERROR-STATUS:ERROR 
+        OR ld-hidate = ?
+        THEN RUN htmlib-AddErrorMessage(
+            'hidate', 
+            'The to date is invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+
+    IF ld-lodate > ld-hidate 
+        THEN RUN htmlib-AddErrorMessage(
+            'lodate', 
+            'The date range is invalid',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+            
+    IF pc-error-field <> ""
+    THEN RETURN.
+    IF YEAR(ld-lodate) <> YEAR(ld-hidate) 
+        THEN RUN htmlib-AddErrorMessage(
+            'lodate', 
+            'The dates must be in the same year',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+            
+                          
+            
+            
 
 END PROCEDURE.
 
@@ -1439,17 +1443,31 @@ PROCEDURE ip-week-month :
 
     {&out}
     htmlib-StartMntTable()
-    htmlib-TableHeading("Week or Month") skip.
+    htmlib-TableHeading("Date Range|") skip.
     
-    {&out}
-    htmlib-trmouse() '<td>' 
-    Format-Select-Period(htmlib-Radio("weekly", "week" , TRUE ) ) '</td>'
-    htmlib-TableField(html-encode("By Week"),'left') '</tr>' skip.
     
-    {&out}
-    htmlib-trmouse() '<td>' 
-    Format-Select-Period(htmlib-Radio("weekly" , "month", FALSE) ) '</td>'
-    htmlib-TableField(html-encode("By Month"),'left') '</tr>' skip.
+    
+    {&out} 
+    '<tr><td valign="top" align="right">' 
+        (IF LOOKUP("lodate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("From")
+        ELSE htmlib-SideLabel("From"))
+    '</td>'
+    '<td valign="top" align="left">'
+    htmlib-CalendarInputField("lodate",10,lc-lodate) 
+    htmlib-CalendarLink("lodate")
+    '</td></tr>' skip.
+    
+    {&out} '<tr><td valign="top" align="right">' 
+        (IF LOOKUP("hidate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("To")
+        ELSE htmlib-SideLabel("To"))
+    '</td>'
+    '<td valign="top" align="left">'
+    htmlib-CalendarInputField("hidate",10,lc-hidate) 
+    htmlib-CalendarLink("hidate")
+    '</td></tr>' skip.
+    
     
     {&out} skip 
       htmlib-EndTable()
@@ -1460,79 +1478,7 @@ END PROCEDURE.
 
 &ENDIF
 
-&IF DEFINED(EXCLUDE-ip-week-select) = 0 &THEN
 
-PROCEDURE ip-week-select :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE zx       AS INTEGER   NO-UNDO.
-    DEFINE VARIABLE lc-year  AS CHARACTER  NO-UNDO.
-
-  
-    
-    {&out}  '<div id="weekdiv" style="display:block;">' skip
-      '<span class="tableheading" >Please select period(s)</span><br>' skip .
-
-    {&out} 
-    '<select id="selectweek" name="selectweek" class="inputfield" ' skip
-            'multiple="multiple" size=8 width="150px" style="width:150px;" >' skip.
-  
-    {&out}
-    '<option value="ALL" selected >Select All</option>' skip.
- 
-    DO zx = 1 TO 53 :
-  
- 
-        {&out}
-        '<option value="' STRING(zx,"99") '" ' '>Week '  html-encode(STRING(zx,"99")) '</option>' skip.
- 
-    END.
-
-      
-    {&out} '</select></div>'.
-
-END PROCEDURE.
-
-
-&ENDIF
-
-&IF DEFINED(EXCLUDE-ip-year-select) = 0 &THEN
-
-PROCEDURE ip-year-select :
-    /*------------------------------------------------------------------------------
-      Purpose:     
-      Parameters:  <none>
-      Notes:       
-    ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE lc-year AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE zx      AS INTEGER  NO-UNDO.
-
-    {&out}  '<div id="yeardiv" style="display:block; margin-top:14px;">' skip
-             
-            '<select id="selectyear" name="selectyear" class="inputfield" ' skip
-            '   >' skip.
-  
- 
- 
-    DO zx = 0 TO 4:
-                
-        lc-year = STRING(YEAR(TODAY) - zx).
- 
-        {&out}
-        '<option value="' lc-year '" >'  html-encode(lc-year) '</option>' skip.
- 
-    END.
-  
-      
-
-    {&out} '</select></div>'.
-END PROCEDURE.
-
-
-&ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
 
@@ -1609,17 +1555,16 @@ PROCEDURE process-web-request :
         ASSIGN
             lc-reptypeA       = get-value("reptype")   /* 1=Detailed , 2=SummaryDetail, 3=Summary */ 
             lc-reptypeE       = get-value("engcust")
-            lc-reptypeC       = get-value("weekly")
             lc-selectengineer = get-value("selectengineer")
             lc-selectcustomer = get-value("selectcustomer")
-            lc-selectmonth    = get-value("selectmonth")      
-            lc-selectweek     = get-value("selectweek") 
-            lc-selectyear     = ENTRY(1,get-value("selectyear")).  
+            lc-custsort       = get-value("custsort")
+            lc-lodate   = get-value("lodate")         
+            lc-hidate   = get-value("hidate").  
 
         
-
-        RUN ip-Validate(OUTPUT lc-error-field).
-
+         RUN ip-Validate( OUTPUT lc-error-field,
+            OUTPUT lc-error-msg ).
+       
         IF lc-error-field = "" 
             THEN RUN ip-ProcessReport.
       
@@ -1627,12 +1572,15 @@ PROCEDURE process-web-request :
 
     IF request_method <> "post"
         THEN ASSIGN lc-date = STRING(TODAY,"99/99/9999")
-            lc-days = "7".
+            lc-days = "7"
+            lc-lodate = STRING(TODAY - 7, "99/99/9999")
+            lc-hidate = STRING(TODAY, "99/99/9999").
 
     RUN outputHeader.  
     
-    {&out} htmlib-Header(lc-title) SKIP.
     
+    {&out} htmlib-Header(lc-title) SKIP.
+    {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.
     {&out}
     '<script language="JavaScript" src="/scripts/js/prototype.js"></script>' skip
     '<script language="JavaScript" src="/scripts/js/scriptaculous.js"></script>' skip
@@ -1642,8 +1590,8 @@ PROCEDURE process-web-request :
     RUN ip-ExportJavascript.
     
     {&out}
-           htmlib-StartForm("mainform","post", appurl + '/rep/engrep01.p'  )
-           htmlib-ProgramTitle("Engineers Time Report") skip.
+    htmlib-StartForm("mainform","post", appurl + '/rep/engrep01.p'  )
+    htmlib-ProgramTitle("Engineers Time Report") skip.
 
     
     IF request_method <> "POST" OR lc-error-field <> "" THEN
@@ -1666,14 +1614,9 @@ PROCEDURE process-web-request :
         RUN ip-week-month.
         {&out}         '</TD>' skip.
     
-        {&out} '<TD VALIGN="TOP" ALIGN="center" HEIGHT="150px">'  skip.
-        RUN ip-year-select.
-        {&out}         '</TD>' skip.
      
-        {&out} '<TD VALIGN="TOP" ALIGN="center" HEIGHT="150px">'  skip.
-        RUN ip-week-select.
-        RUN ip-month-select.
-        {&out}         '</TD>' skip.
+     
+
      
         {&out} '<TD VALIGN="TOP" ALIGN="center" HEIGHT="150px">'  skip.
         RUN ip-engineer-select.
@@ -1695,7 +1638,9 @@ PROCEDURE process-web-request :
         {&out} htmlib-Hidden("submitsource","") SKIP
                '</div>' skip.
   
-  
+        {&out} htmlib-CalendarScript("lodate") skip
+           htmlib-CalendarScript("hidate") skip.
+   
     END.
     ELSE
     DO:
@@ -1825,7 +1770,7 @@ END FUNCTION.
 &ENDIF
 
 FUNCTION lcom-ts RETURNS CHARACTER 
-( pi-time AS INTEGER ) :
+    ( pi-time AS INTEGER ) :
     /*------------------------------------------------------------------------------
       Purpose:  
         Notes:  
@@ -1836,10 +1781,7 @@ FUNCTION lcom-ts RETURNS CHARACTER
     DEFINE VARIABLE li-hours     AS INTEGER NO-UNDO.
     DEFINE VARIABLE ll-neg       AS LOG     NO-UNDO.
 
-/*
-    IF 1 = 1 THEN RETURN STRING(pi-time) /*+ " = " + com-TimeToString(pi-time) */.
-  */
-    
+      
     IF pi-time < 0 THEN ASSIGN ll-neg  = TRUE
             pi-time = pi-time * -1.
 

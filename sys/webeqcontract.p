@@ -2,13 +2,15 @@
 
     Program:        sys/webeqcontract.p
     
-    Purpose:        Equipment contract Maintenance             
+    Purpose:        Contract Maintenance             
     
     Notes:
     
     
     When        Who         What
     12/04/2006  phoski      Initial
+    07/06/2015  phoski      Renamed & un DJS 
+    09/06/2015  phoski      Gross Profit
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -192,13 +194,13 @@ PROCEDURE process-web-request :
 
     RUN outputHeader.
     
-    {&out} htmlib-Header("Maintain Inventory contract") skip.
+    {&out} htmlib-Header("Maintain Contract") skip.
 
     {&out} htmlib-JScript-Maintenance() skip.
 
     {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webeqcontract.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Inventory Contracts") skip.
+    {&out} htmlib-ProgramTitle("Maintain Contracts") skip.
     
     {&out}
     tbar-Begin(
@@ -220,7 +222,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Code^right|Description^left|Billable^left"
+        "Code^left|Description^left|Notes^left|Billable^left|Gross Profit %^right"
         ) skip.
 
 
@@ -305,9 +307,14 @@ PROCEDURE process-web-request :
             skip
             tbar-tr(rowid(b-query))
             skip
-            htmlib-MntTableField(html-encode(string(b-query.ContractNumber)),'right')
+            htmlib-MntTableField(html-encode(string(b-query.ContractNumber)),'left')
             htmlib-MntTableField(html-encode(string(b-query.Description)),'left')
+            htmlib-MntTableField(html-encode(string(b-query.Notes)),'left')
             htmlib-MntTableField(html-encode(string(b-query.Billable)),'left')
+            
+            
+            htmlib-MntTableField(html-encode(string(b-query.GrossProfit,"zzzzzzz9.99-")),'right')
+            
 
             tbar-BeginHidden(rowid(b-query))
                 tbar-Link("view",rowid(b-query),appurl + "/sys/webeqcontractmnt.p",lc-link-otherp)
@@ -316,9 +323,7 @@ PROCEDURE process-web-request :
                           if DYNAMIC-FUNCTION('com-CanDelete':U,lc-user,"webeqcontract",rowid(b-query))
                           then ( appurl + "/sys/webeqcontractmnt.p") else "off",
                           lc-link-otherp)
-/*                 tbar-Link("eqsubcontract",rowid(b-query),appurl + "/sys/websubcontract.p",lc-link-otherp + "&init=yes&contractcode=" + */
-/*                                     string(rowid(b-query))                                                                             */
-/*                                                 )                                                                                      */
+
                
             tbar-EndHidden()
             '</tr>' skip.

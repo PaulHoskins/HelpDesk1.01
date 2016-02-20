@@ -17,7 +17,14 @@
     27/03/2015  phoski      project stuff
     18/04/2015  phoski      com-ConvertJSDate 
     10/05/2015  phoski      Read/Write User Params 
-    15/05/2015  phoski      JQuery vas
+    15/05/2015  phoski      JQuery var
+    07/06/2015  phoski      Delete 'Contract' check
+    15/08/2015  phoski      com-GetUserListForAccount
+    19/10/2015  phoski      com-LimitCustomerName - To stop 32k errors
+    20/10/2015  phoski      com-GetHelpDeskEmail
+    22/10/2015  phoski      com-AllowCustomerAccess - take into account
+                            AllowAllTeams customer flag
+    
    
 ***********************************************************************/
 
@@ -203,6 +210,10 @@ FUNCTION com-CheckSystemSetup RETURNS LOGICAL
     ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
 
+FUNCTION com-ContractDescription RETURNS CHARACTER 
+    (pc-companyCode AS CHARACTER,
+    pc-ContractType AS CHARACTER) FORWARD.
+
 FUNCTION com-ConvertJSDate RETURNS DATE 
     (pc-date AS CHARACTER) FORWARD.
 
@@ -231,11 +242,11 @@ FUNCTION com-CustomerOpenIssues RETURNS INTEGER
 
 FUNCTION com-DayName RETURNS CHARACTER 
     (pd-Date AS DATE,
-    pc-Format AS CHAR) FORWARD.
+    pc-Format AS CHARACTER) FORWARD.
 
 FUNCTION com-DayOfWeek RETURNS INTEGER 
     (INPUT pd-Date AS DATE,
-    INPUT pi-base AS INT) FORWARD.
+    INPUT pi-base AS INTEGER) FORWARD.
 
 FUNCTION com-DecodeLookup RETURNS CHARACTER
     ( pc-code AS CHARACTER,
@@ -260,6 +271,11 @@ FUNCTION com-GenTabDesc RETURNS CHARACTER
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
     ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
+
+FUNCTION com-GetHelpDeskEmail RETURNS CHARACTER 
+    (pc-mode        AS CHARACTER,
+    pc-companyCode AS CHARACTER,
+     pc-accountNumber AS CHARACTER) FORWARD.
 
 FUNCTION com-HasSchedule RETURNS INTEGER 
     (pc-companyCode AS CHARACTER,
@@ -304,8 +320,14 @@ FUNCTION com-IsSuperUser RETURNS LOGICAL
     ( pc-LoginID      AS CHARACTER )  FORWARD.
 
 
+FUNCTION com-LimitCustomerName RETURNS CHARACTER 
+    (pc-name AS CHARACTER) FORWARD.
+
 FUNCTION com-MMDDYYYY RETURNS CHARACTER 
     (pd-date AS DATE) FORWARD.
+
+FUNCTION com-Money RETURNS CHARACTER 
+    (pf-amount AS DECIMAL) FORWARD.
 
 FUNCTION com-MonthBegin RETURNS DATE
     ( pd-date AS DATE)  FORWARD.
@@ -443,7 +465,7 @@ PROCEDURE com-EndTimeCalc:
             Notes:  																	  
     ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER pd-start AS DATE         NO-UNDO.
-    DEFINE INPUT PARAMETER pi-start AS INT          NO-UNDO.
+    DEFINE INPUT PARAMETER pi-start AS INTEGER          NO-UNDO.
     DEFINE INPUT PARAMETER pi-duration AS INTEGER   NO-UNDO.
     DEFINE OUTPUT PARAMETER pd-end  AS DATE         NO-UNDO.
     DEFINE OUTPUT PARAMETER pi-end  AS INTEGER      NO-UNDO.
@@ -967,7 +989,7 @@ PROCEDURE com-GetCustomer :
             pc-AccountNumber = pc-AccountNumber + '|' + 
                b-cust.AccountNumber
             pc-name          = pc-name + '|' + 
-               b-cust.Name.
+               com-LimitCustomerName(b-cust.Name).
     END.
 
 
@@ -998,12 +1020,12 @@ PROCEDURE com-GetCustomerAccount :
         IF pc-AccountNumber = "" 
             THEN ASSIGN 
                 pc-AccountNumber = b-cust.AccountNumber
-                pc-name          = b-cust.AccountNumber + " " + b-cust.NAME.
+                pc-name          = b-cust.AccountNumber + " " + com-LimitCustomerName(b-cust.NAME).
         ELSE ASSIGN 
                 pc-AccountNumber = pc-AccountNumber + '|' + 
                b-cust.AccountNumber
                 pc-name          = pc-name + '|' + 
-               b-cust.AccountNumber + " " + b-cust.Name.
+               b-cust.AccountNumber + " " + com-LimitCustomerName(b-cust.Name).
     END.
 
 
@@ -1391,13 +1413,52 @@ PROCEDURE com-GetUserListByClass:
     DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
 
-    DEFINE VARIABLE icount AS INT NO-UNDO.
+    DEFINE VARIABLE icount AS INTEGER NO-UNDO.
     
     DEFINE BUFFER b-user FOR WebUser.
 
     FOR EACH b-user NO-LOCK 
         WHERE CAN-DO(pc-class,b-user.UserClass)
         AND b-user.CompanyCode = pc-CompanyCode
+        BY b-user.name:
+        icount = icount + 1.
+        IF icount = 1 
+            THEN ASSIGN
+                pc-loginid = b-user.LoginID
+                pc-name    = b-user.name.
+        ELSE   
+            ASSIGN 
+                pc-LoginID = pc-LoginID + '|' + 
+               b-user.LoginID
+                pc-name    = pc-name + '|' + 
+               b-user.Name.
+    END.
+    
+
+END PROCEDURE.
+
+PROCEDURE com-GetUserListForAccount:
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+                Purpose:                                                                      
+                Notes:                                                                        
+        ------------------------------------------------------------------------------*/
+    DEFINE INPUT  PARAMETER pc-CompanyCode AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pc-Account     AS CHARACTER NO-UNDO.
+        
+    DEFINE OUTPUT PARAMETER pc-LoginID     AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name        AS CHARACTER NO-UNDO.
+
+    DEFINE VARIABLE icount AS INTEGER NO-UNDO.
+    
+    DEFINE BUFFER b-user FOR WebUser.
+
+    FOR EACH b-user NO-LOCK 
+        WHERE b-user.CompanyCode = pc-CompanyCode
+        AND b-user.AccountNumber = pc-Account
         BY b-user.name:
         icount = icount + 1.
         IF icount = 1 
@@ -1522,6 +1583,10 @@ FUNCTION com-AllowCustomerAccess RETURNS LOGICAL
         IF NOT ll-Steam THEN RETURN TRUE.
         FIND customer WHERE customer.companyCode = pc-CompanyCode
             AND customer.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
+        /*
+        ** Allow to every one
+        */
+        IF Customer.allowAllTeams  = TRUE THEN RETURN TRUE.
         IF customer.st-num = 0 THEN RETURN FALSE.
         ll-access = CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = pc-LoginID
             AND webusteam.st-num = customer.st-num NO-LOCK).
@@ -1655,6 +1720,7 @@ FUNCTION com-CanDelete RETURNS LOGICAL
     DEFINE BUFFER ivField    FOR IvField.
     DEFINE BUFFER CustField  FOR CustField.
     DEFINE BUFFER webIssCat  FOR WebIssCat.
+    DEFINE BUFFER webIssCont FOR WebIssCont.
     DEFINE BUFFER issAction  FOR issAction.
     DEFINE BUFFER issStatus  FOR issStatus.
     DEFINE BUFFER issNote    FOR IssNote.
@@ -1920,9 +1986,19 @@ FUNCTION com-CanDelete RETURNS LOGICAL
             END.
             
         WHEN "webprojptask"
-        OR WHEN "webdashb" THEN 
+        OR 
+        WHEN "webdashb" THEN 
             RETURN TRUE.
-        
+        WHEN 'Contract' THEN
+            DO:
+                FIND WebissCont WHERE ROWID(webissCont) =  pr-rowid NO-LOCK NO-ERROR.
+            
+                RETURN NOT CAN-FIND(FIRST  Issue 
+                    WHERE Issue.CompanyCode = WebissCont.CompanyCode
+                    AND Issue.ContractType =  WebissCont.ContractCode 
+                    AND Issue.AccountNumber = WebissCont.Customer NO-LOCK ).
+                  
+            END.
         OTHERWISE
         DO:
             MESSAGE "com-CanDelete invalid table for " pc-table.
@@ -1995,6 +2071,24 @@ no-undo.
     END.
 END FUNCTION.
 
+
+FUNCTION com-ContractDescription RETURNS CHARACTER 
+    ( pc-companyCode AS CHARACTER ,
+    pc-ContractType AS CHARACTER  ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+    DEFINE BUFFER ContractType FOR ContractType.
+    
+    FIND ContractType 
+        WHERE  ContractType.CompanyCode = pc-companyCode
+        AND ContractType.ContractNumber = pc-ContractType NO-LOCK NO-ERROR.
+             
+    RETURN IF AVAILABLE ContractType THEN ContractType.Description ELSE "".             
+
+		
+END FUNCTION.
 
 FUNCTION com-ConvertJSDate RETURNS DATE 
     (  pc-date AS CHARACTER  ):
@@ -2175,7 +2269,7 @@ END FUNCTION.
 
 FUNCTION com-DayName RETURNS CHARACTER 
     ( pd-Date AS DATE ,
-    pc-Format AS CHAR):
+    pc-Format AS CHARACTER):
     /*------------------------------------------------------------------------------
             Purpose:  																	  
             Notes:  																	  
@@ -2194,7 +2288,7 @@ END FUNCTION.
 
 FUNCTION com-DayOfWeek RETURNS INTEGER 
     (INPUT pd-Date AS DATE,
-    INPUT pi-base AS INT) :
+    INPUT pi-base AS INTEGER) :
     /*------------------------------------------------------------------------------
       Purpose:  
         Notes:  
@@ -2302,6 +2396,41 @@ FUNCTION com-GetDefaultCategory RETURNS CHARACTER
 
 END FUNCTION.
 
+
+FUNCTION com-GetHelpDeskEmail RETURNS CHARACTER 
+    ( 
+    pc-mode        AS CHARACTER,
+    pc-companyCode AS CHARACTER,
+    pc-accountNumber AS CHARACTER ):
+
+    DEFINE BUFFER Company  FOR Company.
+    DEFINE BUFFER steam    FOR steam.
+    DEFINE BUFFER Customer FOR Customer.
+    DEFINE VARIABLE lc-Email AS CHARACTER NO-UNDO.
+    
+    FIND Customer WHERE Customer.CompanyCode = pc-companyCode
+                    AND Customer.AccountNumber = pc-accountNumber
+                    NO-LOCK NO-ERROR.
+    IF AVAILABLE Customer AND Customer.st-num > 0 THEN
+    DO:
+        FIND steam WHERE steam.CompanyCode = pc-companyCode
+                     AND steam.st-num = Customer.st-num NO-LOCK NO-ERROR.
+        IF AVAILABLE steam
+        THEN lc-email = steam.supportemail.                
+    END.
+       
+    IF lc-email  = ""
+    OR lc-email  = ? THEN
+    DO:
+        FIND Company WHERE Company.CompanyCode = pc-companyCode NO-LOCK NO-ERROR.
+        lc-email = Company.HelpDeskEmail.
+    END.                 
+    
+    
+    RETURN lc-email.
+    
+		
+END FUNCTION.
 
 FUNCTION com-HasSchedule RETURNS INTEGER 
     ( pc-companyCode AS CHARACTER ,
@@ -2555,6 +2684,18 @@ FUNCTION com-IsSuperUser RETURNS LOGICAL
 END FUNCTION.
 
 
+FUNCTION com-LimitCustomerName RETURNS CHARACTER 
+    ( pc-name AS CHARACTER  ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    RETURN TRIM(substr(pc-name,1,25)).
+
+		
+END FUNCTION.
+
 FUNCTION com-MMDDYYYY RETURNS CHARACTER 
     (  pd-date AS DATE ):
     /*------------------------------------------------------------------------------
@@ -2572,6 +2713,17 @@ FUNCTION com-MMDDYYYY RETURNS CHARACTER
     RETURN lc-return.
 
 
+		
+END FUNCTION.
+
+FUNCTION com-Money RETURNS CHARACTER 
+    (  pf-amount AS DECIMAL ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    RETURN TRIM(STRING(pf-amount,">>>,>>>,>>9.99-")).
 		
 END FUNCTION.
 

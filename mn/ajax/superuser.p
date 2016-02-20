@@ -11,6 +11,7 @@
     06/08/2006  phoski      Initial   
     
     03/08/2010  DJS         Small changes for possible speedup
+    22/10/2015  phoski      AllowAllTeams show quick view
      
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -109,7 +110,7 @@ PROCEDURE ip-ContractorView :
         {&out}
         '<tr><td>'
         '<a title="View Customer" target="mainwindow" class="tlink" style="border:none;" href="' appurl '/cust/custview.p?source=menu&rowid=' 
-         url-encode(lc-enc-key,"Query")  '">'
+        url-encode(lc-enc-key,"Query")  '">'
         html-encode(customer.Name)
         '</a></td></tr>'.
 
@@ -166,28 +167,32 @@ PROCEDURE ip-CustomerQuickView :
         *** if user is in teams then customer must be in 1 of the users teams
         *** or they have been assigned to the an issue for the customer
         */
-        IF ll-steam
-            AND NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-user
-            AND webusteam.st-num = customer.st-num NO-LOCK) 
-            THEN 
+        IF Customer.allowAllTeams = FALSE THEN
         DO:
-            ASSIGN 
-                ll-HasIss = FALSE.
-            FOR EACH Issue NO-LOCK
-                WHERE Issue.CompanyCode = webuser.CompanyCode
-                AND Issue.AssignTo = webuser.LoginID
-                AND issue.AccountNumber = customer.AccountNumber,
-                FIRST WebStatus NO-LOCK
-                WHERE WebStatus.CompanyCode = Issue.CompanyCode 
-                AND WebStatus.StatusCode = Issue.StatusCode
-                AND WebStatus.CompletedStatus = FALSE:
-                ll-HasIss = TRUE.
-                LEAVE.
+            IF ll-steam
+                AND NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-user
+                AND webusteam.st-num = customer.st-num NO-LOCK) 
+                THEN 
+            DO:
+                ASSIGN 
+                    ll-HasIss = FALSE.
+                FOR EACH Issue NO-LOCK
+                    WHERE Issue.CompanyCode = webuser.CompanyCode
+                    AND Issue.AssignTo = webuser.LoginID
+                    AND issue.AccountNumber = customer.AccountNumber,
+                    FIRST WebStatus NO-LOCK
+                    WHERE WebStatus.CompanyCode = Issue.CompanyCode 
+                    AND WebStatus.StatusCode = Issue.StatusCode
+                    AND WebStatus.CompletedStatus = FALSE:
+                    ll-HasIss = TRUE.
+                    LEAVE.
+                END.
+                IF NOT ll-HasIss THEN NEXT.
             END.
-            IF NOT ll-HasIss THEN NEXT.
         END.
-
-        ASSIGN lc-enc-key =
+        
+        ASSIGN 
+            lc-enc-key =
                  DYNAMIC-FUNCTION("sysec-EncodeValue",lc-user,TODAY,"customer",STRING(ROWID(customer))).
                  
         {&out}

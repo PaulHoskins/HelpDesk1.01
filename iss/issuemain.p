@@ -19,6 +19,7 @@
     29/03/2015  phoski      Complex Project Class 
     08/04/2015  phoski      Complex Project - Main work begins
     29/04/2015  phoski      Complex Project - Main info page
+    14/11/2015  phoski      No adhoc issues, must be against a contract
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -355,9 +356,10 @@ PROCEDURE ip-ContractSelect :
 
     {&out}  skip
             '<select id="selectcontract" name="selectcontract" class="inputfield"  onchange=~"javascript:ChangeContract();~">' skip.
+    /*
     {&out}
-    '<option value="ADHOC|yes" >Ad Hoc (Billable)</option>' skip
-    .
+        '<option value="ADHOC|yes" >Ad Hoc (Billable)</option>' skip.
+    */
 
     
     

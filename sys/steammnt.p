@@ -8,7 +8,8 @@
     
     
     When        Who         What
-    16/05/2014  phoski      Initial      
+    16/05/2014  phoski      Initial    
+    19/10/2015  phoski      Support Email   
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -46,6 +47,7 @@ DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-descr        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-st-num       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-SupportEmail AS CHARACTER NO-UNDO.
 
 
 
@@ -307,7 +309,8 @@ PROCEDURE process-web-request :
         DO:
             ASSIGN 
                 lc-descr     = get-value("descr")
-                lc-st-num     = get-value("st-num").
+                lc-st-num     = get-value("st-num")
+                lc-supportEmail = get-value("supportemail").
                   
             .
             
@@ -343,6 +346,7 @@ PROCEDURE process-web-request :
                 DO:
                     ASSIGN 
                         b-table.descr     = lc-descr
+                        b-table.supportEmail = lc-supportEmail
                         .
                    
                     
@@ -383,6 +387,7 @@ PROCEDURE process-web-request :
         IF CAN-DO("view,delete",lc-mode)
             OR request_method <> "post"
             THEN ASSIGN lc-descr   = b-table.descr
+                        lc-supportEmail = b-table.supportEmail
                 .
        
     END.
@@ -440,6 +445,21 @@ PROCEDURE process-web-request :
            skip.
     {&out} '</TR>' skip.
     
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("supportemail",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Support Email")
+        ELSE htmlib-SideLabel("Support Email"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("supportemail",40,lc-supportEmail) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-supportEmail),'left')
+           skip.
+    {&out} '</TR>' skip.
 
     
 

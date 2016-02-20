@@ -26,7 +26,12 @@
                             know )   
     25/04/2015  phoski      End date/end time is calculated now  
     29/03/2015  phoski      Complex Project Class                                
-        
+    07/06/2015  phoski      webissCont ( removed description from DB )  
+    15/08/2015  phoski      Default user change  
+    19/08/2015  phoski      Company.custaddissue get email when customer
+                            adds unassigned
+    20/10/2015  phoski      com-GetHelpDeskEmail for email sender  
+    14/11/2015  phoski      No Ad hoc contract and a type must be entered                  
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -331,7 +336,7 @@ PROCEDURE ip-ContractSelect :
     {&out}  skip
             '<select id="selectcontract" name="selectcontract" class="inputfield"  onchange=~"javascript:ChangeContract();~">' skip.
     {&out}
-    '<option value="ADHOC|yes" >Ad Hoc</option>' skip
+    '<option value="SELECT|yes" >Select Contract Type</option>' skip
     .
  
 
@@ -360,12 +365,17 @@ PROCEDURE ip-ContractSelect :
                 AND WebIssCont.ConActive       = TRUE
                 AND WebissCont.defcon          = TRUE NO-LOCK NO-ERROR.
             IF AVAILABLE WebissCont
-                THEN ASSIGN lc-contract-type = WebissCont.ContractCode
+                THEN ASSIGN lc-contract-type = /* WebissCont.ContractCode */ "SELECT"
                     ll-billing       = WebissCont.Billable
                     lc-billable-flag = IF ll-billing THEN "on" ELSE "".
         END.
-        
-
+        ELSE
+        IF request_method <> "GET" THEN
+        DO:
+            lc-contract-type = ENTRY(1,get-value("selectcontract"),"|").
+        END.
+      
+ 
         IF CAN-FIND (FIRST WebIssCont                           
             WHERE WebIssCont.CompanyCode     = lc-global-company     
             AND WebIssCont.Customer        = lc-accountnumber            
@@ -845,7 +855,7 @@ PROCEDURE ip-GetContract :
         DO:
             ASSIGN 
                 pc-Type     = '0'
-                pc-Contract = "AdHoc".
+                pc-Contract = "SELECT".
 
             FOR EACH WebIssCont NO-LOCK                             
                 WHERE WebIssCont.CompanyCode     = lc-global-company     
@@ -862,7 +872,7 @@ PROCEDURE ip-GetContract :
     
                 ASSIGN 
                     pc-Type     = pc-Type      + '|' + string(WebIssCont.ContractCode)
-                    pc-Contract = pc-Contract  + '|' + WebIssCont.Description.
+                    pc-Contract = pc-Contract  + '|' + WebIssCont.Notes.
     
             END.
         END.
@@ -870,14 +880,14 @@ PROCEDURE ip-GetContract :
         DO:
             ASSIGN 
                 pc-Type     = '0'
-                pc-Contract = "AdHoc".
+                pc-Contract = "SELECT".
         END.
     END.                                                        
     ELSE
     DO:
         ASSIGN 
             pc-Type     = '0'
-            pc-Contract = "AdHoc".
+            pc-Contract = "SELECT".
     END.
 
 END PROCEDURE.
@@ -898,14 +908,20 @@ PROCEDURE ip-GetOwner :
     DEFINE OUTPUT PARAMETER pc-Name          AS CHARACTER NO-UNDO.
 
     DEFINE BUFFER b-user FOR WebUser.
+    DEFINE BUFFER cu     FOR Customer.
+     
 
     IF pc-Account <> "" THEN
-    DO:                                                            
+    DO: 
+        FIND cu WHERE cu.CompanyCode   = lc-global-company      
+            AND cu.AccountNumber = pc-Account           
+           NO-LOCK NO-ERROR.
+                                                                      
         FIND FIRST b-user NO-LOCK                                  
             WHERE b-user.CompanyCode   = lc-global-company      
             AND b-user.AccountNumber = pc-Account             
             AND b-user.Disabled      = FALSE                  
-            AND b-user.DefaultUser   = TRUE                   
+            AND b-user.LoginID = cu.def-iss-loginid                
             NO-ERROR.                  
            
         IF ll-Customer THEN
@@ -931,7 +947,7 @@ PROCEDURE ip-GetOwner :
             WHERE b-user.CompanyCode   = lc-global-company
             AND b-user.AccountNumber = pc-Account
             AND b-user.Disabled      = FALSE               
-            AND b-user.DefaultUser   = FALSE               
+            AND b-user.loginid <> cu.def-iss-loginid        
             BY b-user.name:
   
             ASSIGN 
@@ -1262,6 +1278,7 @@ PROCEDURE ip-MainEntry :
         '</TD></TR>' skip. 
 
     END.
+    
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("briefdescription",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("Brief Description")
@@ -1981,6 +1998,14 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
     
+    IF NOT ll-customer
+    AND ( lc-contract-type = "" OR lc-contract-Type BEGINS "SELECT" ) 
+    THEN RUN htmlib-AddErrorMessage(
+            'contract', 
+            'You must select contract',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    
     IF lc-briefdescription = ""
         THEN RUN htmlib-AddErrorMessage(
             'briefdescription', 
@@ -2336,6 +2361,33 @@ PROCEDURE process-web-request :
                 lc-catcode = lc-default-catcode.
         IF lc-submitsource <> "accountchange" THEN
         DO:
+            IF NUM-ENTRIES(lc-contract-type,"|") > 1
+            THEN lc-contract-type = ENTRY(1,lc-contract-type,"|").
+            
+            IF ll-customer THEN
+            DO:
+                FIND FIRST WebIssCont                           
+                    WHERE WebIssCont.CompanyCode     = lc-global-company     
+                      AND WebIssCont.Customer        = lc-accountnumber            
+                      AND WebIssCont.ConActive       = TRUE
+                      AND WebissCont.defcon          = TRUE NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE WebissCont THEN
+                FIND FIRST WebIssCont                           
+                    WHERE WebIssCont.CompanyCode     = lc-global-company     
+                    AND WebIssCont.Customer        = lc-accountnumber            
+                    AND WebIssCont.ConActive       = TRUE
+                    NO-LOCK NO-ERROR.    
+                IF NOT AVAILABLE WebissCont THEN
+                FIND FIRST WebIssCont                           
+                        WHERE WebIssCont.CompanyCode     = lc-global-company     
+                        AND WebIssCont.Customer        = lc-accountnumber            
+                        NO-LOCK NO-ERROR.   
+                ASSIGN
+                    lc-contract-type = IF AVAILABLE webissCont THEN WebissCont.ContractCode ELSE "".         
+                    
+            END.
+            
+            
             RUN ip-Validate( OUTPUT lc-error-field,OUTPUT lc-error-msg ).
             IF lc-error-field = "" THEN
             DO:
@@ -2466,9 +2518,9 @@ PROCEDURE process-web-request :
                 ELSE
                 DO:
                     
-                    FIND Company WHERE Company.CompanyCode = lc-global-company NO-LOCK NO-ERROR.
-                   
                     
+                    FIND Company WHERE Company.CompanyCode = lc-global-company NO-LOCK NO-ERROR.
+                                       
                     ASSIGN 
                         lc-mail = "Issue: " + string(Issue.IssueNumber) 
                                 + ' ' + Issue.BriefDescription + "~n" + 
@@ -2484,10 +2536,33 @@ PROCEDURE process-web-request :
 
                     DYNAMIC-FUNCTION("mlib-SendEmail",
                         Issue.Company,
-                        "",
+                        DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
                         lc-Subject,
                         lc-mail,
-                        Company.HelpDeskEmail).
+                        DYNAMIC-FUNCTION("com-GetHelpDeskEmail","To",issue.company,Issue.AccountNumber)).
+                    IF Company.custaddissue <> "" THEN
+                    DO:
+                        ASSIGN 
+                        lc-mail = "Issue: " + string(Issue.IssueNumber) 
+                                + ' ' + Issue.BriefDescription + "~n" + 
+                                "Customer: " + customer.name.
+                        IF Issue.LongDescription <> "" 
+                        THEN lc-mail = lc-mail + "~n" + Issue.LongDescription.
+    
+  
+                        .
+                        ASSIGN 
+                            lc-subject = "Unassigned Issue Raised By Customer " + string(Issue.IssueNumber) +
+                            ' - Customer ' + Customer.Name + ' - ' +  string(NOW,"99/99/9999 hh:mm").
+
+                        DYNAMIC-FUNCTION("mlib-SendEmail",
+                            Issue.Company,
+                            DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
+                            lc-Subject,
+                            lc-mail,
+                            DYNAMIC-FUNCTION("com-GetHelpDeskEmail","To",issue.company,Issue.AccountNumber)).
+                        
+                    END.    
                 
                 END.
                     

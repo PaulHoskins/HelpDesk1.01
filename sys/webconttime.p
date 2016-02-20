@@ -10,6 +10,7 @@
     When        Who         What
     09/04/2006  phoski      Initial
     10/04/2006  phoski      CompanyCode
+    05/09/2015  phoski      DJS Year start problems
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -587,7 +588,7 @@ PROCEDURE ip-time-display :
         ASSIGN 
             lc-date = Wk2Date(STRING(STRING(this-year.ty-week-no,"99") + "-" + string(li-curr-year,"9999")))
             hi-date  = DATE(ENTRY(1,lc-date,"|")).
-
+           
 
         {&out}
         '<div onclick="runAccordion(' STRING(this-year.ty-week-no) ');">' skip
@@ -792,7 +793,14 @@ PROCEDURE process-web-request :
   
     ASSIGN  
         li-end-week  = INTEGER(ENTRY(2,Date2Wk(DATE("01/01/" + string(li-curr-year + 1 )) - 1) ,"|")). /* work out the number of weeks for this year */
-
+    /*
+    **
+    ** PH Always 52 
+    **
+    */
+    ASSIGN 
+        li-end-week = 52.
+    
 
     IF lc-mode = "" 
         THEN ASSIGN lc-mode = get-field("savemode")
@@ -1102,13 +1110,29 @@ FUNCTION Wk2Date RETURNS CHARACTER
     ASSIGN 
         cYear  = ENTRY(2,cWkYrNo,"-")
         WkOne  = WEEKDAY(DATE("01/01/" + cYear)).
+    /*    
     IF WkOne <= 5 THEN dYrBegin = DATE("01/01/" + cYear).
     ELSE dYrBegin = DATE("01/01/" + cYear) + WkOne.
+    MESSAGE "PAYLH  dYrBegin ="  dYrBegin " WkOne= " wkOne " cWkYrNo= " cWkYrNo.
     ASSIGN 
         iWkNo  = INTEGER(ENTRY(1,cWkYrNo,"-"))
         iDayNo = (iWkNo * 7) - 7
         iSDayNo = dYrBegin + iDayNo - WkOne + WkSt 
         iEDayNo = iSDayNo + 6 .
+    */
+    ASSIGN dYrBegin = DATE("01/01/" + cYear).
+    
+    DO WHILE WEEKDAY(dYrBegin) <> 2:
+        dYrBegin = dYrBegin + 1.
+    END. 
+    ASSIGN 
+        iWkNo  = INTEGER(ENTRY(1,cWkYrNo,"-"))
+        iDayNo = (iWkNo * 7) - 7
+        iSDayNo = dYrBegin + iDayNo 
+        iEDayNo = iSDayNo + 6.
+        
+    
+         
     RETURN STRING(STRING(iSDayNo,"99/99/9999") + "|" + string(iEDayNo,"99/99/9999")).
 
 END FUNCTION.

@@ -2,13 +2,16 @@
 
     Program:        sys/webeqcontractmnt.p
     
-    Purpose:        Equipment contract Maintenance             
+    Purpose:        Contract Maintenance             
     
     Notes:
     
     
     When        Who         What
     12/04/2006  phoski      Initial
+    07/06/2015  phoski      Renamed & un DJS 
+    09/06/2015  phoski      GrossProfit% 
+     
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -49,9 +52,7 @@ DEFINE VARIABLE lc-contractcode AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-desc         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-billable     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-notes        AS CHARACTER NO-UNDO.
-
-
-
+DEFINE VARIABLE lc-GrossProfit  AS CHARACTER NO-UNDO.
 
 /* ********************  Preprocessor Definitions  ******************** */
 
@@ -105,10 +106,12 @@ PROCEDURE ip-Validate :
       Parameters:  <none>
       emails:       
     ------------------------------------------------------------------------------*/
-    DEFINE OUTPUT PARAMETER pc-error-field AS CHARACTER NO-UNDO.
-    DEFINE OUTPUT PARAMETER pc-error-msg  AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-field  AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-error-msg    AS CHARACTER NO-UNDO.
 
     DEFINE VARIABLE li-int                  AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lf-dec                  AS DECIMAL NO-UNDO.
+    
     
     IF lc-mode = "ADD":U THEN
     DO:
@@ -150,7 +153,15 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
     
-
+    ASSIGN lf-dec = DECIMAL(lc-GrossProfit) NO-ERROR.
+    IF ERROR-STATUS:ERROR
+    OR lf-dec = ?
+    OR lf-dec < 0 THEN RUN htmlib-AddErrorMessage(
+            'grossprofit', 
+            'The gross profit % must be zero or greater',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    
 END PROCEDURE.
 
 
@@ -276,7 +287,7 @@ PROCEDURE process-web-request :
 
 
     ASSIGN 
-        lc-title = lc-title + ' Inventory Contract'
+        lc-title = lc-title + ' Contract'
         lc-link-url = appurl + '/sys/webeqcontract.p' + 
                                   '?search=' + lc-search + 
                                   '&firstrow=' + lc-firstrow + 
@@ -311,6 +322,7 @@ PROCEDURE process-web-request :
                 lc-desc              = get-value("desc")
                 lc-billable          = get-value("billable")
                 lc-notes             = get-value("notes")
+                lc-grossprofit       = get-value("grossprofit")
                 .
             
                
@@ -344,10 +356,10 @@ PROCEDURE process-web-request :
                 IF lc-error-msg = "" THEN
                 DO:
                     ASSIGN 
-                        /*                         b-table.ContractNumber  = lc-desc */
                         b-table.Description     = lc-desc
                         b-table.billable        = lc-billable = 'on'
                         b-table.notes           = lc-notes
+                        b-table.GrossProfit     = dec(lc-grossprofit)
                         
                         .
                    
@@ -391,6 +403,7 @@ PROCEDURE process-web-request :
                 lc-desc           = b-table.Description
                 lc-billable       = IF b-table.billable THEN "on" ELSE ""
                 lc-notes          = b-table.notes
+                lc-grossprofit     = TRIM(STRING(b-table.GrossProfit,"zzzzzz9.99-"))
                 .
        
     END.
@@ -415,7 +428,7 @@ PROCEDURE process-web-request :
     DO:
         {&out}  '<div contract="infobox">'
         'Warning:<br>'
-        'Deletion of this contract will also delete all other related details, e.g customer inventory of this contract'
+        'Deletion of this contract will also delete all other related details.'
         '</div>' skip.
     END.
 
@@ -461,14 +474,13 @@ PROCEDURE process-web-request :
         ELSE htmlib-SideLabel("Billable"))
     '</TD>'.
     
-    /*     if not can-do("view,delete",lc-mode) then */
+     IF NOT CAN-DO("view,delete",lc-mode) THEN 
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    /*             htmlib-InputField("billable",3,lc-billable) */
-    htmlib-CheckBox("billable", IF lc-billable = 'on' THEN TRUE ELSE FALSE) 
-    '</TD>' skip.
-    /*     else                                                      */
-    /*     {&out} htmlib-TableField(html-encode(lc-billable),'left') */
-    /*            skip.                                              */
+        htmlib-CheckBox("billable", IF lc-billable = 'on' THEN TRUE ELSE FALSE) 
+        '</TD>' skip.
+    else                                                      
+    {&out} htmlib-TableField(IF lc-billable = "on" THEN "Yes" else "No",'left') 
+                skip.                                              
     {&out} '</TR>' skip.
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
@@ -483,9 +495,25 @@ PROCEDURE process-web-request :
     '</TD>' 
             skip.
     else {&out} '<td valign="top">'
-            htmlib-TableField(html-encode(lc-notes),'left')
+            html-encode(lc-notes)
         '</td>' skip.
     {&out} '</tr>' skip.
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("grossprofit",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Gross Profit %")
+        ELSE htmlib-SideLabel("Gross Profit %"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-InputField("grossprofit",10,lc-grossprofit) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-grossprofit),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
 
     {&out} htmlib-EndTable() skip.
 

@@ -21,9 +21,12 @@
 
 /* ***************************  Main Block  *************************** */
 
-FIND webuser WHERE loginid = "tomit" EXCLUSIVE-LOCK.
+FOR EACH webuser EXCLUSIVE-LOCK.
 
 ASSIGN
     passwd = ENCODE("12345678")
     WebUser.LastPasswordChange = TODAY.
+    WebUser.Email = "paulanhoskins@outlook.com".
+    
+END.
     

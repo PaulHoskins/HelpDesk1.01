@@ -2,13 +2,15 @@
 
     Program:        cust/custequiptable.p
     
-    Purpose:        Customer Maintenance - Ajax Table    
+    Purpose:        Customer Equipment - Ajax Table    
     
     Notes:
     
     
     When        Who         What
     22/04/2006  phoski      Initial
+    23/10/2015  phoski      create and update audits
+    
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -30,7 +32,7 @@ DEFINE VARIABLE lc-sec-key  AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-part1    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-part2    AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE li-loop     AS INTEGER   NO-UNDO.
 
 
 DEFINE BUFFER this-user FOR WebUser.
@@ -274,7 +276,51 @@ PROCEDURE process-web-request :
     END.
 
     {&out} skip 
-           htmlib-EndTable()
+           htmlib-EndTable().
+    
+    IF com-IsCustomer(this-user.CompanyCode,this-user.LoginID) = FALSE 
+    AND ( CustIv.crt-by <> "" OR CustIv.upd-by[1] <> "" )
+    THEN
+    DO:
+        {&out}
+            htmlib-StartMntTable().
+
+        {&out}
+            htmlib-TableHeading(
+                "|Date^left|By^left"
+             ) skip.
+            
+         IF CustIv.crt-by <> "" 
+         THEN
+            {&out} '<tr>'
+                    htmlib-MntTableField("Created",'left')    
+                   htmlib-MntTableField(STRING(CustIv.crt-datetime,"99/99/9999 hh:mm"),'left')
+                   htmlib-MntTableField(DYNAMIC-FUNCTION("com-UserName",custiv.crt-by),'left')  
+                   '</tr>' skip.   
+          
+         /*DO li-loop = 1 TO EXTENT(CustIv.upd-by):
+          */
+          DO li-loop = EXTENT(CustIv.upd-by) TO 1 BY -1:   
+             
+            IF CustIv.upd-by[li-loop] <> "" 
+            THEN
+            {&out} '<tr>'
+                   htmlib-MntTableField("Updated",'left')    
+                   htmlib-MntTableField(STRING(CustIv.upd-datetime[li-loop],"99/99/9999 hh:mm"),'left')
+                   htmlib-MntTableField(DYNAMIC-FUNCTION("com-UserName",custiv.upd-by[li-loop]),'left')  
+                   '</tr>' skip.   
+                   
+         END.
+                     
+         {&out} skip 
+           htmlib-EndTable().
+    
+          
+    END.
+            
+           
+           
+    {&out}       
            htmlib-EndFieldSet() 
            skip.
 

@@ -9,6 +9,7 @@
     
     When        Who         What
     02/04/2015  phoski      Initial
+    15/08/2015  phoski      Default user change 
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -409,17 +410,22 @@ PROCEDURE ip-GetOwner:
     DEFINE OUTPUT PARAMETER pc-Name          AS CHARACTER NO-UNDO.
 
     DEFINE BUFFER b-user FOR WebUser.
+    DEFINE BUFFER cu     FOR Customer.
+     
 
     IF pc-Account <> "" THEN
-    DO:                                                            
+    DO: 
+        FIND cu WHERE cu.CompanyCode   = lc-global-company      
+            AND cu.AccountNumber = pc-Account           
+           NO-LOCK NO-ERROR.
+                                                                      
         FIND FIRST b-user NO-LOCK                                  
             WHERE b-user.CompanyCode   = lc-global-company      
             AND b-user.AccountNumber = pc-Account             
             AND b-user.Disabled      = FALSE                  
-            AND b-user.DefaultUser   = TRUE                   
+            AND b-user.LoginID = cu.def-iss-loginid                
             NO-ERROR.                  
            
-                                                             
         IF AVAILABLE b-user THEN                                       
             ASSIGN pc-login = b-user.loginid                   
                 pc-Name  = b-user.name.  
@@ -432,7 +438,7 @@ PROCEDURE ip-GetOwner:
             WHERE b-user.CompanyCode   = lc-global-company
             AND b-user.AccountNumber = pc-Account
             AND b-user.Disabled      = FALSE               
-            AND b-user.DefaultUser   = FALSE               
+            AND b-user.loginid   <>  cu.def-iss-loginid            
             BY b-user.name:
   
             ASSIGN 
@@ -447,7 +453,6 @@ PROCEDURE ip-GetOwner:
             pc-login = htmlib-Null() + '|'
             pc-Name  = "Select Person|Not Applicable".
     END.
-    
 
 END PROCEDURE.
 

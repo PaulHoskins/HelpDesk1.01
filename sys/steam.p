@@ -8,7 +8,8 @@
     
     
     When        Who         What
-    16/05/2014  phoski      Initial      
+    16/05/2014  phoski      Initial     
+    19/10/2015  phoski      Support Email 
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -215,7 +216,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Code|Description"
+        "Code|Description|Support Email"
         ) skip.
 
 
@@ -300,7 +301,7 @@ PROCEDURE process-web-request :
             skip
             htmlib-MntTableField(html-encode(string(b-query.st-num)),'left')
             htmlib-MntTableField(html-encode(b-query.descr),'left')
-            
+             htmlib-MntTableField(html-encode(b-query.SupportEmail),'left')
             tbar-StandardRow(
                 rowid(b-query),
                 lc-user,

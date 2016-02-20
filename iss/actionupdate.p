@@ -11,6 +11,7 @@
     09/04/2006  phoski      Initial
     24/01/2015  phoski      stop 'open' actions if the issue is closed
     09/05/2015  phoski      Complex Project
+    20/10/2015  phoski      com-GetHelpDeskEmail for email sender
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -521,7 +522,7 @@ PROCEDURE process-web-request :
                                               
                                 DYNAMIC-FUNCTION("mlib-SendEmail",
                                     lc-global-company,
-                                    "",
+                                    DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
                                     "HelpDesk Action Assignment - Issue " + 
                                     string(Issue.IssueNumber),
                                     lc-temp,

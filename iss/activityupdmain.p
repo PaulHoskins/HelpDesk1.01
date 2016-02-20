@@ -1314,7 +1314,7 @@ PROCEDURE process-web-request :
     FIND WebAction 
         WHERE WebAction.ActionID = issAction.ActionID
         NO-LOCK NO-ERROR.
-    MESSAGE "Avail webact = " AVAILABLE WebAction IssAction.ActionID.     
+   
     
     IF NOT AVAILABLE WebAction
     THEN FIND FIRST WebAction WHERE WebAction.CompanyCode = IssAction.CompanyCode NO-LOCK NO-ERROR.

@@ -97,6 +97,8 @@ PROCEDURE ip-ActionTable :
     DEFINE BUFFER b-query      FOR IssAction.
 
     DEFINE VARIABLE lc-assign-info      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-aDesc            AS CHARACTER NO-UNDO.
+    
     
     DEFINE VARIABLE ll-Steam    AS LOG NO-UNDO.
     
@@ -147,10 +149,15 @@ PROCEDURE ip-ActionTable :
             
                 THEN NEXT.
         END.
+        lc-Adesc = "".
+        
         FIND WebAction 
             WHERE WebAction.ActionID = b-query.ActionID
             NO-LOCK NO-ERROR.
 
+        IF AVAILABLE WebAction
+        THEN lc-Adesc = WebAction.Description.
+        
        
         {&out}
         SKIP(1)
@@ -168,7 +175,7 @@ PROCEDURE ip-ActionTable :
         
             ASSIGN 
                 lc-info = 
-                REPLACE(htmlib-MntTableField(html-encode(WebAction.Description),'left'),'</td>','')
+                REPLACE(htmlib-MntTableField(html-encode(lc-aDesc),'left'),'</td>','')
                 lc-object = "hdobj" + string(b-query.issActionID).
         
             ASSIGN 
@@ -189,7 +196,7 @@ PROCEDURE ip-ActionTable :
             {&out} '</td>' skip.
         END.
         ELSE {&out}
-        htmlib-MntTableField(WebAction.Description,'left').
+        htmlib-MntTableField(lc-Adesc,'left').
         
         ASSIGN 
             lc-assign-info = com-userName(b-query.AssignTo).

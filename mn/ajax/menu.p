@@ -19,6 +19,7 @@
     08/03/2015  phoski      Issue log for customer users      
     25/04/2015  phoski      Project Schedule
     24/05/2015  phoski      Dashboard Links
+    22/10/2015  phoski      Link to issue page is by trafic light/asc
                               
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -480,7 +481,7 @@ PROCEDURE ip-SuperUserFinal :
             {&out} 
             '<tr><td nowrap  style="vertical-align:top">'
             '<a title="View All Issues For ' html-encode(tt.ADescription) '" target="mainwindow" class="tlink" style="border:none;" href="' 
-            appurl '/iss/issue.p?frommenu=yes&status=allopen&iclass=All&assign=' tt.ACode '">'
+            appurl '/iss/issue.p?frommenu=yes&status=allopen&iclass=All&sortfield=b-query.tlight&sortorder=ASC&assign=' tt.ACode '">'
             html-encode(lc-class)
             '</a></td>' SKIP.
             IF tt.Acount = 0 THEN
@@ -494,7 +495,7 @@ PROCEDURE ip-SuperUserFinal :
             IF iloop > 1 THEN {&out} '-'.
             {&out} 
             '<a title="View Issues For ' lc-class '" target="mainwindow" class="tlink" style="border:none;" href="' 
-            appurl '/iss/issue.p?frommenu=yes&status=allopen&iclass=' lc-class ' &assign=' tt.ACode '">'
+            appurl '/iss/issue.p?frommenu=yes&status=allopen&iclass=' lc-class '&sortfield=b-query.tlight&sortorder=ASC&assign=' tt.ACode '">'
             STRING(tt.CCount[iloop]) '</a>' SKIP.
 
 
@@ -981,7 +982,7 @@ PROCEDURE process-web-request :
                 tt-menu.ObjType     = "WS"
                 tt-menu.ObjTarget   = "mainwindow"
                 tt-menu.ObjURL      = 'iss/issue.p?assign=' + WebUser.LoginID + 
-                    '&status=AllOpen&iclass=All&lodate=01/01/1990&hidate=01/01/2050'
+                    '&status=AllOpen&iclass=All&lodate=01/01/1990&hidate=01/01/2050&sortfield=b-query.tlight&sortorder=ASC'
                 tt-menu.AltInfo     = "View your issues"
                 .
             IF li-user-open > 0 

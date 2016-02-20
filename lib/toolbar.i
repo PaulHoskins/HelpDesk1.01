@@ -803,14 +803,12 @@ FUNCTION tbar-Link RETURNS CHARACTER
             ASSIGN 
                 lc-image    = '/images/toolbar3/recup.gif'
                 lc-alt-text = 'Move Up Order'.
-                
-                
-                       
-                       
-                
-         
-         
-
+         WHEN "CustContract" THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/contract.gif'
+                lc-alt-text = 'Customer Contracts'.
+                  
+  
     END CASE.
     
   

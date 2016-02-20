@@ -12,6 +12,8 @@
     10/04/2006  phoski      CompanyCode
     22/04/2006  phoski      Equip maint link
     27/09/2014  phoski      Encrypted rowid to custview.p
+    05/06/2015  phoski      Contract Page
+    08/11/2015  phoski      Show account Ref & show def contract
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -43,6 +45,8 @@ DEFINE VARIABLE lc-smessage    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-otherp AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Enc-Key     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-def-cont    AS CHARACTER NO-UNDO.
+
 
 
 
@@ -220,6 +224,7 @@ PROCEDURE process-web-request :
     tbar-Link("doclist",?,"off",lc-link-otherp)
     tbar-Link("ticketadd",?,"off",lc-link-otherp)
     tbar-Link("CustAsset",?,"off",lc-link-otherp)
+    tbar-Link("CustContract",?,"off",lc-link-otherp)
     tbar-EndOption()
     tbar-End().
 
@@ -230,7 +235,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Account|Name|Contact|Telephone|Ticket Balance^right"
+        "Account|Name|Contact|Telephone|Account Ref|Default Contract|Ticket Balance^right"
         ) skip.
 
     IF lc-search = ""
@@ -315,8 +320,17 @@ PROCEDURE process-web-request :
         ASSIGN
             lc-view-link = tbar-Link("view",ROWID(b-query),appurl + '/' + "cust/custview.p",lc-link-otherp).
         ASSIGN
-            lc-view-link = REPLACE(lc-view-link,STRING(ROWID(b-query)),url-encode(lc-enc-key,"Query")).
-                
+            lc-view-link = REPLACE(lc-view-link,STRING(ROWID(b-query)),url-encode(lc-enc-key,"Query"))
+            lc-def-cont = "<b>** None **</b>".
+            
+        FIND FIRST WebissCont 
+            WHERE WebissCont.CompanyCode = b-query.companyCode
+              AND WebissCont.Customer  = b-query.AccountNumber
+              AND WebissCont.defcon = TRUE
+              NO-LOCK NO-ERROR.
+        IF AVAILABLE WebissCont
+        THEN lc-def-cont = WebissCont.ContractCode.
+                    
         {&out}
             skip
             tbar-tr(rowid(b-query))
@@ -325,6 +339,8 @@ PROCEDURE process-web-request :
             htmlib-MntTableField(html-encode(b-query.name),'left')
             htmlib-MntTableField(html-encode(b-query.contact),'left')
             htmlib-MntTableField(html-encode(b-query.telephone),'left')
+            htmlib-MntTableField(html-encode(b-query.accountref),'left')
+            htmlib-MntTableField((lc-def-cont),'left')
             htmlib-MntTableField(if DYNAMIC-FUNCTION('com-AllowTicketSupport':U,rowid(b-query))
                                  then dynamic-function("com-TimeToString",b-query.TicketBalance)
                                  else "&nbsp;",'right')
@@ -346,6 +362,10 @@ PROCEDURE process-web-request :
                           then ( appurl + '/' + "cust/custticket.p") else "off",
                           lc-link-otherp)
                 tbar-Link("CustAsset",rowid(b-query),appurl + '/' + "cust/custasset.p","customer=" + 
+                                                string(rowid(b-query)) + 
+                                                "&returnback=" + string(lr-first-row)
+                                                )
+                 tbar-Link("CustContract",rowid(b-query),appurl + '/' + "cust/custcontract.p","customer=" + 
                                                 string(rowid(b-query)) + 
                                                 "&returnback=" + string(lr-first-row)
                                                 )

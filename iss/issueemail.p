@@ -10,6 +10,8 @@
     When        Who         What
     07/06/2014  phoski      Initial
     24/01/2015  phoski      email default always 'no email'
+    15/08/2015  phoski      customer bulk email alert
+    20/10/2015  phoski      com-GetHelpDeskEmail for email sender
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -376,6 +378,9 @@ PROCEDURE ipProcessEmail :
     DEFINE BUFFER WebStatus FOR WebStatus.
     DEFINE BUFFER b-table   FOR IssAction.
     DEFINE BUFFER u         FOR webuser.
+    DEFINE BUFFER customer  FOR Customer.
+    DEFINE BUFFER company   FOR Company.
+    
 
     DEFINE VARIABLE lc-descr   AS CHARACTER NO-UNDO.
     DEFINE VARIABLE lc-tmpcode AS CHARACTER NO-UNDO.
@@ -390,11 +395,17 @@ PROCEDURE ipProcessEmail :
     DEFINE VARIABLE lc-emailTo AS CHARACTER NO-UNDO.
 
 
+    FIND Company WHERE Company.CompanyCode = lc-global-company NO-LOCK.
+    
     FOR EACH issue EXCLUSIVE-LOCK WHERE issue.CompanyCode = lc-global-company
         AND issue.assignto = lc-global-user,
         FIRST WebStatus OF issue WHERE WebStatus.CompletedStatus = NO NO-LOCK:
 
 
+        FIND Customer WHERE Customer.CompanyCode = Issue.CompanyCode
+                        AND Customer.AccountNumber = Issue.AccountNumber
+                        NO-LOCK NO-ERROR.
+                        
         ASSIGN
             lc-ipref = "I" + STRING(issue.IssueNumber).
             
@@ -467,18 +478,22 @@ PROCEDURE ipProcessEmail :
         DYNAMIC-FUNCTION("islib-CreateAutoAction",
             b-table.IssActionID).
 
-        lc-emailTo = "Support@ouritdept.co.uk".
+        lc-emailTo = /* "Support@ouritdept.co.uk" */ Company.bulkemail.
 
+        lc-emailTo = DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber).
         FIND u WHERE u.loginid = issue.RaisedLogin NO-LOCK NO-ERROR.
         IF AVAILABLE u THEN lc-emailto = lc-emailto + "," + u.email.
 
-
-        FIND FIRST u WHERE u.accountNumber = issue.accountNumber
-            AND u.defaultuser = TRUE
-            AND u.loginid <> issue.RaisedLogin
-            NO-LOCK NO-ERROR.
-        IF AVAILABLE u THEN lc-emailto = lc-emailto + "," + u.email.
-
+        /*
+        *** Bulk email notification alert 
+        */
+        
+        IF Issue.RaisedLoginID <> Customer.def-bulk-loginid
+        AND Customer.def-bulk-loginid <> "" THEN
+        DO:   
+            FIND FIRST u WHERE u.loginid = Customer.def-bulk-loginid NO-LOCK NO-ERROR.
+            IF AVAILABLE u THEN lc-emailto = lc-emailto + "," + u.email.
+        END.
        
 
         ASSIGN
@@ -490,7 +505,7 @@ PROCEDURE ipProcessEmail :
 
         DYNAMIC-FUNCTION("mlib-SendEmail",
             lc-global-company,
-            "",
+            DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
             "Issue " + 
             string(Issue.IssueNumber) + " - " + issue.BriefDescription,
             lc-convtxt,

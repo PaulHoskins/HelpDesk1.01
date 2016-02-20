@@ -20,8 +20,10 @@
     27/09/2014 phoski       Encrypted rowid
     13/11/2014 phoski       CustomerViewInventory flag
     09/12/2014 phoski       Add documents
-                          
-                                
+    15/08/2015 phoski       Default user - Issue/Bulk Email/Status
+                            Changes
+    08/11/2015 phoski       Account ref & default contract 
+                        
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -434,7 +436,8 @@ PROCEDURE ip-CustomerMainInfo :
     DEFINE VARIABLE lc-temp         AS CHARACTER        NO-UNDO.
     DEFINE VARIABLE lc-tempAddress  AS CHARACTER        NO-UNDO.  
     DEFINE VARIABLE lc-cam          AS CHARACTER        NO-UNDO.
-    DEFINE VARIABLE lc-AMan          AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-AMan         AS CHARACTER        NO-UNDO.
+    DEFINE VARIABLE lc-def-cont     AS CHARACTER        NO-UNDO.
     
 
     FIND b-query
@@ -442,6 +445,17 @@ PROCEDURE ip-CustomerMainInfo :
         AND b-query.AccountNumber = pc-AccountNumber NO-LOCK NO-ERROR.
     IF NOT AVAILABLE b-query THEN RETURN.
    
+        
+    FIND FIRST WebissCont 
+         WHERE WebissCont.CompanyCode = b-query.companyCode
+           AND WebissCont.Customer  = b-query.AccountNumber
+           AND WebissCont.defcon = TRUE
+           NO-LOCK NO-ERROR.
+    IF AVAILABLE WebissCont
+    THEN lc-def-cont = WebissCont.ContractCode.
+    ELSE lc-def-cont = "<b>** None **</b>".
+                    
+                    
     ASSIGN
         lc-address = ""
         lc-cam = ""
@@ -491,7 +505,7 @@ PROCEDURE ip-CustomerMainInfo :
 
     {&out}
     htmlib-TableHeading(
-        "Account^left|Name^left|Address^left|Contact|Telephone|Support Team|Account Manager|Notes")
+        "Account^left|Name^left|Address^left|Contact|Telephone|Support Team|Account<br>Manager|Account<br>Ref|Default<br>Contract|Notes")
             skip.
 
     {&out}
@@ -517,7 +531,10 @@ FIND steam WHERE steam.companyCode = b-query.CompanyCode
     AND steam.st-num = b-query.st-num NO-LOCK NO-ERROR.
 {&out} htmlib-MntTableField(IF AVAILABLE steam THEN STRING(steam.st-num) + " - " + steam.descr ELSE 'None','left').
 {&out}
-htmlib-MntTableField(html-encode(lc-AMan),'left').
+    htmlib-MntTableField(html-encode(lc-AMan),'left')
+    htmlib-MntTableField(html-encode(b-query.accountRef),'left')
+    htmlib-MntTableField(lc-def-cont,'left').
+
 
 IF b-query.notes = ""
     THEN {&out} htmlib-MntTableField("",'left').
@@ -840,9 +857,7 @@ PROCEDURE ip-CustomerUsers :
         AND b-query.AccountNumber = pc-AccountNumber
         :
     
-   
-        IF b-query.DefaultUser 
-            THEN ASSIGN lc-main = b-query.Name.
+          
 
         ASSIGN 
             lc-nopass = IF b-query.passwd = ""
@@ -880,10 +895,18 @@ PROCEDURE ip-CustomerUsers :
            htmlib-EndTable()
            skip.
 
-    IF lc-main <> "" THEN
     DO:
-        {&out} '<div class="infobox">'
-        html-encode(lc-main) " is the main issue contact for this account</div>" .
+        {&out} '<div class="infobox">'.
+        
+        IF Customer.def-iss-loginid <> ""
+        THEN {&out} 'Default Issue User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-iss-loginid) '</br>' SKIP.
+        IF Customer.def-bulk-loginid <> ""
+        THEN {&out} 'Bulk Email User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-bulk-loginid) '</br>' SKIP.
+        IF Customer.def-stat-loginid <> ""
+        THEN {&out} 'Status Change User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-iss-loginid) '</br>' SKIP.
+        
+        
+        {&out} '</div>' .
                 
     END.
 END PROCEDURE.

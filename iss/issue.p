@@ -26,6 +26,7 @@
     16/12/2014  phoski      TAM/CAM problem if not allowed ( paging problems in JS )
     07/03/2015  phoski      Default dates for customers today & today - 30
     29/03/2015  phoski      Complex Project Class 
+    24/08/2015  phoski      Default to Open issues and sort by issue 
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -589,7 +590,8 @@ PROCEDURE ip-InitialProcess :
     
  
     IF lc-SortField = "" THEN
-        ASSIGN lc-SortField = ENTRY(1,lc-SortOptions,"|").
+        ASSIGN lc-SortField = /* ENTRY(1,lc-SortOptions,"|") */ "b-query.IssueNumber".
+   
     IF lc-SortOrder = ""
         THEN lc-SortOrder = ENTRY(1,lc-OrderOptions,"|").
 
@@ -620,7 +622,7 @@ PROCEDURE ip-InitialProcess :
         THEN ASSIGN lc-sel-account = htmlib-Null().
 
     IF lc-sel-status = ""
-        THEN ASSIGN lc-sel-status = htmlib-Null().
+        THEN ASSIGN lc-sel-status = /* htmlib-Null() */ "AllOpen".
 
     IF lc-sel-assign = ""
         THEN ASSIGN lc-sel-assign = htmlib-Null().

@@ -9,6 +9,7 @@
     
     When        Who         What
     12/05/2006  phoski      Initial
+    20/10/2015  phoski      com-GetHelpDeskEmail for email sender
 
 ***********************************************************************/
 
@@ -401,7 +402,7 @@ FOR EACH ro-Issue NO-LOCK
 
             DYNAMIC-FUNCTION("mlib-SendEmail",
                 Issue.Company,
-                "",
+                DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
                 lc-Subject,
                 lc-mail,
                 WebUser.email).
