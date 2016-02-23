@@ -24,6 +24,7 @@
     20/10/2015  phoski      com-GetHelpDeskEmail
     22/10/2015  phoski      com-AllowCustomerAccess - take into account
                             AllowAllTeams customer flag
+    23/02/2016  phoski      com-GetCustomerAccountActiveOnly
     
    
 ***********************************************************************/
@@ -1030,6 +1031,47 @@ PROCEDURE com-GetCustomerAccount :
 
 
 END PROCEDURE.
+
+
+
+PROCEDURE com-GetCustomerAccountActiveOnly:
+
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+
+    DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-LoginID          AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-AccountNumber   AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER pc-Name            AS CHARACTER NO-UNDO.
+
+
+    DEFINE BUFFER b-cust FOR customer.
+    DEFINE BUFFER b-user FOR WebUser.
+
+   
+    FIND b-user WHERE b-user.LoginID = pc-LoginID NO-LOCK NO-ERROR.
+    
+    FOR EACH b-cust NO-LOCK 
+        WHERE b-cust.CompanyCode = pc-CompanyCode
+          AND b-cust.IsActive = TRUE
+        BY b-cust.AccountNumber:
+        IF pc-AccountNumber = "" 
+            THEN ASSIGN 
+                pc-AccountNumber = b-cust.AccountNumber
+                pc-name          = b-cust.AccountNumber + " " + com-LimitCustomerName(b-cust.NAME).
+        ELSE ASSIGN 
+                pc-AccountNumber = pc-AccountNumber + '|' + 
+               b-cust.AccountNumber
+                pc-name          = pc-name + '|' + 
+               b-cust.AccountNumber + " " + com-LimitCustomerName(b-cust.Name).
+    END.
+    
+
+
+END PROCEDURE.
+
 
 
 PROCEDURE com-GetEngineerList:

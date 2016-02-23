@@ -10,6 +10,7 @@
     When        Who         What
     30/07/2006  phoski      Initial
     23/10/2015  phoski      create and update audits
+    23/02/2016  phoski      isDecom flag    
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -54,6 +55,7 @@ DEFINE VARIABLE lc-list-Name    AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-ref          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-ivClass      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-decom        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE li-loop         AS INTEGER   NO-UNDO.
 
 DEFINE TEMP-TABLE tu NO-UNDO
@@ -648,6 +650,7 @@ PROCEDURE process-web-request :
                 ASSIGN 
                     lc-ref          = get-value("ref")
                     lc-ivclass      = get-value("ivclass")
+                    lc-decom        = get-value("decom")
                     .
                 
                 RUN ip-Validate( OUTPUT lc-error-field,
@@ -695,6 +698,7 @@ PROCEDURE process-web-request :
                     
                     ASSIGN 
                         b-table.ref = lc-ref
+                        b-table.isDecom = lc-decom = "on"
                         .
                     /* 
                     ***
@@ -798,6 +802,7 @@ PROCEDURE process-web-request :
         DO:
             ASSIGN 
                 lc-ref      = b-table.ref
+                lc-decom    = IF b-table.isDecom THEN "on" ELSE ""
                 .
             
         END.
@@ -863,7 +868,21 @@ PROCEDURE process-web-request :
            skip.
     {&out} '</TR>' skip.
 
-
+      {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("decom",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Decommissioned?")
+        ELSE htmlib-SideLabel("Decommissioned?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("decom",lc-decom = "on") 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(IF lc-decom = "on" THEN "Yes" ELSE "No"),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
     RUN ip-InventoryTable.
 
     {&out} htmlib-EndTable() skip.

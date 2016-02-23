@@ -13,6 +13,7 @@
     09/11/2014  phoski    
     07/03/2015  phoski      Summary page with graphics     
     29/03/2015  phoski      Class Code/Desc
+    23/02/2015  phoski      Acive/Inactive Customers & toggle 
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -49,6 +50,8 @@ DEFINE VARIABLE li-loop       AS INTEGER   NO-UNDO.
 
 DEFINE VARIABLE lc-ClassList  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-output     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-submit     AS CHARACTER NO-UNDO.
+
 
 
 DEFINE TEMP-TABLE ttc NO-UNDO
@@ -250,7 +253,8 @@ PROCEDURE ip-InitialProcess :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-
+    DEFINE VARIABLE lc-temp AS CHARACTER NO-UNDO.
+    
     IF ll-customer THEN
     DO:
         ASSIGN 
@@ -262,12 +266,16 @@ PROCEDURE ip-InitialProcess :
     ASSIGN
         lc-lo-account = get-value("loaccount")
         lc-hi-account = get-value("hiaccount")    
-        lc-lodate      = get-value("lodate")         
-        lc-hidate      = get-value("hidate")
-        lc-output      = get-value("output")
-        .
+        lc-lodate     = get-value("lodate")         
+        lc-hidate     = get-value("hidate")
+        lc-output     = get-value("output")
+        lc-submit     = get-value("submitsource")
+        lc-temp       = get-value("allcust").
     
-    RUN com-GetCustomerAccount ( lc-global-company , lc-global-user, OUTPUT lc-list-acc, OUTPUT lc-list-aname ).
+    
+    IF lc-temp = "on"
+    THEN RUN com-GetCustomerAccount ( lc-global-company , lc-global-user, OUTPUT lc-list-acc, OUTPUT lc-list-aname ).
+    ELSE RUN com-GetCustomerAccountActiveOnly ( lc-global-company , lc-global-user, OUTPUT lc-list-acc, OUTPUT lc-list-aname ).
 
 
 
@@ -700,7 +708,8 @@ PROCEDURE ip-Selection :
         htmlib-SideLabel("All Customers")
         '</td>'
         '<td valign="top" align="left">'
-        htmlib-checkBox("allcust",get-value("allcust") = "on")
+        REPLACE(htmlib-checkBox("allcust",get-value("allcust") = "on"),
+        ">",' onChange="ChangeAccount()">')
         '</td></tr>' skip.
         
 
@@ -1326,7 +1335,7 @@ PROCEDURE process-web-request :
 
     RUN ip-InitialProcess.
 
-    IF request_method = "POST" THEN
+    IF request_method = "POST" AND lc-submit = "" THEN
     DO:
         
         
@@ -1359,8 +1368,7 @@ PROCEDURE process-web-request :
             
         END.
     END.
-
-    
+       
     RUN outputHeader.
 
     {&out} DYNAMIC-FUNCTION('htmlib-CalendarInclude':U) skip.

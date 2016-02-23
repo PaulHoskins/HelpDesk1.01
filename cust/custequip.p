@@ -9,6 +9,7 @@
     
     When        Who         What
     22/04/2006  phoski      Initial
+    23/02/2016  phoski      isDecom flag
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -234,7 +235,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Inventory|Reference"
+        "Inventory|Reference|Decommissioned?"
         ) skip.
 
 
@@ -333,6 +334,7 @@ PROCEDURE process-web-request :
 
             htmlib-MntTableField(html-encode(lc-temp),'left')
             htmlib-MntTableField(html-encode(b-query.ref),'left')
+            htmlib-MntTableField(html-encode(IF b-query.isDecom THEN "Yes" ELSE ""),'left')
             tbar-BeginHidden(rowid(b-query))
                 tbar-Link("view",rowid(b-query),appurl + '/cust/custequipmnt.p',lc-link-otherp)
                 tbar-Link("update",rowid(b-query),appurl + '/cust/custequipmnt.p',lc-link-otherp)

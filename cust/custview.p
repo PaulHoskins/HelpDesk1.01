@@ -23,6 +23,7 @@
     15/08/2015 phoski       Default user - Issue/Bulk Email/Status
                             Changes
     08/11/2015 phoski       Account ref & default contract 
+    23/02/2016 phoski       Decommission inventory not shown
                         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -998,7 +999,8 @@ PROCEDURE ip-Inventory :
     '<tr class="tabrow1">'
     '<td valign="top" nowrap class="tree">' skip
     .
-    FOR EACH b-query NO-LOCK OF customer,
+    FOR EACH b-query NO-LOCK OF Customer
+        WHERE b-query.isDecom = FALSE ,
         FIRST ivSub NO-LOCK OF b-query,
         FIRST ivClass NO-LOCK OF ivSub
         BREAK 

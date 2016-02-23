@@ -12,6 +12,7 @@
     
     03/09/2010  DJS         3704 - Customer Details Tab alteration
     20/02/2016  PHOSKI      Include manager/team/ref etc
+    23/02/2016  phoski      isDecom flag   
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -616,7 +617,7 @@ PROCEDURE process-web-request :
             customer.AccountNumber ).
         RUN ip-AccountUsers ( customer.CompanyCode,
             customer.AccountNumber ).
-        FIND FIRST b-query OF customer NO-LOCK NO-ERROR.
+        FIND FIRST b-query OF Customer WHERE b-query.isDecom = FALSE NO-LOCK NO-ERROR.
         IF NOT AVAILABLE b-query THEN RETURN.
         {&out}
         REPLACE(htmlib-StartMntTable(),'width="100%"','width="95%" align="center"').
@@ -633,7 +634,8 @@ PROCEDURE process-web-request :
     '<tr class="tabrow1">'
     '<td valign="top" nowrap class="tree">' skip
     .
-    FOR EACH b-query NO-LOCK OF customer,
+    FOR EACH b-query NO-LOCK OF Customer
+        WHERE b-query.isDecom = FALSE,
         FIRST ivSub NO-LOCK OF b-query,
         FIRST ivClass NO-LOCK OF ivSub
         BREAK BY ivClass.DisplayPriority DESCENDING

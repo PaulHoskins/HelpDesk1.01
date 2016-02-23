@@ -31,7 +31,8 @@
     19/08/2015  phoski      Company.custaddissue get email when customer
                             adds unassigned
     20/10/2015  phoski      com-GetHelpDeskEmail for email sender  
-    14/11/2015  phoski      No Ad hoc contract and a type must be entered                  
+    14/11/2015  phoski      No Ad hoc contract and a type must be entered  
+    23/02/2016  phoski      isDecom flag                
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1031,7 +1032,8 @@ PROCEDURE ip-Inventory :
     '<tr class="tabrow1">'
     '<td valign="top" nowrap class="tree">' skip
     .
-    FOR EACH b-query NO-LOCK OF customer,
+    FOR EACH b-query NO-LOCK OF Customer
+        WHERE b-query.isDecom = FALSE,
         FIRST ivSub NO-LOCK OF b-query,
         FIRST ivClass NO-LOCK OF ivSub
         BREAK 

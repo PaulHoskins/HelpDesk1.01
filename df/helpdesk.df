@@ -845,6 +845,14 @@ ADD FIELD "upd-datetime" OF "CustIv" AS datetime
   EXTENT 10
   ORDER 90
 
+ADD FIELD "isDecom" OF "CustIv" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Decomissioned"
+  POSITION 11
+  MAX-WIDTH 1
+  ORDER 100
+
 ADD INDEX "Customer" ON "CustIv" 
   AREA "Schema Area"
   UNIQUE
@@ -5491,4 +5499,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000108989
+0000109139
