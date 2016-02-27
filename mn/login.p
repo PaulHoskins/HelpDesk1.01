@@ -12,6 +12,8 @@
     11/04/2006  phoski      Email password changes
     23/04/2006  phoski      Form changed
     25/09/2014  phoski      Security Lib
+    24/02/2016  phoski      Email new password for internal users
+    27/02/2016  phoski      Issue link from SLA Email
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -29,7 +31,12 @@ DEFINE VARIABLE lc-user        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-pass        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-value       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-reason      AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passtype    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passref     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lkey        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-ws-fields   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-key         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-url-company AS CHARACTER NO-UNDO.
 
 DEFINE BUFFER WebUser FOR webuser.
@@ -183,7 +190,7 @@ PROCEDURE ip-Validate :
     END.
 
     IF ENCODE(lc-pass) <> b-webuser.Passwd 
-    OR b-webuser.Passwd = "" THEN
+        OR b-webuser.Passwd = "" THEN
     DO:
         lc-AttrData ="IP|" + remote_addr.
             
@@ -238,6 +245,59 @@ END PROCEDURE.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
+
+
+PROCEDURE ipMainWeb:
+
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+
+    ASSIGN 
+        lc-value = htmlib-EncodeUser(lc-user). 
+    lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"Password",lc-value).
+           
+    FIND webUser 
+        WHERE webUser.LoginID = lc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+    IF AVAILABLE WebUser THEN
+    DO:
+        ASSIGN 
+            WebUser.LastDate         = TODAY
+            WebUser.LastTime         = TIME
+            WebUser.FailedLoginCount = 0.
+    END. 
+            
+    delete-cookie(lc-global-cookie-name,appurl,"").
+    delete-cookie(lc-global-cookie-name,appurl,?).
+        
+    Set-Cookie(lc-global-cookie-name,
+        lc-key,
+        DYNAMIC-FUNCTION("com-CookieDate",lc-user),
+        DYNAMIC-FUNCTION("com-CookieTime",lc-user),
+        APPurl,
+        ?,
+        IF hostURL BEGINS "https" THEN "secure" ELSE ?).
+
+    ASSIGN
+        REQUEST_METHOD = "GET".
+    set-user-field("ExtranetUser",lc-user).
+    set-user-field("mode",lc-mode).
+    set-user-field("passtype",lc-passtype).
+    set-user-field("passref",lc-passref).
+    IF DYNAMIC-FUNCTION("com-RequirePasswordChange",lc-user) THEN 
+    DO:
+        set-user-field("expire","yes").
+        RUN run-web-object IN web-utilities-hdl ("mn/changepassword.p").
+
+    END.
+    ELSE RUN run-web-object IN web-utilities-hdl ("mn/main.p").
+    RETURN.
+            
+
+END PROCEDURE.
+
+
 
 PROCEDURE outputHeader :
     /*------------------------------------------------------------------------------
@@ -302,11 +362,14 @@ PROCEDURE process-web-request :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE lc-key AS CHARACTER NO-UNDO.
+    
      
 
     ASSIGN
-        lc-url-company = get-value("company").
+        lc-url-company = get-value("company")
+        lc-mode = get-value("mode")
+        lc-passtype = get-value("passtype")
+        lc-passref = get-value("passref").
 
     IF lc-url-company = ""
         OR NOT CAN-FIND(company WHERE company.companycode = lc-url-company)
@@ -318,13 +381,31 @@ PROCEDURE process-web-request :
         lc-global-company = lc-url-company.
 
     FIND company WHERE company.companycode = lc-url-company NO-LOCK NO-ERROR.
+    /* need to check if already logged in and if so pass on to main web page */
+    
+    IF request_method = "GET" AND lc-mode = "passthru" THEN
+    DO:
+        ASSIGN 
+            lc-value = get-cookie(lc-global-cookie-name).
+        lc-lkey = DYNAMIC-FUNCTION("sysec-DecodeValue","System",TODAY,"Password",lc-value).
+
+        ASSIGN 
+            lc-user = htmlib-DecodeUser(lc-lkey).
+            
+        IF lc-user <> "" THEN
+        DO:
+            RUN ipMainWeb.
+            RETURN.
+        END.
+        
+    
+    END.
     
     IF request_method = "GET" AND get-value("logoff") = "yes" THEN
     DO:
         delete-cookie(lc-global-cookie-name,appurl,"").
         delete-cookie(lc-global-cookie-name,appurl,?).
-                  
-                
+          
     END.
 
     IF request_method = "POST" THEN
@@ -347,43 +428,9 @@ PROCEDURE process-web-request :
 
             com-SystemLog("OK:Login",lc-user,lc-AttrData).
 
-           
-            ASSIGN 
-                lc-value = htmlib-EncodeUser(lc-user). 
-            lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"Password",lc-value).
-           
-            FIND webUser 
-                WHERE webUser.LoginID = lc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
-            IF AVAILABLE WebUser THEN
-            DO:
-                ASSIGN 
-                    WebUser.LastDate         = TODAY
-                    WebUser.LastTime         = TIME
-                    WebUser.FailedLoginCount = 0.
-            END. 
-            
-            delete-cookie(lc-global-cookie-name,appurl,"").
-            delete-cookie(lc-global-cookie-name,appurl,?).
-        
-            Set-Cookie(lc-global-cookie-name,
-                lc-key,
-                DYNAMIC-FUNCTION("com-CookieDate",lc-user),
-                DYNAMIC-FUNCTION("com-CookieTime",lc-user),
-                APPurl,
-                ?,
-                IF hostURL BEGINS "https" THEN "secure" ELSE ?).
-
-            ASSIGN
-                REQUEST_METHOD = "GET".
-            set-user-field("ExtranetUser",lc-user).
-            IF DYNAMIC-FUNCTION("com-RequirePasswordChange",lc-user) THEN 
-            DO:
-                set-user-field("expire","yes").
-                RUN run-web-object IN web-utilities-hdl ("mn/changepassword.p").
-
-            END.
-            ELSE RUN run-web-object IN web-utilities-hdl ("mn/main.p").
+            RUN ipMainWeb.
             RETURN.
+           
         END.
         
     END.
@@ -419,21 +466,28 @@ PROCEDURE process-web-request :
     
     RUN ip-CompanyInfo.
     
-    /* PH 25/09/14 remove for now 
+    
     IF lc-reason = "password" THEN 
     DO:
         FIND WebUser WHERE WebUser.Loginid = lc-user NO-LOCK NO-ERROR.
+        
         FIND company WHERE company.companycode = WebUser.companycode NO-LOCK.
 
         IF WebUser.email <> "" 
+            AND WebUser.UserClass = "internal"
             AND ( company.smtp <> "" AND company.helpdeskemail <> "" ) THEN
         DO:
+            ASSIGN 
+                lc-value = STRING(ROWID(WebUser)).
+                 
+            lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"webuser",lc-value).
+            
             {&out} '<br><br><div class="loglink">'
                     
             '<p>Hi ' WebUser.forename ',<br>' skip
                    'The password entered was incorrect for your user name.&nbsp;'
                    'Click ' 
-                        '<a href="' appurl "/mn/loginpass.p?rowid=" string(rowid(WebUser)) '" style="font-weight: bolder;">'
+                        '<a href="' appurl "/mn/loginpass.p?rowid=" url-encode(lc-key,"Query") '" style="font-weight: bolder;">'
                         'here</a>'
                         ' for a new password to be generated and sent to your email address.'
 
@@ -442,7 +496,7 @@ PROCEDURE process-web-request :
                     '</div>'.
         END.
     END.
-    */
+   
     {&out} '</td><td valign="top" align="right">' skip.
 
 
@@ -475,7 +529,10 @@ PROCEDURE process-web-request :
 
 
     
-    {&out} htmlib-Hidden("company",lc-url-company).     
+    {&out} htmlib-Hidden("company",lc-url-company)
+    htmlib-Hidden("mode",lc-mode)
+    htmlib-Hidden("passtype",lc-passtype)
+    htmlib-Hidden("passref",lc-passref).     
     
  
 

@@ -428,6 +428,13 @@ ADD FIELD "custaddissue" OF "Company" AS character
   MAX-WIDTH 16
   ORDER 300
 
+ADD FIELD "HelpDeskLink" OF "Company" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 32
+  MAX-WIDTH 16
+  ORDER 310
+
 ADD INDEX "CompanyCode" ON "Company" 
   AREA "Schema Area"
   UNIQUE
@@ -2961,6 +2968,13 @@ ADD FIELD "Old_ContractType" OF "Issue" AS character
   MAX-WIDTH 16
   COLUMN-LABEL "CType"
   ORDER 460
+
+ADD FIELD "AlertUsers" OF "Issue" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 48
+  MAX-WIDTH 16
+  ORDER 470
 
 ADD INDEX "IssueNumber" ON "Issue" 
   AREA "Schema Area"
@@ -5499,4 +5513,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000109139
+0000109395

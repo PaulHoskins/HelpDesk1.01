@@ -1,31 +1,15 @@
-/*------------------------------------------------------------------------
+/***********************************************************************
 
-  File: 
-
-  Description: 
-
-  Input Parameters:
-      <none>
-
-  Output Parameters:
-      <none>
-
-  Author: 
-
-  Created: 
-
-------------------------------------------------------------------------*/
-/*           This .W file was created with the Progress AppBuilder.     */
-/*----------------------------------------------------------------------*/
-
-/* Create an unnamed pool to store all the widgets created 
-     by this procedure. This is a good default which assures
-     that this procedure's triggers and internal procedures 
-     will execute in this procedure's storage, and that proper
-     cleanup will occur on deletion of the procedure. */
-CREATE WIDGET-POOL.
-
-/* ***************************  Definitions  ************************** */
+    Program:        mn/mainframe.p
+    
+    Purpose:        right hand panel
+    
+    Notes:
+    
+    
+    When        Who         What
+    27/02/2016  phoski      Pass thru link from SLA
+***********************************************************************/
 
 /* Parameters Definitions ---                                           */
 
@@ -33,6 +17,9 @@ CREATE WIDGET-POOL.
 
 DEFINE VARIABLE lc-error-field     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-error-meg       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mode            AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passtype        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passref         AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-passwordchanged AS CHARACTER NO-UNDO.
 
@@ -175,6 +162,39 @@ PROCEDURE process-web-request :
         
     END.
     
+     ASSIGN
+        lc-mode = get-value("mode")
+        lc-passtype = get-value("passtype")
+        lc-passref = get-value("passref").
+
+    
+    IF lc-mode = "passthru" THEN
+    DO:
+        
+        CASE lc-passtype:
+        WHEN "issue" THEN
+        DO:
+            FIND Issue WHERE Issue.CompanyCode = b-User.CompanyCode
+                         AND Issue.IssueNumber = int(lc-passref) NO-LOCK NO-ERROR.
+            IF AVAILABLE Issue
+            /*AND LOOKUP(lc-user,issue.alertUsers) > 0 */ THEN
+            DO:
+                MESSAGE "list = " issue.alertUsers.
+                set-user-field("mode","update").
+                set-user-field("rowid",STRING(ROWID(issue))).
+               
+                ASSIGN 
+                    request_method = 'get'.
+                RUN run-web-object IN web-utilities-hdl ("iss/issueframe.p").
+                RETURN.
+            END.
+            
+                         
+                         
+        END.
+        END CASE.
+        
+    END.
 
     set-user-field("status","AllOpen").
     set-user-field("assign",b-user.loginid).

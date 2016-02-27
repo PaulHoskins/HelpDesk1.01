@@ -20,6 +20,7 @@
     11/12/2014  phoski      Renewal user
     05/06/2015  phoski      Engineer Cost
     19/08/2015  phoski      Email bulkemail custaddissue
+    27/02/2016  phoski      helpdesklink field for SLA alerts
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -88,7 +89,7 @@ DEFINE VARIABLE lc-renew          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-engCost        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-bulkemail      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-custaddissue   AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-helpdesklink   AS CHARACTER NO-UNDO.
 
 
 
@@ -291,6 +292,21 @@ htmlib-InputField("webaddress",40,lc-webaddress)
 '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-webaddress),'left')
+           skip.
+{&out} '</TR>' skip.
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("helpdesklink",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Link URL")
+    ELSE htmlib-SideLabel("Link URL"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("helpdesklink",80,lc-helpdesklink) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-helpdesklink),'left')
            skip.
 {&out} '</TR>' skip.
 
@@ -875,6 +891,7 @@ PROCEDURE process-web-request :
                 lc-engcost        = get-value("engcost")
                 lc-bulkemail      = get-value("bulkemail")
                 lc-custaddissue   = get-value("custaddissue")
+                lc-helpdesklink   = get-value("helpdesklink")
                   
 
                 .
@@ -943,6 +960,7 @@ PROCEDURE process-web-request :
                         b-table.engcost        = dec(lc-engcost)
                         b-table.custaddissue   = lc-custaddissue
                         b-table.bulkemail      = lc-bulkemail
+                        b-table.helpdesklink   = lc-helpdesklink
                         .
                    
                     
@@ -1012,6 +1030,7 @@ PROCEDURE process-web-request :
                 lc-engcost        = STRING(b-table.engcost)
                 lc-bulkemail      = b-table.bulkemail
                 lc-custaddissue   = b-table.custaddissue
+                lc-helpdesklink   = b-table.helpdesklink
                 .
        
     END.

@@ -1,28 +1,16 @@
-/*------------------------------------------------------------------------
+/***********************************************************************
 
-  File: 
+    Program:        mn/changepassword.p
+    
+    Purpose:        Helpdesk Change Login               
+    
+    Notes:
+    
+    
+    When        Who         What
+    27/02/2016  phoski      Issue link from SLA Email
 
-  Description: 
-
-  Input Parameters:
-      <none>
-
-  Output Parameters:
-      <none>
-
-  Author: 
-
-  Created: 
-
-------------------------------------------------------------------------*/
-/*           This .W file was created with the Progress AppBuilder.     */
-/*----------------------------------------------------------------------*/
-
-/* Create an unnamed pool to store all the widgets created 
-     by this procedure. This is a good default which assures
-     that this procedure's triggers and internal procedures 
-     will execute in this procedure's storage, and that proper
-     cleanup will occur on deletion of the procedure. */
+***********************************************************************/
 CREATE WIDGET-POOL.
 
 /* ***************************  Definitions  ************************** */
@@ -40,8 +28,11 @@ DEFINE VARIABLE lc-newpass2    AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-expire      AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE lc-AttrData AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AttrData    AS CHARACTER NO-UNDO.
 
+DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passtype    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passref     AS CHARACTER NO-UNDO.
 
 
 
@@ -240,7 +231,11 @@ PROCEDURE process-web-request :
 
     {lib/checkloggedin.i}
 
-    lc-expire    = get-value("expire").
+    ASSIGN
+        lc-expire    = get-value("expire")
+        lc-mode = get-value("mode")
+        lc-passtype = get-value("passtype")
+        lc-passref = get-value("passref").
 
     IF request_method = "POST" THEN
     DO:
@@ -270,6 +265,11 @@ PROCEDURE process-web-request :
             
             
             set-user-field("passwordchanged","yes").
+            
+            set-user-field("mode",lc-mode).
+            set-user-field("passtype",lc-passtype).
+            set-user-field("passref",lc-passref).
+    
             IF lc-expire = "yes"
                 THEN RUN run-web-object IN web-utilities-hdl ("mn/main.p").
             ELSE RUN run-web-object IN web-utilities-hdl ("mn/mainframe.p").
@@ -339,7 +339,10 @@ PROCEDURE process-web-request :
     '</center>' skip.
     
     {&out}
-    htmlib-hidden("expire",get-value("expire")).
+    htmlib-hidden("expire",get-value("expire"))
+    htmlib-Hidden("mode",lc-mode)
+    htmlib-Hidden("passtype",lc-passtype)
+    htmlib-Hidden("passref",lc-passref).
 
     {&OUT} htmlib-EndForm() skip 
            htmlib-Footer() skip.

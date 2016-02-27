@@ -10,6 +10,7 @@
     When        Who         What
     22/04/2006  phoski      Initial  
     25/09/2014  phoski      Security Lib
+    27/02/2016  phoski      Pass thru link from SLA
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -19,6 +20,10 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
+DEFINE VARIABLE lc-mode       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passtype   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-passref    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-frame-args AS CHARACTER NO-UNDO.
 
 
 
@@ -163,6 +168,11 @@ PROCEDURE process-web-request :
         RETURN.
     END.
     
+    ASSIGN
+        lc-mode = get-value("mode")
+        lc-passtype = get-value("passtype")
+        lc-passref = get-value("passref").
+        
 
     FIND webuser WHERE webuser.LoginID = lc-user NO-LOCK NO-ERROR.
 
@@ -170,8 +180,22 @@ PROCEDURE process-web-request :
 
   
     set-user-field("ExtranetUser",webuser.LoginID).
-
-     
+    
+    /*
+    ***
+    *** Customers dont get pass thru links ever!
+    ***
+    */
+    IF WebUser.UserClass <> "customer" THEN
+    DO:
+        set-user-field("mode",lc-mode).
+        set-user-field("passtype",lc-passtype).
+        set-user-field("passref",lc-passref).
+        IF lc-mode = "passthru"
+        THEN lc-frame-args = "?mode=" + lc-mode + "&passtype=" + lc-passtype + "&passref=" + lc-passref.
+    END.
+    
+   
     lc-value = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"Password",htmlib-EncodeUser(webuser.LoginID)).
       
     Set-Cookie(lc-global-cookie-name,
@@ -198,7 +222,7 @@ PROCEDURE process-web-request :
             '<frame src="' appurl '/mn/menutop.p" name="menutop" scrolling="NO" noresize>' skip
             '<frameset cols="250,*" frameborder="NO" border="0" framespacing="0">' skip
                 '<frame src="' appurl '/mn/menupanel.p" name="leftpanel" scrolling="YES" noresize>' skip
-                '<frame src="' appurl '/mn/mainframe.p" name="mainwindow">' skip
+                '<frame src="' appurl '/mn/mainframe.p' lc-frame-args '" name="mainwindow">' skip
             '</frameset>' skip
         '</frameset>' skip.
 

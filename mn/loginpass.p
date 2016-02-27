@@ -10,6 +10,7 @@
     When        Who         What
     10/04/2006  phoski      CompanyCode    
     26/09/2014  phoski      function disabled  
+    24/02/2016  phoski      Reinstated for internal users
 ***********************************************************************/
 
 CREATE WIDGET-POOL.
@@ -165,43 +166,54 @@ PROCEDURE process-web-request :
       emails:       
     ------------------------------------------------------------------------------*/
    
+    DEFINE VARIABLE lc-lkey      AS CHARACTER NO-UNDO.
+   
     ASSIGN 
         lc-rowid = get-value("rowid").
     
     IF lc-rowid = "" 
         THEN ASSIGN lc-rowid = get-field("saverowid")
             .
-    /*
+    
+        
+    lc-lkey = DYNAMIC-FUNCTION("sysec-DecodeValue","System",TODAY,"webuser",lc-rowid).
+    
     ASSIGN 
         lc-title = 'New Password Sent'.
            
     
-    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) EXCLUSIVE-LOCK.
+    FIND b-table WHERE ROWID(b-table) = to-rowid(lc-lkey) EXCLUSIVE-LOCK NO-ERROR.
     
+    IF AVAILABLE b-table AND b-table.UserClass = "internal" THEN
+    DO:
 
-    ASSIGN 
-        lc-length = htmlib-GetAttr ('PASSWORDRULE', 'MinLength').
+        ASSIGN 
+            lc-length = htmlib-GetAttr ('PASSWORDRULE', 'MinLength').
 
-    ASSIGN 
-        li-length = int(lc-length) no-error.
-    IF li-length = ?
+        ASSIGN 
+            li-length = int(lc-length) no-error.
+        IF li-length = ?
         OR li-length <= 0 
         THEN li-length = 8.
 
-    ASSIGN 
-        lc-newPassword = htmlib-GenPassword(li-length).
+        ASSIGN 
+            lc-newPassword = htmlib-GenPassword(li-length).
 
 
-    DYNAMIC-FUNCTION("mlib-SendPassword",b-table.loginid,lc-newpassword).
+        DYNAMIC-FUNCTION("mlib-SendPassword",b-table.loginid,lc-newpassword).
     
-    ASSIGN 
-        b-table.PassWd = ENCODE(lc-newpassword).
+        ASSIGN 
+            b-table.PassWd = ENCODE(lc-newpassword)
+            b-table.FailedLoginCount = 0
+            b-table.LastPasswordChange = TODAY - 365.
 
-    */
+    END.
+    ELSE lc-title = "Function not allowed".
+        
     
     RUN outputHeader.
     
-    lc-title = "Function disabled".
+    /* lc-title = "Function disabled" */.
     
     {&out} htmlib-Header(lc-title) skip
            htmlib-StartForm("mainform","post", appurl + '/mn/loginpass.p')
@@ -209,23 +221,18 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-Hidden ("saverowid", lc-rowid) skip
     .
-    /*    
-    {&out} '<table align=center>' 
-    '<tr><td>Your new password has been sent to your email address at '
-    b-table.email '.</td></tr>' skip
-            '<tr><td>Once you have received this you can login to the '
-                     htmlib-NormalTextLink("Help Desk",
-                                     appurl + '/mn/login.p')
-            '.</td></tr></table>'.
-     */
-     {&out} '<table align=center>' 
-    '<tr><td>This function is disabled at present</td></tr>' skip
-            '<tr><td>Please contact the helpdesk to have your password changed for the '
-                     htmlib-NormalTextLink("Help Desk",
-                                     appurl + '/mn/login.p')
-            '.</td></tr></table>'.
-            
-     
+        
+    IF AVAILABLE b-table AND b-table.UserClass = "internal" THEN
+    DO:
+        {&out} '<table align=center>' 
+        '<tr><td>Your new password has been sent to your email address at '
+        b-table.email '.</td></tr>' SKIP
+                   '</table>'.
+    
+    END.
+    
+    
+    
     {&out} htmlib-EndForm() skip
            htmlib-Footer() skip.
     

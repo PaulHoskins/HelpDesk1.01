@@ -1,5 +1,7 @@
 {src/web/method/wrap-cgi.i}
-
+{lib/htmlib.i}
+{lib/checkloggedin.i}
+ 
 DEFINE VARIABLE li-docid AS INTEGER NO-UNDO.
 
 ASSIGN 

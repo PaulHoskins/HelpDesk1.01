@@ -11,6 +11,7 @@
     10/04/2006  phoski      Initial
     20/06/2011  DJS         Added email html format
     09/11/2014  phoski      Replace perl with com object
+    24/02/2016  phoski      Change password email msg
 ***********************************************************************/
 
 &if defined(maillib-library-defined) = 0 &then
@@ -134,7 +135,8 @@ FUNCTION mlib-SendAttEmail RETURNS LOG
     li-time = TIME.
     /* oSmtp:LogFileName = "c:\temp\email.log". */
     
-    MESSAGE "SendM " lc-address-to " " pc-Subject " From " pc-sender.
+    /*MESSAGE "SendM " lc-address-to " " pc-Subject " From " pc-sender.
+    */
     li-result = oSmtp:SendMail().
     IF li-result <> 0 THEN
     DO:
@@ -145,7 +147,7 @@ FUNCTION mlib-SendAttEmail RETURNS LOG
             "Err Desc  = " oSmtp:GetLastErrDescription() .
     END.
     li-time = TIME - li-time.
-    MESSAGE "SendE " lc-address-to " In " STRING(li-time,"HH:MM:SS").
+    /*MESSAGE "SendE " lc-address-to " In " STRING(li-time,"HH:MM:SS"). */
     RELEASE OBJECT oSmtp NO-ERROR.
     oSmtp = ?.
     
@@ -251,7 +253,7 @@ FUNCTION mlib-SendPassword RETURNS LOG ( pc-user AS CHARACTER, pc-password AS CH
         lc-message = "Dear $forename,~n~nYour password has been changed for the $company HelpDesk to the following:~n~n" + 
                      "User Name: $user~n" + 
                      " Password: $password~n~n" +
-                     "Once you have logged in you can change your password using the 'Change Password' option.~n~nPlease note that this password is case sensitive.~n".
+                     "Once you have logged in you will be prompted to choose another password.~n~nPlease note that this password is case sensitive.~n".
     
     ASSIGN 
         lc-message = REPLACE(lc-message,"$name",

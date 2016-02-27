@@ -10,6 +10,7 @@
     When        Who         What
     12/05/2006  phoski      Initial
     20/10/2015  phoski      com-GetHelpDeskEmail for email sender
+    27/02/2016  phoski      Link to issue in email
 
 ***********************************************************************/
 
@@ -90,6 +91,8 @@ DEFINE VARIABLE ldt-Level2     AS DATETIME  NO-UNDO.
 DEFINE VARIABLE ldt-Amber2     AS DATETIME  NO-UNDO.
 DEFINE VARIABLE li-Mill        AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-dt          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-link        AS CHARACTER NO-UNDO.
+
 
 OUTPUT stream s-log to value(SESSION:TEMP-DIR + "/sla-batch.log") UNBUFFERED.
 
@@ -341,6 +344,16 @@ FOR EACH ro-Issue NO-LOCK
             IssAlert.CreateTime  = li-time.
         
         
+        /*IF LOOKUP(webuser.LoginID,issue.alertusers) = 0 THEN 
+        DO:
+            IF Issue.alertusers = ""
+            THEN Issue.alertusers = webuser.LoginID.
+            ELSE Issue.alertusers = issue.alertusers + "," + webuser.LoginID.
+            
+        END.
+        */
+        Issue.alertusers = issue.alertusers + "," + webuser.LoginID.
+        
         /*
         ***
         *** SMS Alerts
@@ -380,6 +393,7 @@ FOR EACH ro-Issue NO-LOCK
         IF ll-email AND webUser.Email <> "" THEN
         DO:
 
+            FIND Company OF Issue NO-LOCK NO-ERROR.
             ASSIGN 
                 lc-mail = "Issue: " + string(Issue.IssueNumber) 
                                 + ' ' + Issue.BriefDescription + "~n" + 
@@ -396,6 +410,18 @@ FOR EACH ro-Issue NO-LOCK
                 + string(Issue.AssignDate,'99/99/9999') + 
                 ' ' + string(Issue.AssignTime,'hh:mm am')
                     .
+                    
+            IF Company.helpdesklink <> ""  THEN 
+            DO:
+                ASSIGN lc-link = Company.helpdesklink + "/mn/login.p?company=" + Company.CompanyCode
+                                                + "&mode=passthru&passtype=issue&passref=" + string(Issue.IssueNumber).
+                                                
+                ASSIGN lc-mail = lc-mail + "~n~n~n" +
+                  substitute('<a href="&2">&1</a>',
+                          "Issue - " + string(Issue.IssueNumber),
+                          lc-Link ).
+                          
+            END.        
             ASSIGN 
                 lc-subject = "SLA Alert for " + "Issue " + string(Issue.IssueNumber) +
                    ' - Customer ' + Customer.name.
@@ -415,8 +441,10 @@ FOR EACH ro-Issue NO-LOCK
     *** Everything done for this Issue/Alert so set the alert level
     ***
     */
+    
     ASSIGN
         Issue.SLALevel = li-Level.
+        
 END.
 
 fnLog("SLA Batch Ends").

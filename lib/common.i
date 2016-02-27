@@ -826,7 +826,7 @@ PROCEDURE com-GetAssignRoot:
     DO:
         ASSIGN 
             pc-LoginID = DYNAMIC-FUNCTION("htmlib-Null") + "|NotAssigned"
-            pc-name    = "Your Team(s)|Not Assigned".
+            pc-name    = "Your Team(s)and Disabled|Not Assigned".
            
         FOR EACH WebUSteam NO-LOCK
             WHERE WebUSteam.LoginID = pc-UserID,
