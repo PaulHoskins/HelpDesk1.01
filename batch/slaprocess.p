@@ -94,7 +94,7 @@ DEFINE VARIABLE lc-dt          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link        AS CHARACTER NO-UNDO.
 
 
-OUTPUT stream s-log to value(SESSION:TEMP-DIR + "/sla-batch.log") UNBUFFERED.
+OUTPUT stream s-log to value("c:/temp/sla-batch.log") UNBUFFERED.
 
 
 fnLog("SLA Batch Begins").
@@ -130,7 +130,7 @@ FOR EACH ro-Issue NO-LOCK
 
     FIND slahead WHERE slahead.SLAID = Issue.link-SLAID NO-LOCK NO-ERROR.
 
-    fnLog ( "Issue " + string(Issue.IssueNumber) + " SLA = " + slahead.Description).
+    /*fnLog ( "Issue " + string(Issue.IssueNumber) + " SLA = " + slahead.Description).*/
     ASSIGN
         ld-date      = TODAY
         li-time      = TIME
@@ -157,11 +157,11 @@ FOR EACH ro-Issue NO-LOCK
             issue.slaamber = ldt-Amber2.
             */
             
-            fnLog ( "Amber ( Level2 " + STRING(ldt-level2) + " - " +
+            /*fnLog ( "Amber ( Level2 " + STRING(ldt-level2) + " - " +
                 string(slahead.amberWarning) + "mins ) = " +
                 string(issue.slaamber)
                 ).
-            
+            */ 
 
         END.
 
@@ -208,10 +208,7 @@ FOR EACH ro-Issue NO-LOCK
     ELSE ASSIGN issue.tlight = li-global-sla-fail.
 
 
-
-    /*
-    fnlog ( "check " + Issue.companycode + " " + STRING(Issue.issuenumber)).
-    */
+   
     /*
     ***
     *** Alerts done to final level?
@@ -344,15 +341,13 @@ FOR EACH ro-Issue NO-LOCK
             IssAlert.CreateTime  = li-time.
         
         
-        /*IF LOOKUP(webuser.LoginID,issue.alertusers) = 0 THEN 
+        IF LOOKUP(webuser.LoginID,issue.alertusers) = 0 THEN 
         DO:
             IF Issue.alertusers = ""
             THEN Issue.alertusers = webuser.LoginID.
             ELSE Issue.alertusers = issue.alertusers + "," + webuser.LoginID.
             
         END.
-        */
-        Issue.alertusers = issue.alertusers + "," + webuser.LoginID.
         
         /*
         ***
@@ -426,12 +421,15 @@ FOR EACH ro-Issue NO-LOCK
                 lc-subject = "SLA Alert for " + "Issue " + string(Issue.IssueNumber) +
                    ' - Customer ' + Customer.name.
 
-            DYNAMIC-FUNCTION("mlib-SendEmail",
+             fnLog ( "Issue Email " + Issue.CompanyCode + "/" 
+                    + string(Issue.IssueNumber) 
+                    + " to = " + WebUser.Loginid + "/" + WebUser.email).
+             DYNAMIC-FUNCTION("mlib-SendEmail",
                 Issue.Company,
                 DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
                 lc-Subject,
                 lc-mail,
-                WebUser.email).
+                WebUser.email). 
         END.
         
     END.

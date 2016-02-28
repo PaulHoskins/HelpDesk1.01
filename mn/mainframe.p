@@ -177,7 +177,7 @@ PROCEDURE process-web-request :
             FIND Issue WHERE Issue.CompanyCode = b-User.CompanyCode
                          AND Issue.IssueNumber = int(lc-passref) NO-LOCK NO-ERROR.
             IF AVAILABLE Issue
-            /*AND LOOKUP(lc-user,issue.alertUsers) > 0 */ THEN
+            AND LOOKUP(lc-user,issue.alertUsers) > 0  THEN
             DO:
                 MESSAGE "list = " issue.alertUsers.
                 set-user-field("mode","update").
