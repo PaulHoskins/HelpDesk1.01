@@ -179,7 +179,6 @@ PROCEDURE process-web-request :
             IF AVAILABLE Issue
             AND LOOKUP(lc-user,issue.alertUsers) > 0  THEN
             DO:
-                MESSAGE "list = " issue.alertUsers.
                 set-user-field("mode","update").
                 set-user-field("rowid",STRING(ROWID(issue))).
                
