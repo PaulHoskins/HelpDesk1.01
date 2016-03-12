@@ -2,6 +2,32 @@ var gBuild = 0;
 
 var gbdone = false;
 
+function actionExpand (curobj,cname) {
+	var sn = "." + cname;
+	var img = curobj.src;
+	var open = img.indexOf('open');
+	
+	var detailinfo = $(sn);
+	for(var i=0; i<detailinfo.length; i++){
+    	var cid = detailinfo.eq(i);
+   		cid.show()
+    	if ( open == -1 ) {
+				cid.hide()
+		}
+        	
+	}
+	
+	sn = ".i" + cname;
+	
+	detailinfo = $(sn);
+	for(var i1=0; i1<detailinfo.length; i1++){
+    	cid = detailinfo.eq(i1);
+       	cid.attr('src', img);
+    	
+	}
+
+}
+
 function noteTableBuild () {
 	ahah(NoteAjax,'IDNoteAjax')
 }

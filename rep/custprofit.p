@@ -10,6 +10,7 @@
     When        Who         What
     15/06/2015  phoski      Initial
     26/11/2015  phoski      Account Status
+    12/03/2016  phoski      Change page to shrink width
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -56,9 +57,6 @@ RUN process-web-request.
 
 
 
-
-FUNCTION Format-Select-Period RETURNS CHARACTER 
-    (pc-htm AS CHARACTER) FORWARD.
 
 /* **********************  Internal Procedures  *********************** */
 
@@ -208,13 +206,20 @@ PROCEDURE ip-ReportSelectionHTML:
     '<td valign="top" align="left">'
     htmlib-SideLabel("Output To") htmlib-Select("output",lc-output-code,lc-output-desc,get-value("output")) 
     '</td>'
-    '<td valign=top>' SKIP.
+    '</tr><tr>'
+    '<td valign="top" align="right">' 
+        (IF LOOKUP("customer",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Customer(s)")
+        ELSE htmlib-SideLabel("Customer(s)"))
+    '</td>'
+     '<td valign=top colspan=7>' SKIP.
         
    
     
         
-    {&out}  '<div id="customerdiv" style="display:block;">' skip
+    {&out}  /*'<div id="customerdiv" style="display:block;">' skip
             '<span class="tableheading" >Please select customer(s)</span><br>' skip
+            */
             '<select id="selectcustomer" name="selectcustomer" class="inputfield" ' skip
             'multiple="multiple" size=20 style="width:400px;" >' skip.
  
@@ -228,12 +233,12 @@ PROCEDURE ip-ReportSelectionHTML:
         {&out}
         '<option value="'  customer.accountnumber '" ' '>'  html-encode(customer.name) '</option>' skip.
     END.
-    {&out} '</select></div></td></tr><tr>'.
+    {&out} '</select></td></tr>'.
    
       
       
                 
-    {&out} '</tr>'  htmlib-EndTable() skip.
+    {&out}  htmlib-EndTable() SKIP '<br />'.
 
 
     IF lc-error-msg <> "" THEN
@@ -563,21 +568,4 @@ END PROCEDURE.
 
 
 /* ************************  Function Implementations ***************** */
-
-FUNCTION Format-Select-Period RETURNS CHARACTER 
-    ( pc-htm AS CHARACTER) :
-    /*------------------------------------------------------------------------------
-      Purpose:  
-        Notes:  
-    ------------------------------------------------------------------------------*/
-    DEFINE VARIABLE lc-htm AS CHARACTER NO-UNDO.
-
-    lc-htm = REPLACE(pc-htm,'<input',
-        '<input onClick="ChangeReportPeriod(this.value)"'). 
-
-
-    RETURN lc-htm.
-
-		
-END FUNCTION.
 

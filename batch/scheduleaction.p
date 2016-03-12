@@ -137,6 +137,12 @@ FOR EACH Company NO-LOCK:
               
     END.
     
+    /*
+    ***
+    *** Yesterday Engineer email 
+    ***
+    */
+    
     FOR EACH WebUser NO-LOCK
         WHERE WebUser.CompanyCode = Company.CompanyCode
         AND WebUser.UserClass = "internal"
@@ -147,6 +153,7 @@ FOR EACH Company NO-LOCK:
             
         IF DYNAMIC-FUNCTION("HasScheduledBeenDone",ld-date,webuser.loginid,lc-schedCode) THEN NEXT.
 
+       
         EMPTY TEMP-TABLE tt-ilog.
 
         RUN rep/englogbuild.p (
@@ -165,8 +172,7 @@ FOR EACH Company NO-LOCK:
         IF NOT AVAILABLE tt-ilog THEN NEXT.
         
         DYNAMIC-FUNCTION("MarkScheduledBeenDone",ld-date,webuser.loginid,lc-schedCode).
-        
-                
+       
         RUN ip-ExportReport (OUTPUT lc-filename).
           
          

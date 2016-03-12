@@ -10,6 +10,7 @@
     When        Who         What
     
     03/12/2014  phoski      Initial
+    12/03/2016  phoski      Engineer in multi select instead of range
            
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -20,18 +21,18 @@ CREATE WIDGET-POOL.
 
 /* Local Variable Definitions ---                                       */
 
-DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-char        AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-lodate      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-hidate      AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-loeng       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-hieng       AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-RepType     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-engType     AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-eng-code    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lc-eng-desc    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-field    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-error-msg      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-rowid          AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-char           AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-lodate         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-hidate         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-RepType        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-engType        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-eng-code       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-eng-desc       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-selectengineer AS CHARACTER NO-UNDO.
+
 
 DEFINE BUFFER this-user FOR WebUser.
 {rep/engtimett.i}
@@ -96,6 +97,46 @@ RUN process-web-request.
 
 &IF DEFINED(EXCLUDE-ip-ExportJScript) = 0 &THEN
 
+
+PROCEDURE ip-engineer-select:
+
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
+
+    DEFINE BUFFER WebUser FOR WebUser.
+    
+    {&out} 
+    '<select id="selectengineer" name="selectengineer" class="inputfield" ' skip
+            'multiple="multiple" size=8 width="200px" style="width:200px;" >' skip.
+
+ 
+    {&out}
+    '<option value="ALL" selected >Select All</option>' skip.
+
+    FOR EACH webUser NO-LOCK
+        WHERE webuser.company = lc-global-company
+        AND   webuser.UserClass = "internal"
+        BY webUser.name:
+
+                
+ 
+        {&out}
+        '<option value="'  webUser.loginid '" ' '>'  html-encode(webuser.name) '</option>' skip.
+ 
+    END.
+  
+      
+
+    {&out} '</select>'.
+
+
+
+END PROCEDURE.
+
+
+
 PROCEDURE ip-ExportJScript :
     /*------------------------------------------------------------------------------
       Purpose:     
@@ -139,16 +180,15 @@ PROCEDURE ip-InitialProcess :
       Notes:       
     ------------------------------------------------------------------------------*/
 
-    RUN com-GetEngineerList ( lc-global-company , "", OUTPUT lc-eng-code , OUTPUT lc-eng-desc ).
+    
         
     ASSIGN
         ENTRY(1,lc-global-engType-Desc,"|") = "All"
         lc-lodate                           = get-value("lodate")         
         lc-hidate                           = get-value("hidate")
         lc-engType                          = get-value("engtype")
-        lc-loeng                            = get-value("loeng")
-        lc-hieng                            = get-value("hieng")
         lc-repType                          = get-value("reptype")
+        lc-selectengineer = get-value("selectengineer")
         
         .
     IF request_method = "GET" THEN
@@ -159,11 +199,7 @@ PROCEDURE ip-InitialProcess :
         
         IF lc-hidate = ""
             THEN ASSIGN lc-hidate = STRING(TODAY, "99/99/9999").
-        
-        ASSIGN
-            lc-loeng = ENTRY(1,lc-eng-code,"|")
-            lc-hieng = ENTRY(NUM-ENTRIES(lc-eng-code,"|"),lc-eng-code,"|")
-            .
+
         
     END.
 
@@ -188,8 +224,7 @@ PROCEDURE ip-ProcessReport :
         lc-global-user,
         DATE(lc-lodate),
         DATE(lc-hidate),
-        lc-loeng,
-        lc-hieng,
+        lc-selectEngineer,
         lc-engtype,
         OUTPUT TABLE tt-engtime
 
@@ -253,25 +288,17 @@ PROCEDURE ip-Selection :
     
     {&out} '<TD VALIGN="TOP" ALIGN="left">'
     htmlib-Select("reptype","DET|SUM","Detailed|Summary",lc-reptype) 
-    '</TD></tr><tr>' skip.
+    '</TD></tr>' skip.
     
-    {&out} '<TD VALIGN="TOP" ALIGN="right">' 
-        (IF LOOKUP("loeng",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("From Engineer")
-        ELSE htmlib-SideLabel("From Engineer"))    '</TD>'.
-    
-    {&out} '<TD COLSPAN=6 VALIGN="TOP" ALIGN="left">'
-    htmlib-Select("loeng",lc-eng-Code,lc-eng-desc,lc-loeng) 
-    '</TD></tr><tr>' skip.
-    
-    {&out} '<TD VALIGN="TOP" ALIGN="right">' 
-        (IF LOOKUP("hieng",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("To Engineer")
-        ELSE htmlib-SideLabel("To Engineer"))    '</TD>'.
-    
-    {&out} '<TD COLSPAN=6 VALIGN="TOP" ALIGN="left">'
-    htmlib-Select("hieng",lc-eng-Code,lc-eng-desc,lc-hieng) 
-    '</TD>' skip.
+    {&out} '<tr><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("selectengineer",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Engineer(s)")
+        ELSE htmlib-SideLabel("Engineer(s)"))    '</TD><td colpan="7">'.
+    RUN ip-engineer-select.
+     
+    {&out} '</td>'.
+     
+
    
     {&out} '</tr></table>' skip.
 END PROCEDURE.
@@ -294,7 +321,12 @@ PROCEDURE ip-Validate :
     DEFINE VARIABLE ld-hidate AS DATE      NO-UNDO.
     DEFINE VARIABLE li-loop   AS INTEGER   NO-UNDO.
     DEFINE VARIABLE lc-rowid  AS CHARACTER NO-UNDO.
-
+   
+    IF lc-selectengineer BEGINS "ALL," AND NUM-ENTRIES(lc-selectengineer) > 1 THEN lc-selectengineer = substr(lc-selectengineer,INDEX(lc-selectengineer,",") + 1).
+    
+    IF lc-selectEngineer = ""
+    THEN lc-selectEngineer  = "ALL".
+    
     ASSIGN
         ld-lodate = DATE(lc-lodate) no-error.
     IF ERROR-STATUS:ERROR 
@@ -319,13 +351,6 @@ PROCEDURE ip-Validate :
         THEN RUN htmlib-AddErrorMessage(
             'lodate', 
             'The date range is invalid',
-            INPUT-OUTPUT pc-error-field,
-            INPUT-OUTPUT pc-error-msg ).
-
-    IF lc-loeng > lc-hieng THEN
-        RUN htmlib-AddErrorMessage(
-            'loeng', 
-            'The Engineer range is invalid',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 

@@ -12,6 +12,7 @@
     24/01/2015  phoski      stop 'open' actions if the issue is closed
     09/05/2015  phoski      Complex Project
     20/10/2015  phoski      com-GetHelpDeskEmail for email sender
+    12/03/2016  phoski      Customer view flag is on by default
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -604,8 +605,7 @@ PROCEDURE process-web-request :
         ASSIGN 
             lc-assign = lc-global-user
             lc-actiondate = STRING(TODAY,'99/99/9999')
-            lc-customerview = 
-                       IF Customer.ViewAction THEN "on" ELSE "".
+            lc-customerview = "on".
     END.
 
 

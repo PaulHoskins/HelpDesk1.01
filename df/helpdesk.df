@@ -5124,6 +5124,14 @@ ADD FIELD "StdColour" OF "WebStdTime" AS character
   COLUMN-LABEL "Colour"
   ORDER 110
 
+ADD INDEX "prim" ON "WebStdTime" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "LoginID" ASCENDING 
+  INDEX-FIELD "StdWkYear" ASCENDING 
+
 ADD TABLE "WebUser"
   AREA "Schema Area"
   DUMP-NAME "webuser"
@@ -5547,4 +5555,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000110052
+0000110246

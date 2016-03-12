@@ -9,6 +9,7 @@
     
     When        Who         What
     04/12/2014  phoski      Initial  
+    12/03/2016  phoski      Engineer in lookup list instead of range
    
 ***********************************************************************/
 
@@ -16,15 +17,14 @@
 
 
 
-DEFINE INPUT PARAMETER pc-companycode   AS CHARACTER         NO-UNDO.
-DEFINE INPUT PARAMETER pc-loginid       AS CHARACTER         NO-UNDO.
-DEFINE INPUT PARAMETER pd-FromDate      AS DATE              NO-UNDO.
-DEFINE INPUT PARAMETER pd-ToDate        AS DATE              NO-UNDO.
-DEFINE INPUT PARAMETER pc-fromeng       AS CHARACTER         NO-UNDO.
-DEFINE INPUT PARAMETER pc-toeng         AS CHARACTER         NO-UNDO.
-DEFINE INPUT PARAMETER pc-engtype       AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pc-companycode       AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pc-loginid           AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pd-FromDate          AS DATE              NO-UNDO.
+DEFINE INPUT PARAMETER pd-ToDate            AS DATE              NO-UNDO.
+DEFINE INPUT PARAMETER pc-SelectEngineer    AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pc-engtype           AS CHARACTER         NO-UNDO.
 
-DEFINE OUTPUT PARAMETER table           FOR tt-engtime.
+DEFINE OUTPUT PARAMETER table               FOR tt-engtime.
 
 
 
@@ -62,16 +62,19 @@ PROCEDURE ip-BuildData :
         WHERE iact.companycode = pc-companyCode
         AND iact.startdate >= pd-FromDate
         AND iact.startDate <= pd-ToDate
-        AND iact.activityBy >= pc-fromeng
-        AND iact.activityBy <= pc-toeng,
+        ,
         FIRST iss NO-LOCK
         WHERE iss.companycode = iact.companycode
         AND iss.IssueNumber = iact.IssueNumber
         
         :
+             
         FIND WebUser WHERE WebUser.LoginID = iact.activityBy NO-LOCK NO-ERROR.
         IF NOT AVAILABLE WebUser THEN NEXT.
-        
+        IF pc-SelectEngineer <> "ALL" THEN
+        DO:
+            IF LOOKUP(WebUser.LoginID,pc-SelectEngineer) = 0 THEN NEXT.
+        END.
         IF pc-engType <> "" AND pc-engType <> WebUser.engType THEN NEXT.
         
         FIND FIRST tt-engtime 
@@ -103,10 +106,10 @@ END PROCEDURE.
 &ENDIF
 
 PROCEDURE ip-BuildDefaultInfo:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
     
     DEFINE BUFFER WebUser FOR WebUser.
     DEFINE BUFFER WebStdTime FOR WebStdTime.
@@ -119,12 +122,15 @@ PROCEDURE ip-BuildDefaultInfo:
     
     FOR EACH WebUser NO-LOCK
         WHERE webuser.companyCode = pc-companyCode
-          AND WebUser.UserClass = "INTERNAL"
-          AND WebUser.LoginID >= pc-fromEng
-          AND WebUser.LoginID <= pc-ToEng
-          : 
+        AND WebUser.UserClass = "INTERNAL"
+        : 
         
               
+        IF pc-SelectEngineer <> "ALL" THEN
+        DO:
+            IF LOOKUP(WebUser.LoginID,pc-SelectEngineer) = 0 THEN NEXT.
+        END.
+             
         IF pc-engType <> "" AND pc-engType <> WebUser.engType THEN NEXT.
         
         
@@ -137,16 +143,16 @@ PROCEDURE ip-BuildDefaultInfo:
             
         END.
         FOR EACH tt-engtime EXCLUSIVE-LOCK 
-                WHERE tt-engtime.loginid = WebUser.LoginID :
+            WHERE tt-engtime.loginid = WebUser.LoginID :
     
             ASSIGN
                 li-day = com-DayOfWeek(tt-engtime.startdate,2).
                            
             FIND WebStdTime
                 WHERE WebStdTime.CompanyCode = WebUser.CompanyCode
-                  AND WebStdTime.LoginID = WebUser.LoginID
-                  AND WebStdTime.StdWkYear = year(tt-engtime.startdate)
-                  NO-LOCK NO-ERROR.
+                AND WebStdTime.LoginID = WebUser.LoginID
+                AND WebStdTime.StdWkYear = year(tt-engtime.startdate)
+                NO-LOCK NO-ERROR.
             IF AVAILABLE WebStdTime THEN
             DO:
                 ASSIGN
@@ -155,18 +161,18 @@ PROCEDURE ip-BuildDefaultInfo:
                     - (TRUNCATE(WebStdTime.StdAMStTime[li-Day] / 100,0) + dec(WebStdTime.StdAMStTime[li-Day] MODULO 100 / 60)))            /* convert time to decimal  */ 
                      + ((TRUNCATE(WebStdTime.StdPMEndTime[li-Day] / 100,0) + dec(WebStdTime.StdPMEndTime[li-Day] MODULO 100 / 60))          /* convert time to decimal  */                               
                       - (TRUNCATE(WebStdTime.StdPMStTime[li-Day] / 100,0) + dec(WebStdTime.StdPMStTime[li-Day] MODULO 100 / 60))) 
-                      .     
+                    .     
                           
-               ASSIGN
-                  tt-engtime.StdMins = (lf-hours * 60) * 60.
+                ASSIGN
+                    tt-engtime.StdMins = (lf-hours * 60) * 60.
                    
             END.
                   
             FIND FIRST WebUserTime 
                 WHERE WebUserTime.CompanyCode = WebUser.CompanyCode                   
-                  AND WebUserTime.LoginID     = WebUser.LoginID                           
-                  AND WebUserTime.EventDate   = tt-engtime.startdate
-                  NO-LOCK NO-ERROR.
+                AND WebUserTime.LoginID     = WebUser.LoginID                           
+                AND WebUserTime.EventDate   = tt-engtime.startdate
+                NO-LOCK NO-ERROR.
             IF AVAILABLE WebUserTime THEN
             DO:
                 ASSIGN 
@@ -175,25 +181,31 @@ PROCEDURE ip-BuildDefaultInfo:
                     tt-engtime.AdjReason = WebUserTime.EventType.
                     
                 CASE WebUserTime.EventType:
-                    WHEN 'BANK' THEN tt-engtime.AdjReason = "Bank Holiday".
-                    WHEN 'LEAVE' THEN tt-engtime.AdjReason = "A/Leave".
-                    WHEN 'SICK' THEN tt-engtime.AdjReason = "Sickness".
-                    WHEN 'DOC' THEN tt-engtime.AdjReason = "Doctor".
-                    WHEN 'DENT' THEN tt-engtime.AdjReason = "Dentist".
-                    WHEN 'OT' THEN tt-engtime.AdjReason = "Overtime".
+                    WHEN 'BANK' THEN 
+                        tt-engtime.AdjReason = "Bank Holiday".
+                    WHEN 'LEAVE' THEN 
+                        tt-engtime.AdjReason = "A/Leave".
+                    WHEN 'SICK' THEN 
+                        tt-engtime.AdjReason = "Sickness".
+                    WHEN 'DOC' THEN 
+                        tt-engtime.AdjReason = "Doctor".
+                    WHEN 'DENT' THEN 
+                        tt-engtime.AdjReason = "Dentist".
+                    WHEN 'OT' THEN 
+                        tt-engtime.AdjReason = "Overtime".
                 END CASE.    
             END.
             ELSE
             DO:
                 FIND holiday 
                     WHERE holiday.companyCode = webuser.CompanyCode
-                      AND holiday.hDate = tt-engtime.startdate
-                      AND Holiday.observed = TRUE
-                      NO-LOCK NO-ERROR.
+                    AND holiday.hDate = tt-engtime.startdate
+                    AND Holiday.observed = TRUE
+                    NO-LOCK NO-ERROR.
                 IF AVAILABLE Holiday
-                THEN ASSIGN
-                    tt-engtime.AdjTime = tt-engtime.StdMins * -1
-                    tt-engtime.AdjReason = Holiday.descr.     
+                    THEN ASSIGN
+                        tt-engtime.AdjTime = tt-engtime.StdMins * -1
+                        tt-engtime.AdjReason = Holiday.descr.     
             
             END.
                           
@@ -207,24 +219,24 @@ PROCEDURE ip-BuildDefaultInfo:
 END PROCEDURE.
 
 PROCEDURE ip-CleanData:
-/*------------------------------------------------------------------------------
-		Purpose:  																	  
-		Notes:  																	  
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/
 
     FOR EACH tt-engtime EXCLUSIVE-LOCK:
     
         IF tt-engtime.StdMins = 0 
-        AND tt-engtime.NonBillAble = 0
-        AND tt-engtime.BillAble = 0 
-        AND tt-engtime.AdjTime = 0 
-        THEN DELETE tt-engtime.
+            AND tt-engtime.NonBillAble = 0
+            AND tt-engtime.BillAble = 0 
+            AND tt-engtime.AdjTime = 0 
+            THEN DELETE tt-engtime.
         ELSE
-        IF tt-engtime.StdMins = 0 
-        AND tt-engtime.NonBillAble = 0
-        AND tt-engtime.BillAble = 0 
-        AND tt-engtime.AdjTime = tt-engtime.AvailTime
-        THEN DELETE tt-engtime.
+            IF tt-engtime.StdMins = 0 
+                AND tt-engtime.NonBillAble = 0
+                AND tt-engtime.BillAble = 0 
+                AND tt-engtime.AdjTime = tt-engtime.AvailTime
+                THEN DELETE tt-engtime.
         
     END.
     

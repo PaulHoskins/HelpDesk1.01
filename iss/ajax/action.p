@@ -12,7 +12,9 @@
     21/03/2007  phoski      Sort Activity by DATE/CREATE TIME desc
     03/04/2015  phoski      ActionID = ? - its from a project task so 
                             use actDescription
-    05/05/2015  phoski      Complex project                        
+    05/05/2015  phoski      Complex project     
+    12/03/2016  phoski      Click on action + symbol will expand/shrink
+                            the action boxes also                   
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -382,6 +384,10 @@ PROCEDURE ip-StandardActionTable:
             Notes:  																	  
     ------------------------------------------------------------------------------*/
 
+    DEFINE VARIABLE lc-this-class   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE li-class-count  AS INTEGER NO-UNDO.
+    
+    
     {&out} skip
           replace(htmlib-StartMntTable(),'width="100%"','width="100%" align="center"').
     {&out}
@@ -407,7 +413,10 @@ PROCEDURE ip-StandardActionTable:
         END.
         ELSE  ASSIGN lc-descr = b-query.ActDescription.
         
-
+        ASSIGN
+           li-class-count = li-class-count + 1 
+           lc-this-class = "cl" + STRING(li-class-count).
+        
         ASSIGN
             li-duration = 0.
         FOR EACH IssActivity NO-LOCK
@@ -445,7 +454,7 @@ PROCEDURE ip-StandardActionTable:
             ,'left')
         htmlib-MntTableField(lc-Audit,'left').
 
-        IF b-query.notes <> "" THEN
+        IF b-query.notes <> "" OR 1 = 1 THEN
         DO:
         
             ASSIGN 
@@ -462,10 +471,22 @@ PROCEDURE ip-StandardActionTable:
 
             ASSIGN 
                 substr(lc-info,1,li-tag-end) = "".
+            /*
+            {&out} 
+            '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
+            lc-object 
+            
+            '~')">':U skip.
+            */
             
             {&out} 
             '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
-            lc-object '~')">':U skip.
+            lc-object 
+            
+            '~')' SKIP
+            ";actionExpand(this,~'" lc-this-class "~')"
+            '">':U skip.
+            
             {&out} lc-info.
     
             {&out} htmlib-ExpandBox(lc-object,b-query.Notes).
@@ -566,11 +587,12 @@ PROCEDURE ip-StandardActionTable:
                     substr(lc-info,1,li-tag-end) = "".
                 
                 {&out} 
-                '<img class="expandboxi" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
+                '<img class="expandboxi i' lc-this-class '" src="/images/general/plus.gif" onClick="hdexpandcontent(this, ~''
                 lc-object '~')">':U skip.
                 {&out} lc-info.
         
-                {&out} htmlib-ExpandBox(lc-object,IssActivity.Notes).
+                {&out} REPLACE(htmlib-ExpandBox(lc-object,IssActivity.Notes),
+                        'class="','class="' + lc-this-class + " ").
     
                 {&out} '</td>' skip.
             END.

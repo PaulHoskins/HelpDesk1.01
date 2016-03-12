@@ -14,6 +14,7 @@
     19/03/2015  phoski      Various DJS issues
     24/03/2015  phoski      No more js prompt on time start/end diffs
     09/05/2015  phoski      Complex Project
+    12/03/2016  phoski      Customer view flag is on by default
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1432,7 +1433,8 @@ PROCEDURE process-web-request :
                 lc-TimeHourSet    = "0"
                 lc-saved-activity = "0"
                 zx                = zx + 1
-                li-opener         = 2 .
+                li-opener         = 2
+                lc-customerview   = "on" .
   
 
 
@@ -1720,26 +1722,7 @@ PROCEDURE process-web-request2 :
                             b-table.StartDate = ?
                             b-table.StartTime = 0.
                     END.
-                    /** for now 20/3/15 - will calc these
-                    IF lc-enddate <> "" THEN
-                    DO:
-                        ASSIGN 
-                            b-table.EndDate = DATE(lc-endDate).
-    
-                        ASSIGN 
-                            b-table.Endtime = DYNAMIC-FUNCTION("com-InternalTime",
-                                        int(lc-endhour),
-                                        int(lc-endmin)
-                                        ).
-                        
-                    END.
-                    ELSE 
-                    DO:
-                        ASSIGN 
-                            b-table.EndDate = ?
-                            b-table.EndTime = 0.
-                    END.
-                    **/
+                   
                     ASSIGN 
                         b-table.Duration = ( ( int(lc-hours) * 60 ) * 60 ) + 
                         ( int(lc-mins) * 60 ).
@@ -1874,7 +1857,7 @@ PROCEDURE process-web-request2 :
         ASSIGN 
             lc-activityby   = lc-global-user
             lc-actdate      = STRING(TODAY,"99/99/9999")
-            lc-customerview = IF Customer.ViewActivity THEN "on" ELSE "".
+            lc-customerview = "on".
     END.
 
 END PROCEDURE.
