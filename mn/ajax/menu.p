@@ -20,6 +20,7 @@
     25/04/2015  phoski      Project Schedule
     24/05/2015  phoski      Dashboard Links
     22/10/2015  phoski      Link to issue page is by trafic light/asc
+    13/03/2016  phoski      Change assignment build query
                               
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -81,9 +82,7 @@ DEFINE TEMP-TABLE tt NO-UNDO
     INDEX i-ACode IS PRIMARY ACode 
     INDEX i-ACount           ACount DESCENDING ADescription.
 
-DEFINE VARIABLE mytime AS INTEGER.
 
-ETIME(YES).
 
 
 
@@ -361,30 +360,26 @@ PROCEDURE ip-SuperUserAnalysis :
     DEFINE BUFFER Issue       FOR Issue.
     DEFINE BUFFER webUsteam   FOR webUsteam.
     DEFINE BUFFER customer    FOR customer.
-
-
-
     DEFINE BUFFER b-WebStatus FOR WebStatus.
+    
     DEFINE VARIABLE ll-Steam AS LOG       NO-UNDO.
 
-    DEFINE VARIABLE badList  AS CHARACTER NO-UNDO.
+
     DEFINE VARIABLE iloop    AS INTEGER   NO-UNDO.
 
     ll-Steam = DYNAMIC-FUNCTION("com-isTeamMember", lc-global-company,lc-user,?).
 
-    FOR EACH WebStatus 
-        WHERE WebStatus.Completed = TRUE 
-        AND WebStatus.CompanyCode = lc-global-company
-        NO-LOCK:
-        ASSIGN 
-            badList = WebStatus.StatusCode + "," + badList.
-    END.
-
-    FOR EACH Issue NO-LOCK
-        WHERE Issue.CompanyCode = lc-global-company
-        AND Issue.AssignTo    <> ""
-        AND INDEX(badList,Issue.StatusCode)  = 0:
-    
+    FOR EACH WebStatus NO-LOCK
+        WHERE WebStatus.CompanyCode = lc-global-company
+          AND WebStatus.CompletedStatus = FALSE,
+          EACH Issue NO-LOCK
+            WHERE Issue.CompanyCode = lc-global-company
+              AND Issue.StatusCode = WebStatus.StatusCode
+              :
+        
+        IF Issue.AssignTo = "" THEN NEXT.
+        
+          
         IF ll-Steam THEN
         DO:
             FIND customer OF issue NO-LOCK NO-ERROR.
@@ -394,19 +389,14 @@ PROCEDURE ip-SuperUserAnalysis :
     
             IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = lc-user
                 AND webusteam.st-num = customer.st-num NO-LOCK) 
-            
-                THEN NEXT.
+            THEN NEXT.
             
             IF NOT CAN-FIND(FIRST webUsteam WHERE webusteam.loginid = Issue.assignTo
                 AND webusteam.st-num = customer.st-num NO-LOCK) 
-            
-                THEN NEXT.
-            
-            
-            
-            
-
+            THEN NEXT.
+        
         END.
+        
         ASSIGN 
             li-total = li-total + 1.
     
@@ -449,7 +439,7 @@ PROCEDURE ip-SuperUserFinal :
 
     FIND FIRST tt NO-LOCK NO-ERROR.
     
-    mytime = ETIME.
+    
     
     IF AVAILABLE tt THEN
     DO:

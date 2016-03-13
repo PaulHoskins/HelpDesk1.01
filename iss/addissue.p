@@ -32,7 +32,8 @@
                             adds unassigned
     20/10/2015  phoski      com-GetHelpDeskEmail for email sender  
     14/11/2015  phoski      No Ad hoc contract and a type must be entered  
-    23/02/2016  phoski      isDecom flag                
+    23/02/2016  phoski      isDecom flag     
+    13/03/2016  phoski      Customer view on action default to yes           
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -2600,15 +2601,20 @@ PROCEDURE process-web-request :
             END.
         END.
         ELSE 
+        /*
+        ***
+        *** Account Change and post method
+        ***
+        */
         DO:
             ASSIGN 
-                lc-raisedLogin = htmlib-Null().
+                lc-raisedLogin = htmlib-Null()                .
             FIND Customer WHERE customer.CompanyCode = lc-global-company
                 AND customer.AccountNumber = lc-AccountNumber   NO-LOCK NO-ERROR.
             IF AVAILABLE customer THEN
             DO:
                 ASSIGN 
-                    lc-customerview = IF Customer.ViewAction THEN "on" ELSE ""
+                    lc-customerview = "on" 
                     lc-uadd-phone   = Customer.telephone.
                 .
                 IF customer.DefaultSLAID <> 0 THEN
@@ -2628,7 +2634,7 @@ PROCEDURE process-web-request :
             lc-list-number = customer.AccountNumber
             lc-list-name   = customer.Name.
         IF request_method = "GET"
-            THEN ASSIGN lc-customerview = IF Customer.ViewAction THEN "on" ELSE "".
+            THEN ASSIGN lc-customerview = "on".
     END.
     ELSE RUN ip-GetAccountNumbers ( INPUT lc-user,OUTPUT lc-list-number,OUTPUT lc-list-name ).
     RUN ip-GetOwner ( INPUT lc-accountnumber,OUTPUT lc-list-login,OUTPUT lc-list-lname ).
@@ -2646,6 +2652,7 @@ PROCEDURE process-web-request :
             lc-raisedlogin  = IF ll-customer THEN lc-user ELSE htmlib-Null()
             lc-areacode     = htmlib-Null()
             lc-gotomaint    = "on"
+            lc-customerview = "on"
             lc-sla-selected = IF lc-global-company = "MICAR" THEN "slanone" 
                              ELSE IF AVAILABLE slahead THEN  "sla" + string(ROWID(slahead))
                              ELSE "slanoneZZZZ" 
@@ -2674,7 +2681,7 @@ PROCEDURE process-web-request :
                 IF AVAILABLE customer THEN
                 DO:
                     ASSIGN 
-                        lc-customerview  = IF Customer.ViewAction THEN "on" ELSE ""
+                        lc-customerview  = "on" 
                         lc-sla-rows      = com-CustomerAvailableSLA(lc-global-company,customer.AccountNumber)
                         lc-list-number   = customer.AccountNumber
                         lc-list-name     = customer.name

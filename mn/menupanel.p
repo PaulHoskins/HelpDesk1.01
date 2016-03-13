@@ -160,7 +160,6 @@ PROCEDURE process-web-request :
       Notes:       
     ------------------------------------------------------------------------------*/
     
-    
    
     DEFINE VARIABLE lc-value AS CHARACTER NO-UNDO.
 
