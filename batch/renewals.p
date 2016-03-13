@@ -10,6 +10,7 @@
     When        Who         What
     03/09/2010  DJS         Initial build
     10/12/2014  phoski      Tidy up from above hacker
+    13/03/2016  phoski      Ignore decommission inventory
 
 ***********************************************************************/
 
@@ -137,7 +138,7 @@ FIND Company WHERE Company.CompanyCode = lc-global-company NO-LOCK NO-ERROR.
 
     
 ASSIGN
-    lc-report = SESSION:TEMP-DIRECTORY + "/" + replace(CAPS(lc-global-company)," ","") + "-Renewals.log"
+    lc-report = "c:/temp/" + replace(CAPS(lc-global-company)," ","") + "-Renewals.log"
     dLimit = TODAY.
     
 OUTPUT stream srep to value(lc-report) unbuffered.
@@ -178,6 +179,8 @@ FOR EACH customer NO-LOCK
         BY CustIv.Ref
         WITH FRAME f-report DOWN WIDTH 255 STREAM-IO:
     
+        IF CustIv.isDecom THEN NEXT.
+        
     
         FIND b-ivSub OF CustIv NO-LOCK NO-ERROR.
     
