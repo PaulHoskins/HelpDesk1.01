@@ -11,6 +11,7 @@
     15/06/2015  phoski      Initial
     26/11/2015  phoski      Account Status
     12/03/2016  phoski      Change page to shrink width
+    15/03/2016  phoski      Selection of contract status and show it
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -36,11 +37,17 @@ DEFINE VARIABLE lc-selectcustomer AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-output         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-cs             AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-co             AS CHARACTER NO-UNDO.
+
 
 DEFINE VARIABLE lc-output-code    AS CHARACTER INITIAL 'WEB|CSV' NO-UNDO.
 DEFINE VARIABLE lc-output-desc    AS CHARACTER INITIAL 'Web Page|Email CSV' NO-UNDO.
 DEFINE VARIABLE lc-cs-code        AS CHARACTER INITIAL "ALL|ACT|INACT" NO-UNDO.
 DEFINE VARIABLE lc-cs-desc        AS CHARACTER INITIAL 'All Customers|Active Customers|Inactive Customers' NO-UNDO.
+
+DEFINE VARIABLE lc-co-code        AS CHARACTER INITIAL "ALL|ACT|INACT" NO-UNDO.
+DEFINE VARIABLE lc-co-desc        AS CHARACTER INITIAL 'All Contracts|Active Contracts|Inactive Contracts' NO-UNDO.
+
 
 
 {rep/custprofit-tt.i}
@@ -87,7 +94,7 @@ PROCEDURE ip-EmailCSV:
         OUTPUT TO VALUE(lc-filename).
     
         PUT UNFORMATTED
-            '"Customer","Contract","Contact Period","Contract Days","Revenue Days","Daily Rate","Gross Profit %","Contract Value","Billable","NonBillable","Total","Revenue","Cost","Gross Profit"' SKIP.
+            '"Customer","Contract","Active","Contact Period","Contract Days","Revenue Days","Daily Rate","Gross Profit %","Contract Value","Billable","NonBillable","Total","Revenue","Cost","Gross Profit"' SKIP.
      
         FOR EACH tt-custp NO-LOCK 
             BY tt-custp.SortField:
@@ -103,6 +110,7 @@ PROCEDURE ip-EmailCSV:
             EXPORT DELIMITER ','
                 tt-custp.name
                 IF tt-custp.ContractCode = cc-TotalKey THEN "" ELSE tt-custp.ContractCode
+                IF tt-custp.ContractCode = cc-TotalKey THEN "" ELSE STRING(tt-custp.ConActive)
                 lc-dates
                 tt-custp.ndays[1]
                 tt-custp.rdays[1]
@@ -207,6 +215,12 @@ PROCEDURE ip-ReportSelectionHTML:
     htmlib-SideLabel("Output To") htmlib-Select("output",lc-output-code,lc-output-desc,get-value("output")) 
     '</td>'
     '</tr><tr>'
+    '<td valign="top" align="right">'
+    htmlib-SideLabel("Customer Status") 
+    '</td><td valign="top" align="left">'
+    htmlib-Select("co",lc-co-code,lc-co-desc,get-value("co")) 
+    '</td>'
+    '</tr><tr>'
     '<td valign="top" align="right">' 
         (IF LOOKUP("customer",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("Customer(s)")
@@ -294,7 +308,7 @@ PROCEDURE ip-ReportWebPage:
         
         '</tr>' SKIP
     htmlib-TableHeading(
-    'Customer^left|Contract^left|Contract Period^right|Contract Days^right|Revenue Days^right|Daily Rate^right|Gross Profit %^right|Contract Value</br>PA^right|Billable^right|Non Billable^right|Total^right|Revenue^right|Cost^right|Gross Profit^right' ) 
+    'Customer^left|Contract^left|Active^leftContract Period^right|Contract Days^right|Revenue Days^right|Daily Rate^right|Gross Profit %^right|Contract Value</br>PA^right|Billable^right|Non Billable^right|Total^right|Revenue^right|Cost^right|Gross Profit^right' ) 
     SKIP.
         
                           
@@ -329,6 +343,7 @@ PROCEDURE ip-ReportWebPage:
                  replib-RepField( IF tt-custp.ContractCode = cc-TotalKey AND tt-custp.AccountNumber = cc-totalKey THEN "Report Total" else
                  IF tt-custp.ContractCode = cc-TotalKey THEN "Total" else tt-custp.contractCode,
                  IF tt-custp.ContractCode = cc-TotalKey then 'right' ELSE 'left',lc-tot-style2)
+                 replib-RepField(IF tt-custp.ContractCode = cc-TotalKey THEN "" ELSE string(tt-custp.ConActive) ,'left','')
                  replib-RepField(IF tt-custp.cbegin = ? THEN "" ELSE lc-dates ,'right',lc-tot-style2)
                  replib-RepField(IF tt-custp.cbegin = ? THEN "" ELSE string(tt-custp.ndays[1]) ,'right',lc-tot-style2)
                  replib-RepField(IF tt-custp.cbegin = ? THEN "" ELSE string(tt-custp.rdays[1]) ,'right',lc-tot-style2)
@@ -495,6 +510,7 @@ PROCEDURE process-web-request :
             lc-selectcustomer = get-value("selectcustomer")
             lc-output  = get-value("output")
             lc-cs       = get-value("cs")
+            lc-co       = get-value("co")
             .
             
         RUN ip-Validate( OUTPUT lc-error-field,
@@ -508,6 +524,7 @@ PROCEDURE process-web-request :
                 DATE(lc-hiDate),
                 lc-SelectCustomer,
                 lc-cs,
+                lc-co,
                 OUTPUT TABLE tt-custp ).
          
         END.          

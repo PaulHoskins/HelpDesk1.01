@@ -11,6 +11,7 @@
     15/06/2015  phoski      Initial
     25/10/2015  phoski      Revenue and Costs fields
     10/11/2015  phoski      Report on contract per period
+    15/03/2016  phoski      conActive flag
    
 ***********************************************************************/
 DEFINE VARIABLE cc-TotalKey     AS CHARACTER INITIAL "zzzzz_total_zzzzz" NO-UNDO.
@@ -22,7 +23,8 @@ DEFINE TEMP-TABLE tt-custp NO-UNDO
     FIELD cbegin            LIKE ContractRate.cBegin
     
     FIELD cValue            LIKE ContractRate.cValue
-    FIELD contract_no       LIKE webissCont.Contract_no
+    FIELD contract_no       LIKE WebissCont.Contract_no
+    FIELD ConActive         LIKE WebissCont.ConActive
     
     FIELD cend              AS DATE
     
@@ -50,7 +52,8 @@ DEFINE TEMP-TABLE tt-custt NO-UNDO
     FIELD cbegin        LIKE ContractRate.cBegin
     FIELD isDefault     AS LOG
     
-    FIELD contract_no       LIKE webissCont.Contract_no
+    FIELD contract_no       LIKE WebissCont.Contract_no
+    FIELD ConActive         LIKE WebissCont.ConActive
     
     FIELD cend              AS DATE
       

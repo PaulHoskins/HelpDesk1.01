@@ -11,6 +11,7 @@
     15/06/2015  phoski      Initial
     26/11/2015  phoski      Contract Totals only for 'current' and
                             customer status
+    15/03/2016  phoski      Contract Status                        
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -21,7 +22,9 @@ DEFINE INPUT PARAMETER pc-CompanyCode   AS CHARACTER    NO-UNDO.
 DEFINE INPUT PARAMETER pd-DateFrom      AS DATE         NO-UNDO.
 DEFINE INPUT PARAMETER pd-DateTo        AS DATE         NO-UNDO.
 DEFINE INPUT PARAMETER pc-CustomerList  AS CHARACTER    NO-UNDO.
-DEFINE INPUT PARAMETER pc-CStatus       AS CHARACTER    NO-UNDO.
+DEFINE INPUT PARAMETER pc-CustStatus    AS CHARACTER    NO-UNDO.
+DEFINE INPUT PARAMETER pc-ContStatus    AS CHARACTER    NO-UNDO.
+
 
 DEFINE OUTPUT PARAMETER table           FOR tt-custp.
 
@@ -41,10 +44,7 @@ DEFINE BUFFER ContractType FOR ContractType.
 ASSIGN
     ld-YearStart = DATE(1,1,YEAR(pd-DateFrom)).
     
-/*
-ASSIGN 
-    ld-YearStart = pd-dateFRom.
-*/
+
     
 RUN ip-Build.
 
@@ -91,12 +91,20 @@ PROCEDURE ip-Build:
         DO:
             IF LOOKUP(Customer.AccountNumber,pc-CustomerList) = 0 THEN NEXT.
         END.
-        IF pc-cStatus <> "ALL" THEN
+        IF pc-CustStatus <> "ALL" THEN
         DO:
-            IF pc-cstatus = "ACT" AND Customer.IsActive = FALSE THEN NEXT.
-            IF pc-cstatus = "INACT" AND Customer.IsActive = TRUE THEN NEXT.
+            IF pc-CustStatus = "ACT" AND Customer.IsActive = FALSE THEN NEXT.
+            IF pc-CustStatus = "INACT" AND Customer.IsActive = TRUE THEN NEXT.
             
         END.
+        
+        IF pc-ContStatus <> "ALL" THEN
+        DO:
+            IF pc-ContStatus = "ACT" AND webissCont.ConActive = FALSE THEN NEXT.
+            IF pc-ContStatus = "INACT" AND webissCont.ConActive = TRUE THEN NEXT.
+            
+        END.
+        
          
         FIND FIRST ContractType 
             WHERE ContractType.CompanyCode = customer.CompanyCode
@@ -147,7 +155,8 @@ PROCEDURE ip-Build:
                 CREATE tt-custt.  
                 ASSIGN 
                     tt-custt.AccountNumber = Customer.AccountNumber 
-                    tt-custt.ContractCode = WebissCont.contractCode
+                    tt-custt.ContractCode = WebissCont.ContractCode
+                    tt-custt.ConActive = WebissCont.conActive
                     tt-custt.cbegin = ld-cbegin
                     tt-custt.cvalue = lf-cvalue
                     tt-custt.cend = ld-cend
@@ -161,7 +170,8 @@ PROCEDURE ip-Build:
             CREATE tt-custt.  
             ASSIGN 
                 tt-custt.AccountNumber = Customer.AccountNumber 
-                tt-custt.ContractCode = WebissCont.contractCode
+                tt-custt.ContractCode = WebissCont.ContractCode
+                tt-custt.ConActive = WebissCont.conActive
                 tt-custt.cbegin = pd-datefrom
                 tt-custt.cvalue = 0.00
                 tt-custt.cend = pd-dateto
@@ -215,10 +225,10 @@ PROCEDURE ip-Build:
         END.
         FIND Customer WHERE Customer.companycode = Issue.CompanyCode
                         AND Customer.AccountNumber = Issue.AccountNumber NO-LOCK NO-ERROR.
-        IF pc-cStatus <> "ALL" THEN
+        IF pc-CustStatus <> "ALL" THEN
         DO:
-            IF pc-cstatus = "ACT" AND Customer.IsActive = FALSE THEN NEXT.
-            IF pc-cstatus = "INACT" AND Customer.IsActive = TRUE THEN NEXT.
+            IF pc-CustStatus = "ACT" AND Customer.IsActive = FALSE THEN NEXT.
+            IF pc-CustStatus = "INACT" AND Customer.IsActive = TRUE THEN NEXT.
             
         END.
             
@@ -341,6 +351,7 @@ PROCEDURE ip-Build:
                 ASSIGN 
                     tt-custp.AccountNumber = lc-account
                     tt-custp.contractCode = lc-code 
+                    tt-custp.ConActive = tt-custt.ConActive
                     tt-custp.cbegin = ld-cbegin
                     tt-custp.cend = ld-cend
                     tt-custp.cvalue = 0
