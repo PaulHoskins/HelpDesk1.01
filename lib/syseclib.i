@@ -1,6 +1,6 @@
 /***********************************************************************
 
-    Program:        lib/ssyseclib.i
+    Program:        lib/syseclib.i
     
     Purpose:        Security Lib     
     

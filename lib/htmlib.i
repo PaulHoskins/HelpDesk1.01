@@ -19,9 +19,10 @@
     13/09/2010  DJS         3708  Added Calendar Input Field Submit     
     25/09/2014  phoski      Include security lib   
     30/11/2014  phoski      htmlib-SelectTime       
-    26/03/2015  phoski      MntNoLines down max is 30               
-    
-***********************************************************************/
+    26/03/2015  phoski      MntNoLines down max is 30   
+    21/03/2016  phoski      Document Link Encrypt 
+          
+ ***********************************************************************/
 
 {lib/common.i}
 {lib/toolbar.i}
@@ -112,10 +113,11 @@ FUNCTION htmlib-CloseHeader RETURNS CHARACTER
 FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
     ( pc-companyCode AS CHARACTER,
     pc-AccountNumber AS CHARACTER,  
-    pc-appurl AS CHARACTER , 
-    pl-isCustomer AS LOG
+    pc-thisUser      AS CHARACTER , 
+    pc-appurl AS CHARACTER,
 
-    )  FORWARD.
+    
+     pl-isCustomer AS LOG)  FORWARD.
 
 
 FUNCTION htmlib-CustomerViewable RETURNS CHARACTER
@@ -765,6 +767,7 @@ END FUNCTION.
 FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
     ( pc-companyCode AS CHARACTER,
     pc-AccountNumber AS CHARACTER,  
+    pc-thisUser      AS CHARACTER,
     pc-appurl AS CHARACTER , 
     pl-isCustomer AS LOG
 
@@ -778,6 +781,8 @@ FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
     DEFINE VARIABLE btnLink   AS CHARACTER NO-UNDO.
     DEFINE VARIABLE vx        AS INTEGER   NO-UNDO.
     DEFINE VARIABLE lc-return AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-doc-key  AS CHARACTER NO-UNDO. 
+    
     
     FIND customer
         WHERE customer.CompanyCode = pc-CompanyCode
@@ -801,12 +806,18 @@ FUNCTION htmlib-CustomerDocs RETURNS CHARACTER
         IF pl-isCustomer AND doch.CustomerView = FALSE THEN NEXT.
         
     
+        ASSIGN 
+            lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",pc-thisUser,TODAY,"Document",STRING(ROWID(doch))).
+            
+         
+        lc-doc-key = DYNAMIC-FUNCTION("url-encode",lc-doc-key,"Query").
+        
         vx = vx + 1.
         IF vx > 3 THEN LEAVE.
       
         btnLink = 'javascript:OpenNewWindow('
             + '~'' + pc-appurl
-            + '/sys/docview.' + lc(doch.doctype) + '?docid=' + string(doch.docid)
+            + '/sys/docview.' + lc(doch.doctype) + '?docid=' + lc-doc-key
             + '~''
             + ');'.
         lc-return = lc-return + '<a class="button" href="' + btnLink 

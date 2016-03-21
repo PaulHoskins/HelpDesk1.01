@@ -1,19 +1,35 @@
+/***********************************************************************
+
+    Program:        sys/docview.p
+    
+    Purpose:        View a documment
+    
+    Notes:
+    
+    
+    When        Who         What
+    21/03/2016  phoski      Document Link Is Encrypted 
+          
+ ***********************************************************************/
+ 
 {src/web/method/wrap-cgi.i}
 {lib/htmlib.i}
 {lib/checkloggedin.i}
- 
-DEFINE VARIABLE li-docid AS INTEGER NO-UNDO.
 
-ASSIGN 
-    li-docid = dec(get-value("docid")).
+DEFINE VARIABLE lc-doc-key  AS CHARACTER    NO-UNDO. 
 
-FIND doch WHERE doch.docid = li-docid NO-LOCK NO-ERROR.
+
+ASSIGN
+    lc-doc-key = DYNAMIC-FUNCTION("sysec-DecodeValue",lc-global-user,TODAY,"Document",get-value("docid")).
+        
+FIND doch WHERE ROWID(doch) = to-rowid(lc-doc-key) NO-LOCK NO-ERROR.
 
 IF NOT AVAILABLE doch THEN
 DO:
     RUN ip-Error("Missing document").
     RETURN.
 END.
+
 
 CASE doch.doctype:
     WHEN "PDF" THEN output-content-type("application/pdf").
@@ -48,14 +64,10 @@ CASE doch.doctype:
     OTHERWISE
     DO:
         output-content-type("application/" + lc(doch.doctype)).
-    /*
-    run ip-Error("Unknown content type of " + doch.doctype).
-    return.
-    */
     END.
 END CASE.
 
-FOR EACH docl WHERE docl.docid = li-docid NO-LOCK:
+FOR EACH docl WHERE docl.docid = doch.docid NO-LOCK:
     PUT {&WEBSTREAM} control docl.rdata.
 END.
 
@@ -69,7 +81,7 @@ PROCEDURE ip-Error:
         '<html><head><title>Document Error</title></head>'
         '<body>'
         '<h1>This document can not be displayed</h1><br>'
-        '<h2>Document ID =' li-docid '</h2><br>'
+        '<h2>Reference ' get-value("docid") '</h2>'
         '<h2>' pc-error '</h2></body></html>' skip.
 
     RETURN.

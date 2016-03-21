@@ -10,8 +10,8 @@
     When        Who         What
     09/04/2006  phoski      Initial
     10/04/2006  phoski      CompanyCode
-    
     02/09/2010  DJS         3674 - Added Quickview facility
+    21/03/2016 phoski       Document Link Encrypt
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -48,6 +48,9 @@ DEFINE VARIABLE lc-deleterow    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-label   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-submit-label AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-url     AS CHARACTER NO-UNDO.
+
+DEFINE VARIABLE lc-doc-key      AS CHARACTER NO-UNDO. 
+
 
 DEFINE VARIABLE lc-type         AS CHARACTER 
     INITIAL "CUSTOMER" NO-UNDO.
@@ -324,6 +327,8 @@ PROCEDURE process-web-request :
         AND b-query.RelType = "customer"
         AND b-query.RelKey  = b-table.AccountNumber:
 
+        ASSIGN 
+            lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(b-query))).
         {&out}
             skip
             tbar-tr(rowid(b-query))
@@ -350,7 +355,7 @@ PROCEDURE process-web-request :
                           'javascript:OpenNewWindow('                                    
                           + '~'' + appurl 
                           + '/sys/docview.' 
-                            + lc(b-query.DocType) + '?docid=' + string(b-query.docid)
+                            + lc(b-query.DocType) + '?docid=' + url-encode(lc-doc-key,"Query")
                           + '~'' 
                           + ');'
                           ,"")

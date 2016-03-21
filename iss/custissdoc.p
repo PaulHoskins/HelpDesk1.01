@@ -10,6 +10,8 @@
     When        Who         What
     09/04/2006  phoski      Initial
     10/04/2006  phoski      CompanyCode
+    21/03/2016 phoski       Document Link Encrypt
+
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -22,6 +24,8 @@ CREATE WIDGET-POOL.
 
 DEFINE VARIABLE lc-error-field AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-error-msg   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-doc-key     AS CHARACTER NO-UNDO. 
+
 
 
 DEFINE VARIABLE lc-mode        AS CHARACTER NO-UNDO.
@@ -287,6 +291,9 @@ PROCEDURE process-web-request :
             IF b-query.CreateBy <> lc-global-user THEN NEXT.
         END.
         
+        ASSIGN 
+            lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(b-query))).
+            
         {&out}
             skip
             tbar-tr(rowid(b-query))
@@ -302,7 +309,7 @@ PROCEDURE process-web-request :
                           'javascript:OpenNewWindow('
                           + '~'' + appurl 
                           + '/sys/docview.' +
-                           b-query.DocType + '?docid=' + string(b-query.docid)
+                           b-query.DocType + '?docid=' + url-encode(lc-doc-key,"Query")
                           + '~'' 
                           + ');'
                           ,"")

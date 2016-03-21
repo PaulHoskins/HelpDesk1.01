@@ -10,6 +10,8 @@
     When        Who         What
     16/07/2006  phoski      Initial 
     24/07/2014  phoski      Team
+    21/03/2016  phoski      Document Link Encrypt
+    
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -27,6 +29,8 @@ DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-print  AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE li-max-lines   AS INTEGER   INITIAL 12 NO-UNDO.
+DEFINE VARIABLE lc-doc-key     AS CHARACTER NO-UNDO.
+
 
 
 DEFINE BUFFER b-query  FOR EmailH.
@@ -364,11 +368,14 @@ PROCEDURE process-web-request :
                     ASSIGN 
                         li-Attach = li-Attach + 1.
         
+                    ASSIGN 
+                        lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(doch))).
+            
                     {&out}
                     '<a class="tlink" style="border:none; width: 100%;" href="'
                         'javascript:OpenNewWindow('
                         + '~'' + appurl 
-                        + '/sys/docview.p?docid=' + string(doch.docid)
+                        + '/sys/docview.p?docid=' + url-encode(lc-doc-key,"Query")
                         + '~'' 
                         + ');'
                     '">'

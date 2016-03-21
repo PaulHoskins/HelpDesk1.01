@@ -10,6 +10,7 @@
     When        Who         What
     10/04/2006  phoski      CompanyCode    
     05/07/2006  phoski      Category  
+    21/03/2016  phoski      Document Link Encrypt
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -35,6 +36,7 @@ DEFINE VARIABLE lc-rowid       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-title       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-autoprint   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE ll-customer    AS LOG       NO-UNDO.
+DEFINE VARIABLE lc-doc-key     AS CHARACTER NO-UNDO. 
 
 DEFINE VARIABLE lc-Doc-TBAR    AS CHARACTER 
     INITIAL "doctb" NO-UNDO.
@@ -603,6 +605,9 @@ PROCEDURE ip-Document :
         IF ll-customer AND b-query.CustomerView = FALSE THEN NEXT.
         
 
+        ASSIGN 
+            lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(b-query))).
+            
         {&out}
         SKIP(1)
         tbar-trID(pc-ToolBarID,ROWID(b-query))
@@ -617,7 +622,7 @@ PROCEDURE ip-Document :
         tbar-Link("documentview",ROWID(b-query),
             'javascript:OpenNewWindow('
             + '~'' + appurl 
-            + '/sys/docview.' + lc(b-query.doctype) + '?docid=' + string(b-query.docid)
+            + '/sys/docview.' + lc(b-query.doctype) + '?docid=' + url-encode(lc-doc-key,"Query")
             + '~'' 
             + ');'
             ,"")

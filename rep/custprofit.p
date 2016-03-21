@@ -216,7 +216,7 @@ PROCEDURE ip-ReportSelectionHTML:
     '</td>'
     '</tr><tr>'
     '<td valign="top" align="right">'
-    htmlib-SideLabel("Customer Status") 
+    htmlib-SideLabel("Contract Status") 
     '</td><td valign="top" align="left">'
     htmlib-Select("co",lc-co-code,lc-co-desc,get-value("co")) 
     '</td>'

@@ -24,6 +24,7 @@
                             Changes
     08/11/2015 phoski       Account ref & default contract 
     23/02/2016 phoski       Decommission inventory not shown
+    21/03/2016 phoski       Document Link Encrypt
                         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -71,6 +72,7 @@ DEFINE VARIABLE lc-notes          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-supportticket  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-statementemail AS CHARACTER NO-UNDO.
 
+DEFINE VARIABLE lc-doc-key        AS CHARACTER NO-UNDO. 
 DEFINE VARIABLE lc-sla-rows       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-sla-selected   AS CHARACTER NO-UNDO.
 
@@ -383,6 +385,10 @@ PROCEDURE ip-CustomerDocuments :
             IF NOT doch.customerView THEN NEXT.
 
         END.
+        ASSIGN 
+           lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(doch))).
+            
+        
         {&out}
             skip
             tbar-trID(pc-ToolBarID,rowid(doch))
@@ -397,7 +403,8 @@ PROCEDURE ip-CustomerDocuments :
                  tbar-Link("documentview",rowid(doch),
                           'javascript:OpenNewWindow('
                           + '~'' + appurl 
-                          + '/sys/docview.' + lc(doch.doctype) + '?docid=' + string(doch.docid)
+                          + '/sys/docview.' + lc(doch.doctype) + '?docid=' + url-encode(lc-doc-key,"Query")
+
                           + '~'' 
                           + ');'
                           ,"")
@@ -550,7 +557,7 @@ IF b-query.notes = ""
 IF NOT ll-customer THEN
     {&out} htmlib-CustomerViewable(b-query.CompanyCode,b-Query.AccountNumber) SKIP.
 
-{&out} htmlib-CustomerDocs(b-query.CompanyCode,b-Query.AccountNumber,appurl,ll-customer)    /* 3674 */
+{&out} htmlib-CustomerDocs(b-query.CompanyCode,b-Query.AccountNumber,lc-global-user,appurl,ll-customer)    /* 3674 */
 
            skip.
 

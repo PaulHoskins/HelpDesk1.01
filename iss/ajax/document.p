@@ -9,6 +9,7 @@
     
     When        Who         What
     03/05/2006  phoski      Initial
+    21/03/2016  phoski      Document Link Encrypt
     
 
 ***********************************************************************/
@@ -18,7 +19,7 @@ CREATE WIDGET-POOL.
 DEFINE VARIABLE lc-rowid     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-toolbarid AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-toggle    AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-doc-key   AS CHARACTER NO-UNDO. 
 
 DEFINE BUFFER b-table FOR issue.
 DEFINE BUFFER b-query FOR doch.
@@ -184,6 +185,9 @@ PROCEDURE process-web-request :
         IF DYNAMIC-FUNCTION("com-isCustomer",b-table.companycode,lc-user)
             AND b-query.CustomerView = FALSE THEN NEXT.
 
+        ASSIGN 
+            lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(b-query))).
+        
         {&out}
         SKIP(1)
         tbar-trID(lc-ToolBarID,ROWID(b-query))
@@ -201,9 +205,7 @@ PROCEDURE process-web-request :
         htmlib-MntTableField(b-query.DocType,'left')
         htmlib-MntTableField(STRING(ROUND(b-query.InBytes / 1024,2)),'right')
         tbar-BeginHidden(ROWID(b-query))
-        /*
-            tbar-Link("documentview",rowid(b-query),appurl + '/sys/docview.p',"docid=" + string(b-query.docid))
-        */
+      
         tbar-Link("delete",ROWID(b-query),
             'javascript:ConfirmDeleteAttachment(' +
             "ROW" + string(ROWID(b-query)) + ','
@@ -218,7 +220,7 @@ PROCEDURE process-web-request :
             'javascript:OpenNewWindow('
             + '~'' + appurl 
             + '/sys/docview.'
-            + lc(b-query.DocType) + '?docid=' + string(b-query.docid)
+            + lc(b-query.DocType) + '?docid=' + url-encode(lc-doc-key,"Query")
             + '~'' 
             + ');'
             ,"")
