@@ -1,6 +1,6 @@
 /***********************************************************************
 
-    Program:        rep/custprofit.p
+    Program:        jq/custprofit.p
     
     Purpose:        Customer Profit Report
     
@@ -53,6 +53,7 @@ DEFINE VARIABLE lc-co-desc        AS CHARACTER INITIAL 'All Contracts|Active Con
 {rep/custprofit-tt.i}
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
+{lib/jquery-ui.i}
 {lib/maillib.i}
 {lib/replib.i}
 
@@ -160,10 +161,14 @@ PROCEDURE ip-HTM-Header:
     ------------------------------------------------------------------------------*/
     DEFINE OUTPUT PARAMETER pc-return       AS CHARACTER NO-UNDO.
 
-    pc-return = 
+     pc-return = 
+        '~n<link rel="stylesheet" type="text/css" href="/asset/jquery-easyui-1.4.2/themes/default/easyui.css">' +
+        '~n<link rel="stylesheet" type="text/css" href="/asset/jquery-easyui-1.4.2/themes/icon.css">' +
+        '~n<link rel="stylesheet" type="text/css" href="/asset/jquery-easyui-1.4.2/themes/color.css">' +
+    
         lc-global-jquery +
-        '<script language="JavaScript" src="/asset/page/custprofit.js?v=1.0.0"></script>~n' 
-        
+        lc-global-jquery-ui 
+            
         .
     
 
@@ -308,7 +313,7 @@ PROCEDURE ip-ReportWebPage:
         
         '</tr>' SKIP
     htmlib-TableHeading(
-    'Customer^left|Contract^left|Active^left|Contract Period^right|Contract Days^right|Revenue Days^right|Daily Rate^right|Gross Profit %^right|Contract Value</br>PA^right|Billable^right|Non Billable^right|Total^right|Revenue^right|Cost^right|Gross Profit^right' ) 
+    'Customer^left|Contract^left|Active^leftContract Period^right|Contract Days^right|Revenue Days^right|Daily Rate^right|Gross Profit %^right|Contract Value</br>PA^right|Billable^right|Non Billable^right|Total^right|Revenue^right|Cost^right|Gross Profit^right' ) 
     SKIP.
         
                           
@@ -548,10 +553,8 @@ PROCEDURE process-web-request :
     {&out} htmlib-Header('Customer Profit Report') SKIP.
     
    
-    {&out}
-    htmlib-StartForm("mainform","post", appurl + '/rep/custprofit.p'  )
-    htmlib-ProgramTitle("Customer Profit Report") skip.
-
+    
+    {&out} '<div id="p" class="easyui-panel" title="Customer Profit Report" style="width:100%;height:200px;padding:10px;">' SKIP.
     
     IF request_method = "GET"
         OR lc-error-msg <> ""
@@ -568,6 +571,7 @@ PROCEDURE process-web-request :
     END.
       
    
+    {&out} '</div>' SKIP.
     {&out} htmlib-EndForm() skip.
     
     IF request_method = "GET"
@@ -577,8 +581,7 @@ PROCEDURE process-web-request :
    
    
     
-         
-    {&out} htmlib-Footer() skip.
+    
     
 
 END PROCEDURE.

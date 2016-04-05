@@ -101,7 +101,7 @@ FUNCTION sysec-DecodeValue RETURNS CHARACTER
     DEFINE VARIABLE lr-mem  AS RAW       NO-UNDO.
     
     IF pc-other = "Inventory"
-    THEN 
+    OR pc-other = "Document" THEN 
     DO:
         FIND FIRST  websession
              WHERE websession.wsKey = pc-value
@@ -152,7 +152,8 @@ FUNCTION sysec-EncodeValue RETURNS CHARACTER
     DEFINE VARIABLE lr-data AS RAW       NO-UNDO.
     DEFINE VARIABLE lc-data AS CHARACTER NO-UNDO.
     
-    IF pc-other = "Inventory" THEN 
+    IF pc-other = "Inventory" 
+    OR pc-other = "Document" THEN 
     DO:
         lc-data = DYNAMIC-FUNCTION("sysec-GeneratePBE-Password",pc-loginid,pd-date,pc-other). 
         
