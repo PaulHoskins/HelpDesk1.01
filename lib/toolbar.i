@@ -16,6 +16,7 @@
     26/04/2014  phoski      Asset Toolbar
     26/11/2014  phoski      nofind option on standard toolbar
     27/03/2015  phoski      project related link
+    18/06/2016  phoksi      survey link
     
     
 ***********************************************************************/
@@ -807,6 +808,10 @@ FUNCTION tbar-Link RETURNS CHARACTER
             ASSIGN 
                 lc-image    = '/images/toolbar3/contract.gif'
                 lc-alt-text = 'Customer Contracts'.
+          WHEN "Survq" THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/survq.gif'
+                lc-alt-text = 'Survey Questions'.
                   
   
     END CASE.

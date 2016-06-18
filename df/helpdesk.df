@@ -45,6 +45,214 @@ ADD SEQUENCE "ProjPhase"
   CYCLE-ON-LIMIT no
   MAX-VAL 99999999999
 
+ADD SEQUENCE "acs_line"
+  INITIAL 1
+  INCREMENT 1
+  CYCLE-ON-LIMIT yes
+
+ADD TABLE "acs_head"
+  AREA "Schema Area"
+  LABEL "Survey Header"
+  DUMP-NAME "acs_head"
+
+ADD FIELD "CompanyCode" OF "acs_head" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company Code"
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "acs_code" OF "acs_head" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Survey Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "descr" OF "acs_head" AS character 
+  FORMAT "x(200)"
+  INITIAL ""
+  LABEL "Descriptiion"
+  POSITION 4
+  MAX-WIDTH 400
+  ORDER 30
+
+ADD FIELD "em_subject" OF "acs_head" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 5
+  MAX-WIDTH 16
+  ORDER 40
+
+ADD FIELD "em_begin" OF "acs_head" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 6
+  MAX-WIDTH 16
+  ORDER 50
+
+ADD FIELD "em_end" OF "acs_head" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 7
+  MAX-WIDTH 16
+  ORDER 60
+
+ADD FIELD "wp_begin" OF "acs_head" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 8
+  MAX-WIDTH 16
+  ORDER 80
+
+ADD FIELD "wp_end" OF "acs_head" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 9
+  MAX-WIDTH 16
+  ORDER 90
+
+ADD FIELD "wp_subject" OF "acs_head" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 10
+  MAX-WIDTH 16
+  ORDER 70
+
+ADD INDEX "Prim" ON "acs_head" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "acs_code" ASCENDING 
+
+ADD TABLE "acs_line"
+  AREA "Schema Area"
+  LABEL "Survey Lines"
+  DUMP-NAME "acs_line"
+
+ADD FIELD "CompanyCode" OF "acs_line" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company Code"
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "acs_code" OF "acs_line" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Survey Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "DisplayOrder" OF "acs_line" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 4
+  MAX-WIDTH 4
+  ORDER 30
+
+ADD FIELD "qText" OF "acs_line" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Question"
+  POSITION 5
+  MAX-WIDTH 16
+  ORDER 40
+
+ADD FIELD "qType" OF "acs_line" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 6
+  MAX-WIDTH 16
+  ORDER 50
+
+ADD FIELD "acs_line_id" OF "acs_line" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 8
+  MAX-WIDTH 4
+  ORDER 60
+
+ADD INDEX "acs_code_key" ON "acs_line" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "acs_code" ASCENDING 
+  INDEX-FIELD "DisplayOrder" ASCENDING 
+
+ADD INDEX "acs_lne_id_key" ON "acs_line" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "acs_line_id" ASCENDING 
+
+ADD TABLE "acs_rq"
+  AREA "Schema Area"
+  LABEL "Account Survey Request"
+  DUMP-NAME "acs_rq"
+
+ADD FIELD "rq_id" OF "acs_rq" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 2
+  MAX-WIDTH 16
+  ORDER 10
+
+ADD FIELD "CompanyCode" OF "acs_rq" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Company Code"
+  POSITION 3
+  MAX-WIDTH 16
+  ORDER 20
+
+ADD FIELD "IssueNumber" OF "acs_rq" AS integer 
+  FORMAT "99999999"
+  INITIAL "0"
+  LABEL "Issue No"
+  POSITION 4
+  MAX-WIDTH 4
+  ORDER 30
+
+ADD FIELD "LoginID" OF "acs_rq" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "User ID"
+  POSITION 5
+  MAX-WIDTH 30
+  ORDER 40
+
+ADD FIELD "Email" OF "acs_rq" AS character 
+  FORMAT "x(30)"
+  INITIAL ""
+  LABEL "Email Address"
+  POSITION 6
+  MAX-WIDTH 60
+  ORDER 50
+
+ADD FIELD "rq_status" OF "acs_rq" AS integer 
+  DESCRIPTION "0 - outstanding
+1 - complete
+99 - expired"
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  POSITION 7
+  MAX-WIDTH 4
+  ORDER 60
+
+ADD FIELD "acs_code" OF "acs_rq" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Survey Code"
+  POSITION 8
+  MAX-WIDTH 16
+  ORDER 70
+
 ADD TABLE "AdHocWork"
   AREA "Schema Area"
   LABEL "AdHocWork"
@@ -5562,4 +5770,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000110381
+0000114293

@@ -25,6 +25,7 @@
     22/10/2015  phoski      com-AllowCustomerAccess - take into account
                             AllowAllTeams customer flag
     23/02/2016  phoski      com-GetCustomerAccountActiveOnly
+    18/06/2016  phoski      
     
    
 ***********************************************************************/
@@ -140,7 +141,11 @@ DEFINE VARIABLE lc-global-taskResp-code       AS CHARACTER
 DEFINE VARIABLE lc-global-taskResp-desc       AS CHARACTER 
     INITIAL 'Engineer|Customer|3rd Party' NO-UNDO.
                         
-
+DEFINE VARIABLE lc-global-sq-code             AS CHARACTER 
+    INITIAL 'RANGE1-10|LOG|COM|FIELD|PARA'  NO-UNDO.                        
+DEFINE VARIABLE lc-global-sq-desc           AS CHARACTER 
+    INITIAL 'Range (1-10)|Yes/No|Comment Box|Field Input|Text Only'  NO-UNDO.
+    
 DEFINE VARIABLE li-global-sla-fail            AS INTEGER   INITIAL 10 NO-UNDO.
 DEFINE VARIABLE li-global-sla-amber           AS INTEGER   INITIAL 20 NO-UNDO.
 DEFINE VARIABLE li-global-sla-ok              AS INTEGER   INITIAL 30 NO-UNDO.
@@ -1776,7 +1781,9 @@ FUNCTION com-CanDelete RETURNS LOGICAL
     DEFINE BUFFER ptp_proj   FOR ptp_proj.
     DEFINE BUFFER ptp_phase  FOR ptp_phase.
     DEFINE BUFFER ptp_task   FOR ptp_task.
-      
+    DEFINE BUFFER acs_head   FOR acs_head.
+    DEFINE BUFFER acs_line   FOR acs_line.
+         
     
  
 
@@ -2041,6 +2048,19 @@ FUNCTION com-CanDelete RETURNS LOGICAL
                     AND Issue.AccountNumber = WebissCont.Customer NO-LOCK ).
                   
             END.
+            WHEN "webacs" THEN
+            DO:
+                FIND acs_head WHERE ROWID(acs_head) = pr-rowid NO-LOCK NO-ERROR.
+                IF NOT AVAILABLE acs_head THEN RETURN FALSE.
+                IF CAN-FIND(FIRST acs_line OF acs_head NO-LOCK)
+                    THEN RETURN FALSE.
+
+                RETURN TRUE.
+            END.
+        WHEN "webacsquestion" THEN
+        DO:
+            RETURN TRUE.
+        END.
         OTHERWISE
         DO:
             MESSAGE "com-CanDelete invalid table for " pc-table.
