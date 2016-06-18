@@ -5411,6 +5411,13 @@ ADD FIELD "dashbList" OF "WebUser" AS character
   MAX-WIDTH 16
   ORDER 340
 
+ADD FIELD "EmailTimeReport" OF "WebUser" AS logical 
+  FORMAT "yes/no"
+  INITIAL "yes"
+  POSITION 37
+  MAX-WIDTH 1
+  ORDER 350
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -5555,4 +5562,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000110246
+0000110381

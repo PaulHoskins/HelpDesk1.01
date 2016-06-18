@@ -10,6 +10,7 @@
     When        Who         What
     22/04/2006  phoski      Initial
     23/10/2015  phoski      create and update audits
+    18/06/2015  phoski      Show 'Decomissioned' info in details
     
     
 ***********************************************************************/
@@ -234,11 +235,16 @@ PROCEDURE process-web-request :
         RETURN.
     END.
         
-       
     {&out} skip
-           htmlib-StartFieldSet("Inventory Details For " + 
-                                custIv.Ref) 
+           htmlib-StartFieldSet(  "Inventory Details For " + 
+                                custIv.Ref).
+    IF CustIv.isDecom
+    THEN  {&out} '<div class="infobox">Decommissioned</div>'.
+    
+    {&out} SKIP
+                              
            htmlib-StartMntTable().
+   
 
     {&out}
     htmlib-TableHeading(

@@ -9,7 +9,8 @@
     
     When        Who         What
     01/03/2016  phoski      Initial
-    17/06/2016  phoski      EmailTimeReport flag on user
+    17/06/2016  phoski      EmailTimeReport flag on user and total time
+                            on the email and send even if no activity
    
 ***********************************************************************/
 {lib/common.i}
@@ -25,12 +26,17 @@ DEFINE VARIABLE li-idx          AS INTEGER      NO-UNDO.
 DEFINE VARIABLE lc-time         AS CHARACTER    NO-UNDO.
 DEFINE VARIABLE li-EODTime      AS INTEGER      NO-UNDO.
 DEFINE VARIABLE lc-FileName     AS CHARACTER    NO-UNDO.
+DEFINE VARIABLE li-tot-seconds  AS INTEGER      NO-UNDO.
+
 
 {rep/englogtt.i}
 
 
 DEFINE STREAM rp.
 
+
+FUNCTION fnTotalTime RETURNS CHARACTER 
+    (  ) FORWARD.
 
 FUNCTION HasScheduledBeenDone RETURNS LOGICAL 
     (pd-Date AS DATE,
@@ -113,8 +119,10 @@ FOR EACH Company NO-LOCK:
             OUTPUT TABLE tt-ilog
             ).
         
+        /* 
         FIND FIRST tt-ilog NO-LOCK NO-ERROR.
         IF NOT AVAILABLE tt-ilog THEN NEXT.
+        */
         
         
         DYNAMIC-FUNCTION("MarkScheduledBeenDone",ld-date,webuser.loginid,lc-schedCode).
@@ -128,7 +136,9 @@ FOR EACH Company NO-LOCK:
             "",
             "End Of Day HelpDesk Engineer Log Report ",
             "Please find attached your report covering the period "
-            + string(ld-date,"99/99/9999") ,
+            + string(ld-date,"99/99/9999")
+            + ". The time recorded for this period was " + dynamic-function("fnTotalTime")
+             ,
             webuser.email,
             "",
             "",
@@ -171,8 +181,10 @@ FOR EACH Company NO-LOCK:
             OUTPUT TABLE tt-ilog
             ).
         
+        /*
         FIND FIRST tt-ilog NO-LOCK NO-ERROR.
         IF NOT AVAILABLE tt-ilog THEN NEXT.
+        */
         
         DYNAMIC-FUNCTION("MarkScheduledBeenDone",ld-date,webuser.loginid,lc-schedCode).
        
@@ -184,7 +196,8 @@ FOR EACH Company NO-LOCK:
             "",
             "Yesterdays HelpDesk Engineer Log Report ",
             "Please find attached your report covering the period "
-            + string(ld-date - 1,"99/99/9999") ,
+            + string(ld-date - 1,"99/99/9999")  
+            + ". The time recorded for this period was " + dynamic-function("fnTotalTime") ,
             webuser.email,
             "",
             "",
@@ -281,6 +294,47 @@ END PROCEDURE.
 
 /* ************************  Function Implementations ***************** */
 
+
+FUNCTION fnTotalTime RETURNS CHARACTER 
+    (  ):
+    /*------------------------------------------------------------------------------
+            Purpose:  																	  
+            Notes:  																	  
+    ------------------------------------------------------------------------------*/	
+
+    DEFINE VARIABLE lc-time     AS CHARACTER    NO-UNDO.
+    DEFINE VARIABLE li-seconds  AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-min      AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE li-hr       AS INTEGER      NO-UNDO.
+    	
+    FOR EACH tt-ilog NO-LOCK:
+        li-seconds = li-seconds + tt-ilog.iseconds.
+    END.
+ 
+    IF li-seconds > 0 THEN
+    DO:
+        li-seconds = ROUND(li-seconds / 60,0).
+
+        li-min = li-seconds MOD 60.
+
+        IF li-seconds - li-min >= 60 THEN
+            ASSIGN
+                li-hr = ROUND( (li-seconds - li-min) / 60 , 0 ).
+        ELSE li-hr = 0.
+
+        ASSIGN
+            lc-time = STRING(li-hr) + ":" + STRING(li-min,'99')
+            .
+
+    END.
+    ELSE lc-time = "0:00".
+        
+    RETURN lc-time.
+	
+
+
+		
+END FUNCTION.
 
 FUNCTION HasScheduledBeenDone RETURNS LOGICAL 
     ( pd-Date AS DATE,

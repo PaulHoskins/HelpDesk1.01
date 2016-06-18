@@ -25,6 +25,7 @@
     08/11/2015 phoski       Account ref & default contract 
     23/02/2016 phoski       Decommission inventory not shown
     21/03/2016 phoski       Document Link Encrypt
+    18/06/2016 phoski       Show decomissioned at end of inventory
                         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -85,7 +86,7 @@ DEFINE VARIABLE first-RDP         AS LOG       INITIAL TRUE NO-UNDO. /* 3677 & 3
 
 DEFINE VARIABLE ll-Customer       AS LOG       INITIAL FALSE NO-UNDO.
 
-DEFINE VARIABLE lc-inv-key       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-inv-key        AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-Doc-TBAR       AS CHARACTER 
     INITIAL "doctb" NO-UNDO.
@@ -360,7 +361,7 @@ PROCEDURE ip-CustomerDocuments :
     tbar-BeginID(pc-ToolBarID,"").
     
     IF NOT ll-customer
-    THEN {&out} tbar-Link("add",?,'javascript:documentAdd();',"") SKIP.
+        THEN {&out} tbar-Link("add",?,'javascript:documentAdd();',"") SKIP.
     
     {&out}
     tbar-BeginOptionID(pc-ToolBarID)
@@ -386,7 +387,7 @@ PROCEDURE ip-CustomerDocuments :
 
         END.
         ASSIGN 
-           lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(doch))).
+            lc-doc-key = DYNAMIC-FUNCTION("sysec-EncodeValue",lc-global-user,TODAY,"Document",STRING(ROWID(doch))).
             
         
         {&out}
@@ -455,12 +456,12 @@ PROCEDURE ip-CustomerMainInfo :
    
         
     FIND FIRST WebissCont 
-         WHERE WebissCont.CompanyCode = b-query.companyCode
-           AND WebissCont.Customer  = b-query.AccountNumber
-           AND WebissCont.defcon = TRUE
-           NO-LOCK NO-ERROR.
+        WHERE WebissCont.CompanyCode = b-query.companyCode
+        AND WebissCont.Customer  = b-query.AccountNumber
+        AND WebissCont.defcon = TRUE
+        NO-LOCK NO-ERROR.
     IF AVAILABLE WebissCont
-    THEN lc-def-cont = WebissCont.ContractCode.
+        THEN lc-def-cont = WebissCont.ContractCode.
     ELSE lc-def-cont = "<b>** None **</b>".
                     
                     
@@ -481,7 +482,7 @@ PROCEDURE ip-CustomerMainInfo :
 
     FIND b-webu WHERE b-webu.LoginID = b-query.AccountManager NO-LOCK NO-ERROR.
     IF AVAILABLE b-webu
-    THEN lc-AMan = b-webu.Name.
+        THEN lc-AMan = b-webu.Name.
     
     
     IF get-value("source") = "menu" THEN
@@ -539,9 +540,9 @@ FIND steam WHERE steam.companyCode = b-query.CompanyCode
     AND steam.st-num = b-query.st-num NO-LOCK NO-ERROR.
 {&out} htmlib-MntTableField(IF AVAILABLE steam THEN STRING(steam.st-num) + " - " + steam.descr ELSE 'None','left').
 {&out}
-    htmlib-MntTableField(html-encode(lc-AMan),'left')
-    htmlib-MntTableField(html-encode(b-query.accountRef),'left')
-    htmlib-MntTableField(lc-def-cont,'left').
+htmlib-MntTableField(html-encode(lc-AMan),'left')
+htmlib-MntTableField(html-encode(b-query.accountRef),'left')
+htmlib-MntTableField(lc-def-cont,'left').
 
 
 IF b-query.notes = ""
@@ -907,11 +908,11 @@ PROCEDURE ip-CustomerUsers :
         {&out} '<div class="infobox">'.
         
         IF Customer.def-iss-loginid <> ""
-        THEN {&out} 'Default Issue User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-iss-loginid) '</br>' SKIP.
+            THEN {&out} 'Default Issue User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-iss-loginid) '</br>' SKIP.
         IF Customer.def-bulk-loginid <> ""
-        THEN {&out} 'Bulk Email User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-bulk-loginid) '</br>' SKIP.
+            THEN {&out} 'Bulk Email User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-bulk-loginid) '</br>' SKIP.
         IF Customer.def-stat-loginid <> ""
-        THEN {&out} 'Status Change User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-iss-loginid) '</br>' SKIP.
+            THEN {&out} 'Status Change User - ' DYNAMIC-FUNCTION("com-UserName",Customer.def-iss-loginid) '</br>' SKIP.
         
         
         {&out} '</div>' .
@@ -939,6 +940,11 @@ PROCEDURE ip-Inventory :
     DEFINE BUFFER b-query FOR CustIv.
     DEFINE BUFFER b-search FOR CustIv.
 
+    DEFINE VARIABLE iPass AS INTEGER NO-UNDO.
+    DEFINE VARIABLE lPass AS LOGICAL NO-UNDO.
+    DEFINE VARIABLE lTitle AS LOGICAL NO-UNDO.
+    DEFINE VARIABLE cPass AS CHARACTER NO-UNDO.
+    
     DEFINE VARIABLE lc-object           AS CHARACTER NO-UNDO.
     DEFINE VARIABLE lc-subobject        AS CHARACTER NO-UNDO.
     DEFINE VARIABLE lc-ajaxSubWindow    AS CHARACTER NO-UNDO.
@@ -1004,136 +1010,153 @@ PROCEDURE ip-Inventory :
     
     {&out}
     '<tr class="tabrow1">'
-    '<td valign="top" nowrap class="tree">' skip
-    .
-    FOR EACH b-query NO-LOCK OF Customer
-        WHERE b-query.isDecom = FALSE ,
-        FIRST ivSub NO-LOCK OF b-query,
-        FIRST ivClass NO-LOCK OF ivSub
-        BREAK 
-        BY ivClass.DisplayPriority DESCENDING
-        BY ivClass.name
-        BY ivSub.DisplayPriority DESCENDING
-        BY ivSub.name
-        BY b-query.Ref:
-
-
+    '<td valign="top" nowrap class="tree">' skip.
+    
+   
+    
+    
+    DO iPass = 1 TO 2:
+        
+       
         ASSIGN 
-            lc-object = "CLASS" + string(ROWID(ivClass))
-            lc-subobject = "SUB" + string(ROWID(ivSub)).
-        IF FIRST-OF(ivClass.name) THEN
-        DO:
-            IF lc-expand = "yes" 
-                THEN {&out} '<img src="/images/general/menuopen.gif" onClick="hdexpandcontent(this, ~''
-            lc-object '~')">'
-            '&nbsp;' '<span style="' ivClass.Style '">' html-encode(ivClass.name) '</span><br>'
-            '<div id="' lc-object '" style="padding-left: 15px; display: block;">' skip.
-            else {&out}
-                '<img src="/images/general/menuclosed.gif" onClick="hdexpandcontent(this, ~''
-                        lc-object '~')">'
-                '&nbsp;' '<span style="' ivClass.Style '">' html-encode(ivClass.name) '</span><br>'
-                '<div id="' lc-object '" style="padding-left: 15px; display: none;">' skip.
-        END.
-
-        IF FIRST-OF(ivSub.name) THEN
-        DO:
-            
-            IF lc-expand = "yes"
-                THEN {&out} 
-            '<img src="/images/general/menuopen.gif" onClick="hdexpandcontent(this, ~''
-            lc-subobject '~')">'
-            '&nbsp;'
-            '<span style="' ivSub.Style '">'
-            html-encode(ivSub.name) '</span><br>' skip
-                '<div id="' lc-subobject '" style="padding-left: 15px; display: block;">' skip.
+            lPass = IF iPass = 1 THEN NO ELSE TRUE
+            cPass = IF iPass = 1 THEN "L" ELSE "D"
+            lTitle = NO.
+        
+        FOR EACH b-query NO-LOCK OF Customer
+            WHERE b-query.isDecom = lpass ,
+            FIRST ivSub NO-LOCK OF b-query,
+            FIRST ivClass NO-LOCK OF ivSub
+            BREAK 
+            BY ivClass.DisplayPriority DESCENDING
+            BY ivClass.name
+            BY ivSub.DisplayPriority DESCENDING
+            BY ivSub.name
+            BY b-query.Ref:
+    
+            IF lPass AND NOT lTitle THEN
+            DO:
+                {&out} '<div class="infobox">Decomissioned Inventory</div>' SKIP.
+                lTitle = TRUE.
                 
-            else {&out} 
-                '<img src="/images/general/menuclosed.gif" onClick="hdexpandcontent(this, ~''
-                        lc-subobject '~')">'
+            END.
+            
+            ASSIGN 
+                lc-object = "CLASS" + string(ROWID(ivClass)) + cPass
+                lc-subobject = "SUB" + string(ROWID(ivSub)) + cPass.
+            IF FIRST-OF(ivClass.name) THEN
+            DO:
+                IF lc-expand = "yes" 
+                    THEN {&out} '<img src="/images/general/menuopen.gif" onClick="hdexpandcontent(this, ~''
+                lc-object '~')">'
+                '&nbsp;' '<span style="' ivClass.Style '">' html-encode(ivClass.name) '</span><br>'
+                '<div id="' lc-object '" style="padding-left: 15px; display: block;">' skip.
+                else {&out}
+                    '<img src="/images/general/menuclosed.gif" onClick="hdexpandcontent(this, ~''
+                            lc-object '~')">'
+                    '&nbsp;' '<span style="' ivClass.Style '">' html-encode(ivClass.name) '</span><br>'
+                    '<div id="' lc-object '" style="padding-left: 15px; display: none;">' skip.
+            END.
+    
+            IF FIRST-OF(ivSub.name) THEN
+            DO:
+                
+                IF lc-expand = "yes"
+                    THEN {&out} 
+                '<img src="/images/general/menuopen.gif" onClick="hdexpandcontent(this, ~''
+                lc-subobject '~')">'
                 '&nbsp;'
                 '<span style="' ivSub.Style '">'
                 html-encode(ivSub.name) '</span><br>' skip
-                '<div id="' lc-subobject '" style="padding-left: 15px; display: none;">' skip.
-        END.
-       
-        ll-htmltrue = FALSE.
-        
-        {&out} '<a '.
-
-        IF b-query.ivSubID = 52 THEN
-        DO:
-            RUN ip-SetRDP-O( RECID(b-query),
-                OUTPUT lc-htmlreturn,
-                OUTPUT ll-htmltrue).
-        END.
-        ELSE
-            IF b-query.ivSubID = 73928 THEN
+                    '<div id="' lc-subobject '" style="padding-left: 15px; display: block;">' skip.
+                    
+                else {&out} 
+                    '<img src="/images/general/menuclosed.gif" onClick="hdexpandcontent(this, ~''
+                            lc-subobject '~')">'
+                    '&nbsp;'
+                    '<span style="' ivSub.Style '">'
+                    html-encode(ivSub.name) '</span><br>' skip
+                    '<div id="' lc-subobject '" style="padding-left: 15px; display: none;">' skip.
+            END.
+           
+            ll-htmltrue = FALSE.
+            
+            {&out} '<a '.
+    
+            IF b-query.ivSubID = 52 THEN
             DO:
-                RUN ip-SetRDP-M( RECID(b-query),
+                RUN ip-SetRDP-O( RECID(b-query),
                     OUTPUT lc-htmlreturn,
                     OUTPUT ll-htmltrue).
             END.
-          
-        IF ll-htmltrue THEN {&out} ' onclick="javascript:newRDP(~'' + lc-htmlreturn + '~')"  '.
-          
-        ASSIGN 
-        lc-inv-key = DYNAMIC-FUNCTION("sysec-EncodeValue","Inventory",TODAY,"Inventory",STRING(ROWID(b-query))).
-        
-        {&out} 'href="'
-        "javascript:ahah('" 
-        appurl "/cust/custequiptable.p?rowid=" url-encode(lc-inv-key,"Query") "&customer=" url-encode(lc-enc-key,"Query")
-         "&sec=" url-encode(lc-global-secure,"Query")
-        "','inventory');".
-
-        IF ll-toolbar THEN
-        DO:
+            ELSE
+                IF b-query.ivSubID = 73928 THEN
+                DO:
+                    RUN ip-SetRDP-M( RECID(b-query),
+                        OUTPUT lc-htmlreturn,
+                        OUTPUT ll-htmltrue).
+                END.
+              
+            IF ll-htmltrue THEN {&out} ' onclick="javascript:newRDP(~'' + lc-htmlreturn + '~')"  '.
+              
             ASSIGN 
-                lc-update-id = "clx" + string(ROWID(b-query)).
-
-            {&out} 'ivtbrowSelect (' lc-update-id ',~'' lc-update-id '~');'. 
-        END.
-        {&out}
-        '">' html-encode(b-query.ref) '</a><br>' skip.
-
-        IF first-RDP THEN
-        DO:
-            IF ll-htmltrue THEN
+                lc-inv-key = DYNAMIC-FUNCTION("sysec-EncodeValue","Inventory",TODAY,"Inventory",STRING(ROWID(b-query))).
+            
+            {&out} 'href="'
+            "javascript:ahah('" 
+            appurl "/cust/custequiptable.p?rowid=" url-encode(lc-inv-key,"Query") "&customer=" url-encode(lc-enc-key,"Query")
+            "&sec=" url-encode(lc-global-secure,"Query")
+            "','inventory');".
+    
+            IF ll-toolbar THEN
             DO:
                 ASSIGN 
-                    first-RDP = FALSE.
-                {&out} '<div id="ScriptDiv" style="visibility:hidden; position:absolute; top:-1px; left:-1px " ></div>'.
-                {&out} '<div id="ScriptSet" style="visibility:hidden; position:absolute; top:-1px; left:-1px " > ~n'
-                '<script defer > ~n'
-                '<!-- hide script from old browsers ~n'
-                '   newRDP(~'' + lc-htmlreturn + '~'); ~n'
-                ' --> ~n'
-                '</script></div>~n'.
+                    lc-update-id = "clx" + string(ROWID(b-query)).
+    
+                {&out} 'ivtbrowSelect (' lc-update-id ',~'' lc-update-id '~');'. 
+            END.
+            {&out}
+            '">' html-encode(b-query.ref) '</a><br>' skip.
+    
+            IF first-RDP THEN
+            DO:
+                IF ll-htmltrue THEN
+                DO:
+                    ASSIGN 
+                        first-RDP = FALSE.
+                    {&out} '<div id="ScriptDiv" style="visibility:hidden; position:absolute; top:-1px; left:-1px " ></div>'.
+                    {&out} '<div id="ScriptSet" style="visibility:hidden; position:absolute; top:-1px; left:-1px " > ~n'
+                    '<script defer > ~n'
+                    '<!-- hide script from old browsers ~n'
+                    '   newRDP(~'' + lc-htmlreturn + '~'); ~n'
+                    ' --> ~n'
+                    '</script></div>~n'.
+                END.
+            END.
+    
+            IF ll-toolbar THEN
+            DO:
+                
+    
+                {&out}
+                '<div id="' lc-update-id '" style="display: none;">'
+                tbar-Link("update",ROWID(b-query),appurl + '/cust/custequipmnt.p',"customer=" + string(ROWID(customer)) + "&returnback=customerview")
+                /*                 tbar-Link("delete",rowid(b-query),appurl + '/cust/custequipmnt.p',"customer=" + string(rowid(customer)) + "&returnback=customerview")  */
+                '</div>'
+                    .
+            END.
+            
+            IF LAST-OF(ivSub.name) THEN
+            DO:
+                {&out} '</div>' skip.
+            END.
+    
+            IF LAST-OF(ivClass.name) THEN
+            DO:
+                {&out} '</div>' skip.
             END.
         END.
-
-        IF ll-toolbar THEN
-        DO:
-            
-
-            {&out}
-            '<div id="' lc-update-id '" style="display: none;">'
-            tbar-Link("update",ROWID(b-query),appurl + '/cust/custequipmnt.p',"customer=" + string(ROWID(customer)) + "&returnback=customerview")
-            /*                 tbar-Link("delete",rowid(b-query),appurl + '/cust/custequipmnt.p',"customer=" + string(rowid(customer)) + "&returnback=customerview")  */
-            '</div>'
-                .
-        END.
-        
-        IF LAST-OF(ivSub.name) THEN
-        DO:
-            {&out} '</div>' skip.
-        END.
-
-        IF LAST-OF(ivClass.name) THEN
-        DO:
-            {&out} '</div>' skip.
-        END.
-    END.
-
+    END. /* iPass */
     {&out} '</td>' skip.
     {&out} '<td valign="top" rowspan="100" ><div id="inventory">&nbsp;</div></td>'.
     {&out} '</tr>' skip.
@@ -1708,7 +1731,7 @@ PROCEDURE process-web-request :
 
     
     IF NOT ll-customer 
-    OR ( ll-customer AND this-user.CustomerViewInventory )THEN
+        OR ( ll-customer AND this-user.CustomerViewInventory )THEN
     DO:
         
         {&out}
@@ -1726,9 +1749,9 @@ PROCEDURE process-web-request :
     {&out} 
     '</div>'.
 
-     IF get-value("showtab") = "document" THEN
+    IF get-value("showtab") = "document" THEN
         {&out}
-        '<div class="tabbertab tabbertabdefault" title="Documents">' skip
+    '<div class="tabbertab tabbertabdefault" title="Documents">' skip
     .
     ELSE
     {&out}
