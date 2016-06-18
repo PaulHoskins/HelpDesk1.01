@@ -96,15 +96,13 @@ body {
 }
 
 .tableback {
-   margin: 1% 0% 1%;
-   
+	margin: 1% 0% 1%;
 }
 
 .tablefield {
-   color: black;
+	color: black;
 	font: Verdana;
 	font-size: 10px;
-	
 }
 
 .tableheading {
@@ -114,6 +112,7 @@ body {
 	color: White;
 	background-color: Black;
 }
+
 .xableheading {
 	font-family: Verdana;
 	font-size: 14px;
@@ -126,17 +125,24 @@ body {
 	color: black;
 	background-color: #F5F5F5;
 }
+
 .ml {
 	color: black;
 	text-decoration: none;
 	font-size: 12px;
 }
-.mb { border-bottom: 1px solid black
-	  padding-bottom: 5px;
-	  padding-left:5px;}
+
+.mb {
+	border-bottom: 1px solid black padding-bottom :   5px;
+	padding-left: 5px;
+}
+
 a.ml:hover {
 	text-decoration: underline;
 	color: white;
 	background-color: black;
 }
-.test { border: 1px solid black; }
+
+.test {
+	border: 1px solid black;
+}

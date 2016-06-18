@@ -14,6 +14,7 @@
     07/03/2015  phoski      Summary page with graphics     
     29/03/2015  phoski      Class Code/Desc
     23/02/2015  phoski      Acive/Inactive Customers & toggle 
+    21/05/2016  phoski      use Longchars for customer selection
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -655,17 +656,21 @@ PROCEDURE ip-Selection :
     FIND this-user
         WHERE this-user.LoginID = lc-global-user NO-LOCK NO-ERROR.
 
-    IF NOT ll-customer
-        THEN {&out}
-    '<td align=right valign=top>' 
-        (IF LOOKUP("loaccount",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("From Customer")
-        ELSE htmlib-SideLabel("From Customer"))
-
-    '</td>'
-    '<td align=left valign=top>' 
-    htmlib-Select("loaccount",lc-list-acc,lc-list-aname,lc-lo-account) '</td>'.
-
+    IF NOT ll-customer THEN
+    DO:
+         {&out}
+            '<td align=right valign=top>' 
+            (IF LOOKUP("loaccount",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("From Customer")
+            ELSE htmlib-SideLabel("From Customer"))
+            
+            '</td>'
+            '<td align=left valign=top>' .
+         {&out-long}   
+                htmlib-SelectLong("loaccount",lc-list-acc,lc-list-aname,lc-lo-account).
+         {&out} '</td>'.
+    END.
+    
     
     {&out} 
     '<td valign="top" align="right">' 
@@ -678,18 +683,23 @@ PROCEDURE ip-Selection :
     htmlib-CalendarLink("lodate")
     '</td>' skip.
 
-    IF NOT ll-customer
-        THEN {&out}
-    '</tr><tr>' SKIP
+    IF NOT ll-customer THEN 
+    DO:
+        {&out}
+        '</tr><tr>' SKIP
            '<td align=right valign=top>' 
            (if lookup("loaccount",lc-error-field,'|') > 0 
             then htmlib-SideLabelError("To Customer")
             else htmlib-SideLabel("To Customer"))
         
-        '</td>'
-           '<td align=left valign=top>' 
-                htmlib-Select("hiaccount",lc-list-acc,lc-list-aname,lc-hi-account) '</td>'.
-
+            '</td>'
+           '<td align=left valign=top>'.
+           {&out-long}
+                htmlib-SelectLong("hiaccount",lc-list-acc,lc-list-aname,lc-hi-account).
+                
+            {&out} '</td>'.
+    END.
+    
     {&out} '<td valign="top" align="right">' 
         (IF LOOKUP("hidate",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("To Date")

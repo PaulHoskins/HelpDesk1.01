@@ -78,6 +78,8 @@ DEFINE VARIABLE lc-DefaultUser    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-DisableTimeout AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-CustInv        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-engType        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-EmailTimeReport AS CHARACTER NO-UNDO.
+
 
 
 DEFINE VARIABLE lc-html           AS CHARACTER NO-UNDO.
@@ -571,6 +573,25 @@ PROCEDURE ip-Page :
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-DisableTimeout = 'on'
+                                         then 'yes' else 'no'),'left')
+           skip.
+    
+    {&out} '</TR>' skip.
+    /* */
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("emailtimereport",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Email Engineer Log Report?")
+        ELSE htmlib-SideLabel("Email Engineer Log Report?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("emailtimereport", IF lc-EmailTimeReport = 'on'
+        THEN TRUE ELSE FALSE) 
+          
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(if lc-EmailTimeReport = 'on'
                                          then 'yes' else 'no'),'left')
            skip.
     
@@ -1118,6 +1139,7 @@ PROCEDURE process-web-request :
                 lc-disableTimeout  = get-value("disabletimeout")
                 lc-custinv         = get-value("custinv")
                 lc-engtype         = get-value("engtype")
+                lc-EmailTimeReport = get-value("emailtimereport")
                 .
             
            
@@ -1180,7 +1202,8 @@ PROCEDURE process-web-request :
                         b-table.disabletimeout   = lc-disabletimeout = "on"
                         b-table.CustomerViewInventory = lc-custinv = 'on'
                         b-table.engtype               = lc-engtype
-                        b-table.dashbList           = "".
+                        b-table.dashbList           = ""
+                        b-table.EmailTimeReport     = lc-EmailTimeReport = 'on'
                         .
                     ASSIGN 
                         b-table.name = b-table.forename + ' ' + 
@@ -1315,6 +1338,7 @@ PROCEDURE process-web-request :
                 lc-custinv         = IF b-table.CustomerViewInventory THEN 'on'
                                     ELSE ''
                 lc-engtype         = b-table.engtype
+                lc-emailtimereport = IF b-table.EmailTimeReport THEN 'on' ELSE ''
                 .
             
         END.

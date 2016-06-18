@@ -21,6 +21,8 @@
     30/11/2014  phoski      htmlib-SelectTime       
     26/03/2015  phoski      MntNoLines down max is 30   
     21/03/2016  phoski      Document Link Encrypt 
+    21/05/2016  phoski      htmlib-SelectLong to fix problems with big 
+                            selections
           
  ***********************************************************************/
 
@@ -325,6 +327,15 @@ FUNCTION htmlib-SelectJS RETURNS CHARACTER
     pc-value AS CHARACTER ,
     pc-display AS CHARACTER,
     pc-selected AS CHARACTER )  FORWARD.
+
+
+
+
+FUNCTION htmlib-SelectLong RETURNS LONGCHAR 
+	(pc-name AS CHARACTER,
+	 pc-value AS CHARACTER,
+	 pc-display AS CHARACTER,
+	 pc-selected AS CHARACTER) FORWARD.
 
 
 FUNCTION htmlib-SelectTime RETURNS CHARACTER 
@@ -1984,6 +1995,58 @@ FUNCTION htmlib-SelectJS RETURNS CHARACTER
 
     RETURN lc-data.
 
+END FUNCTION.
+
+
+
+
+FUNCTION htmlib-SelectLong RETURNS LONGCHAR 
+      ( pc-name AS CHARACTER ,
+    pc-value AS CHARACTER ,
+    pc-display AS CHARACTER,
+    pc-selected AS CHARACTER ) :
+    /*------------------------------------------------------------------------------
+      Purpose:  
+        Notes:  
+    ------------------------------------------------------------------------------*/
+
+    DEFINE VARIABLE lc-data     AS LONGCHAR  NO-UNDO.
+    DEFINE VARIABLE li-loop     AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE lc-value    AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-display  AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lc-selected AS CHARACTER NO-UNDO.
+
+    IF pc-display = ""
+        THEN pc-display = pc-value.
+
+    ASSIGN 
+        lc-data = '<select class="inputfield" id="' + pc-name + '" name="' + pc-name + '">'.
+
+    DO li-loop = 1 TO NUM-ENTRIES(pc-value,'|'):
+        ASSIGN 
+            lc-value   = ENTRY(li-loop,pc-value,'|')
+            lc-display = ENTRY(li-loop,pc-display,'|').
+        IF lc-value = pc-selected 
+            THEN lc-selected = 'selected'.
+        ELSE lc-selected = "".
+        ASSIGN 
+            lc-data = lc-data + 
+                       '<option ' +
+                       lc-selected + 
+                       ' value="' + 
+                       lc-value + 
+                       '">' + 
+                       lc-display +
+                       '</option>'.
+    END.
+  
+    ASSIGN 
+        lc-data = lc-data + '</select>'.
+
+    RETURN lc-data.
+
+
+		
 END FUNCTION.
 
 

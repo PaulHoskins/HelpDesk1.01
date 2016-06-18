@@ -9,6 +9,7 @@
     
     When        Who         What
     01/03/2016  phoski      Initial
+    17/06/2016  phoski      EmailTimeReport flag on user
    
 ***********************************************************************/
 {lib/common.i}
@@ -64,6 +65,7 @@ FOR EACH Company NO-LOCK:
     FOR EACH WebUser NO-LOCK
         WHERE WebUser.CompanyCode = Company.CompanyCode
         AND WebUser.UserClass = "internal"
+        AND WebUser.EmailTimeReport = TRUE
         :
         
         ASSIGN
@@ -146,6 +148,7 @@ FOR EACH Company NO-LOCK:
     FOR EACH WebUser NO-LOCK
         WHERE WebUser.CompanyCode = Company.CompanyCode
         AND WebUser.UserClass = "internal"
+        AND WebUser.EmailTimeReport = TRUE
         :
         
         ASSIGN
