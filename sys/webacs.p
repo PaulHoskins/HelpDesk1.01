@@ -195,6 +195,11 @@ PROCEDURE process-web-request :
     {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webacs.p' ) skip.
 
     {&out} htmlib-ProgramTitle("Maintain Account Survey") skip.
+    
+    IF get-value("testsent") = "YES" THEN
+    DO:
+          {&out} '<div class=infobox>A test survey has been sent to your email address</div>' SKIP.
+    END.
 
     {&out}
     tbar-Begin(
@@ -206,6 +211,7 @@ PROCEDURE process-web-request :
     tbar-Link("update",?,"off",lc-link-otherp)
     tbar-Link("delete",?,"off",lc-link-otherp)
     tbar-Link("survq",?,"off",lc-link-otherp)
+    tbar-Link("survSend",?,"off",lc-link-otherp)
     tbar-EndOption()
     tbar-End().
     {&out} skip
@@ -307,8 +313,8 @@ PROCEDURE process-web-request :
                           if DYNAMIC-FUNCTION('com-CanDelete':U,lc-user,"webacs",rowid(b-query))
                           then ( appurl + "/sys/webacsmnt.p") else "off",
                           lc-link-otherp)
-                tbar-Link("survq",rowid(b-query),appurl + "/sys/webacsquestion.p",lc-link-otherp + "&init=yes"     
-                                                )
+                tbar-Link("survq",rowid(b-query),appurl + "/sys/webacsquestion.p",lc-link-otherp + "&init=yes" )
+                tbar-Link("survSend",rowid(b-query),appurl + "/sys/webacstest.p",lc-link-otherp + "&init=yes" )
                
             tbar-EndHidden()  
             

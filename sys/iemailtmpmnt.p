@@ -8,7 +8,8 @@
     
     
     When        Who         What
-    16/05/2014  phoski      Initial      
+    16/05/2014  phoski      Initial    
+    20/06/2015  phoksi      Fix labels if undefined on merge list  
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -177,7 +178,7 @@ PROCEDURE ipShowMergeFields :
 
         {&out} '<tr>'
         htmlib-MntTableField('<%' + pc-buffer + '.' + _field-name  + '%>','left')
-        htmlib-MntTableField(_label,'left')
+        htmlib-MntTableField(IF _label = ? THEN '' ELSE _label,'left')
         '</tr>' SKIP.
     END.
     {&out} skip 

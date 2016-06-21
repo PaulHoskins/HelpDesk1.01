@@ -172,7 +172,7 @@ PROCEDURE ip-Page:
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-InputField("description",60,lc-description) 
+    htmlib-InputField("description",40,lc-description) 
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(lc-description),'left')
@@ -203,7 +203,7 @@ PROCEDURE ip-Page:
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-TextArea("em-begin",lc-em-begin,10,80) 
+    htmlib-TextArea("em-begin",lc-em-begin,10,60) 
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(replace(lc-em-begin,'~n','<br />'),'left')
@@ -219,7 +219,7 @@ PROCEDURE ip-Page:
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-TextArea("em-end",lc-em-end,10,80) 
+    htmlib-TextArea("em-end",lc-em-end,10,60) 
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(replace(lc-em-end,'~n','<br />'),'left')
@@ -249,7 +249,7 @@ PROCEDURE ip-Page:
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-TextArea("wp-begin",lc-wp-begin,10,80) 
+    htmlib-TextArea("wp-begin",lc-wp-begin,10,60) 
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(replace(lc-wp-begin,'~n','<br />'),'left')
@@ -265,12 +265,32 @@ PROCEDURE ip-Page:
     
     IF NOT CAN-DO("view,delete",lc-mode) THEN
         {&out} '<TD VALIGN="TOP" ALIGN="left">'
-    htmlib-TextArea("wp-end",lc-wp-end,10,80) 
+    htmlib-TextArea("wp-end",lc-wp-end,10,60) 
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(replace(lc-wp-end,'~n','<br />'),'left')
            skip.
     {&out} '</TR>' skip.
+    IF lc-mode <> "DELETE" THEN
+    DO:
+        
+        {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+               
+        htmlib-SideLabel("Available Merge Fields")
+        '</TD>'
+        '<td>' SKIP.
+    
+        RUN ipShowMergeFields ('issue','Issue','Issue Merge Fields').
+        RUN ipShowMergeFields ('customer','Customer','Customer Merge Fields').
+        RUN ipShowMergeFields ('webstatus','IStatus','Issue Status Merge Fields').
+        RUN ipShowMergeFields ('webIssArea','IArea','Issue Area Merge Fields').
+        RUN ipShowMergeFields ('webUser','Assigned','Issue Assigned To Merge Fields').
+        RUN ipShowMergeFields ('webUser','Raised','Issue Raised By Merge Fields').
+
+
+        {&out} '</TD></TR>' skip.
+
+    END.
     
     
     {&out} htmlib-EndTable() skip.
@@ -325,6 +345,43 @@ END PROCEDURE.
 &ENDIF
 
 &IF DEFINED(EXCLUDE-outputHeader) = 0 &THEN
+
+PROCEDURE ipShowMergeFields:
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/
+    DEFINE INPUT PARAMETER pc-table        AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-buffer       AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pc-label        AS CHARACTER NO-UNDO.
+
+
+    {&out} skip
+           htmlib-StartMntTable().
+
+    {&out} '<tr><th colspan=2>' pc-label '</th></tr>' SKIP.
+    {&out}
+    htmlib-TableHeading(
+        "Code|Description"
+        ) skip.
+
+    FOR EACH _file NO-LOCK WHERE _file._file-name = pc-table,
+        EACH _field NO-LOCK OF _file
+        WHERE _field._extent <= 1:
+
+        {&out} '<tr>'
+        htmlib-MntTableField('<%' + pc-buffer + '.' + _field-name  + '%>','left')
+        htmlib-MntTableField(IF _label = ? THEN '' ELSE _label,'left')
+        '</tr>' SKIP.
+    END.
+    {&out} skip 
+           htmlib-EndTable()
+           skip.
+
+
+
+
+END PROCEDURE.
 
 PROCEDURE outputHeader :
     /*------------------------------------------------------------------------------

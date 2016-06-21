@@ -812,6 +812,11 @@ FUNCTION tbar-Link RETURNS CHARACTER
             ASSIGN 
                 lc-image    = '/images/toolbar3/survq.gif'
                 lc-alt-text = 'Survey Questions'.
+           WHEN "SurvSend" THEN 
+            ASSIGN 
+                lc-image    = '/images/toolbar3/surv-send.gif'
+                lc-alt-text = 'Test Survey'.
+                
                   
   
     END CASE.
