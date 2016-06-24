@@ -208,7 +208,7 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-StartForm("mainform","post", appurl + '/sys/webacsquestion.p' ) skip.
 
-    {&out} htmlib-ProgramTitle("Maintain Account Survey - Question -<i> " + lc-ProjCode + " " + this-surv.descr + '</i>') skip.
+    {&out} htmlib-ProgramTitle("Maintain Account Survey - Questions -<i> " + lc-ProjCode + " " + this-surv.descr + '</i>') skip.
     
     ASSIGN 
         lc-link-url = appurl + '/sys/webacs.p' +

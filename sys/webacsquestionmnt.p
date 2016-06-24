@@ -49,6 +49,9 @@ DEFINE VARIABLE lc-description  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-projcode     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE li-loop         AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-qtype        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-mand         AS CHARACTER NO-UNDO.
+
+
 
 
 
@@ -300,6 +303,7 @@ PROCEDURE process-web-request :
             ASSIGN 
                 lc-description  = get-value("description")
                 lc-qtype        = get-value("qtype")
+                lc-mand         = get-value("mand")
                 .
 
             
@@ -343,6 +347,7 @@ PROCEDURE process-web-request :
                     ASSIGN 
                         b-table.qText   = lc-description
                         b-table.qType   = lc-qType
+                        b-table.isMandatory = lc-mand = "on"
                         .
                     
                 END.
@@ -400,6 +405,7 @@ PROCEDURE process-web-request :
             ASSIGN 
                 lc-description   = b-table.qtext
                 lc-qtype         = b-table.qtype
+                lc-mand          = IF b-table.isMandatory THEN "on" ELSE ""
                 .
                     
            
@@ -460,6 +466,23 @@ PROCEDURE process-web-request :
     {&out} htmlib-TableField(html-encode(lc-description),'left')
            skip.
     {&out} '</TR>' skip.
+    
+    
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("mand",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Mandatory?")
+        ELSE htmlib-SideLabel("Mandatory?"))
+        '</TD>'.
+        
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-checkBox("mand",lc-mand = "on")
+    '</TD>' skip.
+        else 
+        {&out} htmlib-TableField(IF lc-mand = "on" THEN "Yes" ELSE 'No','left')
+               skip.
+    {&out} '</TR>' skip.
+    
     
 
     

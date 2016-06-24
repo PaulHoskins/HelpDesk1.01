@@ -21,11 +21,15 @@ DEFINE OUTPUT PARAMETER pc-Error           AS CHARACTER NO-UNDO.
  
 {lib/common.i}
 {lib/maillib.i}
+{iss/issue.i}
+
 
 DEFINE BUFFER acs_head  FOR acs_head.
 DEFINE BUFFER acs_line  FOR acs_line.
 DEFINE BUFFER company   FOR Company.
 DEFINE BUFFER acs_rq    FOR acs_rq.
+DEFINE BUFFER Issue     FOR Issue.
+
 
 
 DEFINE VARIABLE lc-id       AS CHARACTER NO-UNDO.
@@ -60,11 +64,8 @@ ASSIGN
 
 ASSIGN
     lc-subj = acs_head.em_subject
-    lc-body = acs_head.em_begin + "~n~n" +
-              substitute('<a href="&2">&1</a>',
-                          "Survey",
-                          lc-Link ) + '~n~n' +
-              acs_head.em_end.
+    lc-body = "".
+    
               
 RUN lib/translatetemplate.p 
     (
@@ -126,6 +127,13 @@ DYNAMIC-FUNCTION("mlib-SendEmail",
     lc-body,
     pc-email). 
 
+
+RUN islib-CreateNote( Issue.CompanyCode,
+                    Issue.IssueNumber,
+                    "SYSTEM",
+                    "SYS.MISC",
+                    "Created Survey " + acs_rq.rq_id + " " + acs_head.descr + " For " + pc-email).
+                    
     
     
 

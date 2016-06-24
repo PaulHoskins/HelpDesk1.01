@@ -338,12 +338,10 @@ PROCEDURE process-web-request :
         htmlib-MultiplyErrorMessage(lc-error-msg) '</CENTER>' skip.
     END.
 
-    IF lc-submit-label <> "" THEN
-    DO:
-        {&out} '<br /><center>' htmlib-SubmitButton("submitform","Test Survey") 
+   
+    {&out} '<br /><center>' htmlib-SubmitButton("submitform","Test Survey") 
         '</center>' skip.
-    END.
-         
+      
     {&out} htmlib-EndForm() skip
            htmlib-Footer() skip.
     

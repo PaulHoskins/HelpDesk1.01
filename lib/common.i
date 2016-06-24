@@ -142,9 +142,9 @@ DEFINE VARIABLE lc-global-taskResp-desc       AS CHARACTER
     INITIAL 'Engineer|Customer|3rd Party' NO-UNDO.
                         
 DEFINE VARIABLE lc-global-sq-code             AS CHARACTER 
-    INITIAL 'RANGE1-10|LOG|COM|FIELD|PARA'  NO-UNDO.                        
+    INITIAL 'RANGE1-10|LOG|COM|FIELD|PARA|NUMBER'  NO-UNDO.                        
 DEFINE VARIABLE lc-global-sq-desc           AS CHARACTER 
-    INITIAL 'Range (1-10)|Yes/No|Comment Box|Field Input|Text Only'  NO-UNDO.
+    INITIAL 'Range (1-10)|Yes/No|Comment Box|Text Input|Text Only|Number'  NO-UNDO.
     
 DEFINE VARIABLE li-global-sla-fail            AS INTEGER   INITIAL 10 NO-UNDO.
 DEFINE VARIABLE li-global-sla-amber           AS INTEGER   INITIAL 20 NO-UNDO.
@@ -1783,6 +1783,7 @@ FUNCTION com-CanDelete RETURNS LOGICAL
     DEFINE BUFFER ptp_task   FOR ptp_task.
     DEFINE BUFFER acs_head   FOR acs_head.
     DEFINE BUFFER acs_line   FOR acs_line.
+    DEFINE BUFFER acs_res    FOR acs_res.
          
     
  
@@ -2059,6 +2060,10 @@ FUNCTION com-CanDelete RETURNS LOGICAL
             END.
         WHEN "webacsquestion" THEN
         DO:
+            FIND acs_line WHERE ROWID(acs_line)  = pr-rowid NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE acs_line THEN RETURN FALSE.
+            IF CAN-FIND(FIRST acs_res WHERE acs_res.acs_line_id = acs_line.acs_line_id NO-LOCK)
+            THEN RETURN FALSE.
             RETURN TRUE.
         END.
         OTHERWISE

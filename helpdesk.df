@@ -198,43 +198,6 @@ ADD INDEX "acs_lne_id_key" ON "acs_line"
   UNIQUE
   INDEX-FIELD "acs_line_id" ASCENDING 
 
-ADD TABLE "acs_res"
-  AREA "Schema Area"
-  LABEL "Account Survey Result"
-  DUMP-NAME "acs_res"
-
-ADD FIELD "acs_line_id" OF "acs_res" AS integer 
-  FORMAT "->,>>>,>>9"
-  INITIAL "0"
-  POSITION 2
-  MAX-WIDTH 4
-  ORDER 20
-
-ADD FIELD "rvalue" OF "acs_res" AS character 
-  FORMAT "x(8)"
-  INITIAL ""
-  POSITION 3
-  MAX-WIDTH 16
-  ORDER 30
-
-ADD FIELD "rq_id" OF "acs_res" AS character 
-  FORMAT "x(8)"
-  INITIAL ""
-  POSITION 4
-  MAX-WIDTH 16
-  ORDER 10
-
-ADD INDEX "Prim" ON "acs_res" 
-  AREA "Schema Area"
-  UNIQUE
-  PRIMARY
-  INDEX-FIELD "rq_id" ASCENDING 
-  INDEX-FIELD "acs_line_id" ASCENDING 
-
-ADD INDEX "acs_line_id" ON "acs_res" 
-  AREA "Schema Area"
-  INDEX-FIELD "acs_line_id" ASCENDING 
-
 ADD TABLE "acs_rq"
   AREA "Schema Area"
   LABEL "Account Survey Request"
@@ -5859,4 +5822,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000116198
+0000115469
