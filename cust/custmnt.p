@@ -20,7 +20,8 @@
                             Changes
     24/08/2015  phoski      Inventory renewal user
     22/10/2015  phoski      allowAllTeams    
-    08/11/2015  phoski      AccountRef field    
+    08/11/2015  phoski      AccountRef field 
+    25/06/2016  phoski      iss_survey field   
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -85,7 +86,7 @@ DEFINE VARIABLE lc-stat-loginid     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-renew-loginid    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-allowAllTeams    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-accountref       AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-iss-survey       AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-sla-rows         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-sla-selected     AS CHARACTER NO-UNDO.
@@ -561,10 +562,6 @@ htmlib-Select("accountmanager",lc-ct-Code,lc-ct-desc,lc-AccountManager)
            skip.
 {&out} '</TR>' skip.
 
-
-
-/***/
-
 {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
     (IF LOOKUP("supportticket",lc-error-field,'|') > 0 
     THEN htmlib-SideLabelError("Support Tickets Used?")
@@ -618,6 +615,17 @@ IF NOT CAN-DO("view,delete",lc-mode) THEN
 '</TD>'
 '<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
 htmlib-CheckBox("viewactivity", IF lc-viewActivity = 'on'
+    THEN TRUE ELSE FALSE) 
+'</TD></TR>' skip.
+
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("viewaction",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Send Surveys?")
+    ELSE htmlib-SideLabel("Send Surveys?"))
+'</TD>'
+'<TD VALIGN="TOP" ALIGN="left" COLSPAN="2">'
+htmlib-CheckBox("iss-survey", IF lc-iss-survey = 'on'
     THEN TRUE ELSE FALSE) 
 '</TD></TR>' skip.
 
@@ -1072,6 +1080,7 @@ PROCEDURE process-web-request :
                 lc-renew-loginid     = get-value("renew-loginid")
                 lc-allowAllTeams     = get-value("allowallteams")
                 lc-accountref        = get-value("accountref")
+                lc-iss-survey        = get-value("iss-survey")
              
                 .
 
@@ -1128,6 +1137,7 @@ PROCEDURE process-web-request :
                         b-table.def-stat-loginid = lc-stat-loginid
                         b-table.def-renew-loginid = lc-renew-loginid
                         b-table.accountref       = lc-accountref
+                        b-table.iss_survey      = lc-iss-survey = "on"
                         
                        .
                      
@@ -1221,6 +1231,8 @@ PROCEDURE process-web-request :
                 lc-stat-loginid  = b-table.def-stat-loginid
                 lc-renew-loginid  = b-table.def-renew-loginid
                 lc-accountref     = b-table.accountRef
+                lc-iss-survey = IF b-table.iss_survey THEN "on" ELSE ""
+                
                 
                 .
 

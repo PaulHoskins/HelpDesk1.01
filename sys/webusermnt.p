@@ -23,6 +23,7 @@
     29/11/2014  phoski      remove working hours
     03/12/2014  phoski      Engineer Type 
     24/05/2015  phoski      Dashboard selection  
+    25/06/2016  phoski      iss_survey field  
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -79,6 +80,8 @@ DEFINE VARIABLE lc-DisableTimeout AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-CustInv        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-engType        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-EmailTimeReport AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-iss-survey       AS CHARACTER NO-UNDO.
+
 
 
 
@@ -592,6 +595,25 @@ PROCEDURE ip-Page :
     '</TD>' skip.
     else 
     {&out} htmlib-TableField(html-encode(if lc-EmailTimeReport = 'on'
+                                         then 'yes' else 'no'),'left')
+           skip.
+    
+    {&out} '</TR>' skip.
+    /* */
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("iss-survey",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Send Surveys?")
+        ELSE htmlib-SideLabel("Send Surveys?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+   htmlib-CheckBox("iss-survey", IF lc-iss-survey = 'on'
+    THEN TRUE ELSE FALSE) 
+          
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(if lc-iss-survey = 'on'
                                          then 'yes' else 'no'),'left')
            skip.
     
@@ -1140,6 +1162,7 @@ PROCEDURE process-web-request :
                 lc-custinv         = get-value("custinv")
                 lc-engtype         = get-value("engtype")
                 lc-EmailTimeReport = get-value("emailtimereport")
+                lc-iss-survey       = get-value("iss-survey")
                 .
             
            
@@ -1204,6 +1227,7 @@ PROCEDURE process-web-request :
                         b-table.engtype               = lc-engtype
                         b-table.dashbList           = ""
                         b-table.EmailTimeReport     = lc-EmailTimeReport = 'on'
+                        b-table.iss_survey      = lc-iss-survey = "on"
                         .
                     ASSIGN 
                         b-table.name = b-table.forename + ' ' + 
@@ -1339,6 +1363,7 @@ PROCEDURE process-web-request :
                                     ELSE ''
                 lc-engtype         = b-table.engtype
                 lc-emailtimereport = IF b-table.EmailTimeReport THEN 'on' ELSE ''
+                lc-iss-survey = IF b-table.iss_survey THEN "on" ELSE ""
                 .
             
         END.

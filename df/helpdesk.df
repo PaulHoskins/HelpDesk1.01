@@ -311,6 +311,14 @@ ADD FIELD "rq_completed" OF "acs_rq" AS datetime
   MAX-WIDTH 8
   ORDER 90
 
+ADD FIELD "Eng-LoginID" OF "acs_rq" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Last Engineer"
+  POSITION 11
+  MAX-WIDTH 16
+  ORDER 100
+
 ADD INDEX "rq_id" ON "acs_rq" 
   AREA "Schema Area"
   UNIQUE
@@ -1404,6 +1412,14 @@ ADD FIELD "AccountRef" OF "Customer" AS character
   POSITION 30
   MAX-WIDTH 16
   ORDER 280
+
+ADD FIELD "iss_survey" OF "Customer" AS logical 
+  FORMAT "yes/no"
+  INITIAL "yes"
+  LABEL "Send Issue Surveys"
+  POSITION 31
+  MAX-WIDTH 1
+  ORDER 290
 
 ADD INDEX "AccountNumber" ON "Customer" 
   AREA "Schema Area"
@@ -4630,6 +4646,13 @@ ADD FIELD "AutoActionCode" OF "WebAction" AS character
   MAX-WIDTH 16
   ORDER 70
 
+ADD FIELD "ActionClass" OF "WebAction" AS character 
+  FORMAT "x(8)"
+  INITIAL "ENG"
+  POSITION 9
+  MAX-WIDTH 16
+  ORDER 80
+
 ADD INDEX "ActionCode" ON "WebAction" 
   AREA "Schema Area"
   UNIQUE
@@ -5715,6 +5738,14 @@ ADD FIELD "EmailTimeReport" OF "WebUser" AS logical
   MAX-WIDTH 1
   ORDER 350
 
+ADD FIELD "iss_survey" OF "WebUser" AS logical 
+  FORMAT "yes/no"
+  INITIAL "yes"
+  LABEL "Send Issue Surveys"
+  POSITION 38
+  MAX-WIDTH 1
+  ORDER 360
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -5859,4 +5890,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000116198
+0000116804

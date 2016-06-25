@@ -9,6 +9,7 @@
     
     When        Who         What
     30/04/2006  phoski      Initial
+    25/06/2016  phoski      ActionClass
           
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -50,10 +51,12 @@ DEFINE VARIABLE lc-description    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-Notes          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-EmailAssign    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lf-Audit          AS DECIMAL   NO-UNDO.
-
+DEFINE VARIABLE lc-actionClass          AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lc-list-action    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-list-aname     AS CHARACTER NO-UNDO.
+
+
 
 
 
@@ -307,6 +310,7 @@ PROCEDURE process-web-request :
                 lc-notes          = get-value("notes")
                 lc-emailassign    = get-value("emailassign")
                 lc-autoactioncode = get-value("autoactioncode")
+                lc-actionClass          = get-value("actionclass")
                    
                 .
   
@@ -356,6 +360,7 @@ PROCEDURE process-web-request :
                         b-table.notes          = lc-notes
                         b-table.emailassign    = lc-emailassign = "on"
                         b-table.autoactioncode = lc-autoactioncode
+                        b-table.actionClass    = lc-actionClass
                            
                         .
                    
@@ -403,6 +408,7 @@ PROCEDURE process-web-request :
                 lc-emailassign    = IF b-table.EmailAssign
                                        THEN "on" ELSE ""
                 lc-autoactioncode = b-table.Autoactioncode
+                lc-actionClass          = b-table.actionClass
                 .
        
     END.
@@ -460,6 +466,24 @@ PROCEDURE process-web-request :
     {&out} '</TR>' skip.
     
 
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("qtype",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Action Class")
+        ELSE htmlib-SideLabel("Action Class"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+       htmlib-Select("actionclass",lc-global-webActionClass-code ,lc-global-webActionClass-Desc,lc-actionClass)
+        '</TD>' skip.
+    ELSE
+    {&out} htmlib-TableField(html-encode(dynamic-function("com-DecodeLookup",lc-actionClass,
+                                     lc-global-webActionClass-code,
+                                     lc-global-webActionClass-Desc
+                                     )),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("notes",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("Note")

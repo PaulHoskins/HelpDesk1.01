@@ -15,6 +15,8 @@
     26/09/2014  phoski      Disabled Features
     20/11/2014  phoski      Pass thru 'selacc' field to mnt page
     27/11/2014  phoski      Working Hours page & changes
+    25/06/2015  phoski      Shorten account/user type width to stop 
+                            overflow on toolbar
     
 
 ***********************************************************************/
@@ -595,7 +597,7 @@ FUNCTION fnToolbarAccountSelection RETURNS CHARACTER
         BY customer.NAME:
         ASSIGN 
             lc-codes = lc-codes + "|" + customer.AccountNumber
-            lc-names = lc-names + "|" + trim(substr(customer.NAME,1,40)).
+            lc-names = lc-names + "|" + trim(substr(customer.NAME,1,30)).
 
     END.
 

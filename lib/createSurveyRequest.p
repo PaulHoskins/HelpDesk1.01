@@ -17,23 +17,20 @@ DEFINE INPUT PARAMETER pi-IssueNumber   AS INTEGER   NO-UNDO.
 DEFINE INPUT PARAMETER pc-LoginID       AS CHARACTER NO-UNDO.
 DEFINE INPUT PARAMETER pc-Email         AS CHARACTER NO-UNDO.
 DEFINE INPUT PARAMETER pl-Test          AS LOGICAL   NO-UNDO.
-DEFINE OUTPUT PARAMETER pc-Error           AS CHARACTER NO-UNDO.
+DEFINE OUTPUT PARAMETER pc-Error        AS CHARACTER NO-UNDO.
  
 {lib/common.i}
 {lib/maillib.i}
 {iss/issue.i}
-
 
 DEFINE BUFFER acs_head  FOR acs_head.
 DEFINE BUFFER acs_line  FOR acs_line.
 DEFINE BUFFER company   FOR Company.
 DEFINE BUFFER acs_rq    FOR acs_rq.
 DEFINE BUFFER Issue     FOR Issue.
-
-
+DEFINE BUFFER IssAction FOR IssAction.
 
 DEFINE VARIABLE lc-id       AS CHARACTER NO-UNDO.
- 
 DEFINE VARIABLE lc-Link     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-subj     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-body     AS CHARACTER NO-UNDO.
@@ -78,14 +75,6 @@ RUN lib/translatetemplate.p
     OUTPUT lc-error
     ).
             
-/*          
-IF lc-error <> "" THEN
-DO:
-    lc-temp = lc-error + "~n" + lc-temp.
-    pc-Error = lc-error.
-            
-END.   
-*/
        
 ASSIGN 
     lc-body = lc-temp  + '~n~n' +
@@ -106,16 +95,7 @@ RUN lib/translatetemplate.p
     OUTPUT lc-error
     ).
             
-/*            
-IF lc-error <> "" THEN
-DO:
-    lc-temp = lc-error + "~n" + lc-temp.
-    pc-Error = lc-error.
-
-       
-END.
-*/
-     
+    
 ASSIGN 
     lc-body = lc-body + lc-temp.
            
@@ -162,9 +142,27 @@ PROCEDURE ipCreateRequest:
         acs_rq.Email = pc-email
         acs_rq.IssueNumber = pi-issueNumber
         acs_rq.LoginID = pc-loginId
+        acs_rq.eng-loginid = Issue.AssignTo
         acs_rq.rq_status = 0
         acs_rq.rq_id = cGuid
         acs_rq.rq_created = NOW.
+       
+    /*
+    *** Last Engineer
+    */
+    FOR EACH IssAction NO-LOCK OF Issue,
+        FIRST WebAction NO-LOCK
+            WHERE WebAction.CompanyCode = Issue.CompanyCode
+              AND WebAction.ActionID = IssAction.ActionID
+              AND WebAction.ActionClass = "ENG"
+              BY IssAction.CreateDate
+              BY IssAction.CreateTime
+              :
+        ASSIGN
+            acs_rq.eng-loginid = IssAction.AssignTo.
+                   
+    END.
+                    
     
     pc_rq_id = acs_rq.rq_id.
     

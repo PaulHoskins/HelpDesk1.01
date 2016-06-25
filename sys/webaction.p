@@ -9,6 +9,7 @@
     
     When        Who         What
     30/04/2006  phoski      Initial
+    25/06/2006  phoski      actionClass
      
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -212,7 +213,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Action^left|Description^left|Notes^left|Auto Action|Email On Assign"
+        "Action^left|Description^left|Action Class^left|Notes^left|Auto Action|Email On Assign"
         ) skip.
 
 
@@ -310,6 +311,12 @@ PROCEDURE process-web-request :
             skip
             htmlib-MntTableField(html-encode(b-query.actioncode),'left')
             htmlib-MntTableField(html-encode(b-query.description),'left')
+             htmlib-MntTableField(
+                dynamic-function("com-DecodeLookup",b-query.actionClass,
+                                     lc-global-webActionClass-code,
+                                     lc-global-webActionClass-Desc
+                                     ),'Left' )
+                                     
             htmlib-MntTableField(replace(html-encode(b-query.notes),"~n",'<br>'),'left')
             htmlib-MntTableField(html-encode(lc-AutoAction),'left')
             htmlib-MntTableField(if b-query.EmailAssign then "yes" else "&nbsp;",'left')

@@ -25,9 +25,9 @@
     22/10/2015  phoski      com-AllowCustomerAccess - take into account
                             AllowAllTeams customer flag
     23/02/2016  phoski      com-GetCustomerAccountActiveOnly
-    18/06/2016  phoski      
-    
-   
+    18/06/2016  phoski      Survey Question Types
+    25/06/2016  phoski      webAction.ActionClass Types
+  
 ***********************************************************************/
 
 {lib/attrib.i}
@@ -146,6 +146,11 @@ DEFINE VARIABLE lc-global-sq-code             AS CHARACTER
 DEFINE VARIABLE lc-global-sq-desc           AS CHARACTER 
     INITIAL 'Range (1-10)|Yes/No|Comment Box|Text Input|Text Only|Number'  NO-UNDO.
     
+DEFINE VARIABLE lc-global-webActionClass-code             AS CHARACTER 
+    INITIAL 'ENG|ACC'  NO-UNDO.                        
+DEFINE VARIABLE lc-global-WebActionClass-desc           AS CHARACTER 
+    INITIAL 'Engineer|Account'  NO-UNDO.
+        
 DEFINE VARIABLE li-global-sla-fail            AS INTEGER   INITIAL 10 NO-UNDO.
 DEFINE VARIABLE li-global-sla-amber           AS INTEGER   INITIAL 20 NO-UNDO.
 DEFINE VARIABLE li-global-sla-ok              AS INTEGER   INITIAL 30 NO-UNDO.

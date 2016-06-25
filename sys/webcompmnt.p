@@ -21,7 +21,8 @@
     05/06/2015  phoski      Engineer Cost
     19/08/2015  phoski      Email bulkemail custaddissue
     27/02/2016  phoski      helpdesklink field for SLA alerts
-
+    25/06/2016  phoski      Issue Survey
+    
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -90,6 +91,10 @@ DEFINE VARIABLE lc-engCost        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-bulkemail      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-custaddissue   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-helpdesklink   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-iss-survey     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sv-code        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-sv-desc        AS CHARACTER NO-UNDO.
+
 
 
 
@@ -598,6 +603,22 @@ htmlib-InputField("engcost",10,lc-engcost)
 {&out} '</TR>' skip.
 
 
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("iss-survey",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("Issue Survey")
+    ELSE htmlib-SideLabel("Issue Survey"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-Select("iss-survey",lc-sv-code ,lc-sv-desc,lc-iss-survey)
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-iss-survey),'left')
+           skip.
+{&out} '</TR>' skip.
+
+
 
 {&out} htmlib-EndTable() '<br /> 'skip.
 END PROCEDURE.
@@ -892,6 +913,7 @@ PROCEDURE process-web-request :
                 lc-bulkemail      = get-value("bulkemail")
                 lc-custaddissue   = get-value("custaddissue")
                 lc-helpdesklink   = get-value("helpdesklink")
+                lc-iss-survey     = get-value("iss-survey")
                   
 
                 .
@@ -961,6 +983,7 @@ PROCEDURE process-web-request :
                         b-table.custaddissue   = lc-custaddissue
                         b-table.bulkemail      = lc-bulkemail
                         b-table.helpdesklink   = lc-helpdesklink
+                        b-table.isc_acs_code   = TRIM(lc-iss-survey)
                         .
                    
                     
@@ -995,11 +1018,15 @@ PROCEDURE process-web-request :
     DO:
         FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid) NO-LOCK.
         ASSIGN 
-            lc-companycode = b-table.companycode.
+            lc-companycode = b-table.companycode
+            lc-sv-code     = " "
+            lc-sv-desc     = "None"
+            .
 
         IF CAN-DO("view,delete",lc-mode)
-            OR request_method <> "post"
-            THEN ASSIGN 
+            OR request_method <> "post" THEN 
+        DO:
+            ASSIGN 
                 lc-companycode = b-table.companycode
                 lc-name             = b-table.name
                 lc-address1  = b-table.address1
@@ -1031,8 +1058,16 @@ PROCEDURE process-web-request :
                 lc-bulkemail      = b-table.bulkemail
                 lc-custaddissue   = b-table.custaddissue
                 lc-helpdesklink   = b-table.helpdesklink
+                lc-iss-survey     = b-table.isc_acs_code
                 .
-       
+            FOR EACH acs_head NO-LOCK
+                WHERE acs_head.CompanyCode = b-table.companyCode:
+                ASSIGN
+                    lc-sv-code = lc-sv-code + "|" + acs_head.acs_code
+                    lc-sv-desc = lc-sv-desc + "|" + acs_head.descr.
+                          
+            END.                     
+        END.
     END.
 
     RUN outputHeader.
