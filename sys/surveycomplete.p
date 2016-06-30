@@ -259,9 +259,10 @@ PROCEDURE ip-Validate:
                         lc-id = lc-fld + "-" + string(li-loop).
                         
                         IF get-value(lc-id) = "on"
-                            THEN icount = icount + 1.
-                        
-        
+                        THEN ASSIGN
+                                tt-res.rvalue = STRING(li-loop)
+                                icount = icount + 1.
+                               
                     END.
                     IF icount > 1
                         THEN set-user-field(lc-efld,"Please tick only one value.").
