@@ -3331,6 +3331,16 @@ ADD INDEX "ContractCustomer" ON "Issue"
   INDEX-FIELD "ContractType" ASCENDING 
   INDEX-FIELD "AccountNumber" ASCENDING 
 
+ADD INDEX "CreateDate" ON "Issue" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "CreateDate" ASCENDING 
+
+ADD INDEX "issueDate" ON "Issue" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "IssueDate" ASCENDING 
+
 ADD INDEX "LastActiviy" ON "Issue" 
   AREA "Schema Area"
   INDEX-FIELD "CompanyCode" ASCENDING 
@@ -5890,4 +5900,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000116804
+0000117080

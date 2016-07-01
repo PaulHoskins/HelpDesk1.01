@@ -57,11 +57,13 @@ DEFINE VARIABLE lc-loeng      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-hieng      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-question   AS CHARACTER NO-UNDO.
 
+DEFINE TEMP-TABLE   tt-res NO-UNDO
+    FIELD ivalue    AS INTEGER
+    FIELD icount    AS INTEGER
+    INDEX ivalue    ivalue.
 
-{lib/maillib.i}
+
 {rep/survanalysistt.i}
-
-
 
 
 /* ********************  Preprocessor Definitions  ******************** */
@@ -104,7 +106,8 @@ FUNCTION Format-Select-Account RETURNS CHARACTER
 
 {src/web2/wrap-cgi.i}
 {lib/htmlib.i}
-
+{lib/maillib.i}
+{lib/replib.i}
 
 
  
@@ -291,14 +294,91 @@ PROCEDURE ip-PrintReport :
       Notes:       
     ------------------------------------------------------------------------------*/
 
-    DEFINE BUFFER customer     FOR customer.
-    DEFINE BUFFER issue        FOR issue.
     DEFINE VARIABLE li-count        AS INTEGER          NO-UNDO.
+    DEFINE VARIABLE li-count2       AS INTEGER          NO-UNDO.
     DEFINE VARIABLE lc-tr           AS CHARACTER        NO-UNDO.
     DEFINE VARIABLE li-eng          AS INTEGER          NO-UNDO.
     
+   
 
-
+    {&out} 
+    htmlib-StartMntTable() SKIP
+        htmlib-TableHeading('Customer^left|Engineer^left|Sent To^left|Issue^right|Description|Issue Date|Survey Sent|Survey Completed|Response^right') SKIP.
+      
+    FOR EACH tt-san NO-LOCK BY tt-san.rseq:
+        
+        ASSIGN
+            li-count = li-count + 1
+            li-count2 = li-count2 + 1.
+        IF li-count2 MOD 2 = 0
+            THEN lc-tr = '<tr style="background: #EBEBE6;">'.
+        ELSE lc-tr = '<tr style="background: white;">'. 
+        
+        {&out}
+            skip
+            lc-tr
+            htmlib-MntTableField(html-encode(tt-san.cName),'left')
+            htmlib-MntTableField(html-encode(tt-san.eName),'left')
+            htmlib-MntTableField(html-encode(tt-san.cuname),'left')
+            htmlib-MntTableField(html-encode(string(tt-san.issuenumber)),'right')
+            htmlib-MntTableField(html-encode(tt-san.iDesc),'left')
+            htmlib-MntTableField(html-encode(string(tt-san.issDate,'99/99/9999')),'left')
+            htmlib-MntTableField(html-encode(string(tt-san.rq_created,'99/99/9999')),'left')
+            htmlib-MntTableField(html-encode(string(tt-san.rq_completed,'99/99/9999')),'left')
+            htmlib-MntTableField(html-encode(string(tt-san.ivalue)),'right')
+         
+            
+            
+            '</tr>' SKIP.
+            
+        FIND tt-res
+            WHERE tt-res.ivalue = tt-san.ivalue NO-ERROR.
+        IF NOT AVAILABLE tt-res THEN CREATE tt-res.
+        ASSIGN
+            tt-res.icount = tt-res.icount + 1
+            tt-res.ivalue = tt-san.iValue.
+            
+            
+    END.
+     
+    {&out} skip 
+                htmlib-EndTable()
+                skip.
+                
+              
+                
+    {&out} '<br/><br/>'
+    htmlib-StartMntTable() SKIP
+        htmlib-TableHeading('Response^right|Survey Count^right') SKIP.
+        
+    ASSIGN li-count2 = 0.
+    
+    FOR EACH tt-res NO-LOCK:
+         ASSIGN
+             li-count2 = li-count2 + 1.
+        IF li-count2 MOD 2 = 0
+            THEN lc-tr = '<tr style="background: #EBEBE6;">'.
+        ELSE lc-tr = '<tr style="background: white;">'. 
+        
+        {&out}
+            skip
+            lc-tr
+   
+            htmlib-MntTableField(html-encode(string(tt-res.ivalue)),'right')
+            htmlib-MntTableField(html-encode(string(tt-res.icount)),'right')
+            
+            '</tr>' SKIP.
+             
+               
+    END.
+          
+    {&out} skip 
+                htmlib-EndTable()
+                skip.
+                
+                
+                 
+            
      
 END PROCEDURE.
 
@@ -308,26 +388,26 @@ END PROCEDURE.
 &IF DEFINED(EXCLUDE-ip-BuildData) = 0 &THEN
 
 PROCEDURE ip-BuildData :
-/*------------------------------------------------------------------------------
-  Purpose:     
-  Parameters:  <none>
-  Notes:       
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+      Purpose:     
+      Parameters:  <none>
+      Notes:       
+    ------------------------------------------------------------------------------*/
 
     RUN rep/survanalysis-build.p
         (
-            lc-global-company,
-            lc-iss-survey,
-            int(lc-question),
-            lc-lo-account,
-            lc-hi-account,
-            get-value("allcust") = "on",
-            DATE(lc-lodate),
-            DATE(lc-hidate),
-            lc-loeng,
-            lc-hieng,
-            lc-sort,
-            OUTPUT TABLE tt-san
+        lc-global-company,
+        lc-iss-survey,
+        int(lc-question),
+        lc-lo-account,
+        lc-hi-account,
+        get-value("allcust") = "on",
+        DATE(lc-lodate),
+        DATE(lc-hidate),
+        lc-loeng,
+        lc-hieng,
+        lc-sort,
+        OUTPUT TABLE tt-san
    
         ).
 
@@ -365,7 +445,7 @@ PROCEDURE ip-Selection :
         SKIP
             '</td></tr>' SKIP.
     FIND acs_head WHERE acs_head.CompanyCode = lc-global-company
-                    AND acs_head.acs_code = lc-iss-survey NO-LOCK NO-ERROR.
+        AND acs_head.acs_code = lc-iss-survey NO-LOCK NO-ERROR.
     IF AVAILABLE acs_head THEN
     DO:
         FOR EACH acs_line OF acs_head  WHERE acs_line.qType BEGINS "RANGE"  NO-LOCK:
@@ -415,6 +495,30 @@ PROCEDURE ip-Selection :
     '<td align=left valign=top colspan=4>' 
     htmlib-Select("hieng",lc-eng-Code,lc-eng-desc,lc-hieng)  '</td></tr>' skip.
     
+    {&out} 
+    '<tr><td valign="top" align="right">' 
+        (IF LOOKUP("lodate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Issues From Date")
+        ELSE htmlib-SideLabel("Issues From Date"))
+    '</td>'
+    '<td valign="top" align="left">'
+    htmlib-CalendarInputField("lodate",10,lc-lodate) 
+    htmlib-CalendarLink("lodate")
+    '</td></tr>' skip.
+    
+    {&out} '<tr><td valign="top" align="right">' 
+        (IF LOOKUP("hidate",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Issues To Date")
+        ELSE htmlib-SideLabel("Issues To Date"))
+    '</td>'
+    '<td valign="top" align="left">'
+    htmlib-CalendarInputField("hidate",10,lc-hidate) 
+    htmlib-CalendarLink("hidate")
+    '</td>' skip.
+
+    {&out} '</tr>' SKIP.
+    
+    
             
     {&out}
     '<tr><td align=right valign=top>' 
@@ -429,16 +533,7 @@ PROCEDURE ip-Selection :
     {&out} '</td>'.
    
     
-    {&out} 
-    '<td valign="top" align="right">' 
-        (IF LOOKUP("lodate",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Issues From Date")
-        ELSE htmlib-SideLabel("Issues From Date"))
-    '</td>'
-    '<td valign="top" align="left">'
-    htmlib-CalendarInputField("lodate",10,lc-lodate) 
-    htmlib-CalendarLink("lodate")
-    '</td>' skip.
+  
     {&out}
     '</tr><tr>' SKIP
            '<td align=right valign=top>' 
@@ -451,19 +546,8 @@ PROCEDURE ip-Selection :
     {&out-long}
     htmlib-SelectLong("hiaccount",lc-list-acc,lc-list-aname,lc-hi-account).
                 
-    {&out} '</td>'.
+    {&out} '</td></tr>'.
      
-    {&out} '<td valign="top" align="right">' 
-        (IF LOOKUP("hidate",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("Issues To Date")
-        ELSE htmlib-SideLabel("Issues To Date"))
-    '</td>'
-    '<td valign="top" align="left">'
-    htmlib-CalendarInputField("hidate",10,lc-hidate) 
-    htmlib-CalendarLink("hidate")
-    '</td>' skip.
-
-    {&out} '</tr>' SKIP.
 
     {&out} '<tr><td valign="top" align="right">' 
     htmlib-SideLabel("All Customers")
@@ -524,12 +608,12 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
     ELSE
-    IF lc-question  = "" 
-    THEN RUN htmlib-AddErrorMessage(
-            'iss-survey', 
-            'This survey does not contain any relevant questions',
-            INPUT-OUTPUT pc-error-field,
-            INPUT-OUTPUT pc-error-msg ).
+        IF lc-question  = "" 
+            THEN RUN htmlib-AddErrorMessage(
+                'iss-survey', 
+                'This survey does not contain any relevant questions',
+                INPUT-OUTPUT pc-error-field,
+                INPUT-OUTPUT pc-error-msg ).
     ASSIGN
         ld-lodate = DATE(lc-lodate) no-error.
     IF ERROR-STATUS:ERROR 
@@ -664,24 +748,33 @@ PROCEDURE process-web-request :
         IF lc-error-msg = "" THEN
         DO:
             RUN ip-BuildData.
-            
-            IF lc-output = "CSV" THEN RUN ip-ExportReport (OUTPUT lc-filename).
+            FIND FIRST tt-san NO-LOCK NO-ERROR.
+            IF NOT AVAILABLE tt-san THEN
+            DO:
+                ASSIGN
+                    lc-error-field = "iss-survey"
+                    lc-error-msg   = "No completed survey data for selected ranges".
+            END.
+            ELSE
+            DO:
+                IF lc-output = "CSV" THEN RUN ip-ExportReport (OUTPUT lc-filename).
 
             
-            IF lc-output <> "WEB" THEN 
-            DO:
-                mlib-SendAttEmail 
-                    ( lc-global-company,
-                    "",
-                    "HelpDesk Issue Log Report ",
-                    "Please find attached your report covering the period "
-                    + string(DATE(lc-lodate),"99/99/9999") + " to " +
-                    string(DATE(lc-hidate),'99/99/9999'),
-                    this-user.email,
-                    "",
-                    "",
-                    lc-filename).
-                OS-DELETE value(lc-filename).
+                IF lc-output <> "WEB" THEN 
+                DO:
+                    mlib-SendAttEmail 
+                        ( lc-global-company,
+                        "",
+                        "HelpDesk Issue Log Report ",
+                        "Please find attached your report covering the period "
+                        + string(DATE(lc-lodate),"99/99/9999") + " to " +
+                        string(DATE(lc-hidate),'99/99/9999'),
+                        this-user.email,
+                        "",
+                        "",
+                        lc-filename).
+                    OS-DELETE value(lc-filename).
+                END.
             END.
             
         END.
@@ -719,7 +812,7 @@ PROCEDURE process-web-request :
     
     
     IF request_method = "POST" 
-        AND lc-error-msg = "" THEN
+        AND lc-error-msg = "" AND lc-submit = "" THEN
     DO:
        
         IF lc-output = "WEB" THEN RUN ip-PrintReport.   

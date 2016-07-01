@@ -21,11 +21,13 @@ DEFINE VARIABLE lc-msg     AS CHARACTER NO-UNDO.
 
 
 ASSIGN
-    ld-date[1] = /* 01/01/2016  */ TODAY - 1
+    ld-date[1] = /* 01/01/2016  */ TODAY - 30
     ld-date[2] = TODAY.
     
 
 OUTPUT STREAM slog TO "c:\temp\surveylog.txt" PAGED.
+
+PUT STREAM slog UNFORMATTED "begin " NOW SKIP.
 
 FOR EACH Company NO-LOCK
     WHERE Company.isc_acs_code > "",
@@ -90,6 +92,10 @@ FOR EACH Company NO-LOCK
               
 
 END.
+
+
+PUT STREAM slog UNFORMATTED "end " NOW SKIP.
+
 OUTPUT STREAM slog CLOSE.
 
 
