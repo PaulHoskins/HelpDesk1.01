@@ -26,6 +26,7 @@
     23/02/2016 phoski       Decommission inventory not shown
     21/03/2016 phoski       Document Link Encrypt
     18/06/2016 phoski       Show decomissioned at end of inventory
+    01/07/2016 phoski       AdminTime activity is not chargeable
                         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -1422,6 +1423,8 @@ PROCEDURE ip-Tickets :
         AND b-query.AccountNumber = pc-AccountNumber NO-LOCK) 
         THEN RETURN.
 
+    {&out} '<div class="infobox">Activities marked ** are administration and are not charged</div>' SKIP.
+    
     {&out} skip
            replace(htmlib-StartMntTable(),'width="100%"','width="97%"') skip.
 

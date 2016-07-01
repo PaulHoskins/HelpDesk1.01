@@ -33,7 +33,8 @@
     20/10/2015  phoski      com-GetHelpDeskEmail for email sender  
     14/11/2015  phoski      No Ad hoc contract and a type must be entered  
     23/02/2016  phoski      isDecom flag     
-    13/03/2016  phoski      Customer view on action default to yes           
+    13/03/2016  phoski      Customer view on action default to yes   
+    01/07/2016  phoski      Shorten name in customer combo        
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -750,7 +751,7 @@ PROCEDURE ip-GetAccountNumbers :
 
         ASSIGN 
             pc-AccountNumber = pc-AccountNumber + '|' + b-cust.AccountNumber
-            pc-Name          = pc-Name + '|' + b-cust.name.
+            pc-Name          = pc-Name + '|' + trim(substr(b-cust.name,1,30)).
 
     END.
 

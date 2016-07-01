@@ -27,6 +27,8 @@
     23/02/2016  phoski      com-GetCustomerAccountActiveOnly
     18/06/2016  phoski      Survey Question Types
     25/06/2016  phoski      webAction.ActionClass Types
+    01/07/2016  phoski      com-GetAssignList/com-GetAssignIssue
+                            - only active users
   
 ***********************************************************************/
 
@@ -778,6 +780,7 @@ PROCEDURE com-GetAssignIssue :
     FOR EACH b-user NO-LOCK 
         WHERE CAN-DO(lc-global-internal,b-user.UserClass)
         AND b-user.CompanyCode = pc-CompanyCode
+        AND b-user.Disabled = FALSE
         BY b-user.name:
         ASSIGN 
             pc-LoginID = pc-LoginID + '|' + 
@@ -804,6 +807,7 @@ PROCEDURE com-GetAssignList :
     FOR EACH b-user NO-LOCK 
         WHERE CAN-DO(lc-global-internal,b-user.UserClass)
         AND b-user.CompanyCode = pc-CompanyCode
+        AND b-user.Disabled = FALSE
         BY b-user.name:
 
         IF pc-loginID = ""

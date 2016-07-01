@@ -56,9 +56,12 @@ DEFINE VARIABLE lc-sort       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-loeng      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-hieng      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-question   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-showall    AS CHARACTER NO-UNDO.
+
 
 DEFINE TEMP-TABLE   tt-res NO-UNDO
     FIELD ivalue    AS INTEGER
+    FIELD dperc     AS DEC
     FIELD icount    AS INTEGER
     INDEX ivalue    ivalue.
 
@@ -247,7 +250,8 @@ PROCEDURE ip-InitialProcess :
         lc-loeng    = get-value("loeng")
         lc-hieng    = get-value("hieng")   
         lc-sort     = get-value("sort") 
-        lc-question = get-value("question").
+        lc-question = get-value("question")
+        lc-showall = get-value("showall").
     
     
     IF lc-temp = "on"
@@ -339,17 +343,49 @@ PROCEDURE ip-PrintReport :
             tt-res.ivalue = tt-san.iValue.
             
             
+        IF lc-ShowAll = "ON" THEN
+        DO:
+            FOR EACH acs_res NO-LOCK
+                WHERE acs_res.rq_id = tt-san.rq_id :
+                    
+            FIND acs_line WHERE acs_line.acs_line_id = acs_res.acs_line_id NO-LOCK NO-ERROR.
+             
+                   
+            ASSIGN li-count2 = li-count2 + 1. 
+            IF li-count2 MOD 2 = 0
+            THEN lc-tr = '<tr style="background: #EBEBE6;">'.
+            ELSE lc-tr = '<tr style="background: white;">'. 
+        
+            {&out}
+                skip
+                lc-tr
+                replace(htmlib-MntTableField(html-encode(acs_line.qText),'right'),'<td','<td colspan=8')
+                htmlib-MntTableField(html-encode(string(acs_res.rvalue)),'right')
+                                               
+                '</tr>' SKIP.
+                  
+                
+                    
+            END.
+        END.
+            
+            
     END.
      
     {&out} skip 
                 htmlib-EndTable()
                 skip.
                 
-              
+    FOR EACH tt-res EXCLUSIVE-LOCK:
+        
+        ASSIGN tt-res.dperc = ROUND(
+            tt-res.icount / ( li-count / 100)
+        ,2).
+    END.          
                 
-    {&out} '<br/><br/>'
+    {&out} '<br/><br/><div style="width:50%">'
     htmlib-StartMntTable() SKIP
-        htmlib-TableHeading('Response^right|Survey Count^right') SKIP.
+        htmlib-TableHeading('Response^right|% Of Total^right|Survey Count^right') SKIP.
         
     ASSIGN li-count2 = 0.
     
@@ -364,8 +400,9 @@ PROCEDURE ip-PrintReport :
             skip
             lc-tr
    
-            htmlib-MntTableField(html-encode(string(tt-res.ivalue)),'right')
-            htmlib-MntTableField(html-encode(string(tt-res.icount)),'right')
+            htmlib-MntTableField(string(tt-res.ivalue),'right')
+            htmlib-MntTableField(string(tt-res.dperc,">>>>>>>>9.99-"),'right')
+            htmlib-MntTableField(string(tt-res.icount),'right')
             
             '</tr>' SKIP.
              
@@ -374,6 +411,7 @@ PROCEDURE ip-PrintReport :
           
     {&out} skip 
                 htmlib-EndTable()
+                '</div>' skip
                 skip.
                 
                 
@@ -446,6 +484,10 @@ PROCEDURE ip-Selection :
             '</td></tr>' SKIP.
     FIND acs_head WHERE acs_head.CompanyCode = lc-global-company
         AND acs_head.acs_code = lc-iss-survey NO-LOCK NO-ERROR.
+    ASSIGN
+        cCode = "0"
+        cDesc = "All Questions On Survey".
+        
     IF AVAILABLE acs_head THEN
     DO:
         FOR EACH acs_line OF acs_head  WHERE acs_line.qType BEGINS "RANGE"  NO-LOCK:
@@ -557,7 +599,7 @@ PROCEDURE ip-Selection :
         ">",' onChange="ChangeAccount()">')
     '</td></tr>' skip.
     
-
+    
     {&out}
     '<tr><td valign="top" align="right">' 
     htmlib-SideLabel("Sort By")
@@ -565,6 +607,12 @@ PROCEDURE ip-Selection :
     '<td align=left valign=top>' 
     htmlib-Select("sort","TSHI|TSLO|ENG|CUST","Total Score (High to Low)|Total Score (Low To High)|Engineer|Customer",get-value("sort")) '</td></tr>'.
     
+    {&out} '<tr><td valign="top" align="right">' 
+    htmlib-SideLabel("Show Full Survey Results")
+    '</td>'
+    '<td valign="top" align="left">'
+    htmlib-checkBox("showall",get-value("showall") = "on")
+    '</td></tr>' skip.
     
     
     

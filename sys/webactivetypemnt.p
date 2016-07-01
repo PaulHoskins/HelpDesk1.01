@@ -9,6 +9,7 @@
     
     When        Who         What
     12/04/2006  phoski      Initial
+    01/07/2016  phoski      isAdminTime field
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -49,6 +50,7 @@ DEFINE VARIABLE li-typeid       AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-actype       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-desc         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-mintime      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-isAdminTime  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-notes        AS CHARACTER NO-UNDO.
 
 
@@ -142,14 +144,6 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
-   
-/*     if lc-notes = ""                                     */
-/*     or lc-notes = ?                                      */
-/*     then run htmlib-AddErrorMessage(                     */
-/*                     'notes',                             */
-/*                     'The notes field must not be empty', */
-/*                     input-output pc-error-field,         */
-/*                     input-output pc-error-msg ).         */
     
 
 END PROCEDURE.
@@ -311,7 +305,7 @@ PROCEDURE process-web-request :
                 lc-actype      = get-value("acttype")
                 lc-desc        = get-value("desc")
                 lc-mintime     = get-value("mintime")
-                /*                    lc-notes       = get-value("notes") */
+                lc-isAdminTime   = get-value("isadmintime")
                 .
             
                
@@ -334,10 +328,12 @@ PROCEDURE process-web-request :
                 END.
                 ELSE
                 DO:
-                    FIND LAST WebActType WHERE WebActType.Companycode = lc-global-company
-                        NO-ERROR.
-                    IF NOT AVAILABLE WebActType THEN li-typeid = 1.
-                    ELSE li-typeid = WebActType.TypeID + 1.
+                    ASSIGN li-TypeID = 1.
+                    FOR EACH WebActType WHERE WebActType.Companycode = lc-global-company BY WebActType.TypeID:
+                        li-typeid = WebActType.TypeID + 1.
+                      
+                    END.
+                    
                     CREATE b-table.
                     ASSIGN 
                         b-table.Companycode     = lc-global-company
@@ -352,7 +348,7 @@ PROCEDURE process-web-request :
                     ASSIGN 
                         b-table.Description     = lc-desc
                         b-table.mintime         = INTEGER(lc-mintime)
-                        /*                         b-table.notes           = lc-notes */
+                        b-table.isAdminTime     = lc-isAdminTime = "on"
                         
                         .
                    
@@ -395,7 +391,7 @@ PROCEDURE process-web-request :
                 lc-actype         = b-table.activitytype
                 lc-desc           = b-table.Description
                 lc-mintime        = STRING(b-table.mintime)
-                /*                 lc-notes          = b-table.notes */
+                lc-isAdminTime    = IF b-table.isAdminTime THEN "on" ELSE ""
                 .
        
     END.
@@ -476,22 +472,31 @@ PROCEDURE process-web-request :
            skip.
     {&out} '</TR>' skip.
 
-    /*     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">'            */
-    /*            (if lookup("notes",lc-error-field,'|') > 0       */
-    /*            then htmlib-SideLabelError("Notes")              */
-    /*            else htmlib-SideLabel("Notes"))                  */
-    /*            '</TD>' skip.                                    */
-    /*                                                             */
-    /*     if not can-do("view,delete",lc-mode) then               */
-    /*     {&out} '<TD VALIGN="TOP" ALIGN="left">'                 */
-    /*             htmlib-TextArea("notes",lc-notes,10,60)         */
-    /*            '</TD>'                                          */
-    /*             skip.                                           */
-    /*     else {&out} '<td valign="top">'                         */
-    /*             htmlib-TableField(html-encode(lc-notes),'left') */
-    /*         '</td>' skip.                                       */
-    /*     {&out} '</tr>' skip.                                    */
+/*
+{&out} '<tr><td valign="top" align="right">' 
+    htmlib-SideLabel("Show Full Survey Results")
+    '</td>'
+    '<td valign="top" align="left">'
+    htmlib-checkBox("showall",get-value("showall") = "on")
+    '</td></tr>' skip.
+    */
 
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("isadmintime",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Administration Time?")
+        ELSE htmlib-SideLabel("Administration Time?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+     htmlib-checkBox("isadmintime",lc-isAdminTime = "on")
+              
+    '</TD>' skip.
+    else
+    {&out} htmlib-TableField(html-encode(IF lc-isadminTime = "on" THEN "Yes" ELSE "No"),'left')
+           skip.
+    {&out} '</TR>' skip.
+    
     {&out} htmlib-EndTable() skip.
 
 

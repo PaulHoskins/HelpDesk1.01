@@ -58,30 +58,38 @@ PROCEDURE ip-Build:
         AND acs_rq.eng-loginid >=  pc-fromEng 
         AND acs_rq.eng-loginid <=  pc-ToEng 
         ,
-        FIRST acs_res NO-LOCK
+        EACH acs_res NO-LOCK
         WHERE acs_res.rq_id = acs_rq.rq_id
-        AND acs_res.acs_line_id = pi-acs_line_id
-        :
+                :
             
+        IF pi-acs_line_id <> 0 THEN
+        DO:
+            IF acs_res.acs_line_id <> pi-acs_line_id THEN NEXT.
+        END.
+        
+        FIND acs_line WHERE acs_line.acs_line_id = acs_res.acs_line_id NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE  acs_line THEN NEXT.
+        IF NOT acs_line.qType BEGINS "RANGE"  THEN NEXT.
+        
+        
         MESSAGE "crt = " Issue.IssueNumber.
         
         FIND Customer OF Issue NO-LOCK NO-ERROR.
         IF NOT AVAILABLE Customer THEN NEXT.
         
         IF NOT pl-allCust AND NOT Customer.IsActive THEN NEXT.
-         
-        CREATE tt-san.
+        
+        FIND FIRST tt-san WHERE tt-san.rq_id =  acs_rq.rq_id EXCLUSIVE-LOCK NO-ERROR.
+        IF NOT AVAILABLE tt-san
+        THEN CREATE tt-san.
         ASSIGN
             tt-san.rSeq        = ?
             tt-san.Eng-Loginid = acs_rq.Eng-LoginID
             
             tt-san.issueNumber = Issue.IssueNumber
             tt-san.issDate     = Issue.IssueDate
-            
-            tt-san.acs_line_id = acs_res.acs_line_id
             tt-san.rq_id       = acs_rq.rq_id
             tt-san.cName       = Customer.Name
-            tt-san.rvalue      = acs_res.rvalue
             tt-san.eName       = com-UserName(tt-san.eng-loginid)
             tt-san.iDesc       = Issue.BriefDescription
             tt-san.cu-loginid  = Issue.RaisedLoginID
@@ -92,7 +100,7 @@ PROCEDURE ip-Build:
             .
              
         ASSIGN
-            tt-san.ivalue = INTEGER(acs_res.rvalue) NO-ERROR.
+            tt-san.ivalue =  tt-san.ivalue + INTEGER(acs_res.rvalue) NO-ERROR.
             
         
              

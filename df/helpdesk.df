@@ -2598,6 +2598,15 @@ ADD FIELD "ActDescription" OF "issActivity" AS character
   MAX-WIDTH 80
   ORDER 210
 
+ADD FIELD "ActivityType" OF "issActivity" AS character 
+  FORMAT "X(30)"
+  INITIAL ""
+  LABEL "ActType"
+  POSITION 23
+  MAX-WIDTH 60
+  COLUMN-LABEL "ActType"
+  ORDER 220
+
 ADD INDEX "IssueNumber" ON "issActivity" 
   AREA "Schema Area"
   PRIMARY
@@ -4724,6 +4733,21 @@ ADD FIELD "TypeID" OF "WebActType" AS integer
   COLUMN-LABEL "TypeID"
   ORDER 60
 
+ADD FIELD "isAdminTime" OF "WebActType" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Is Admin Time"
+  POSITION 8
+  MAX-WIDTH 1
+  ORDER 70
+
+ADD INDEX "prim-key" ON "WebActType" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ActivityType" ASCENDING 
+
 ADD TABLE "WebAttr"
   AREA "Schema Area"
   LABEL "Web Attributes"
@@ -5900,4 +5924,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000117080
+0000117581

@@ -75,8 +75,10 @@ DEFINE VARIABLE li-tot-period-productivity AS DECIMAL NO-UNDO.
 
 DEFINE TEMP-TABLE issRep NO-UNDO LIKE issActivity
     FIELD AccountNumber LIKE issue.AccountNumber
-    FIELD ActionDesc    LIKE issAction.Notes
+    FIELD ActionDesc    LIKE IssAction.notes
+    /*
     FIELD ActivityType  LIKE issActivity.ContractType
+    */
     FIELD IssueDate     LIKE Issue.IssueDate
     FIELD period-of     AS INTEGER
     INDEX i-cust AccountNumber period-of

@@ -9,6 +9,7 @@
     
     When        Who         What
     12/04/2006  phoski      Initial
+    01/07/2016  phoski      isAdminTime field
         
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -219,7 +220,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "Type^left|Description^left|Minimum Time Bookable<br />(Minutes)^right"
+        "Type^left|Description^left|Administration Time?|Minimum Time Bookable<br />(Minutes)^right"
         ) skip.
 
 
@@ -306,6 +307,7 @@ PROCEDURE process-web-request :
             skip
             htmlib-MntTableField(html-encode(string(b-query.ActivityType)),'left')
             htmlib-MntTableField(html-encode(string(b-query.Description)),'left')
+            htmlib-MntTableField(html-encode(string(b-query.isAdminTime)),'left')
             htmlib-MntTableField(html-encode(string(b-query.MinTime)),'right')
 
             tbar-BeginHidden(rowid(b-query))

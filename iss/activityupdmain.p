@@ -15,6 +15,7 @@
     24/03/2015  phoski      No more js prompt on time start/end diffs
     09/05/2015  phoski      Complex Project
     12/03/2016  phoski      Customer view flag is on by default
+    01/07/2016  phoski      Only active users for add function
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1287,7 +1288,8 @@ PROCEDURE process-web-request :
         AND Customer.AccountNumber = Issue.AccountNumber
         NO-LOCK NO-ERROR.
 
-    RUN com-GetInternalUser ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
+    
+    RUN com-GetAssignIssue  ( lc-global-company , OUTPUT lc-list-assign , OUTPUT lc-list-assname ).
 
     ASSIGN 
         lc-main-title = " Activities for Issue " + string(issue.IssueNumber).
