@@ -17,9 +17,7 @@ DEFINE TEMP-TABLE tt-IssRep NO-UNDO LIKE issActivity
     FIELD SortField     AS CHARACTER 
     FIELD AccountNumber LIKE issue.AccountNumber
     FIELD ActionDesc    LIKE IssAction.notes
-    /*
-    FIELD ActivityType  LIKE issActivity.ContractType
-    */
+    
     FIELD IssueDate     LIKE Issue.IssueDate
     FIELD period-of     AS INTEGER
     INDEX i-cust AccountNumber period-of

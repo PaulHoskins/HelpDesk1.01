@@ -34,7 +34,9 @@
     14/11/2015  phoski      No Ad hoc contract and a type must be entered  
     23/02/2016  phoski      isDecom flag     
     13/03/2016  phoski      Customer view on action default to yes   
-    01/07/2016  phoski      Shorten name in customer combo        
+    01/07/2016  phoski      Shorten name in customer combo   
+    02/07/2016  phoski      issActivity.ActivityType    
+    02/07/2016  phoski      com-GetTicketBalance for ticket balance
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1216,7 +1218,7 @@ PROCEDURE ip-MainEntry :
             {&out} '<TR><TD VALIGN="TOP" ALIGN="center" colspan=2>'
         '<div class="infobox" style="font-size: 15px;">'
         "Ticketed Customer Balance: "
-        DYNAMIC-FUNCTION("com-TimeToString",bcust.ticketBalance)
+             DYNAMIC-FUNCTION("com-TimeToString",com-GetTicketBalance(lc-global-company,lc-accountnumber))
         '</TD></TR>' skip. 
 
 
@@ -1702,8 +1704,12 @@ PROCEDURE ip-QuickUpdate :
                 issActivity.Billable       = lc-billable-flag = "on"
                 issActivity.ContractType   = lc-contract-type
                 issActivity.CustomerView   = lc-customerview = "on"
-                issActivity.Notes          = lc-actionnote.
-        
+                issActivity.Notes          = lc-actionnote
+                issActivity.typeID         = int(lc-activityType).
+           ASSIGN
+                 issActivity.activityType = com-GetActivityByType(lc-global-company,issActivity.TypeID).
+                 
+                        
             IF lc-startdate <> "" THEN
             DO:
                 ASSIGN 

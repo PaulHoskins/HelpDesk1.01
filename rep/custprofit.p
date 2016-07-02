@@ -12,6 +12,8 @@
     26/11/2015  phoski      Account Status
     12/03/2016  phoski      Change page to shrink width
     15/03/2016  phoski      Selection of contract status and show it
+    02/07/2016  phoski      Admin Time option
+    
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -47,6 +49,7 @@ DEFINE VARIABLE lc-cs-desc        AS CHARACTER INITIAL 'All Customers|Active Cus
 
 DEFINE VARIABLE lc-co-code        AS CHARACTER INITIAL "ALL|ACT|INACT" NO-UNDO.
 DEFINE VARIABLE lc-co-desc        AS CHARACTER INITIAL 'All Contracts|Active Contracts|Inactive Contracts' NO-UNDO.
+DEFINE VARIABLE lc-admin          AS CHARACTER NO-UNDO.
 
 
 
@@ -220,6 +223,13 @@ PROCEDURE ip-ReportSelectionHTML:
     '</td><td valign="top" align="left">'
     htmlib-Select("co",lc-co-code,lc-co-desc,get-value("co")) 
     '</td>'
+    '</tr><tr><TD VALIGN="TOP"  ALIGN="right">' 
+            htmlib-SideLabel("Exclude Administration Time?")
+     
+             '</td><TD VALIGN="TOP" ALIGN="left">'
+                htmlib-CheckBox("admin", IF lc-admin = 'on'
+                                        THEN TRUE ELSE FALSE) 
+            '</TD>'
     '</tr><tr>'
     '<td valign="top" align="right">' 
         (IF LOOKUP("customer",lc-error-field,'|') > 0 
@@ -511,6 +521,7 @@ PROCEDURE process-web-request :
             lc-output  = get-value("output")
             lc-cs       = get-value("cs")
             lc-co       = get-value("co")
+            lc-admin    = get-value("admin")
             .
             
         RUN ip-Validate( OUTPUT lc-error-field,
@@ -525,6 +536,7 @@ PROCEDURE process-web-request :
                 lc-SelectCustomer,
                 lc-cs,
                 lc-co,
+                lc-admin = "on",
                 OUTPUT TABLE tt-custp ).
          
         END.          

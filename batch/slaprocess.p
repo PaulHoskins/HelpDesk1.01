@@ -11,6 +11,7 @@
     12/05/2006  phoski      Initial
     20/10/2015  phoski      com-GetHelpDeskEmail for email sender
     27/02/2016  phoski      Link to issue in email
+    02/07/2016  phoski      Don't send emails if holiday
 
 ***********************************************************************/
 
@@ -420,16 +421,21 @@ FOR EACH ro-Issue NO-LOCK
             ASSIGN 
                 lc-subject = "SLA Alert for " + "Issue " + string(Issue.IssueNumber) +
                    ' - Customer ' + Customer.name.
-
-             fnLog ( "Issue Email " + Issue.CompanyCode + "/" 
-                    + string(Issue.IssueNumber) 
-                    + " to = " + WebUser.Loginid + "/" + WebUser.email).
-             DYNAMIC-FUNCTION("mlib-SendEmail",
-                Issue.Company,
-                DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
-                lc-Subject,
-                lc-mail,
-                WebUser.email). 
+                   
+             IF CAN-FIND(FIRST Holiday WHERE Holiday.CompanyCode = Issue.CompanyCode
+                        AND Holiday.hDate = TODAY 
+                        AND Holiday.observed = TRUE NO-LOCK) = FALSE THEN
+             DO:
+                 fnLog ( "Issue Email " + Issue.CompanyCode + "/" 
+                        + string(Issue.IssueNumber) 
+                        + " to = " + WebUser.Loginid + "/" + WebUser.email).
+                 DYNAMIC-FUNCTION("mlib-SendEmail",
+                    Issue.Company,
+                    DYNAMIC-FUNCTION("com-GetHelpDeskEmail","From",issue.company,Issue.AccountNumber),
+                    lc-Subject,
+                    lc-mail,
+                    WebUser.email).
+             END. 
         END.
         
     END.

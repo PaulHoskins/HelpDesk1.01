@@ -11,7 +11,8 @@
     
     03/12/2014  phoski      Initial
     12/03/2016  phoski      Engineer in multi select instead of range
-           
+    02/07/2016  phoski      Admin Time option
+         
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -32,6 +33,7 @@ DEFINE VARIABLE lc-engType        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-eng-code       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-eng-desc       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-selectengineer AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-admin          AS CHARACTER NO-UNDO.
 
 
 DEFINE BUFFER this-user FOR WebUser.
@@ -189,6 +191,7 @@ PROCEDURE ip-InitialProcess :
         lc-engType                          = get-value("engtype")
         lc-repType                          = get-value("reptype")
         lc-selectengineer = get-value("selectengineer")
+        lc-admin          = get-value("admin")
         
         .
     IF request_method = "GET" THEN
@@ -226,6 +229,7 @@ PROCEDURE ip-ProcessReport :
         DATE(lc-hidate),
         lc-selectEngineer,
         lc-engtype,
+        lc-admin = "on",
         OUTPUT TABLE tt-engtime
 
         ).
@@ -297,6 +301,16 @@ PROCEDURE ip-Selection :
     RUN ip-engineer-select.
      
     {&out} '</td>'.
+    
+     {&out} '</tr><tr>'
+            '<TD VALIGN="TOP"  ALIGN="right">&nbsp;' 
+            htmlib-SideLabel("Exclude Administration Time?")
+     
+             '</td><TD VALIGN="TOP" ALIGN="left">'
+                htmlib-CheckBox("admin", IF lc-admin = 'on'
+                                        THEN TRUE ELSE FALSE) 
+            '</TD>'.
+            
      
 
    

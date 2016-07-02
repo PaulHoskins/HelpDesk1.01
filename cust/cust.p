@@ -14,6 +14,7 @@
     27/09/2014  phoski      Encrypted rowid to custview.p
     05/06/2015  phoski      Contract Page
     08/11/2015  phoski      Show account Ref & show def contract
+    02/07/2016  phoski      com-getTicketBalance
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -342,7 +343,7 @@ PROCEDURE process-web-request :
             htmlib-MntTableField(html-encode(b-query.accountref),'left')
             htmlib-MntTableField((lc-def-cont),'left')
             htmlib-MntTableField(if DYNAMIC-FUNCTION('com-AllowTicketSupport':U,rowid(b-query))
-                                 then dynamic-function("com-TimeToString",b-query.TicketBalance)
+                                 then dynamic-function("com-TimeToString",com-GetTicketBalance(b-query.companyCode,b-query.accountnumber))
                                  else "&nbsp;",'right')
 
             tbar-BeginHidden(rowid(b-query))

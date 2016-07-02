@@ -10,6 +10,7 @@
     When        Who         What
     26/07/2006  phoski      Initial
     19/11/2014  phoski      Phase 2 changes
+    02/07/2016  phoski      Admin time 
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -29,6 +30,8 @@ DEFINE VARIABLE lc-hidate      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-test        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-pdf         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-avail       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-admin       AS CHARACTER NO-UNDO.
+
 
 {lib/maillib.i}
 
@@ -145,9 +148,9 @@ PROCEDURE ip-CustomerTable :
 
         ASSIGN
             lc-name = "tog" + string(ROWID(b-query)).
-
+/*
         IF request_method = "get" THEN set-user-field(lc-name,IF pl-Selected THEN "on" ELSE "").
-
+*/
         IF lc-this = ""
         THEN lc-this = lc-name.
         ELSE lc-this = lc-this + "," + lc-name.
@@ -171,7 +174,7 @@ PROCEDURE ip-CustomerTable :
             THEN TRUE ELSE FALSE) 
 
         '&nbsp;'
-        b-query.name
+        TRIM(substr(b-query.name,1,30))
         '</td>' skip.
 
         ASSIGN 
@@ -252,6 +255,7 @@ PROCEDURE ip-ProcessReport :
             ( lc-global-user,
             tt.CompanyCode,
             tt.AccountNumber,
+            lc-admin = "on",
             DATE(lc-lodate),
             DATE(lc-hidate),
             OUTPUT lc-pdf ).
@@ -453,6 +457,7 @@ PROCEDURE process-web-request :
             lc-lodate = get-value("lodate")
             lc-test = get-value("test")
             lc-avail = get-value("avail")
+            lc-admin = get-value("admin")
             .
         
         RUN ip-Validate( OUTPUT lc-error-field,
@@ -505,9 +510,18 @@ PROCEDURE process-web-request :
             '<TD VALIGN="TOP" ALIGN="left">'
             htmlib-InputField("hidate",10,lc-hidate) 
             htmlib-CalendarLink("hidate")
-            '</td>' skip
+            '</td>' SKIP
+            '</tr><tr><TD VALIGN="TOP" ALIGN="right">&nbsp;' 
+            (if lookup("admin",lc-error-field,'|') > 0 
+            then htmlib-SideLabelError("Include Administration Time?")
+            else htmlib-SideLabel("Include Administration Time?"))
+            '</TD>'
+            '<TD VALIGN="TOP" ALIGN="left">'
+                htmlib-CheckBox("admin", if lc-admin = 'on'
+                                        then true else false) 
+            '</TD>'
             
-            '<TD VALIGN="TOP" ALIGN="right">&nbsp;' 
+            '</tr><tr><TD VALIGN="TOP" ALIGN="right">&nbsp;' 
             (if lookup("test",lc-error-field,'|') > 0 
             then htmlib-SideLabelError("Test Statements To " + webuser.email + "?")
             else htmlib-SideLabel("Test Statements To " + webuser.email + "?"))
@@ -525,6 +539,7 @@ PROCEDURE process-web-request :
         lc-avail = "".
     RUN ip-CustomerTable ( TRUE, FALSE ).
     RUN ip-CustomerTable ( FALSE, FALSE ).    
+    
 
     IF request_method = "post" AND lc-error-msg = "" THEN
     DO:

@@ -14,6 +14,7 @@
     17/03/2015  phoski      fix problem with totals
     23/10/2015  phoski      Date Range instead of DJS drivel and
                             removed all period week/month stuff
+    02/07/2016  phoski      Exclude Admin
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -39,6 +40,7 @@ DEFINE INPUT PARAMETER pc-ReportType        AS CHARACTER    NO-UNDO.
 
 DEFINE INPUT PARAMETER pc-Engineers         AS CHARACTER    NO-UNDO.
 DEFINE INPUT PARAMETER pc-Customers         AS CHARACTER    NO-UNDO.
+DEFINE INPUT PARAMETER pl-ExcludeAdmin      AS LOGICAL      NO-UNDO.
 
 DEFINE OUTPUT PARAMETER TABLE FOR tt-IssRep.
 DEFINE OUTPUT PARAMETER TABLE FOR tt-IssTime.
@@ -387,6 +389,9 @@ PROCEDURE ipBuildData:
             :
             INNER: 
             DO:
+                IF pl-ExcludeAdmin 
+                AND com-IsActivityChargeable(issActivity.IssActivityID) = FALSE THEN NEXT.
+                
                 FIND FIRST issAction OF issActivity NO-LOCK NO-ERROR.
                 IF NOT AVAILABLE issAction THEN NEXT.
 
@@ -416,7 +421,9 @@ PROCEDURE ipBuildData:
                     AND IssActivity.StartDate >= pd-FromDate
                     AND IssActivity.StartDate <= pd-toDate
                     :
-
+                    IF pl-ExcludeAdmin 
+                    AND com-IsActivityChargeable(issActivity.IssActivityID) = FALSE THEN NEXT.
+                
                     FIND FIRST issAction OF issActivity NO-LOCK NO-ERROR.
                     IF NOT AVAILABLE issAction THEN NEXT.
 
@@ -440,6 +447,10 @@ PROCEDURE ipBuildData:
                 AND ro-user.UserClass = "internal"
               
                 :
+                    
+                IF pl-ExcludeAdmin 
+                AND com-IsActivityChargeable(issActivity.IssActivityID) = FALSE THEN NEXT.
+                
 
                 FIND FIRST issAction OF issActivity NO-LOCK NO-ERROR.
                 IF NOT AVAILABLE issAction THEN NEXT.

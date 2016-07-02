@@ -11,7 +11,8 @@
     15/06/2015  phoski      Initial
     26/11/2015  phoski      Contract Totals only for 'current' and
                             customer status
-    15/03/2016  phoski      Contract Status                        
+    15/03/2016  phoski      Contract Status    
+    02/07/2016  phoski      Exclude Admin                    
    
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -24,6 +25,7 @@ DEFINE INPUT PARAMETER pd-DateTo        AS DATE         NO-UNDO.
 DEFINE INPUT PARAMETER pc-CustomerList  AS CHARACTER    NO-UNDO.
 DEFINE INPUT PARAMETER pc-CustStatus    AS CHARACTER    NO-UNDO.
 DEFINE INPUT PARAMETER pc-ContStatus    AS CHARACTER    NO-UNDO.
+DEFINE INPUT PARAMETER pl-ExcludeAdmin  AS LOGICAL      NO-UNDO.
 
 
 DEFINE OUTPUT PARAMETER table           FOR tt-custp.
@@ -231,6 +233,10 @@ PROCEDURE ip-Build:
             IF pc-CustStatus = "INACT" AND Customer.IsActive = TRUE THEN NEXT.
             
         END.
+        IF pl-ExcludeAdmin 
+        AND com-IsActivityChargeable(iAct.IssActivityID) = FALSE THEN NEXT.
+            
+            
             
             
         FIND ContractType 

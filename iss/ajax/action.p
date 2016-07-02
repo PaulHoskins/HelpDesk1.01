@@ -14,7 +14,9 @@
                             use actDescription
     05/05/2015  phoski      Complex project     
     12/03/2016  phoski      Click on action + symbol will expand/shrink
-                            the action boxes also                   
+                            the action boxes also    
+    02/07/2016  phoski      Show activityType if not blank and totals 
+                            for admin etc.
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -28,6 +30,7 @@ DEFINE VARIABLE li-tag-end        AS INTEGER   NO-UNDO.
 DEFINE VARIABLE lc-dummy-return   AS CHARACTER INITIAL "MYXXX111PPP2222" NO-UNDO.
 DEFINE VARIABLE li-duration       AS INTEGER   NO-UNDO.
 DEFINE VARIABLE li-total-duration AS INTEGER   NO-UNDO.
+DEFINE VARIABLE li-tduration      AS INTEGER   EXTENT 2 NO-UNDO.
 DEFINE VARIABLE lc-AllowDelete    AS CHARACTER NO-UNDO.
 
 
@@ -145,6 +148,12 @@ PROCEDURE ip-ComplexProjectTable:
             ASSIGN
                 li-duration = li-duration + IssActivity.Duration
                 li-count    = li-count + 1.
+                
+           
+            IF com-IsActivityChargeable(IssActivity.IssActivityID) = FALSE
+            THEN ASSIGN li-tduration[1] = li-tduration[1] + issActivity.Duration.
+            ELSE ASSIGN li-tduration[2] = li-tduration[2] + issActivity.Duration.
+            
         END.
         ASSIGN
             li-total-duration = li-total-duration + li-duration.
@@ -272,7 +281,10 @@ PROCEDURE ip-ComplexProjectTable:
             BY issActivity.CreateTime DESCENDING:
 
             ASSIGN
-                lc-start = "".
+                lc-start = ""
+                lc-descr = IssActivity.Description.
+            IF issActivity.activityType <> ""
+            THEN ASSIGN lc-descr = issactivity.activityType + " - " + IssActivity.Description.
 
             IF issActivity.StartDate <> ? THEN
             DO:
@@ -303,7 +315,7 @@ PROCEDURE ip-ComplexProjectTable:
             
                 ASSIGN 
                     lc-info = 
-                    REPLACE(htmlib-MntTableField(html-encode(IssActivity.Description),'left'),'</td>','')
+                    REPLACE(htmlib-MntTableField(html-encode(lc-descr),'left'),'</td>','')
                     lc-object = "hdobj" + string(IssActivity.issActivityID).
             
                 ASSIGN 
@@ -324,7 +336,7 @@ PROCEDURE ip-ComplexProjectTable:
                 {&out} '</td>' skip.
             END.
             ELSE {&out}
-            htmlib-MntTableField(IssActivity.Description,'left').
+            htmlib-MntTableField(lc-descr,'left').
 
             {&out}
             htmlib-MntTableField(IF IssActivity.SiteVisit THEN "Yes" ELSE "&nbsp;",'left').
@@ -357,12 +369,27 @@ PROCEDURE ip-ComplexProjectTable:
     END.
     
     IF li-total-duration <> 0 THEN
+    DO:
         {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
-    REPLACE(htmlib-MntTableField("Total Duration","right"),"<td","<td colspan=10 ")
-    htmlib-MntTableField(html-encode(com-TimeToString(li-total-duration))
-        ,'right')
-                
-    '</tr>'.
+        REPLACE(htmlib-MntTableField("Total Duration","right"),"<td","<td colspan=9 ")
+        htmlib-MntTableField(html-encode(com-TimeToString(li-total-duration))
+            ,'right')
+            '</tr>'.
+            
+        {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
+        REPLACE(htmlib-MntTableField("Total Duration (Admin)","right"),"<td","<td colspan=9 ")
+        htmlib-MntTableField(html-encode(com-TimeToString(li-tduration[1]))
+            ,'right')
+            '</tr>'.
+            
+         {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
+        REPLACE(htmlib-MntTableField("Total Duration (Non Admin)","right"),"<td","<td colspan=9 ")
+        htmlib-MntTableField(html-encode(com-TimeToString(li-tduration[2]))
+            ,'right')
+            '</tr>'.
+            
+    END.
+    
 
     IF ll-HasClosed THEN
     DO:
@@ -426,6 +453,11 @@ PROCEDURE ip-StandardActionTable:
             ASSIGN
                 li-duration = li-duration + IssActivity.Duration
                 li-count    = li-count + 1.
+            
+            IF com-IsActivityChargeable(IssActivity.IssActivityID) = FALSE
+            THEN ASSIGN li-tduration[1] = li-tduration[1] + issActivity.Duration.
+            ELSE ASSIGN li-tduration[2] = li-tduration[2] + issActivity.Duration.
+            
         END.
         ASSIGN
             li-total-duration = li-total-duration + li-duration.
@@ -544,7 +576,14 @@ PROCEDURE ip-StandardActionTable:
             BY issActivity.CreateTime DESCENDING:
 
             ASSIGN
-                lc-start = "".
+                lc-start = ""
+                lc-descr = IssActivity.Description.
+            IF issActivity.activityType <> ""
+            THEN ASSIGN lc-descr = issactivity.activityType + " - " + IssActivity.Description.
+            
+            IF com-IsActivityChargeable(IssActivity.IssActivityID) = FALSE 
+            THEN ASSIGN lc-descr = "** " + lc-descr.
+            
 
             IF issActivity.StartDate <> ? THEN
             DO:
@@ -575,7 +614,7 @@ PROCEDURE ip-StandardActionTable:
             
                 ASSIGN 
                     lc-info = 
-                    REPLACE(htmlib-MntTableField(html-encode(IssActivity.Description),'left'),'</td>','')
+                    REPLACE(htmlib-MntTableField(html-encode(lc-descr),'left'),'</td>','')
                     lc-object = "hdobj" + string(IssActivity.issActivityID).
             
                 ASSIGN 
@@ -597,7 +636,7 @@ PROCEDURE ip-StandardActionTable:
                 {&out} '</td>' skip.
             END.
             ELSE {&out}
-            htmlib-MntTableField(IssActivity.Description,'left').
+            htmlib-MntTableField(lc-descr,'left').
 
             {&out}
             htmlib-MntTableField(IF IssActivity.SiteVisit THEN "Yes" ELSE "&nbsp;",'left').
@@ -630,13 +669,27 @@ PROCEDURE ip-StandardActionTable:
     END.
     
     IF li-total-duration <> 0 THEN
+    DO:
         {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
-    REPLACE(htmlib-MntTableField("Total Duration","right"),"<td","<td colspan=9 ")
-    htmlib-MntTableField(html-encode(com-TimeToString(li-total-duration))
-        ,'right')
-                
-    '</tr>'.
-
+        REPLACE(htmlib-MntTableField("Total Duration","right"),"<td","<td colspan=9 ")
+        htmlib-MntTableField(html-encode(com-TimeToString(li-total-duration))
+            ,'right')
+            '</tr>'.
+            
+        {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
+        REPLACE(htmlib-MntTableField("Total Duration (Admin)","right"),"<td","<td colspan=9 ")
+        htmlib-MntTableField(html-encode(com-TimeToString(li-tduration[1]))
+            ,'right')
+            '</tr>'.
+            
+         {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'
+        REPLACE(htmlib-MntTableField("Total Duration (Non Admin)","right"),"<td","<td colspan=9 ")
+        htmlib-MntTableField(html-encode(com-TimeToString(li-tduration[2]))
+            ,'right')
+            '</tr>'.
+            
+    END.
+    
     IF ll-HasClosed THEN
     DO:
         {&out} '<tr class="tabrow1" style="font-weight: bold; border: 1px solid black;">'

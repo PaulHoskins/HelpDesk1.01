@@ -29,6 +29,7 @@
     25/06/2016  phoski      webAction.ActionClass Types
     01/07/2016  phoski      com-GetAssignList/com-GetAssignIssue
                             - only active users
+    02/07/2016  phoski      com-GetActivityByType 
   
 ***********************************************************************/
 
@@ -281,6 +282,10 @@ FUNCTION com-GenTabDesc RETURNS CHARACTER
     )  FORWARD.
 
 
+FUNCTION com-GetActivityByType RETURNS CHARACTER 
+	(pc-companyCode AS CHARACTER,
+	 pi-TypeID      AS INTEGER) FORWARD.
+
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
     ( pc-CompanyCode AS CHARACTER )  FORWARD.
 
@@ -289,6 +294,14 @@ FUNCTION com-GetHelpDeskEmail RETURNS CHARACTER
     (pc-mode        AS CHARACTER,
     pc-companyCode AS CHARACTER,
      pc-accountNumber AS CHARACTER) FORWARD.
+
+FUNCTION com-GetTicketBalance RETURNS INTEGER 
+	(pc-companyCode AS CHARACTER,
+	 pc-accountNumber   AS CHARACTER) FORWARD.
+
+FUNCTION com-GetTicketBalanceWithAdmin RETURNS INTEGER 
+	(pc-companyCode AS CHARACTER,
+	 pc-accountNumber   AS CHARACTER) FORWARD.
 
 FUNCTION com-HasSchedule RETURNS INTEGER 
     (pc-companyCode AS CHARACTER,
@@ -306,6 +319,9 @@ FUNCTION com-InternalTime RETURNS INTEGER
     ( pi-hours AS INTEGER,
     pi-mins  AS INTEGER )  FORWARD.
 
+
+FUNCTION com-IsActivityChargeable RETURNS LOGICAL 
+	(pf-ActID     AS DECIMAL) FORWARD.
 
 FUNCTION com-IsContractor RETURNS LOGICAL
     ( pc-companyCode  AS CHARACTER,
@@ -2451,6 +2467,26 @@ FUNCTION com-GenTabDesc RETURNS CHARACTER
 END FUNCTION.
 
 
+FUNCTION com-GetActivityByType RETURNS CHARACTER 
+	    ( pc-companyCode AS CHARACTER ,
+	      pi-TypeID      AS INTEGER  ):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+
+		DEFINE BUFFER WebActType FOR WebActType.
+		
+		FOR FIRST WebActType NO-LOCK
+		  WHERE WebActType.CompanyCode = pc-companyCode
+		    AND WebActType.TypeID = pi-TypeID:
+		      RETURN WebActType.ActivityType.
+		END.
+		RETURN "".
+
+		
+END FUNCTION.
+
 FUNCTION com-GetDefaultCategory RETURNS CHARACTER
     ( pc-CompanyCode AS CHARACTER ) :
     /*------------------------------------------------------------------------------
@@ -2505,6 +2541,68 @@ FUNCTION com-GetHelpDeskEmail RETURNS CHARACTER
     
     RETURN lc-email.
     
+		
+END FUNCTION.
+
+FUNCTION com-GetTicketBalance RETURNS INTEGER  
+	    ( pc-companyCode AS CHARACTER ,
+	      pc-accountNumber   AS CHARACTER  ):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+
+        DEFINE BUFFER b-query    FOR Ticket.
+        
+		DEFINE VARIABLE li-bal AS INTEGER  NO-UNDO.
+        FOR EACH b-query NO-LOCK
+            WHERE b-query.CompanyCode   = pc-CompanyCode
+            AND b-query.AccountNumber = pc-AccountNumber
+        :
+         
+            IF b-query.IssActivityID <> 0 THEN
+            DO:
+                IF com-IsActivityChargeable(b-query.IssActivityID) = FALSE THEN NEXT.
+                
+            END.
+            
+            
+            li-bal = li-bal + b-query.Amount.
+            
+        END.
+        
+		RETURN li-bal.
+		
+
+
+		
+END FUNCTION.
+
+FUNCTION com-GetTicketBalanceWithAdmin RETURNS INTEGER 
+	   ( pc-companyCode AS CHARACTER ,
+         pc-accountNumber   AS CHARACTER  ):
+/*------------------------------------------------------------------------------
+        Purpose:                                                                      
+        Notes:                                                                        
+------------------------------------------------------------------------------*/    
+
+        DEFINE BUFFER b-query    FOR Ticket.
+        
+        DEFINE VARIABLE li-bal AS INTEGER  NO-UNDO.
+        FOR EACH b-query NO-LOCK
+            WHERE b-query.CompanyCode   = pc-CompanyCode
+            AND b-query.AccountNumber = pc-AccountNumber
+        :
+         
+                        
+            
+            li-bal = li-bal + b-query.Amount.
+            
+        END.
+        
+        RETURN li-bal.
+
+
 		
 END FUNCTION.
 
@@ -2642,6 +2740,34 @@ FUNCTION com-InternalTime RETURNS INTEGER
 
 END FUNCTION.
 
+
+FUNCTION com-IsActivityChargeable RETURNS LOGICAL 
+	    ( pf-ActID     AS DECIMAL ):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+
+    DEFINE BUFFER IssActivity  FOR IssActivity.
+    DEFINE BUFFER WebActType   FOR WebActType.		 
+    FIND issActivity WHERE issActivity.issActivityID = 
+                pf-ActID NO-LOCK NO-ERROR.
+    IF AVAILABLE issActivity AND issActivity.ActivityType <> "" THEN
+    FOR FIRST WebActType NO-LOCK
+        WHERE WebActType.CompanyCode = issActivity.CompanyCode
+          AND WebActType.ActivityType = issActivity.ActivityType
+          AND WebActType.isAdminTime = TRUE:
+              
+        RETURN FALSE.
+              
+    END.
+          
+	RETURN TRUE.
+		
+
+
+		
+END FUNCTION.
 
 FUNCTION com-IsContractor RETURNS LOGICAL
     ( pc-companyCode  AS CHARACTER,

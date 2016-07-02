@@ -12,7 +12,8 @@
     
     03/09/2010  DJS         3704 - Customer Details Tab alteration
     20/02/2016  PHOSKI      Include manager/team/ref etc
-    23/02/2016  phoski      isDecom flag   
+    23/02/2016  phoski      isDecom flag  
+    02/07/2016  phoski      Show ticket balance 
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -249,6 +250,14 @@ PROCEDURE ip-AccountInformation :
            
            skip.
 
+     IF  b-query.SupportTicket <> "none" THEN
+     {&out}      
+        '<div class="infobox" style="xxfont-size: 15px;">'
+        "Ticketed Customer Balance: "
+             DYNAMIC-FUNCTION("com-TimeToString",com-GetTicketBalance(lc-global-company,pc-accountnumber))
+            '</div>' skip. 
+    
+    
 END PROCEDURE.
 
 

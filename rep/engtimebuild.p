@@ -10,6 +10,7 @@
     When        Who         What
     04/12/2014  phoski      Initial  
     12/03/2016  phoski      Engineer in lookup list instead of range
+    02/07/2016  phoski      Exclude Admin
    
 ***********************************************************************/
 
@@ -23,6 +24,8 @@ DEFINE INPUT PARAMETER pd-FromDate          AS DATE              NO-UNDO.
 DEFINE INPUT PARAMETER pd-ToDate            AS DATE              NO-UNDO.
 DEFINE INPUT PARAMETER pc-SelectEngineer    AS CHARACTER         NO-UNDO.
 DEFINE INPUT PARAMETER pc-engtype           AS CHARACTER         NO-UNDO.
+DEFINE INPUT PARAMETER pl-ExcludeAdmin      AS LOGICAL           NO-UNDO.
+
 
 DEFINE OUTPUT PARAMETER table               FOR tt-engtime.
 
@@ -68,6 +71,9 @@ PROCEDURE ip-BuildData :
         AND iss.IssueNumber = iact.IssueNumber
         
         :
+        IF pl-ExcludeAdmin 
+        AND com-IsActivityChargeable(iAct.IssActivityID) = FALSE THEN NEXT.
+            
              
         FIND WebUser WHERE WebUser.LoginID = iact.activityBy NO-LOCK NO-ERROR.
         IF NOT AVAILABLE WebUser THEN NEXT.

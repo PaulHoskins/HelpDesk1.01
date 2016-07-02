@@ -14,6 +14,7 @@
     10/06/2015  phoski      Customer Report - Sort options
     23/10/2015  phoski      Replace week/year DJS drivel with a 
                             date range
+    02/07/2016  phoski      Admin Time option
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -64,6 +65,7 @@ DEFINE VARIABLE li-tot-period-productivity AS DECIMAL   NO-UNDO.
 
 DEFINE VARIABLE lc-lodate                  AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
 DEFINE VARIABLE lc-hidate                  AS CHARACTER FORMAT "99/99/9999" NO-UNDO.
+DEFINE VARIABLE lc-admin                   AS CHARACTER NO-UNDO.
 
 {rep/engrep01-build.i}
 
@@ -1251,6 +1253,9 @@ PROCEDURE ip-GenerateReport:
     
              
     {&out} '</td>' SKIP
+        '<th>' IF lc-admin = "on" THEN "Exclude Administration Time"
+               ELSE "Include Administration Time" '</th>' SKIP.
+               
     .
        
     {&out} '</tr></table>' skip.
@@ -1303,6 +1308,7 @@ PROCEDURE ip-ProcessReport :
         STRING(LOOKUP(lc-reptypeE,engcust)),
         lc-selectengineer ,
         lc-selectcustomer ,
+        lc-admin = 'on',
         OUTPUT TABLE tt-IssRep,
         OUTPUT TABLE tt-IssTime,
         OUTPUT TABLE tt-IssTotal,
@@ -1353,6 +1359,15 @@ PROCEDURE ip-report-type :
     htmlib-Radio("reptype" , "summary", FALSE) '</td>'
     htmlib-TableField(html-encode("Summary"),'left') '</tr>' skip.
     
+    {&out} '<tr>'
+            '<TD VALIGN="TOP" colspan="2" nowrap ALIGN="right">&nbsp;' 
+            htmlib-SideLabel("Exclude Administration Time?")
+     
+             '</td><TD VALIGN="TOP" ALIGN="left">'
+                htmlib-CheckBox("admin", IF lc-admin = 'on'
+                                        THEN TRUE ELSE FALSE) 
+            '</TD><tr>'.
+            
     {&out} skip 
       htmlib-EndTable()
       skip.
@@ -1559,7 +1574,8 @@ PROCEDURE process-web-request :
             lc-selectcustomer = get-value("selectcustomer")
             lc-custsort       = get-value("custsort")
             lc-lodate   = get-value("lodate")         
-            lc-hidate   = get-value("hidate").  
+            lc-hidate   = get-value("hidate")
+            lc-admin    = get-value("admin").  
 
         
          RUN ip-Validate( OUTPUT lc-error-field,
@@ -1574,7 +1590,8 @@ PROCEDURE process-web-request :
         THEN ASSIGN lc-date = STRING(TODAY,"99/99/9999")
             lc-days = "7"
             lc-lodate = STRING(TODAY - 7, "99/99/9999")
-            lc-hidate = STRING(TODAY, "99/99/9999").
+            lc-hidate = STRING(TODAY, "99/99/9999")
+            .
 
     RUN outputHeader.  
     

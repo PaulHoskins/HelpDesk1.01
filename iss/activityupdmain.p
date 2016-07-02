@@ -16,6 +16,8 @@
     09/05/2015  phoski      Complex Project
     12/03/2016  phoski      Customer view flag is on by default
     01/07/2016  phoski      Only active users for add function
+    02/07/2016  phoski      Activity type on issActivity
+    
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1356,7 +1358,7 @@ PROCEDURE process-web-request :
             lc-rowid           = STRING(ROWID(issActivity))
             lc-action-rowid    = STRING(ROWID(issAction))
             lc-actdescription  = issActivity.ActDescription   
-            lc-activitytype    = STRING(Get-Activity( issActivity.ActDescription ))
+            lc-activitytype    = IF issActivity.typeid <> 0 THEN STRING(issActivity.typeid) ELSE STRING(Get-Activity( issActivity.ActDescription ))
             lc-billing-charge  = IF issActivity.Billable THEN "on" ELSE ""
             lc-saved-activity  = lc-activitytype
             lc-manChecked      = "on"
@@ -1610,13 +1612,8 @@ PROCEDURE process-web-request2 :
                 lc-save-timeHourSet    = get-value("timeHourSet")
                 lc-save-DefaultTimeSet = get-value("defaultTime")
                 . 
-            /*  why ??   
-            IF lc-save-manChecked <> "checked"  AND
-                lc-mode = 'add' THEN
-                lc-save-mins = STRING(INTEGER(lc-save-mins) + 1).
-            */
-
- 
+          
+            
             ASSIGN 
                 lc-activityby     = lc-save-activityby     
                 lc-actdate        = lc-save-actdate        
@@ -1642,6 +1639,8 @@ PROCEDURE process-web-request2 :
                 lc-timeHourSet    = lc-save-timeHourSet  
                 lc-DefaultTimeSet = lc-save-DefaultTimeSet 
                 .
+           
+             
           
             FIND issue WHERE ROWID(issue) = to-rowid(lc-issue-rowid) NO-LOCK.
             FIND customer WHERE Customer.CompanyCode = Issue.CompanyCode
@@ -1705,8 +1704,13 @@ PROCEDURE process-web-request2 :
                         b-table.ActDate        = DATE(lc-ActDate)
                         b-table.customerview   = lc-customerview = "on"
                         b-table.ContractType   = Issue.ContractType 
-                        b-table.SiteVisit      = lc-SiteVisit = "on".
-
+                        b-table.SiteVisit      = lc-SiteVisit = "on"
+                        b-table.TypeID         = int(lc-activitytype)
+                        .   
+                    ASSIGN
+                        b-table.activityType = com-GetActivityByType(lc-global-company,b-table.TypeID).
+                                             . 
+                    
                     IF lc-startdate <> "" THEN
                     DO:
                         ASSIGN 

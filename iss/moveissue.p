@@ -11,6 +11,7 @@
     07/04/2007  phoski      Initial
     
     09/08/2010  DJS         3667 - view only active co's & users
+    02/07/2016  phoski      Ticket balance on account and issue removed
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -305,7 +306,7 @@ PROCEDURE ip-MoveAccount :
     *** Reverse any tickets on this issue
     ***
     */
-    IF issue.Ticket AND issue.TicketAmount <> 0 THEN
+    IF issue.Ticket THEN
     DO:
         FIND customer
             WHERE customer.CompanyCode = issue.CompanyCode
@@ -316,9 +317,7 @@ PROCEDURE ip-MoveAccount :
 
             DELETE ticket.
         END.
-
-        ASSIGN
-            customer.TicketBalance = customer.TicketBalance + issue.TicketAmount.
+    
     END.
 
     RUN islib-CreateNote(
@@ -337,7 +336,7 @@ PROCEDURE ip-MoveAccount :
         Issue.SLAStatus     = "OFF"
         Issue.SLATime       = 0
         Issue.Ticket        = FALSE
-        Issue.TicketAmount  = 0.
+        .
 
     IF com-IsCustomer(Issue.CompanyCode,Issue.CreateBy) 
         THEN issue.CreateBy = "".

@@ -10,6 +10,7 @@
     When        Who         What
     09/04/2006  phoski      Initial
     10/05/2015  phoski      last activity on issue
+    02/07/2016  phoski      Activity type on issActivity
 ***********************************************************************/
 CREATE WIDGET-POOL.
 
@@ -1034,6 +1035,7 @@ PROCEDURE process-web-request :
                         b-table.CreateTime  = TIME
                         b-table.CreatedBy   = lc-global-user
                         b-table.ActivityBy  = lc-ActivityBy
+                        b-table.activityType = lc-activitytype
                         .
 
                     DO WHILE TRUE:
@@ -1055,11 +1057,15 @@ PROCEDURE process-web-request :
                     ASSIGN 
                         b-table.notes            = lc-notes
                         b-table.description      = lc-description
-                           
                         b-table.ActDate          = DATE(lc-ActDate)
                         b-table.customerview     = lc-customerview = "on"
-                        b-table.SiteVisit        = lc-SiteVisit = "on".
-                    b-table.Billable         = lc-billing-charge  = "on".
+                        b-table.SiteVisit        = lc-SiteVisit = "on"
+                        b-table.Billable         = lc-billing-charge  = "on"
+                        b-table.TypeID         = int(lc-activitytype)
+                        .   
+                    ASSIGN
+                        b-table.activityType = com-GetActivityByType(lc-global-company,b-table.TypeID).
+                        
 
                     IF lc-startdate <> "" THEN
                     DO:
@@ -1186,28 +1192,15 @@ PROCEDURE process-web-request :
                 lc-sitevisit       = IF b-table.SiteVisit THEN "on" ELSE ""
                 lc-billing-charge  = IF b-table.Billable THEN "on" ELSE ""
                 lc-actdescription  = b-table.ActDescription 
-                lc-saved-activity  = STRING(Get-Activity( b-table.ActDescription ))
-       
-                /*                                                      */
-                /*                                                      */
-                /*                                                      */
-                /*                                                      */
-                /*                                                      */
-                /*                                                      */
-                /*                                                      */
-                /*                                                      */
-                /*                                                      */
-                .
+                lc-saved-activity  = IF b-table.typeid <> 0 THEN STRING(b-table.Typeid) ELSE STRING(Get-Activity( b-table.ActDescription ))
+                      .
             IF b-table.Duration > 0 THEN
             DO:
                 RUN com-SplitTime ( b-table.Duration, OUTPUT li-hours, OUTPUT li-mins ).
                 ASSIGN 
                     lc-hours = STRING(INTEGER(li-hours),"zz99")
                     lc-mins  = STRING(INTEGER(li-mins),"99").
-            /*                 if li-hours > 0                                         */
-            /*                 then assign lc-hours = string(integer(li-hours),"zz9"). */
-            /*                 if li-mins > 0                                          */
-            /*                 then assign lc-mins = string(integer(li-mins),"99").    */
+ 
 
             END.
 
@@ -1254,17 +1247,6 @@ PROCEDURE process-web-request :
             lc-enddate          = STRING(TODAY,"99/99/9999")
             lc-endHour          = STRING(int(substr(STRING(TIME,"hh:mm"),1,2)))
             lc-endMin           = substr(STRING(TIME,"hh:mm"),4,2).
-
-        /*                                                      */
-        /*                                                      */
-        /*                                                      */
-        /*                                                      */
-        /*                                                      */
-        /*                                                      */
-        /*                                                      */
-        /*                                                      */
-        /*                                                      */
-        .
 
     END.
 

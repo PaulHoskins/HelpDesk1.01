@@ -9,44 +9,13 @@
     
     When        Who         What
     16/07/2006  phoski      Initial   
+    02/07/2016  phoski      Removed customer ticket balance as always
+                            calculated now
 ***********************************************************************/
 
 
 DEFINE TEMP-TABLE tt-ticket NO-UNDO LIKE ticket.
 
-
-
-
-/* ********************  Preprocessor Definitions  ******************** */
-
-
-
-
-
-
-/* *********************** Procedure Settings ************************ */
-
-
-
-/* *************************  Create Window  ************************** */
-
-/* DESIGN Window definition (used by the UIB) 
-  CREATE WINDOW Include ASSIGN
-         HEIGHT             = 15
-         WIDTH              = 60.
-/* END WINDOW DEFINITION */
-                                                                        */
-
- 
-
-
-
-
-/* ***************************  Main Block  *************************** */
-
-
-
-/* **********************  Internal Procedures  *********************** */
 
 PROCEDURE tlib-IssueChanged :
     /*------------------------------------------------------------------------------
@@ -63,20 +32,14 @@ PROCEDURE tlib-IssueChanged :
     DEFINE BUFFER Customer    FOR Customer.
     DEFINE BUFFER IssActivity FOR IssActivity.
 
-    DEFINE VARIABLE li-TicketAmount LIKE Issue.TicketAmount NO-UNDO.
-    DEFINE VARIABLE lc-Reference    LIKE Ticket.Reference NO-UNDO.
+    DEFINE VARIABLE li-TicketAmount LIKE IssActivity.Duration   NO-UNDO.
+    DEFINE VARIABLE lc-Reference    LIKE Ticket.Reference       NO-UNDO.
 
     IF pl-to = pl-from THEN RETURN.
 
     FIND Issue WHERE ROWID(Issue) = pr-rowid EXCLUSIVE-LOCK.
     
-    /*
-    ***
-    *** Converting from a ticket to non ticket, issue has no
-    *** activity so ignore
-    ***
-    */
-    IF Issue.TicketAmount = 0 AND NOT pl-to THEN RETURN.
+
     
     FIND Customer WHERE Customer.CompanyCode = Issue.Companycode
         AND Customer.AccountNumber = Issue.AccountNumber
@@ -95,8 +58,8 @@ PROCEDURE tlib-IssueChanged :
         ***
         */
         FOR EACH IssActivity OF Issue NO-LOCK:
-            ASSIGN 
-                li-TicketAmount = li-TicketAmount + IssActivity.Duration.
+            IF DYNAMIC-FUNCTION("com-IsActivityChargeable",IssActivity.IssActivityID)
+            THEN ASSIGN li-TicketAmount = li-TicketAmount + IssActivity.Duration.
         END.
         IF li-TicketAmount = 0 THEN RETURN.
 
@@ -118,8 +81,14 @@ PROCEDURE tlib-IssueChanged :
         ***
         */
         ASSIGN 
-            li-TicketAmount = Issue.TicketAmount 
             lc-reference    = "Issue Changed To Non-Ticket".
+            li-ticketAmount = 0.
+            
+        FOR EACH IssActivity OF Issue NO-LOCK:
+            IF DYNAMIC-FUNCTION("com-IsActivityChargeable",IssActivity.IssActivityID)
+            THEN ASSIGN li-TicketAmount = li-TicketAmount + IssActivity.Duration.
+        END.
+        
     END.
 
     EMPTY TEMP-TABLE tt-ticket.
@@ -139,8 +108,8 @@ PROCEDURE tlib-IssueChanged :
         tt-ticket.TxnTime       = TIME
         tt-ticket.TxnType       = "ADJ".
 
-
-    RUN tlib-PostTicket.
+    IF li-TicketAmount <> 0
+    THEN RUN tlib-PostTicket.
 
 
     
@@ -187,17 +156,6 @@ PROCEDURE tlib-PostTicket :
                 ticket.TickID = lf-TickID.
 
             
-            ASSIGN
-                Customer.TicketBalance = Customer.TicketBalance + ticket.Amount.
-
-            IF tt-ticket.Issue > 0 THEN
-            DO:
-                FIND Issue WHERE Issue.companyCode = tt-ticket.CompanyCode
-                    AND Issue.IssueNumber = tt-ticket.IssueNumber
-                    EXCLUSIVE-LOCK NO-ERROR.
-                IF AVAILABLE Issue
-                    THEN ASSIGN Issue.TicketAmount = Issue.TicketAmount + ( ticket.Amount * -1 ).
-            END.
 
             RELEASE ticket.
             RELEASE customer.

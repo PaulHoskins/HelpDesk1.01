@@ -9,37 +9,20 @@
     
     When        Who         What
     26/07/2006  phoski      Initial
+    02/07/2016  phoski      Fixed totals and admin time
 ***********************************************************************/
                                           
 {lib/htmlib.i}
 {lib/princexml.i}
 
-&IF DEFINED(UIB_is_Running) EQ 0 &THEN
 
 DEFINE INPUT PARAMETER pc-user             AS CHARACTER NO-UNDO.
 DEFINE INPUT PARAMETER pc-CompanyCode      AS CHARACTER NO-UNDO.
 DEFINE INPUT PARAMETER pc-AccountNumber    AS CHARACTER NO-UNDO.
+DEFINE INPUT PARAMETER pl-includeAdmin     AS LOGICAL   NO-UNDO.
 DEFINE INPUT PARAMETER pd-lodate           AS DATE NO-UNDO.
 DEFINE INPUT PARAMETER pd-hidate           AS DATE NO-UNDO.
-DEFINE OUTPUT PARAMETER pc-pdf            AS CHARACTER NO-UNDO.
-
-&ELSE
-
-DEFINE VARIABLE pc-user                    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE pc-CompanyCode             AS CHARACTER NO-UNDO.
-DEFINE VARIABLE pc-AccountNumber           AS CHARACTER NO-UNDO.
-DEFINE VARIABLE pd-lodate                   AS DATE NO-UNDO.
-DEFINE VARIABLE pd-hidate                    AS DATE NO-UNDO.
-DEFINE VARIABLE pc-pdf                     AS CHARACTER NO-UNDO.
-
-ASSIGN 
-    pc-CompanyCode = "OURITDEPT"
-    pd-lodate        = TODAY - 100
-    pd-hidate        = TODAY
-    pc-AccountNumber = "9999".
-
-&ENDIF
-
+DEFINE OUTPUT PARAMETER pc-pdf             AS CHARACTER NO-UNDO.
 
 {iss/issue.i}
 
@@ -48,8 +31,10 @@ DEFINE VARIABLE ld-hi-date      AS DATE     NO-UNDO.
 
 DEFINE VARIABLE lc-html         AS CHARACTER     NO-UNDO.
 DEFINE VARIABLE lc-pdf          AS CHARACTER     NO-UNDO.
-DEFINE VARIABLE ll-ok           AS LOG      NO-UNDO.
-DEFINE VARIABLE li-ReportNumber AS INTEGER      NO-UNDO.
+DEFINE VARIABLE ll-ok           AS LOGICAL       NO-UNDO.
+DEFINE VARIABLE li-ReportNumber AS INTEGER       NO-UNDO.
+DEFINE VARIABLE li-BalanceNow   AS INTEGER       NO-UNDO.
+
 
 DEFINE BUFFER Customer     FOR Customer.
 DEFINE BUFFER Company      FOR Company.
@@ -129,6 +114,9 @@ FIND Customer
 FIND Company
     WHERE Company.CompanyCode = pc-companyCode NO-LOCK NO-ERROR.
 
+IF pl-includeAdmin
+THEN li-balanceNow = com-GetTicketBalanceWithAdmin(Customer.CompanyCode,Customer.AccountNumber).
+ELSE li-balanceNow = com-GetTicketBalance(Customer.CompanyCode,Customer.AccountNumber).
 
 RUN ip-BuildIssueData.
 
@@ -157,11 +145,8 @@ ll-ok = DYNAMIC-FUNCTION("pxml-Convert",lc-html,lc-pdf).
 
 IF ll-ok
     THEN ASSIGN pc-pdf = lc-pdf.
+ELSE ASSIGN pc-pdf = lc-html.
     
-&IF DEFINED(UIB_is_Running) ne 0 &THEN
-
-OS-COMMAND SILENT START VALUE(lc-pdf).
-&ENDIF
 
 
 
@@ -232,6 +217,11 @@ PROCEDURE ip-BuildIssueData :
             AND ticket.IssueNumber = issue.IssueNumber
             AND ticket.TxnDate <= ld-hi-date:
 
+            IF Ticket.IssActivityID <> 0 AND pl-includeAdmin = FALSE THEN
+            DO:
+                IF com-IsActivityChargeable(Ticket.IssActivityID) = FALSE THEN NEXT.
+            END.
+            
             IF ticket.TxnDate < ld-lo-date
                 THEN ASSIGN
                     tt.udf-prev-period = tt.udf-prev-period + ( ticket.Amount * -1 ).
@@ -325,11 +315,6 @@ PROCEDURE ip-Header :
     '<p style="font-size: 20px; font-weight: 900; text-align: center; margin-top: 10px; margin-bottom: 10px;">'
     'HelpDesk Statement' skip.
 
-    /*
-    if lc-logo <> ?
-    then {&prince} 
-            '<img src="' lc-logo '" style="clear: left; float: right; margin-top: 10px; margin-right: 10px;">' skip. 
-    */
     {&prince}
     '</p>' skip.
 
@@ -686,7 +671,9 @@ PROCEDURE ip-StatementDetails :
         WHERE ticket.CompanyCode = pc-CompanyCode
         AND ticket.AccountNumber = pc-AccountNumber
         AND ticket.TxnDate <= ld-hi-date
-        AND ticket.TxnType = "TCK":
+        /*
+        AND ticket.TxnType = "TCK" 
+            */:
 
         /*
         ***
@@ -701,9 +688,15 @@ PROCEDURE ip-StatementDetails :
         *** Bfwd balance
         ***
         */
-        IF ticket.TxnDate < ld-lo-date 
-            THEN ASSIGN li-TicketPrev = li-TicketPrev + ticket.Amount. 
-
+        IF ticket.TxnDate < ld-lo-date THEN
+        DO: 
+            IF Ticket.IssActivityID <> 0 AND pl-includeAdmin = FALSE THEN
+            DO:
+                IF com-IsActivityChargeable(Ticket.IssActivityID) = FALSE THEN NEXT.
+            END.
+            ASSIGN 
+                li-TicketPrev = li-TicketPrev + ticket.Amount. 
+        END.
         
     END.
 
@@ -729,6 +722,7 @@ PROCEDURE ip-StatementDetails :
                     '<th style="text-align: right;">Hours Purchased In Period</th>'
                     '<th style="text-align: right;">Hours Used In Period</th>'
                     '<th style="text-align: right;">Hours Carried Forward</th>'
+                    '<th style="text-align: right;">Available Hours As Of ' string(now,"99/99/9999 hh:mm") '</th>'
                     
                 '</tr>' skip
             '</thead>' skip
@@ -738,9 +732,15 @@ PROCEDURE ip-StatementDetails :
         '<tr>' skip
                 '<td style="text-align: right;">' dynamic-function("com-TimeToString",li-TicketPrev) '</td>' 
                 '<td style="text-align: right;">' dynamic-function("com-TimeToString",li-TicketNew) '</td>' 
-                '<td style="text-align: right;">' dynamic-function("com-TimeToString",li-this-period + li-prev-period) '</td>' 
+                '<td style="text-align: right;">' 
+                dynamic-function("com-TimeToString",li-this-period) 
+                  '</td>' 
                 '<td style="text-align: right;">' dynamic-function("com-TimeToString",( li-TicketPrev + li-TicketNew)
-                                                                                      - ( li-this-period + li-prev-period)) '</td>' 
+                                                                                      - ( li-this-period )) '</td>' 
+                                                                                      
+                   '<td style="text-align: right;">' 
+                dynamic-function("com-TimeToString",li-BalanceNow) 
+                  '</td>' 
 
 
 

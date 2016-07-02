@@ -807,7 +807,7 @@ RUN ip-SLA.
     ),'left') skip.
 
 {&out} htmlib-MntTableField(IF DYNAMIC-FUNCTION('com-AllowTicketSupport':U,ROWID(b-query))
-    THEN DYNAMIC-FUNCTION("com-TimeToString",b-query.TicketBalance)
+    THEN DYNAMIC-FUNCTION("com-TimeToString",com-GetTicketBalance(lc-global-company,pc-accountnumber))
     ELSE "&nbsp;",'right') skip
           htmlib-MntTableField(html-encode(b-query.statementemail),'left').
            
@@ -1413,9 +1413,10 @@ PROCEDURE ip-Tickets :
     DEFINE BUFFER IssActivity  FOR IssActivity.
     DEFINE BUFFER issue        FOR issue.
         
-    DEFINE VARIABLE lc-Issue        AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE lc-Activity     AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE li-cf           AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE lc-Issue        AS CHARACTER    NO-UNDO.
+    DEFINE VARIABLE lc-Activity     AS CHARACTER    NO-UNDO.
+    DEFINE VARIABLE li-cf           AS INTEGER      NO-UNDO.
+    DEFINE VARIABLE ll-Chargeable   AS LOGICAL      NO-UNDO.
 
 
     IF NOT CAN-FIND(FIRST b-query
@@ -1424,6 +1425,8 @@ PROCEDURE ip-Tickets :
         THEN RETURN.
 
     {&out} '<div class="infobox">Activities marked ** are administration and are not charged</div>' SKIP.
+    
+    
     
     {&out} skip
            replace(htmlib-StartMntTable(),'width="100%"','width="97%"') skip.
@@ -1442,7 +1445,13 @@ PROCEDURE ip-Tickets :
         ASSIGN
             lc-issue = ""
             lc-Activity = ""
-            li-cf = li-cf + b-query.Amount.
+            ll-chargeable = TRUE.
+            
+        IF b-query.IssActivityID <> 0 
+        THEN ll-chargeable = com-IsActivityChargeable(b-query.IssActivityID).
+        
+        IF ll-chargeable
+        THEN li-cf = li-cf + b-query.Amount.
 
         IF b-query.IssueNumber > 0 THEN
         DO:
@@ -1456,9 +1465,18 @@ PROCEDURE ip-Tickets :
         DO:
             FIND issActivity WHERE issActivity.issActivityID = 
                 b-query.IssActivityID NO-LOCK NO-ERROR.
-            IF AVAILABLE issActivity 
-                THEN ASSIGN lc-Activity = issActivity.description.
+            IF AVAILABLE issActivity THEN
+            DO:
+                /* Pre 07.2106 - activity type was not recorded */
+                IF issActivity.activityType <> ""
+                THEN ASSIGN lc-Activity = issActivity.activityType + " - " + issActivity.description.
+                ELSE ASSIGN lc-Activity = issActivity.description.
+             END.
+                
         END.
+        IF NOT ll-chargeable
+        THEN lc-activity = "** " + lc-activity.
+        
         {&out}
         '<tr>' skip
             htmlib-MntTableField(string(b-query.txndate,'99/99/9999'),'right')
@@ -1467,8 +1485,10 @@ PROCEDURE ip-Tickets :
             htmlib-MntTableField(if b-query.IssueNumber = 0
                                  then "&nbsp;" else string(b-query.IssueNumber),'right')
             htmlib-MntTableField(html-encode(lc-issue),'left')
-            htmlib-MntTableField(html-encode(lc-Activity),'left')
-            htmlib-MntTableField(dynamic-function("com-TimeToString",b-query.Amount),'right')
+            htmlib-MntTableField(lc-Activity,'left')
+            htmlib-MntTableField(dynamic-function("com-TimeToString",b-query.Amount) + 
+                IF ll-chargeable THEN " " ELSE "**"
+             ,'right')
             htmlib-MntTableField(dynamic-function("com-TimeToString",li-cf),'right')
 
         .
@@ -1484,8 +1504,7 @@ PROCEDURE ip-Tickets :
     {&out} skip 
            htmlib-EndTable()
            skip.
-
-
+   
 END PROCEDURE.
 
 
