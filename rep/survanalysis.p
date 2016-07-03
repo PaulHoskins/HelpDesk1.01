@@ -193,12 +193,24 @@ PROCEDURE ip-ExportReport :
     OUTPUT TO VALUE(pc-filename).
 
     PUT UNFORMATTED
-                
-        '"Customer","Issue Number","Description","Issue Type","Raised By","System","SLA Level","' +
-        'Date Raised","Time Raised","Date Completed","Time Completed","Activity Duration","SLA Achieved","SLA Comment","' +
-        '"Closed By' SKIP.
+              
+        '"Customer","Engineer","Sent To","Issue","Description","Issue Date","Sent","Completed","Response"' SKIP.
 
 
+    FOR EACH tt-san NO-LOCK:
+        EXPORT DELIMITER ','
+             tt-san.cname
+             tt-san.eName   
+             tt-san.cuName
+             tt-san.issueNumber
+             tt-san.iDesc
+             tt-san.issDate
+             DATE(tt-san.rq_created)
+             DATE(tt-san.rq_completed)
+             tt-san.iValue.
+              
+    END.
+    
     OUTPUT CLOSE.
 
 
@@ -696,12 +708,6 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
 
-
-
-
-
-
-
 END PROCEDURE.
 
 
@@ -813,10 +819,8 @@ PROCEDURE process-web-request :
                     mlib-SendAttEmail 
                         ( lc-global-company,
                         "",
-                        "HelpDesk Issue Log Report ",
-                        "Please find attached your report covering the period "
-                        + string(DATE(lc-lodate),"99/99/9999") + " to " +
-                        string(DATE(lc-hidate),'99/99/9999'),
+                        "HelpDesk Survey Analysis Report ",
+                        "Please find  your report attached",
                         this-user.email,
                         "",
                         "",

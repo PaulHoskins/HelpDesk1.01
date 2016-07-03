@@ -740,6 +740,42 @@ ADD FIELD "isc_acs_code" OF "Company" AS character
   MAX-WIDTH 16
   ORDER 320
 
+ADD FIELD "TwoFactor_Auth" OF "Company" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "2 Factor Auth"
+  POSITION 34
+  MAX-WIDTH 1
+  ORDER 330
+
+ADD FIELD "TwoFactor_Email" OF "Company" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 35
+  MAX-WIDTH 16
+  ORDER 340
+
+ADD FIELD "TwoFactor_Account" OF "Company" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 36
+  MAX-WIDTH 16
+  ORDER 350
+
+ADD FIELD "TwoFactor_Password" OF "Company" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  POSITION 37
+  MAX-WIDTH 16
+  ORDER 360
+
+ADD FIELD "TwoFactor_PinLength" OF "Company" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "4"
+  POSITION 38
+  MAX-WIDTH 4
+  ORDER 370
+
 ADD INDEX "CompanyCode" ON "Company" 
   AREA "Schema Area"
   UNIQUE
@@ -1300,14 +1336,6 @@ ADD FIELD "SupportTicket" OF "Customer" AS character
   POSITION 15
   MAX-WIDTH 16
   ORDER 140
-
-ADD FIELD "TicketBalance" OF "Customer" AS integer 
-  FORMAT "zzzzzzzzzzz9"
-  INITIAL "0"
-  LABEL "Ticket Balance"
-  POSITION 16
-  MAX-WIDTH 4
-  ORDER 150
 
 ADD FIELD "StatementEmail" OF "Customer" AS character 
   FORMAT "X(8)"
@@ -2607,6 +2635,15 @@ ADD FIELD "ActivityType" OF "issActivity" AS character
   COLUMN-LABEL "ActType"
   ORDER 220
 
+ADD FIELD "TypeID" OF "issActivity" AS integer 
+  FORMAT "9999"
+  INITIAL "0"
+  LABEL "typeID"
+  POSITION 24
+  MAX-WIDTH 4
+  COLUMN-LABEL "TypeID"
+  ORDER 230
+
 ADD INDEX "IssueNumber" ON "issActivity" 
   AREA "Schema Area"
   PRIMARY
@@ -2626,12 +2663,22 @@ ADD INDEX "ActivityID" ON "issActivity"
   UNIQUE
   INDEX-FIELD "IssActivityID" ASCENDING 
 
+ADD INDEX "ActivityType" ON "issActivity" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "ActivityType" ASCENDING 
+
 ADD INDEX "EngStartIDX" ON "issActivity" 
   AREA "Schema Area"
   INDEX-FIELD "CompanyCode" ASCENDING 
   INDEX-FIELD "ActivityBy" ASCENDING 
   INDEX-FIELD "StartDate" ASCENDING 
   INDEX-FIELD "StartTime" ASCENDING 
+
+ADD INDEX "StartDate" ON "issActivity" 
+  AREA "Schema Area"
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "StartDate" ASCENDING 
 
 ADD TABLE "IssAlert"
   AREA "Schema Area"
@@ -3143,14 +3190,6 @@ ADD FIELD "Ticket" OF "Issue" AS logical
   POSITION 30
   MAX-WIDTH 1
   ORDER 280
-
-ADD FIELD "TicketAmount" OF "Issue" AS integer 
-  FORMAT "->,>>>,>>9"
-  INITIAL "0"
-  LABEL "Ticket Amount"
-  POSITION 31
-  MAX-WIDTH 4
-  ORDER 290
 
 ADD FIELD "CreateSource" OF "Issue" AS character 
   FORMAT "X(8)"
@@ -4748,6 +4787,12 @@ ADD INDEX "prim-key" ON "WebActType"
   INDEX-FIELD "CompanyCode" ASCENDING 
   INDEX-FIELD "ActivityType" ASCENDING 
 
+ADD INDEX "TypeID" ON "WebActType" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "CompanyCode" ASCENDING 
+  INDEX-FIELD "TypeID" ASCENDING 
+
 ADD TABLE "WebAttr"
   AREA "Schema Area"
   LABEL "Web Attributes"
@@ -5780,6 +5825,14 @@ ADD FIELD "iss_survey" OF "WebUser" AS logical
   MAX-WIDTH 1
   ORDER 360
 
+ADD FIELD "TwoFactor_Disable" OF "WebUser" AS logical 
+  DESCRIPTION "if true then no 2 factor auth for user"
+  FORMAT "yes/no"
+  INITIAL "no"
+  POSITION 39
+  MAX-WIDTH 1
+  ORDER 370
+
 ADD INDEX "LoginID" ON "WebUser" 
   AREA "Schema Area"
   UNIQUE
@@ -5924,4 +5977,4 @@ ADD INDEX "prim-key" ON "WebUSteam"
 PSC
 cpstream=ISO8859-1
 .
-0000117581
+0000118762

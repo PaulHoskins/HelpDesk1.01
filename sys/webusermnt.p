@@ -24,6 +24,7 @@
     03/12/2014  phoski      Engineer Type 
     24/05/2015  phoski      Dashboard selection  
     25/06/2016  phoski      iss_survey field  
+    03/07/2016  phoski      TwoFactor_Disable field 
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -81,7 +82,7 @@ DEFINE VARIABLE lc-CustInv        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-engType        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-EmailTimeReport AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-iss-survey       AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-factorDisable    AS CHARACTER NO-UNDO.
 
 
 
@@ -164,7 +165,8 @@ PROCEDURE ip-Page :
       Parameters:  <none>
       Notes:       
     ------------------------------------------------------------------------------*/
-
+    
+   
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         ( IF LOOKUP("loginid",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("User Name")
@@ -320,7 +322,25 @@ PROCEDURE ip-Page :
     {&out} htmlib-TableField(html-encode(lc-mobile),'left')
            skip.
     {&out} '</TR>' skip.
-
+       
+    {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+        (IF LOOKUP("factordisable",lc-error-field,'|') > 0 
+        THEN htmlib-SideLabelError("Do NOT use SMS Two Factor Authorisation?")
+        ELSE htmlib-SideLabel("Do NOT use SMS  Two Factor Authorisation?"))
+    '</TD>'.
+    
+    IF NOT CAN-DO("view,delete",lc-mode) THEN
+        {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-CheckBox("factordisable", IF lc-factordisable = 'on'
+        THEN TRUE ELSE FALSE) 
+    '</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(if lc-factordisable = 'on'
+                                         then 'yes' else 'no'),'left')
+           skip.
+    
+    {&out} '</TR>' SKIP.
+/**   
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("allowsms",lc-error-field,'|') > 0 
         THEN htmlib-SideLabelError("SLA SMS Alerts?")
@@ -356,7 +376,7 @@ PROCEDURE ip-Page :
            skip.
     
     {&out} '</TR>' skip.
-
+**/
 
     {&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
         (IF LOOKUP("pagename",lc-error-field,'|') > 0 
@@ -861,7 +881,7 @@ PROCEDURE ip-Validate :
             'You must enter the surname',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
-
+/*
     IF lc-allowsms = "on"
         AND lc-mobile = ""
         THEN RUN htmlib-AddErrorMessage(
@@ -884,6 +904,7 @@ PROCEDURE ip-Validate :
             'Access to the SMS web page is restricted to internal users',
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
+*/
 
     IF lc-userClass <> "INTERNAL"
         AND lc-superuser = "on" THEN
@@ -1163,6 +1184,7 @@ PROCEDURE process-web-request :
                 lc-engtype         = get-value("engtype")
                 lc-EmailTimeReport = get-value("emailtimereport")
                 lc-iss-survey       = get-value("iss-survey")
+                lc-FactorDisable    = get-value("factordisable")
                 .
             
            
@@ -1228,6 +1250,7 @@ PROCEDURE process-web-request :
                         b-table.dashbList           = ""
                         b-table.EmailTimeReport     = lc-EmailTimeReport = 'on'
                         b-table.iss_survey      = lc-iss-survey = "on"
+                        b-table.twofactor_Disable = lc-factordisable = "on"
                         .
                     ASSIGN 
                         b-table.name = b-table.forename + ' ' + 
@@ -1364,6 +1387,7 @@ PROCEDURE process-web-request :
                 lc-engtype         = b-table.engtype
                 lc-emailtimereport = IF b-table.EmailTimeReport THEN 'on' ELSE ''
                 lc-iss-survey = IF b-table.iss_survey THEN "on" ELSE ""
+                lc-factorDisable = IF b-table.twofactor_disable THEN "on" ELSE ""
                 .
             
         END.

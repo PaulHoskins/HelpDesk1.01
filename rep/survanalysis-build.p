@@ -42,26 +42,26 @@ PROCEDURE ip-Build:
             Notes:  																	  
     ------------------------------------------------------------------------------*/
     DEFINE VARIABLE li-seq AS INTEGER NO-UNDO.
-       
-    FOR EACH issue NO-LOCK 
-        WHERE issue.CompanyCode = pc-CompanyCode
-        AND issue.issueDate >= pd-FromDate 
-        AND issue.issueDate <= pd-ToDate 
-        AND issue.accountNumber >=  pc-FromAccountNumber 
-        AND issue.accountNumber <= pc-ToAccountNumber 
-        ,
-        EACH acs_rq NO-LOCK
+   
+    FOR EACH acs_rq NO-LOCK
         WHERE acs_rq.CompanyCode = pc-CompanyCode
-        AND acs_rq.IssueNumber = Issue.IssueNumber
         AND acs_rq.rq_status = 1 /* Completed */
         AND acs_rq.acs_code = pc-acs_code 
         AND acs_rq.eng-loginid >=  pc-fromEng 
         AND acs_rq.eng-loginid <=  pc-ToEng 
         ,
+        EACH issue NO-LOCK 
+        WHERE issue.CompanyCode = pc-CompanyCode
+        AND Issue.IssueNumber = acs_rq.IssueNumber  
+        AND issue.issueDate >= pd-FromDate 
+        AND issue.issueDate <= pd-ToDate 
+        AND issue.accountNumber >=  pc-FromAccountNumber 
+        AND issue.accountNumber <= pc-ToAccountNumber 
+        ,
         EACH acs_res NO-LOCK
         WHERE acs_res.rq_id = acs_rq.rq_id
-                :
-            
+        :
+             
         IF pi-acs_line_id <> 0 THEN
         DO:
             IF acs_res.acs_line_id <> pi-acs_line_id THEN NEXT.
@@ -81,7 +81,7 @@ PROCEDURE ip-Build:
         
         FIND FIRST tt-san WHERE tt-san.rq_id =  acs_rq.rq_id EXCLUSIVE-LOCK NO-ERROR.
         IF NOT AVAILABLE tt-san
-        THEN CREATE tt-san.
+            THEN CREATE tt-san.
         ASSIGN
             tt-san.rSeq        = ?
             tt-san.Eng-Loginid = acs_rq.Eng-LoginID

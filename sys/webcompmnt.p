@@ -22,6 +22,7 @@
     19/08/2015  phoski      Email bulkemail custaddissue
     27/02/2016  phoski      helpdesklink field for SLA alerts
     25/06/2016  phoski      Issue Survey
+    03/07/2016  phoski      2 Factor Auth Config      
     
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -55,8 +56,6 @@ DEFINE VARIABLE lc-parameters     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-label     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-submit-label   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-link-url       AS CHARACTER NO-UNDO.
-
-
 
 DEFINE VARIABLE lc-companycode    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-name           AS CHARACTER NO-UNDO.
@@ -94,6 +93,11 @@ DEFINE VARIABLE lc-helpdesklink   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-iss-survey     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-sv-code        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-sv-desc        AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-factorAuth     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-factorEmail    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-factorAccount  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-factorPassword AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-factorPIN      AS CHARACTER NO-UNDO.
 
 
 
@@ -618,6 +622,82 @@ htmlib-Select("iss-survey",lc-sv-code ,lc-sv-desc,lc-iss-survey)
            skip.
 {&out} '</TR>' skip.
 
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("factorauth",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("RedOxygen SMS 2 Factor Authorisation?")
+    ELSE htmlib-SideLabel("RedOxygen SMS 2 Factor Authorisation?"))
+'</TD>'.
+
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+    htmlib-checkBox("factorauth",lc-factorAuth = "on")
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(IF lc-factorAuth = "on" THEN "Yes" ELSE "No"),'left')
+           skip.
+{&out} '</TR>' skip.
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("factoremail",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("RedOxygen Email")
+    ELSE htmlib-SideLabel("RedOxygen Email"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("factoremail",30,lc-factoremail) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-factoremail),'left')
+           skip.
+{&out} '</TR>' skip.
+
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("factoraccount",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("RedOxygen Account")
+    ELSE htmlib-SideLabel("RedOxygen Account"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("factoraccount",30,lc-factoraccount) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-factoraccount),'left')
+           skip.
+{&out} '</TR>' skip.
+
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("factorpassword",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("RedOxygen Password")
+    ELSE htmlib-SideLabel("RedOxygen Password"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-InputField("factorpassword",30,lc-factorpassword) 
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-factorpassword),'left')
+           skip.
+{&out} '</TR>' skip.
+
+{&out} '<TR><TD VALIGN="TOP" ALIGN="right">' 
+    (IF LOOKUP("factorpin",lc-error-field,'|') > 0 
+    THEN htmlib-SideLabelError("SMS PIN Length")
+    ELSE htmlib-SideLabel("SMS PIN Length"))
+'</TD>'.
+    
+IF NOT CAN-DO("view,delete",lc-mode) THEN
+    {&out} '<TD VALIGN="TOP" ALIGN="left">'
+htmlib-Select("factorpin","4|5|6|7|8","4|5|6|7|8",lc-factorpin)
+'</TD>' skip.
+    else 
+    {&out} htmlib-TableField(html-encode(lc-factorPin),'left')
+           skip.
+{&out} '</TR>' skip.
 
 
 {&out} htmlib-EndTable() '<br /> 'skip.
@@ -722,7 +802,29 @@ PROCEDURE ip-Validate :
             INPUT-OUTPUT pc-error-field,
             INPUT-OUTPUT pc-error-msg ).
             
+    IF lc-factorAuth = "on" THEN
+    DO:
+        IF lc-factorEmail = ""
+        THEN RUN htmlib-AddErrorMessage(
+            'factoremail', 
+            'You must enter the email address',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ). 
             
+        IF lc-factorAccount = ""
+        THEN RUN htmlib-AddErrorMessage(
+            'factoraccount', 
+            'You must enter the account',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ). 
+        IF lc-factorPassword = ""
+        THEN RUN htmlib-AddErrorMessage(
+            'factorpassword', 
+            'You must enter the password',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ). 
+        
+    END.         
 
 END PROCEDURE.
 
@@ -914,9 +1016,12 @@ PROCEDURE process-web-request :
                 lc-custaddissue   = get-value("custaddissue")
                 lc-helpdesklink   = get-value("helpdesklink")
                 lc-iss-survey     = get-value("iss-survey")
-                  
-
-                .
+                lc-FactorAuth     = get-value("factorauth")
+                lc-FactorEmail    = get-value("factoremail")
+                lc-FactorAccount  = get-value("factoraccount")
+                lc-FactorPassword = get-value("factorpassword")
+                lc-FactorPIN      = get-value("factorpin")
+                 .
             IF lc-mode = 'update' THEN
             DO:
                 FIND b-table WHERE ROWID(b-table) = to-rowid(lc-rowid)
@@ -984,6 +1089,12 @@ PROCEDURE process-web-request :
                         b-table.bulkemail      = lc-bulkemail
                         b-table.helpdesklink   = lc-helpdesklink
                         b-table.isc_acs_code   = TRIM(lc-iss-survey)
+                        b-table.twoFactor_auth = lc-factorAuth = "on"
+                        b-table.twoFactor_Email = lc-factorEmail
+                        b-table.twoFactor_Account = lc-factoraccount
+                        b-table.twoFactor_Password = lc-factorPassword
+                        b-table.twoFactor_PinLength = int(lc-factorPin)
+                        
                         .
                    
                     
@@ -1059,6 +1170,12 @@ PROCEDURE process-web-request :
                 lc-custaddissue   = b-table.custaddissue
                 lc-helpdesklink   = b-table.helpdesklink
                 lc-iss-survey     = b-table.isc_acs_code
+                lc-FactorAuth     = IF b-table.twoFactor_auth THEN "on" ELSE ""
+                lc-FactorEmail    = b-table.twoFactor_Email
+                lc-FactorAccount  = b-table.twoFactor_Account
+                lc-FactorPassword = b-table.twoFactor_Password
+                lc-FactorPin      = STRING(b-table.twoFactor_PinLength)
+                
                 .
             FOR EACH acs_head NO-LOCK
                 WHERE acs_head.CompanyCode = b-table.companyCode:

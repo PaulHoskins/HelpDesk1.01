@@ -17,6 +17,7 @@
     27/11/2014  phoski      Working Hours page & changes
     25/06/2015  phoski      Shorten account/user type width to stop 
                             overflow on toolbar
+    03/07/2016  phoski      Show Mobile Number                        
     
 
 ***********************************************************************/
@@ -53,10 +54,11 @@ DEFINE VARIABLE lc-nopass      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-selacc      AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-LastLogin   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-LastPass    AS CHARACTER NO-UNDO.
-
+DEFINE VARIABLE lc-ContactInfo AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-QPhrase     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE vhLBuffer      AS HANDLE    NO-UNDO.
 DEFINE VARIABLE vhLQuery       AS HANDLE    NO-UNDO.
+
 
 DEFINE BUFFER b-query  FOR webuser.
 DEFINE BUFFER b-search FOR webuser.
@@ -352,7 +354,7 @@ PROCEDURE process-web-request :
 
     {&out}
     htmlib-TableHeading(
-        "User Name^left|Name^left|Customer|Email^left|Last Password Change^left|Last Login^left|Disabled?"
+        "User Name^left|Name^left|Customer|Email<br/>Mobile^left|Last Password Change^left|Last Login^left|Disabled?"
         ) skip.
 
     lc-QPhrase = 
@@ -445,8 +447,18 @@ PROCEDURE process-web-request :
                            ELSE "".
         IF b-query.Disabled AND b-query.AutoDisableTime <> ? THEN
         DO:
-            lc-nopass = ' ' + TRIM(lc-nopass + ' ' + string(b-query.AutoDisableTime)).
-        END.                  
+            lc-nopass = ' ' + TRIM(lc-nopass + ' ' + string(b-query.AutoDisableTime,"99/99/9999 hh:mm")).
+        END.     
+        ASSIGN
+         lc-contactInfo = b-query.email.
+         IF b-query.Mobile <> "" THEN
+         DO:
+             IF lc-contactInfo = ""
+             THEN lc-contactinfo = b-query.mobile.
+             ELSE lc-contactinfo = lc-contactInfo + "<br/>" + b-query.mobile.
+         END.
+         
+                      
         {&out}
             skip
             tbar-tr(rowid(b-query))
@@ -454,9 +466,8 @@ PROCEDURE process-web-request :
             htmlib-MntTableField(html-encode(b-query.loginid),'left')
             htmlib-MntTableField(html-encode(b-query.name),'left')
             htmlib-MntTableField(html-encode(lc-CustomerInfo),'left')
-
-            htmlib-MntTableField(html-encode(b-query.email),'left')
-             htmlib-MntTableField(html-encode(lc-lastPass),'left')
+            htmlib-MntTableField(lc-contactInfo,'left')
+            htmlib-MntTableField(html-encode(lc-lastPass),'left')
             htmlib-MntTableField(html-encode(lc-lastLogin),'left')
             htmlib-MntTableField(html-encode((if b-query.disabled = true
                                           then 'Yes' else 'No') + lc-nopass),'left') skip
