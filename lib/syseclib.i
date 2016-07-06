@@ -9,6 +9,7 @@
     
     When        Who         What
     25/09/2014  phoski      initial
+    04/07/2016  phoski      Two Factor Authorisation
 
 ***********************************************************************/
 
@@ -27,11 +28,23 @@ DEFINE VARIABLE lc-global-pack-key      AS CHARACTER
     INITIAL 'abcEFghi>'                 NO-UNDO.
        
 
+FUNCTION syec-CreateTwoFactorPinForUser RETURNS CHARACTER 
+	(pc-LoginID AS CHARACTER) FORWARD.
+
+FUNCTION syec-GeneratePinValue RETURNS CHARACTER 
+	(pi-len AS INTEGER) FORWARD.
+
+FUNCTION syec-GetCurrentPinForUser RETURNS CHARACTER 
+	(pc-LoginID AS CHARACTER) FORWARD.
+
 FUNCTION syec-UserHasAcessToObject RETURNS LOGICAL 
     (pc-loginid AS CHARACTER,
     pc-objType AS CHARACTER,
     pc-objInfo AS CHARACTER,
      pc-ObjOther AS CHARACTER) FORWARD.
+
+FUNCTION syec-useTwoFactor RETURNS LOGICAL 
+	(pc-loginID AS  CHARACTER) FORWARD.
 
 FUNCTION sysec-DecodeValue RETURNS CHARACTER 
     (pc-loginid AS CHARACTER,
@@ -54,6 +67,104 @@ FUNCTION sysec-GeneratePBE-Password RETURNS CHARACTER
 
 /* ************************  Function Implementations ***************** */
 
+
+FUNCTION syec-CreateTwoFactorPinForUser RETURNS CHARACTER 
+	    ( pc-LoginID AS CHARACTER  ):
+    
+    DEFINE BUFFER webUser   FOR WebUser.
+    DEFINE BUFFER Company   FOR Company.
+    DEFINE BUFFER webSecPin FOR webSecPin.
+    
+    DEFINE VARIABLE MyUUID      AS RAW       NO-UNDO.
+    DEFINE VARIABLE lc-PinId    AS CHARACTER NO-UNDO.
+    
+    
+    
+     FOR FIRST WebUser NO-LOCK
+        WHERE WebUser.LoginID = pc-LoginID:
+       
+        
+        FOR FIRST Company NO-LOCK
+            WHERE Company.CompanyCode = WebUser.CompanyCode:
+                
+            DO WHILE TRUE:
+                    
+                ASSIGN  
+                    MyUUID = GENERATE-UUID  
+                    lc-PinID  = GUID(MyUUID).     
+               
+               IF CAN-FIND(FIRST WebSecPin WHERE WebSecPin.Pin_id = lc-PinID NO-LOCK) THEN NEXT.
+               CREATE WebSecPin.
+               ASSIGN
+                    WebSecPin.Pin_id = lc-PinId
+                    WebSecPin.LoginID = pc-loginID
+                    WebSecPin.dtCreated = NOW
+                    .
+               ASSIGN
+                    WebSecPin.Pin = DYNAMIC-FUNCTION("syec-GeneratePinValue",Company.TwoFactor_PinLength).
+                RELEASE WebSecPin.    
+                RETURN lc-PinId.      
+               
+            END.
+        END.         
+    END.
+    
+		
+END FUNCTION.
+
+FUNCTION syec-GeneratePinValue RETURNS CHARACTER 
+	    (  pi-len AS INTEGER):
+
+    DEFINE VARIABLE li-loop AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE li-bit  AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE MyUUID      AS RAW       NO-UNDO.
+    DEFINE VARIABLE cGUID       AS CHARACTER NO-UNDO.
+    
+    ASSIGN  
+        MyUUID = GENERATE-UUID  
+        cGUID  = GUID(MyUUID). 
+
+    /*
+    *** 
+    *** Remove all letters and "-"
+    ***
+    */
+    
+    cGuid = REPLACE(cguid,"-","").
+    ASSIGN
+        li-bit = ASC("A").
+   
+    DO li-loop = 0 TO 25:
+        cGuid = REPLACE(cguid,CHR( li-bit + li-loop),"").
+    END.
+    cGuid = REPLACE(cguid,"0","").
+    IF LENGTH (cGuid) > pi-len THEN
+    DO:
+        cGuid = SUBSTR(cguid, LENGTH(cguid) - ( pi-len + 1),pi-len).
+    END.
+    RETURN cGuID.
+		
+END FUNCTION.
+
+FUNCTION syec-GetCurrentPinForUser RETURNS CHARACTER 
+	(  pc-LoginID AS CHARACTER  ):
+    
+    DEFINE BUFFER webUser   FOR WebUser.
+    DEFINE BUFFER Company   FOR Company.
+    DEFINE BUFFER webSecPin FOR webSecPin.
+    
+    FOR LAST WebSecPin NO-LOCK
+        WHERE WebSecPin.LoginID = pc-LoginID:
+            
+       RETURN WebSecPin.Pin.
+        
+    END.
+    
+    RETURN "bing bong".
+
+
+		
+END FUNCTION.
 
 FUNCTION syec-UserHasAcessToObject RETURNS LOGICAL 
     ( pc-loginid AS CHARACTER,
@@ -80,6 +191,33 @@ FUNCTION syec-UserHasAcessToObject RETURNS LOGICAL
     
     RETURN llok.
 
+		
+END FUNCTION.
+
+FUNCTION syec-useTwoFactorAuth RETURNS LOGICAL 
+	    ( pc-loginID AS  CHARACTER  ):
+/*------------------------------------------------------------------------------
+		Purpose:  																	  
+		Notes:  																	  
+------------------------------------------------------------------------------*/	
+    DEFINE BUFFER webUser   FOR WebUser.
+    DEFINE BUFFER company   FOR Company.
+    
+    FOR FIRST WebUser NO-LOCK
+        WHERE WebUser.LoginID = pc-LoginID:
+            
+        IF WebUser.TwoFactor_Disable THEN RETURN FALSE.
+        
+        FOR FIRST Company NO-LOCK
+            WHERE Company.CompanyCode = WebUser.CompanyCode:
+                
+            RETURN Company.TwoFactor_Auth.     
+        END.         
+    END.
+    
+    RETURN FALSE.
+
+	
 		
 END FUNCTION.
 

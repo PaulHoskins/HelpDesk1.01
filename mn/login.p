@@ -14,6 +14,7 @@
     25/09/2014  phoski      Security Lib
     24/02/2016  phoski      Email new password for internal users
     27/02/2016  phoski      Issue link from SLA Email
+    06/07/2016  phoski      2 Factor Auth
 
 ***********************************************************************/
 CREATE WIDGET-POOL.
@@ -38,6 +39,15 @@ DEFINE VARIABLE lc-lkey        AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-ws-fields   AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-key         AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lc-url-company AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Auth-Pass   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-Pin-ID      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-pin         AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-getPin      AS CHARACTER NO-UNDO.
+DEFINE VARIABLE lc-AuthUser    AS CHARACTER NO-UNDO.
+
+
+
+
 
 DEFINE BUFFER WebUser FOR webuser.
 DEFINE BUFFER company FOR company.
@@ -223,6 +233,17 @@ PROCEDURE ip-Validate :
             pc-reason = "password".
         RETURN.
     END.
+    
+    /*
+    ***
+    *** if they don't have a mobile and 2 factor then they can't login!
+    ***
+    */
+    IF syec-useTwoFactorAuth(b-WebUser.LoginID) = TRUE AND b-WebUser.Mobile = ""
+    THEN RUN htmlib-AddErrorMessage('User', 'This site requires a mobile number for security reaons - Please contact the helpdesk',
+            INPUT-OUTPUT pc-error-field,
+            INPUT-OUTPUT pc-error-msg ).
+    
 
     CASE b-webuser.UserClass:
         WHEN "CONTRACT" THEN
@@ -258,6 +279,9 @@ PROCEDURE ipMainWeb:
         lc-value = htmlib-EncodeUser(lc-user). 
     lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"Password",lc-value).
            
+    ASSIGN
+        lc-authUser = lc-key.
+    
     FIND webUser 
         WHERE webUser.LoginID = lc-user EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
     IF AVAILABLE WebUser THEN
@@ -283,8 +307,31 @@ PROCEDURE ipMainWeb:
         REQUEST_METHOD = "GET".
     set-user-field("ExtranetUser",lc-user).
     set-user-field("mode",lc-mode).
+    set-user-field("authpass",lc-auth-pass).
     set-user-field("passtype",lc-passtype).
     set-user-field("passref",lc-passref).
+    IF lc-auth-pass = "password" THEN
+    DO:
+        IF syec-useTwoFactorAuth(lc-user) = TRUE THEN
+        DO:
+            ASSIGN
+                lc-pin-id = syec-CreateTwoFactorPinForUser(lc-user).
+                
+            ASSIGN
+                lc-getPin = syec-GetCurrentPinForUser(lc-user).
+            
+            RUN lib/sendsms.p ( lc-user , "Login:Pin", "Your Helpdesk Access Pin is " + lc-getPin).
+                
+            set-user-field("authpass","sms").
+            set-user-field("pinid",lc-pin-id).
+            set-user-field("authuser",lc-AuthUser).
+            RUN run-web-object IN web-utilities-hdl ("mn/login.p").
+            RETURN.
+            
+            
+        END.
+    END.
+    
     IF DYNAMIC-FUNCTION("com-RequirePasswordChange",lc-user) THEN 
     DO:
         set-user-field("expire","yes").
@@ -369,7 +416,16 @@ PROCEDURE process-web-request :
         lc-url-company = get-value("company")
         lc-mode = get-value("mode")
         lc-passtype = get-value("passtype")
-        lc-passref = get-value("passref").
+        lc-passref = get-value("passref")
+        lc-auth-Pass = get-value("authpass")
+        lc-pin-id    = get-value("pin-id")
+        lc-pin       = get-value("pin")
+        lc-authUser  = get-value("authuser").
+        
+        
+    IF lc-Auth-Pass = ""
+        THEN lc-Auth-Pass = "password".
+    
 
     IF lc-url-company = ""
         OR NOT CAN-FIND(company WHERE company.companycode = lc-url-company)
@@ -398,7 +454,6 @@ PROCEDURE process-web-request :
             RETURN.
         END.
         
-    
     END.
     
     IF request_method = "GET" AND get-value("logoff") = "yes" THEN
@@ -410,16 +465,36 @@ PROCEDURE process-web-request :
 
     IF request_method = "POST" THEN
     DO:
-        ASSIGN 
-            lc-user = get-field("user")
-            lc-pass = get-field("password").
+        IF lc-Auth-Pass = "password" THEN
+        DO:
+            ASSIGN 
+                lc-user = get-field("user")
+                lc-pass = get-field("password").
 
-        RUN ip-Validate ( 
-            INPUT lc-user,
-            INPUT lc-pass,
-            OUTPUT lc-reason,
-            OUTPUT lc-error-field,
-            OUTPUT lc-error-mess ).  
+            RUN ip-Validate ( 
+                INPUT lc-user,
+                INPUT lc-pass,
+                OUTPUT lc-reason,
+                OUTPUT lc-error-field,
+                OUTPUT lc-error-mess ).  
+        END.
+        ELSE
+        DO:
+            ASSIGN
+                 lc-user = DYNAMIC-FUNCTION("sysec-DecodeValue","System",TODAY,"Password",lc-AuthUser).
+              
+            lc-user = htmlib-DecodeUser(lc-user).
+            
+            ASSIGN
+                lc-getPin = syec-GetCurrentPinForUser(lc-user).
+                
+            IF lc-getPin <> lc-pin 
+            THEN ASSIGN 
+                   lc-error-field = "PIN"
+                   lc-error-mess = "The PIN is incorrect".
+                   
+        END.
+        
         IF lc-error-mess = "" THEN
         DO:
            
@@ -456,7 +531,11 @@ PROCEDURE process-web-request :
 
     {&out} htmlib-StartForm("mainform","post", selfurl ).
     
-    {&out} '<table align="left" width="80%" style="font-size: 10px;">' skip
+    
+    
+    IF lc-Auth-Pass = "password" THEN
+    DO:
+        {&out} '<table align="left" width="80%" style="font-size: 10px;">' skip
            '<tr><td align="left" rowspan="3" valign="top" style="xborder-right: 1px dotted black;">'
            '<img src="/images/topbar/' lc-url-company '/logo.gif" style="float: left; margin-right: 15px; margin-bottom: 15px;">'
            '<p><strong>Welcome to the ' company.name ' Help Desk</strong><p>'
@@ -464,27 +543,27 @@ PROCEDURE process-web-request :
            'If you require a user name and/or password then you can contact us using the following details:' skip.
 
     
-    RUN ip-CompanyInfo.
+        RUN ip-CompanyInfo.
     
     
-    IF lc-reason = "password" THEN 
-    DO:
-        FIND WebUser WHERE WebUser.Loginid = lc-user NO-LOCK NO-ERROR.
-        
-        FIND company WHERE company.companycode = WebUser.companycode NO-LOCK.
-
-        IF WebUser.email <> "" 
-            AND WebUser.UserClass = "internal"
-            AND ( company.smtp <> "" AND company.helpdeskemail <> "" ) THEN
+        IF lc-reason = "password" THEN 
         DO:
-            ASSIGN 
-                lc-value = STRING(ROWID(WebUser)).
+            FIND WebUser WHERE WebUser.Loginid = lc-user NO-LOCK NO-ERROR.
+        
+            FIND company WHERE company.companycode = WebUser.companycode NO-LOCK.
+
+            IF WebUser.email <> "" 
+                AND WebUser.UserClass = "internal"
+                AND ( company.smtp <> "" AND company.helpdeskemail <> "" ) THEN
+            DO:
+                ASSIGN 
+                    lc-value = STRING(ROWID(WebUser)).
                  
-            lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"webuser",lc-value).
+                lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"webuser",lc-value).
             
-            {&out} '<br><br><div class="loglink">'
+                {&out} '<br><br><div class="loglink">'
                     
-            '<p>Hi ' WebUser.forename ',<br>' skip
+                '<p>Hi ' WebUser.forename ',<br>' skip
                    'The password entered was incorrect for your user name.&nbsp;'
                    'Click ' 
                         '<a href="' appurl "/mn/loginpass.p?rowid=" url-encode(lc-key,"Query") '" style="font-weight: bolder;">'
@@ -494,17 +573,17 @@ PROCEDURE process-web-request :
                 
                    '</p>' skip
                     '</div>'.
+            END.
         END.
-    END.
    
-    {&out} '</td><td valign="top" align="right">' skip.
+        {&out} '</td><td valign="top" align="right">' skip.
 
 
-    {&out} '<table><tr><td>'.
+        {&out} '<table><tr><td>'.
 
-    {&out} ( IF LOOKUP("user",lc-error-field,'|') > 0 
-        THEN htmlib-SideLabelError("User Name")
-        ELSE htmlib-SideLabel("User Name"))
+        {&out} ( IF LOOKUP("user",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("User Name")
+            ELSE htmlib-SideLabel("User Name"))
            skip
            '</td><td valign="top" align="left">'
            htmlib-InputField("user",20,lc-user)
@@ -519,19 +598,102 @@ PROCEDURE process-web-request :
            '</td></tr>'.
 
   
-    {&out} '<tr><td align=center colspan="2" nowrap><BR>' htmlib-MultiplyErrorMessage(lc-error-mess)
-    htmlib-SubmitButton("submitform","Login") skip
+        {&out} '<tr><td align=center colspan="2" nowrap><BR>' htmlib-MultiplyErrorMessage(lc-error-mess)
+        htmlib-SubmitButton("submitform","Login") skip
           '</td></tr></table>' skip.
 
     
 
-    {&out} '</td></tr></table>' skip.
+        {&out} '</td></tr></table>' skip.
+
+    END.
+    /*
+    ***
+    *** PIN Entry
+    ***
+    */
+    ELSE
+    DO:
+        lc-user = DYNAMIC-FUNCTION("sysec-DecodeValue","System",TODAY,"Password",lc-AuthUser).
+        lc-user = htmlib-DecodeUser(lc-user).
+        
+        FIND WebUser WHERE WebUser.LoginID = lc-user NO-LOCK NO-ERROR.
+        
+        
+        {&out} '<table align="left" width="80%" style="font-size: 10px;">' skip
+           '<tr><td align="left" rowspan="3" valign="top" style="xborder-right: 1px dotted black;">'
+           '<img src="/images/topbar/' lc-url-company '/logo.gif" style="float: left; margin-right: 15px; margin-bottom: 15px;">'
+           '<p><strong>Welcome to the ' company.name ' Help Desk</strong><p>'
+           'This website uses 2 Factor Authentication - An access PIN has been sent to your mobile on '
+           '<b>' WebUser.Mobile '</b>.<br />Please contact the helpdesk if your number is incorrect or you do not receive the message.'
+           SKIP.
+    
+        RUN ip-CompanyInfo.
+    
+    
+        IF lc-reason = "pin" THEN 
+        DO:
+            FIND WebUser WHERE WebUser.Loginid = lc-user NO-LOCK NO-ERROR.
+        
+            FIND company WHERE company.companycode = WebUser.companycode NO-LOCK.
+
+            IF WebUser.email <> "" 
+                AND WebUser.UserClass = "internal"
+                AND ( company.smtp <> "" AND company.helpdeskemail <> "" ) THEN
+            DO:
+                ASSIGN 
+                    lc-value = STRING(ROWID(WebUser)).
+                 
+                lc-key = DYNAMIC-FUNCTION("sysec-EncodeValue","System",TODAY,"webuser",lc-value).
+            
+                {&out} '<br><br><div class="loglink">'
+                    
+                '<p>Hi ' WebUser.forename ',<br>' skip
+                   'The password entered was incorrect for your user name.&nbsp;'
+                   'Click ' 
+                        '<a href="' appurl "/mn/loginpass.p?rowid=" url-encode(lc-key,"Query") '" style="font-weight: bolder;">'
+                        'here</a>'
+                        ' for a new password to be generated and sent to your email address.'
+
+                
+                   '</p>' skip
+                    '</div>'.
+            END.
+        END.
+   
+        {&out} '</td><td valign="top" align="right">' skip.
 
 
+        {&out} '<table><tr><td>'.
+
+        {&out} ( IF LOOKUP("pin",lc-error-field,'|') > 0 
+            THEN htmlib-SideLabelError("PIN")
+            ELSE htmlib-SideLabel("PIN"))
+           skip
+           '</td><td valign="top" align="left">'
+           htmlib-InputField("pin",20,lc-pin)
+           skip
+           '</td></tr>'.
+
+  
+        {&out} '<tr><td align=center colspan="2" nowrap><BR>' htmlib-MultiplyErrorMessage(lc-error-mess)
+        htmlib-SubmitButton("submitform","Login") skip
+          '</td></tr></table>' skip.
+
+    
+
+        {&out} '</td></tr></table>' skip.
+
+    END.
+    
+    
     
     {&out} htmlib-Hidden("company",lc-url-company)
     htmlib-Hidden("mode",lc-mode)
+    htmlib-hidden("authpass",lc-auth-pass)
+    htmlib-hidden("pin-id", lc-pin-id)
     htmlib-Hidden("passtype",lc-passtype)
+    htmlib-hidden("authuser",lc-Authuser)
     htmlib-Hidden("passref",lc-passref).     
     
  
