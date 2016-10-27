@@ -4,7 +4,7 @@
     File        : custom.p
     Purpose     : 
 
-    Syntax      :
+    Syntax      : xxxxx
 
     Description : 
 
